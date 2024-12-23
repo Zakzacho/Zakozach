@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MyFlix - Home</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header>
+        <div class="logo">MyFlix</div>
+        <nav>
+            <ul>
+                <li><a href="pages/home.html">Home</a></li>
+                <li><a href="pages/movies.html">Movies</a></li>
+                <li><a href="pages/tv.html">TV Shows</a></li>
+                <li><a href="pages/mylist.html">My List</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <!-- قسم Hero مع خلفية -->
+        <section class="hero" style="background-image: url('images/index/hero-bg.jpg');">
+            <div class="hero-content">
+                <h1>MyFlix مرحبا بك في</h1>
+                <p>قناة شباب مست... امزح امزح هذه الصفحة لرواد الصور الطبيعة الخلابة الجذابة اللافة المبهجة العذبة الخصبة المدهشة البديعة  خلاص🚶</p>
+                <a href="pages/home.html" class="btn-get-started">Get Started</a>
+            </div>
+        </section>
+        <!-- قسم الصور -->
+        <section class="gallery">
+            <h2>Popular Picks</h2>
+            <div class="movie-list">
+                <div class="movie-item">
+                    <img src="images/index/movie1.jpg" alt="Movie 1" class="zoomable">
+                </div>
+                <div class="movie-item">
+                    <img src="images/index/movie2.jpg" alt="Movie 2" class="zoomable">
+                </div>
+            </div>
+        </section>
+    </main>
+    <footer>
+        <p> &copy; 2024 MyFlix</p>
+    </footer>
+
+    <!-- Popup Container -->
+    <div class="image-popup" id="imagePopup">
+        <span class="close-btn" id="closeBtn">&times;</span>
+        <img id="popupImage" src="" alt="Zoomed Image">
+    </div>
+<div class="image-popup" id="imagePopup">
+    <span class="close-btn" id="closeBtn">&times;</span>
+    <img id="popupImage" src="" alt="Zoomed Image">
+</div>
+    <script src="js/script.js"></script>
+</body>
+</html>
