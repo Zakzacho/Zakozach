@@ -1,58 +1,843 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MyFlix - Home</title>
-    <link rel="stylesheet" href="css/style.css">
+    <title>محول مواقع الويب إلى تطبيقات APK</title>
+    <style>
+        :root {
+            --primary-color: #222222;
+            --secondary-color: #444444;
+            --background-color: #f8f8f8;
+            --card-color: #ffffff;
+            --text-color: #333333;
+            --border-color: #dddddd;
+            --success-color: #4a4a4a;
+            --error-color: #b71c1c;
+            --warning-color: #f57c00;
+            --info-color: #2196f3;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--background-color);
+            color: var(--text-color);
+            direction: rtl;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 4px;
+            margin-bottom: 2rem;
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            opacity: 0.9;
+            font-weight: 400;
+        }
+
+        .card {
+            background-color: var(--card-color);
+            border-radius: 4px;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--border-color);
+        }
+
+        h2 {
+            font-size: 1.4rem;
+            margin-bottom: 1rem;
+            font-weight: 500;
+            color: var(--primary-color);
+        }
+
+        .workflow {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .workflow-step {
+            background-color: var(--card-color);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 1rem;
+            flex-basis: calc(33.33% - 10px);
+            margin-bottom: 1rem;
+        }
+
+        .step-number {
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 24px;
+            font-size: 0.9rem;
+            margin-bottom: 0.7rem;
+        }
+
+        .workflow-step h3 {
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+
+        form {
+            margin-top: 1rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.2rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.4rem;
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+
+        input[type="text"], input[type="url"], input[type="file"], select, textarea {
+            width: 100%;
+            padding: 0.7rem;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-size: 0.95rem;
+            background-color: #fafafa;
+        }
+
+        input[type="text"]:focus, input[type="url"]:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--secondary-color);
+            background-color: white;
+        }
+
+        .btn {
+            display: inline-block;
+            background-color: var(--primary-color);
+            color: white;
+            padding: 0.7rem 1.2rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            transition: all 0.2s ease;
+        }
+
+        .btn:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .btn-convert {
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: 500;
+        }
+
+        .btn-convert:hover {
+            opacity: 0.9;
+        }
+
+        .loading {
+            display: none;
+            margin: 1.5rem 0;
+        }
+
+        .console {
+            background-color: #1e1e1e;
+            color: #f1f1f1;
+            padding: 1rem;
+            border-radius: 4px;
+            font-family: 'Courier New', Courier, monospace;
+            height: 200px;
+            overflow-y: auto;
+            margin-bottom: 1rem;
+        }
+
+        .console-line {
+            margin-bottom: 0.3rem;
+            line-height: 1.4;
+        }
+
+        .console-info {
+            color: #63c0f5;
+        }
+
+        .console-warning {
+            color: #f5a623;
+        }
+
+        .console-error {
+            color: #ff6b6b;
+        }
+
+        .console-success {
+            color: #8bc34a;
+        }
+
+        .result {
+            display: none;
+            padding: 1rem;
+            border-radius: 4px;
+            margin-top: 1.5rem;
+            text-align: center;
+            background-color: #fafafa;
+            border: 1px solid var(--success-color);
+        }
+
+        .download-btn {
+            margin-top: 1rem;
+            background-color: var(--primary-color);
+        }
+
+        .download-btn:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .preview {
+            margin-top: 2rem;
+        }
+
+        .phone-preview {
+            display: inline-block;
+            width: 280px;
+            height: 550px;
+            background-color: #111;
+            border-radius: 20px;
+            padding: 15px 10px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin: 0 auto;
+        }
+
+        .screen {
+            width: 100%;
+            height: 100%;
+            background-color: white;
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .app-header {
+            height: 50px;
+            background-color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            padding: 0 15px;
+        }
+
+        .app-icon {
+            width: 30px;
+            height: 30px;
+            background-color: white;
+            border-radius: 8px;
+            margin-left: 10px;
+        }
+
+        .app-title {
+            color: white;
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+
+        .app-content {
+            padding: 15px;
+            height: calc(100% - 50px);
+            overflow-y: auto;
+            text-align: right;
+            font-size: 0.8rem;
+        }
+
+        .toggle-section {
+            display: block;
+            color: var(--primary-color);
+            cursor: pointer;
+            font-weight: 500;
+            margin: 1rem 0;
+        }
+
+        .tabs {
+            display: flex;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .tab {
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            border: 1px solid transparent;
+            border-bottom: none;
+            border-radius: 4px 4px 0 0;
+            margin-left: 5px;
+            font-size: 0.9rem;
+        }
+
+        .tab.active {
+            background-color: var(--card-color);
+            border-color: var(--border-color);
+            font-weight: 500;
+            color: var(--primary-color);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .info-box {
+            padding: 0.8rem;
+            background-color: #f5f5f5;
+            border-radius: 4px;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .info-box.warning {
+            background-color: #fff8e1;
+            border-left: 3px solid #f57c00;
+        }
+
+        .info-box.info {
+            background-color: #e3f2fd;
+            border-left: 3px solid #2196f3;
+        }
+
+        .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        .checkbox-item {
+            flex-basis: 50%;
+            margin-bottom: 0.5rem;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s linear infinite;
+            margin-right: 10px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 2rem;
+            padding: 1rem;
+            font-size: 0.9rem;
+            color: #777;
+        }
+
+        .error-message {
+            color: var(--error-color);
+            font-size: 0.85rem;
+            margin-top: 0.3rem;
+            display: none;
+        }
+
+        .progress-container {
+            width: 100%;
+            height: 8px;
+            background-color: #e0e0e0;
+            border-radius: 4px;
+            margin: 1rem 0;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background-color: var(--primary-color);
+            border-radius: 4px;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        @media (max-width: 768px) {
+            .workflow-step {
+                flex-basis: 100%;
+            }
+            
+            .checkbox-item {
+                flex-basis: 100%;
+            }
+        }
+    </style>
 </head>
 <body>
-    <header>
-        <div class="logo">MyFlix</div>
-        <nav>
-            <ul>
-                <li><a href="pages/home.html">منزل</a></li>
-                <li><a href="pages/movies.html">صور متحركة</a></li>
-                <li><a href="pages/tv.html">قائمة</a></li>
-                <li><a href="pages/mylist.html">إحتفظت بها</a></li>
-            </ul>
-        </nav>
-    </header>
-    <main>
-            <!-- قسم Hero مع خلفية -->
-        <section class="hero" style="background-image: url('images/index/hero-bg.jpg');">
-            <div class="hero-content">
-                <h1>MyFlix مرحبا بك في</h1>
-                <p></p>هذه الصفحة لرواد الصور الطبيعية الخلابة الجذابة اللافتة المبهجة العذبة المدهشة البديعة</p>
-                <a href="pages/home.html" class="btn-get-started">Get Started</a>
-            </div>
-        </section>
-        <!-- قسم الصور -->
-        <section class="gallery">
-            <h2>Popular Picks</h2>
-            <div class="movie-list">
-                <div class="movie-item">
-                    <img src="images/index/movie1.jpg" alt="Movie 1" class="zoomable">
-                </div>
-                <div class="movie-item">
-                    <img src="images/index/movie2.jpg" alt="Movie 2" class="zoomable">
-                </div>
-            </div>
-        </section>
-    </main>
-    <footer>
-        <p> &copy; 2024 MyFlix</p>
-    </footer>
+    <div class="container">
+        <header>
+            <h1>محول مواقع الويب إلى تطبيقات APK</h1>
+            <p class="subtitle">أداة احترافية لتحويل المواقع إلى تطبيقات أندرويد</p>
+        </header>
 
-    <!-- Popup Container -->
-    <div class="image-popup" id="imagePopup">
-        <span class="close-btn" id="closeBtn">&times;</span>
-        <img id="popupImage" src="" alt="Zoomed Image">
+        <div class="workflow">
+            <div class="workflow-step">
+                <div class="step-number">1</div>
+                <h3>إدخال رابط الموقع</h3>
+                <p>أدخل رابط الموقع المراد تحويله</p>
+            </div>
+            <div class="workflow-step">
+                <div class="step-number">2</div>
+                <h3>تحديد إعدادات التطبيق</h3>
+                <p>خصص اسم التطبيق والأيقونة والإعدادات الأخرى</p>
+            </div>
+            <div class="workflow-step">
+                <div class="step-number">3</div>
+                <h3>تحويل وتحميل</h3>
+                <p>تحقق من نجاح التحويل وقم بتحميل ملف APK</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>إنشاء تطبيق APK</h2>
+            
+            <div class="info-box info">
+                تأكد من صحة رابط الموقع وتوافقه مع معايير الأمان قبل التحويل.
+            </div>
+
+            <form id="converterForm">
+                <div class="form-group">
+                    <label for="url">رابط الموقع *</label>
+                    <input type="url" id="url" name="url" placeholder="https://example.com" required>
+                    <div class="error-message" id="urlError">الرجاء إدخال رابط صحيح</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="appName">اسم التطبيق *</label>
+                    <input type="text" id="appName" name="appName" placeholder="اسم التطبيق" required>
+                    <div class="error-message" id="appNameError">الرجاء إدخال اسم التطبيق</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="appIcon">أيقونة التطبيق (PNG، 512×512px) *</label>
+                    <input type="file" id="appIcon" name="appIcon" accept="image/png, image/jpeg" required>
+                    <div class="error-message" id="appIconError">الرجاء اختيار صورة بالحجم المناسب</div>
+                </div>
+
+                <div class="toggle-section" id="toggleAdvanced">عرض الإعدادات المتقدمة ↓</div>
+
+                <div id="advancedSettings" style="display: none;">
+                    <div class="tabs">
+                        <div class="tab active" data-tab="general">إعدادات عامة</div>
+                        <div class="tab" data-tab="technical">إعدادات تقنية</div>
+                        <div class="tab" data-tab="optimization">تحسينات</div>
+                    </div>
+
+                    <div class="tab-content active" id="general">
+                        <div class="form-group">
+                            <label for="packageName">اسم الحزمة</label>
+                            <input type="text" id="packageName" name="packageName" placeholder="com.example.app">
+                            <div class="error-message" id="packageNameError">يجب أن يكون اسم الحزمة على شكل com.example.app</div>
+                        </div>
+                        <div class="form-group">
+                            <label for="versionName">رقم الإصدار</label>
+                            <input type="text" id="versionName" name="versionName" placeholder="1.0.0">
+                        </div>
+                        <div class="form-group">
+                            <label for="versionCode">كود الإصدار</label>
+                            <input type="text" id="versionCode" name="versionCode" placeholder="1">
+                        </div>
+                    </div>
+
+                    <div class="tab-content" id="technical">
+                        <div class="form-group">
+                            <label for="minSdkVersion">الحد الأدنى من SDK</label>
+                            <select id="minSdkVersion" name="minSdkVersion">
+                                <option value="21">API 21 (Android 5.0)</option>
+                                <option value="23">API 23 (Android 6.0)</option>
+                                <option value="26">API 26 (Android 8.0)</option>
+                                <option value="28">API 28 (Android 9.0)</option>
+                                <option value="29">API 29 (Android 10.0)</option>
+                                <option value="30">API 30 (Android 11.0)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>الأذونات المطلوبة</label>
+                            <div class="checkbox-group">
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="internet" name="permissions" value="internet" checked>
+                                    <label for="internet">الإنترنت</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="storage" name="permissions" value="storage">
+                                    <label for="storage">التخزين</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="location" name="permissions" value="location">
+                                    <label for="location">الموقع</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="camera" name="permissions" value="camera">
+                                    <label for="camera">الكاميرا</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tab-content" id="optimization">
+                        <div class="form-group">
+                            <label for="caching">استراتيجية التخزين المؤقت</label>
+                            <select id="caching" name="caching">
+                                <option value="none">بدون تخزين مؤقت</option>
+                                <option value="basic">تخزين مؤقت أساسي</option>
+                                <option value="advanced">تخزين مؤقت متقدم</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="resourceCompression">ضغط الموارد</label>
+                            <select id="resourceCompression" name="resourceCompression">
+                                <option value="none">بدون ضغط</option>
+                                <option value="basic">ضغط أساسي</option>
+                                <option value="high">ضغط عالي</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="offlineMode">وضع عدم الاتصال</label>
+                            <select id="offlineMode" name="offlineMode">
+                                <option value="none">غير متاح</option>
+                                <option value="basic">أساسي (الصفحة الرئيسية فقط)</option>
+                                <option value="advanced">متقدم (الموقع بالكامل)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-convert">تحويل إلى تطبيق APK</button>
+            </form>
+        </div>
+
+        <div class="loading" id="loading">
+            <div class="card">
+                <h2>جاري تحويل الموقع إلى تطبيق...</h2>
+                <div class="progress-container">
+                    <div class="progress-bar" id="progressBar"></div>
+                </div>
+                <div class="console" id="console">
+                    <div class="console-line console-info">> بدء عملية التحويل...</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="result" id="result">
+            <div class="card">
+                <h2>تم التحويل بنجاح</h2>
+                <p>تم إنشاء تطبيق APK للموقع بنجاح. يمكنك الآن تحميل الملف واستخدامه على أجهزة أندرويد.</p>
+                <div class="info-box warning">
+                    قد تحتاج إلى تفعيل خيار "التثبيت من مصادر غير معروفة" على جهازك لتثبيت التطبيق.
+                </div>
+                <button class="btn download-btn" id="downloadBtn">تحميل ملف APK</button>
+                
+                <div class="form-group" style="margin-top: 1rem;">
+                    <label for="buildLog">سجل البناء</label>
+                    <textarea id="buildLog" rows="8" readonly></textarea>
+                </div>
+            </div>
+        </div>
+
+        <div class="preview">
+            <div class="card">
+                <h2>معاينة التطبيق</h2>
+                <div style="text-align: center;">
+                    <div class="phone-preview">
+                        <div class="screen">
+                            <div class="app-header">
+                                <div class="app-icon" id="previewIcon"></div>
+                                <div class="app-title" id="previewTitle">اسم التطبيق</div>
+                            </div>
+                            <div class="app-content" id="previewContent">
+                                <p>سيظهر هنا محتوى موقع الويب الخاص بك</p>
+                                <p>أدخل رابط الموقع وسيتم عرض معاينة له هنا</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            محول مواقع الويب إلى تطبيقات APK - إصدار 1.0.0
+        </footer>
     </div>
-<div class="image-popup" id="imagePopup">
-    <span class="close-btn" id="closeBtn">&times;</span>
-    <img id="popupImage" src="" alt="Zoomed Image">
-</div>
-    <script src="js/script.js"></script>
+
+    <script>
+        // Toggle advanced settings
+        document.getElementById('toggleAdvanced').addEventListener('click', function() {
+            const advancedSettings = document.getElementById('advancedSettings');
+            if (advancedSettings.style.display === 'none') {
+                advancedSettings.style.display = 'block';
+                this.textContent = 'إخفاء الإعدادات المتقدمة ↑';
+            } else {
+                advancedSettings.style.display = 'none';
+                this.textContent = 'عرض الإعدادات المتقدمة ↓';
+            }
+        });
+
+        // Tab system
+        const tabs = document.querySelectorAll('.tab');
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                // Remove active class from all tabs and contents
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                
+                // Add active class to current tab and content
+                tab.classList.add('active');
+                const tabId = tab.getAttribute('data-tab');
+                document.getElementById(tabId).classList.add('active');
+            });
+        });
+
+        // Form validation
+        function validateForm() {
+            let isValid = true;
+            
+            // Validate URL
+            const url = document.getElementById('url');
+            const urlError = document.getElementById('urlError');
+            if (!url.value || !url.value.match(/^(https?:\/\/)([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(\/.*)?$/)) {
+                urlError.style.display = 'block';
+                isValid = false;
+            } else {
+                urlError.style.display = 'none';
+            }
+            
+            // Validate app name
+            const appName = document.getElementById('appName');
+            const appNameError = document.getElementById('appNameError');
+            if (!appName.value.trim()) {
+                appNameError.style.display = 'block';
+                isValid = false;
+            } else {
+                appNameError.style.display = 'none';
+            }
+            
+            // Validate app icon
+            const appIcon = document.getElementById('appIcon');
+            const appIconError = document.getElementById('appIconError');
+            if (!appIcon.files || !appIcon.files[0]) {
+                appIconError.style.display = 'block';
+                isValid = false;
+            } else {
+                appIconError.style.display = 'none';
+            }
+            
+            // Validate package name if provided
+            const packageName = document.getElementById('packageName');
+            const packageNameError = document.getElementById('packageNameError');
+            if (packageName.value && !packageName.value.match(/^[a-z][a-z0-9_]*(\.[a-z][a-z0-9_]*)+$/)) {
+                packageNameError.style.display = 'block';
+                isValid = false;
+            } else {
+                packageNameError.style.display = 'none';
+            }
+            
+            return isValid;
+        }
+
+        // Console logger
+        function log(message, type = 'info') {
+            const console = document.getElementById('console');
+            const line = document.createElement('div');
+            line.className = `console-line console-${type}`;
+            line.textContent = `> ${message}`;
+            console.appendChild(line);
+            console.scrollTop = console.scrollHeight;
+        }
+
+        // Progress bar updater
+        function updateProgress(percent) {
+            document.getElementById('progressBar').style.width = `${percent}%`;
+        }
+
+        // Simulated build process
+        function simulateBuildProcess() {
+            const url = document.getElementById('url').value;
+            const appName = document.getElementById('appName').value;
+            
+            return new Promise((resolve, reject) => {
+                log('بدء عملية التحويل...');
+                updateProgress(5);
+                
+                setTimeout(() => {
+                    log('فحص صحة الرابط...');
+                    updateProgress(10);
+                    
+                    if (!url.includes('http')) {
+                        log('خطأ في بروتوكول الرابط', 'error');
+                        reject('خطأ في بروتوكول الرابط');
+                        return;
+                    }
+                    
+                    setTimeout(() => {
+                        log('تحميل محتوى الموقع...');
+                        updateProgress(20);
+                        
+                        setTimeout(() => {
+                            log('تحليل بنية HTML...');
+                            updateProgress(35);
+                            
+                            setTimeout(() => {
+                                log('تحسين CSS للأجهزة المحمولة...');
+                                updateProgress(50);
+                                
+                                setTimeout(() => {
+                                    log('إعداد بنية تطبيق أندرويد...');
+                                    updateProgress(65);
+                                    
+                                    setTimeout(() => {
+                                        log('تضمين WebView وتهيئة الإعدادات...');
+                                        updateProgress(75);
+                                        
+                                        setTimeout(() => {
+                                            log('تكوين ملف AndroidManifest.xml...');
+                                            updateProgress(85);
+                                            
+                                            setTimeout(() => {
+                                                log('بناء حزمة APK...');
+                                                updateProgress(95);
+                                                
+                                                setTimeout(() => {
+                                                    log('اكتمل بناء التطبيق بنجاح!', 'success');
+                                                    updateProgress(100);
+                                                    
+                                                    const buildLog = `
+تحويل موقع: ${url}
+اسم التطبيق: ${appName}
+تاريخ البناء: ${new Date().toLocaleString()}
+
+---- ملخص البناء ----
+• تم تحميل HTML وتحسين CSS
+• تم إنشاء بنية WebView
+• تم ضبط إعدادات الأذونات
+• تم تكوين حزمة APK
+• تم توقيع التطبيق
+• حجم الملف النهائي: 4.2 MB
+
+---- ملاحظات ----
+• التطبيق يعمل على Android 5.0+
+• تم ضبط التخزين المؤقت للصفحات
+• تم إعداد التطبيق للعمل في وضع عدم الاتصال بالإنترنت
+                                                    `;
+                                                    
+                                                    resolve(buildLog);
+                                                }, 800);
+                                            }, 700);
+                                        }, 600);
+                                    }, 700);
+                                }, 500);
+                            }, 600);
+                        }, 800);
+                    }, 700);
+                }, 500);
+            });
+        }
+
+        // Form submission
+        document.getElementById('converterForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            if (!validateForm()) {
+                return;
+            }
+            
+            // Show loading
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('result').style.display = 'none';
+            
+            // Simulate build process
+            simulateBuildProcess()
+                .then(buildLog => {
+                    document.getElementById('loading').style.display = 'none';
+                    document.getElementById('result').style.display = 'block';
+                    document.getElementById('buildLog').value = buildLog;
+                    
+                    // Scroll to result
+                    document.getElementById('result').scrollIntoView({ behavior: 'smooth' });
+                })
+                .catch(error => {
+                    log(`فشل في بناء التطبيق: ${error}`, 'error');
+                    updateProgress(100);
+                    
+                    setTimeout(() => {
+                        document.getElementById('loading').style.display = 'none';
+                    }, 1000);
+                });
+        });
+
+        // Download APK button
+        document.getElementById('downloadBtn').addEventListener('click', function() {
+            alert('سيتم تحميل ملف APK (محاكاة). في التطبيق الفعلي، سيتم تنزيل الملف.');
+        });
+
+        // Live preview updates
+        document.getElementById('appName').addEventListener('input', function() {
+            document.getElementById('previewTitle').textContent = this.value || 'اسم التطبيق';
+        });
+
+        document.getElementById('url').addEventListener('input', function() {
+            const previewContent = document.getElementById('previewContent');
+            if (this.value) {
+                previewContent.innerHTML = `<p>محتوى من: ${this.value}</p>
+                <p>جاري تحميل المحتوى...</p>
+                <div style="width: 100%; height: 100px; background-color: #f0f0f0; margin: 10px 0;"></div>
+                <div style="width: 80%; height: 20px; background-color: #f0f0f0; margin: 10px 0;"></div>
+                <div style="width: 60%; height: 20px; background-color: #f0f0f0; margin: 10px 0;"></div>`;
+            } else {
+                previewContent.innerHTML = '<p>سيظهر هنا محتوى موقع الويب الخاص بك</p>';
+            }
+        });
+
+        document.getElementById('appIcon').addEventListener('change', function() {
+            const file = this.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const previewIcon = document.getElementById('previewIcon');
+                    previewIcon.style.backgroundImage = `url(${e.target.result})`;
+                    previewIcon.style.backgroundSize = 'cover';
+                    previewIcon.style.backgroundPosition = 'center';
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    </script>
 </body>
 </html>
