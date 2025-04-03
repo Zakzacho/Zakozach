@@ -3,1838 +3,566 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>محول HTML إلى APK</title>
+    <title>Photofix - تخزين وتشفير صورك</title>
     <style>
         :root {
-            --bg-color: #000;
-            --text-color: #fff;
-            --accent-color: #0f0;
-            --border-color: #333;
-            --error-color: #ff4d4d;
-            --success-color: #4dff4d;
-            --input-bg: #111;
-            --warning-color: #ffaa00;
+            --primary-color: #e50914;
+            --dark-color: #111;
+            --light-color: #f3f3f3;
+            --gray-color: #333;
         }
         
         * {
+            margin: 0;
+            padding: 0;
             box-sizing: border-box;
-            font-family: 'Tajawal', 'Cairo', sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
         
         body {
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            margin: 0;
-            padding: 20px;
-            line-height: 1.6;
-        }
-        
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            border: 1px solid var(--border-color);
-            border-radius: 5px;
-            padding: 20px;
-            box-shadow: 0 0 10px rgba(0, 255, 0, 0.1);
+            background-color: var(--dark-color);
+            color: white;
+            direction: rtl;
         }
         
         header {
-            text-align: center;
-            margin-bottom: 30px;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 10px;
-        }
-        
-        h1, h2, h3 {
-            color: var(--accent-color);
-            text-shadow: 0 0 5px rgba(0, 255, 0, 0.3);
-        }
-        
-        .terminal-input {
-            background-color: var(--input-bg);
-            border: 1px solid var(--border-color);
-            color: var(--text-color);
-            padding: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 50px;
+            position: fixed;
+            top: 0;
             width: 100%;
-            margin-bottom: 15px;
-            font-size: 16px;
-            border-radius: 3px;
-            transition: border-color 0.3s, box-shadow 0.3s;
+            z-index: 100;
+            transition: 0.5s;
+            background-color: rgba(0, 0, 0, 0.9);
         }
         
-        .terminal-input:focus {
-            outline: none;
-            border-color: var(--accent-color);
-            box-shadow: 0 0 5px rgba(0, 255, 0, 0.5);
-        }
-        
-        .terminal-button {
-            background-color: var(--bg-color);
-            color: var(--accent-color);
-            border: 1px solid var(--accent-color);
-            padding: 12px 20px;
-            cursor: pointer;
-            font-size: 16px;
-            border-radius: 3px;
-            transition: all 0.3s;
+        .logo {
+            color: var(--primary-color);
+            font-size: 32px;
             font-weight: bold;
-            letter-spacing: 0.5px;
-            position: relative;
-            overflow: hidden;
+            text-decoration: none;
         }
         
-        .terminal-button:hover {
-            background-color: var(--accent-color);
-            color: var(--bg-color);
-            box-shadow: 0 0 10px rgba(0, 255, 0, 0.7);
-        }
-
-        .terminal-button:active {
-            transform: translateY(2px);
+        nav ul {
+            display: flex;
+            list-style: none;
         }
         
-        .terminal-button:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
+        nav ul li {
+            margin-left: 20px;
         }
         
-        .file-input-container {
-            position: relative;
-            margin-bottom: 15px;
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+            font-size: 16px;
+            transition: 0.3s;
         }
         
-        .file-input {
-            position: absolute;
-            top: 0;
-            left: 0;
-            opacity: 0;
-            width: 100%;
-            height: 100%;
+        nav ul li a:hover {
+            color: var(--primary-color);
+        }
+        
+        .auth-buttons a {
+            margin-right: 15px;
+            text-decoration: none;
+        }
+        
+        .login-btn {
+            color: white;
+            background: transparent;
+            border: none;
+            font-size: 16px;
             cursor: pointer;
         }
         
-        .file-label {
-            display: block;
-            background-color: var(--bg-color);
-            color: var(--accent-color);
-            border: 1px solid var(--accent-color);
-            padding: 12px;
+        .signup-btn {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 4px;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        
+        .hero {
+            height: 80vh;
+            background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800" viewBox="0 0 1200 800"><rect width="1200" height="800" fill="%23222"/><circle cx="600" cy="400" r="200" fill="%23333"/></svg>');
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
             text-align: center;
-            border-radius: 3px;
-            transition: all 0.3s;
-        }
-
-        .file-label:hover {
-            background-color: rgba(0, 255, 0, 0.1);
-            box-shadow: 0 0 8px rgba(0, 255, 0, 0.5);
+            padding: 0 20px;
         }
         
-        .progress-container {
-            width: 100%;
-            height: 25px;
-            background-color: var(--input-bg);
-            border-radius: 3px;
-            margin: 20px 0;
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+        
+        .hero p {
+            font-size: 1.5rem;
+            margin-bottom: 30px;
+            max-width: 800px;
+        }
+        
+        .get-started {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 15px 25px;
+            font-size: 18px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        
+        .get-started:hover {
+            background-color: #f40612;
+        }
+        
+        .features {
+            padding: 50px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            background-color: black;
+        }
+        
+        .feature {
+            text-align: center;
+            padding: 30px;
+            background-color: var(--gray-color);
+            border-radius: 8px;
+            transition: transform 0.3s;
+        }
+        
+        .feature:hover {
+            transform: translateY(-10px);
+        }
+        
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            color: var(--primary-color);
+        }
+        
+        .feature h3 {
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+        }
+        
+        .gallery {
+            padding: 50px;
+            background-color: var(--dark-color);
+        }
+        
+        .gallery h2 {
+            text-align: center;
+            font-size: 2rem;
+            margin-bottom: 30px;
+        }
+        
+        .images-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+        }
+        
+        .image-card {
+            height: 150px;
+            background-color: var(--gray-color);
+            border-radius: 4px;
             overflow: hidden;
+            transition: transform 0.3s;
+            cursor: pointer;
             position: relative;
-            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
         }
         
-        .progress-bar {
-            width: 0%;
-            height: 100%;
-            background: linear-gradient(90deg, rgba(0,255,0,0.7) 0%, rgba(0,255,0,1) 100%);
-            transition: width 0.5s ease-in-out;
-            box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+        .image-card:hover {
+            transform: scale(1.05);
         }
         
-        .progress-text {
-            position: absolute;
+        .encrypt-banner {
+            background-color: var(--primary-color);
+            padding: 50px;
+            text-align: center;
+            margin: 50px 0;
+        }
+        
+        .encrypt-banner h2 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+        }
+        
+        .encrypt-banner p {
+            font-size: 1.2rem;
+            margin-bottom: 25px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        footer {
+            background-color: var(--gray-color);
+            padding: 30px 50px;
+            text-align: center;
+        }
+        
+        footer p {
+            margin-bottom: 20px;
+        }
+        
+        .social-links {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        
+        .social-links a {
+            color: white;
+            margin: 0 10px;
+            font-size: 1.5rem;
+        }
+        
+        .upload-modal {
+            display: none;
+            position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background-color: var(--gray-color);
+            padding: 30px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 500px;
+            text-align: center;
+        }
+        
+        .close {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 30px;
+            cursor: pointer;
+            color: white;
+        }
+        
+        .dropzone {
+            border: 2px dashed var(--primary-color);
+            padding: 40px;
+            margin: 20px 0;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .encrypt-toggle {
+            margin: 20px 0;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: var(--text-color);
-            font-weight: bold;
-            text-shadow: 0 0 3px rgba(0, 0, 0, 0.8);
         }
         
-        .console {
-            background-color: var(--input-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 3px;
-            padding: 15px;
-            height: 250px;
-            overflow-y: auto;
-            margin-top: 20px;
-            white-space: pre-wrap;
-            font-family: 'Courier New', monospace;
-            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
-            scrollbar-width: thin;
-            scrollbar-color: var(--accent-color) var(--input-bg);
-        }
-        
-        .console::-webkit-scrollbar {
-            width: 6px;
-        }
-        
-        .console::-webkit-scrollbar-track {
-            background: var(--input-bg);
-        }
-        
-        .console::-webkit-scrollbar-thumb {
-            background-color: var(--border-color);
-            border-radius: 10px;
-        }
-        
-        .console::-webkit-scrollbar-thumb:hover {
-            background-color: var(--accent-color);
-        }
-        
-        .console-text {
-            margin: 0;
-            font-size: 14px;
-            line-height: 1.5;
-            color: var(--text-color);
-        }
-        
-        .step {
-            margin-bottom: 30px;
-            padding: 20px;
-            border: 1px solid var(--border-color);
-            border-radius: 5px;
-            transition: box-shadow 0.3s;
-            background-color: rgba(0, 0, 0, 0.3);
-        }
-        
-        .step:hover {
-            box-shadow: 0 0 10px rgba(0, 255, 0, 0.2);
-        }
-        
-        .success {
-            color: var(--success-color);
-        }
-        
-        .error {
-            color: var(--error-color);
-        }
-
-        .warning {
-            color: var(--warning-color);
-        }
-        
-        #downloadBtn {
-            display: none;
-            background-color: var(--bg-color);
-            color: var(--success-color);
-            border: 1px solid var(--success-color);
-            animation: pulse 1.5s infinite;
-        }
-        
-        #downloadBtn:hover {
-            background-color: var(--success-color);
-            color: var(--bg-color);
-            animation: none;
-        }
-        
-        #iconName {
-            color: rgba(255, 255, 255, 0.7);
-            font-style: italic;
-            margin: 10px 0;
-        }
-        
-        @keyframes pulse {
-            0% {
-                box-shadow: 0 0 0 0 rgba(0, 255, 0, 0.4);
-            }
-            70% {
-                box-shadow: 0 0 0 10px rgba(0, 255, 0, 0);
-            }
-            100% {
-                box-shadow: 0 0 0 0 rgba(0, 255, 0, 0);
-            }
-        }
-        
-        .tooltip {
+        .toggle-switch {
             position: relative;
             display: inline-block;
-            cursor: help;
-            margin-right: 5px;
-            font-size: 14px;
-            color: var(--accent-color);
+            width: 60px;
+            height: 34px;
+            margin: 0 10px;
         }
-
-        .tooltip .tooltiptext {
-            visibility: hidden;
-            width: 200px;
-            background-color: var(--input-bg);
-            color: var(--text-color);
-            text-align: center;
-            border-radius: 6px;
-            padding: 10px;
+        
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .slider {
             position: absolute;
-            z-index: 1;
-            bottom: 125%;
-            left: 50%;
-            margin-left: -100px;
-            opacity: 0;
-            transition: opacity 0.3s;
-            border: 1px solid var(--border-color);
-        }
-
-        .tooltip:hover .tooltiptext {
-            visibility: visible;
-            opacity: 1;
-        }
-        
-        .status-label {
-            display: inline-block;
-            padding: 3px 8px;
-            border-radius: 3px;
-            font-size: 12px;
-            margin-right: 10px;
-        }
-        
-        .status-ready {
-            background-color: rgba(0, 255, 0, 0.2);
-            color: var(--accent-color);
-            border: 1px solid var(--accent-color);
-        }
-        
-        .status-processing {
-            background-color: rgba(255, 165, 0, 0.2);
-            color: orange;
-            border: 1px solid orange;
-        }
-        
-        .status-complete {
-            background-color: rgba(0, 255, 0, 0.2);
-            color: var(--success-color);
-            border: 1px solid var(--success-color);
-        }
-
-        .error-shake {
-            animation: shake 0.5s;
-        }
-
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
-            20%, 40%, 60%, 80% { transform: translateX(5px); }
-        }
-
-        .notification {
-            position: fixed;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            padding: 15px 20px;
-            border-radius: 5px;
-            color: white;
-            font-weight: bold;
-            z-index: 1000;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-            display: none;
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-
-        .notification.success {
-            background-color: var(--success-color);
-            color: var(--bg-color);
-        }
-
-        .notification.error {
-            background-color: var(--error-color);
-        }
-        
-        .notification.warning {
-            background-color: var(--warning-color);
-            color: #000;
-        }
-        
-        .disclaimer {
-            background-color: rgba(255, 165, 0, 0.2);
-            color: var(--warning-color);
-            padding: 15px;
-            border-radius: 5px;
-            margin-bottom: 20px;
-            text-align: center;
-            border: 1px solid var(--warning-color);
-        }
-        
-        .advanced-settings {
-            background-color: rgba(0, 0, 0, 0.2);
-            border: 1px solid var(--border-color);
-            border-radius: 5px;
-            padding: 15px;
-            margin-top: 15px;
-        }
-        
-        .advanced-settings-toggle {
             cursor: pointer;
-            user-select: none;
-            display: flex;
-            align-items: center;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
         }
         
-        .advanced-settings-toggle:hover {
-            color: var(--accent-color);
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
         }
         
-        .advanced-settings-content {
+        input:checked + .slider {
+            background-color: var(--primary-color);
+        }
+        
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+        
+        .password-input {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
             display: none;
-            padding-top: 10px;
+            border-radius: 4px;
+            border: 1px solid #555;
+            background-color: #444;
+            color: white;
         }
         
-        .troubleshoot-section {
-            background-color: rgba(255, 255, 255, 0.05);
-            border-radius: 5px;
-            padding: 15px;
+        .upload-btn {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
             margin-top: 20px;
+            font-size: 16px;
         }
         
-        .troubleshoot-section h3 {
-            color: var(--warning-color);
-            margin-top: 0;
-        }
-        
-        .troubleshoot-section ul {
-            padding-right: 20px;
-            margin-bottom: 0;
-        }
-        
-        .troubleshoot-section li {
-            margin-bottom: 8px;
-        }
-        
-        .external-link {
-            color: var(--accent-color);
-            text-decoration: none;
-            transition: all 0.3s;
-        }
-        
-        .external-link:hover {
-            text-decoration: underline;
-            color: var(--success-color);
-        }
-        
-        .alternative-options {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            margin-top: 15px;
-        }
-        
-        .alternative-option {
-            flex: 1;
-            min-width: 200px;
-            background-color: var(--input-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 5px;
-            padding: 15px;
-            transition: all 0.3s;
-        }
-        
-        .alternative-option:hover {
-            border-color: var(--accent-color);
-            box-shadow: 0 0 10px rgba(0, 255, 0, 0.2);
-        }
-        
-        .alternative-option h4 {
-            margin-top: 0;
-            color: var(--accent-color);
-        }
-        
-        @media (max-width: 600px) {
-            .container {
-                padding: 10px;
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            header {
+                padding: 15px 20px;
+                flex-direction: column;
+                align-items: flex-start;
             }
             
-            .step {
-                padding: 15px;
-            }
-            
-            .terminal-button {
+            nav {
                 width: 100%;
+                margin-top: 15px;
             }
             
-            h1 {
-                font-size: 24px;
-            }
-            
-            h2 {
-                font-size: 20px;
-            }
-            
-            .alternative-options {
+            nav ul {
                 flex-direction: column;
             }
-        }
-
-        @font-face {
-            font-family: 'Tajawal';
-            src: url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap');
-        }
-
-        @font-face {
-            font-family: 'Cairo';
-            src: url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap');
+            
+            nav ul li {
+                margin: 10px 0;
+                margin-left: 0;
+            }
+            
+            .auth-buttons {
+                margin-top: 15px;
+                display: flex;
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            .hero h1 {
+                font-size: 2rem;
+            }
+            
+            .hero p {
+                font-size: 1rem;
+            }
+            
+            .features {
+                padding: 30px 20px;
+            }
+            
+            .gallery {
+                padding: 30px 20px;
+            }
+            
+            .encrypt-banner {
+                padding: 30px 20px;
+            }
+            
+            footer {
+                padding: 20px;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="notification" id="notification"></div>
-    <div class="container">
-        <div class="disclaimer">
-            <strong>ملاحظة هامة:</strong> هذه الأداة لأغراض تعليمية فقط. لإنشاء ملف APK قابل للتثبيت بشكل موثوق، يُنصح باستخدام الأدوات المهنية المذكورة أدناه.
-        </div>
-        
-        <header>
-            <h1>محول HTML إلى APK</h1>
-            <p>قم بتحويل أي موقع ويب إلى تطبيق Android APK بسهولة وكفاءة</p>
-            <div class="status-label status-ready" id="statusLabel">جاهز</div>
-        </header>
-        
-        <div class="step">
-            <h2>الخطوة 1: إدخال تفاصيل الموقع</h2>
-            <input type="text" id="websiteUrl" class="terminal-input" placeholder="أدخل رابط الموقع (مثال: https://example.com)" />
-            <input type="text" id="appName" class="terminal-input" placeholder="أدخل اسم التطبيق" />
-            <input type="text" id="appPackage" class="terminal-input" placeholder="أدخل حزمة التطبيق (مثال: com.example.app)" />
-            <div class="file-input-container">
-                <div class="file-label">اختر أيقونة التطبيق (PNG بحجم 512×512)</div>
-                <input type="file" id="appIcon" class="file-input" accept="image/png" />
-            </div>
-            <p id="iconName">لم يتم اختيار أيقونة</p>
-        </div>
-        
-        <div class="step">
-            <h2>الخطوة 2: إعدادات إضافية <span class="tooltip">؟<span class="tooltiptext">إعدادات اختيارية لتخصيص التطبيق</span></span></h2>
-            
-            <div style="display: flex; gap: 15px; margin-bottom: 15px; flex-wrap: wrap;">
-                <label style="flex: 1; min-width: 150px;">
-                    <input type="checkbox" id="enableCache" checked> تفعيل التخزين المؤقت
-                </label>
-                <label style="flex: 1; min-width: 150px;">
-                    <input type="checkbox" id="enableJavascript" checked> تفعيل JavaScript
-                </label>
-                <label style="flex: 1; min-width: 150px;">
-                    <input type="checkbox" id="enableNavBar"> شريط تنقل
-                </label>
-            </div>
-            
-            <div style="display: flex; gap: 15px; margin-bottom: 15px; flex-wrap: wrap;">
-                <select id="orientation" class="terminal-input" style="flex: 1; min-width: 200px;">
-                    <option value="both">اتجاه الشاشة: كلاهما</option>
-                    <option value="portrait">اتجاه الشاشة: رأسي فقط</option>
-                    <option value="landscape">اتجاه الشاشة: أفقي فقط</option>
-                </select>
-                
-                <select id="targetSDK" class="terminal-input" style="flex: 1; min-width: 200px;">
-                    <option value="33">Android 13 (API 33)</option>
-                    <option value="32">Android 12L (API 32)</option>
-                    <option value="31">Android 12 (API 31)</option>
-                    <option value="30" selected>Android 11 (API 30)</option>
-                    <option value="29">Android 10 (API 29)</option>
-                    <option value="28">Android 9 (API 28)</option>
-                </select>
-            </div>
-            
-            <div class="advanced-settings">
-                <div class="advanced-settings-toggle" id="advancedSettingsToggle">
-                    <span style="margin-left: 5px;">▶</span> إعدادات متقدمة
-                </div>
-                <div class="advanced-settings-content" id="advancedSettingsContent">
-                    <div style="display: flex; gap: 15px; margin-bottom: 15px; flex-wrap: wrap;">
-                        <label style="flex: 1; min-width: 200px;">
-                            <input type="checkbox" id="enableDeepLinks"> تفعيل الروابط العميقة
-                        </label>
-                        <label style="flex: 1; min-width: 200px;">
-                            <input type="checkbox" id="enableOfflineMode"> دعم وضع عدم الاتصال
-                        </label>
-                    </div>
-                    <div style="display: flex; gap: 15px; margin-bottom: 15px; flex-wrap: wrap;">
-                        <label style="flex: 1; min-width: 200px;">
-                            <input type="checkbox" id="enablePush" checked> إشعارات الدفع
-                        </label>
-                        <label style="flex: 1; min-width: 200px;">
-                            <input type="checkbox" id="enableGPS"> صلاحيات GPS
-                        </label>
-                    </div>
-                    <div style="display: flex; gap: 15px; margin-bottom: 15px; flex-wrap: wrap;">
-                        <select id="minSDK" class="terminal-input" style="flex: 1; min-width: 200px;">
-                            <option value="24" selected>الحد الأدنى: Android 7.0 (API 24)</option>
-                            <option value="23">الحد الأدنى: Android 6.0 (API 23)</option>
-                            <option value="21">الحد الأدنى: Android 5.0 (API 21)</option>
-                            <option value="19">الحد الأدنى: Android 4.4 (API 19)</option>
-                        </select>
-                        <select id="buildToolsVersion" class="terminal-input" style="flex: 1; min-width: 200px;">
-                            <option value="33.0.0" selected>Build Tools 33.0.0</option>
-                            <option value="32.0.0">Build Tools 32.0.0</option>
-                            <option value="30.0.3">Build Tools 30.0.3</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="step">
-            <h2>الخطوة 3: خيارات التحويل</h2>
-            
-            <div style="display: flex; gap: 15px; flex-wrap: wrap; justify-content: center; margin-bottom: 20px;">
-                <button class="terminal-button" id="demoBtn" style="flex: 1; min-width: 200px;">
-                    إنشاء نموذج تجريبي
-                    <span style="display: block; font-size: 12px; font-weight: normal; opacity: 0.8; margin-top: 5px;">
-                        (غير قابل للتثبيت)
-                    </span>
-                </button>
-                <button class="terminal-button" id="pwaBuilderBtn" style="flex: 1; min-width: 200px; background-color: var(--bg-color); color: var(--success-color); border: 1px solid var(--success-color);">
-                    استخدام PWA Builder
-                    <span style="display: block; font-size: 12px; font-weight: normal; opacity: 0.8; margin-top: 5px;">
-                        (APK حقيقي)
-                    </span>
-                </button>
-            </div>
-            
-            <div class="progress-container" id="progressContainer" style="display: none;">
-                <div class="progress-bar" id="progressBar"></div>
-                <div class="progress-text" id="progressText">0%</div>
-            </div>
-            
-            <div class="console">
-                <p class="console-text" id="consoleOutput">> جاهز للتحويل. انتظار إدخال بيانات الموقع...</p>
-            </div>
-        </div>
-        
-        <div class="step">
-            <h2>الخطوة 4: تنزيل التطبيق</h2>
-            <p>بعد اكتمال عملية التحويل، يمكنك تنزيل ملف APK.</p>
-            <button id="downloadBtn" class="terminal-button">تنزيل ملف APK</button>
-            <p style="margin-top: 10px; font-size: 14px; color: rgba(255,255,255,0.7);">* قد تحتاج إلى السماح بتثبيت التطبيقات من مصادر غير معروفة على جهازك.</p>
-            
-            <div class="troubleshoot-section">
-                <h3>حل مشكلة "There was a problem parsing the package"</h3>
-                <p>إذا واجهتك هذه المشكلة عند محاولة تثبيت التطبيق، جرب الحلول التالية:</p>
-                <ul>
-                    <li>تأكد من اكتمال تنزيل ملف APK (قد يكون تالفًا أو غير مكتمل)</li>
-                    <li>تحقق من توافق إصدار Android الخاص بجهازك مع متطلبات التطبيق (يفضل Android 7.0 أو أحدث)</li>
-                    <li>تأكد من تفعيل "تثبيت من مصادر غير معروفة" في إعدادات الجهاز</li>
-                    <li>قم بتنظيف ذاكرة التخزين المؤقت لمتجر Play ومدير الحزم</li>
-                    <li>استخدم أداة مثل <a href="https://pwabuilder.com" target="_blank" class="external-link">PWA Builder</a> لإنشاء APK متوافق</li>
-                </ul>
-            </div>
-        </div>
-        
-        <div class="step">
-            <h2>خيارات إنشاء تطبيق APK حقيقي</h2>
-            <p>للحصول على ملف APK قابل للتثبيت، يُنصح باستخدام إحدى الخدمات المتخصصة التالية:</p>
-            
-            <div class="alternative-options">
-                <div class="alternative-option">
-                    <h4>PWA Builder</h4>
-                    <p>يحول تطبيقات الويب التقدمية إلى تطبيقات Android قابلة للتثبيت باستخدام Trusted Web Activities.</p>
-                    <a href="https://www.pwabuilder.com" target="_blank" class="terminal-button" style="width: 100%; margin-top: 10px; font-size: 14px;">زيارة الموقع</a>
-                </div>
-                
-                <div class="alternative-option">
-                    <h4>Capacitor / Cordova</h4>
-                    <p>أطر عمل متكاملة لتحويل تطبيقات الويب إلى تطبيقات أصلية متعددة المنصات.</p>
-                    <a href="https://capacitorjs.com" target="_blank" class="terminal-button" style="width: 100%; margin-top: 10px; font-size: 14px;">زيارة الموقع</a>
-                </div>
-                
-                <div class="alternative-option">
-                    <h4>Android Studio</h4>
-                    <p>لإنشاء تطبيق WebView مخصص يمكنه عرض موقع ويب بكامل الخصائص الأصلية.</p>
-                    <a href="https://developer.android.com/studio" target="_blank" class="terminal-button" style="width: 100%; margin-top: 10px; font-size: 14px;">زيارة الموقع</a>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        // العناصر
-        const websiteUrlInput = document.getElementById('websiteUrl');
-        const appNameInput = document.getElementById('appName');
-        const appPackageInput = document.getElementById('appPackage');
-        const appIconInput = document.getElementById('appIcon');
-        const iconNameDisplay = document.getElementById('iconName');
-        const progressContainer = document.getElementById('progressContainer');
-        const progressBar = document.getElementById('progressBar');
-        const progressText = document.getElementById('progressText');
-        const consoleOutput = document.getElementById('consoleOutput');
-        const downloadBtn = document.getElementById('downloadBtn');
-        const statusLabel = document.getElementById('statusLabel');
-        const enableCache = document.getElementById('enableCache');
-        const enableJavascript = document.getElementById('enableJavascript');
-        const enableNavBar = document.getElementById('enableNavBar');
-        const orientation = document.getElementById('orientation');
-        const targetSDK = document.getElementById('targetSDK');
-        const notification = document.getElementById('notification');
-        const demoBtn = document.getElementById('demoBtn');
-        const pwaBuilderBtn = document.getElementById('pwaBuilderBtn');
-        const advancedSettingsToggle = document.getElementById('advancedSettingsToggle');
-        const advancedSettingsContent = document.getElementById('advancedSettingsContent');
-        
-        // إعدادات متقدمة إضافية
-        const enableDeepLinks = document.getElementById('enableDeepLinks');
-        const enableOfflineMode = document.getElementById('enableOfflineMode');
-        const enablePush = document.getElementById('enablePush');
-        const enableGPS = document.getElementById('enableGPS');
-        const minSDK = document.getElementById('minSDK');
-        const buildToolsVersion = document.getElementById('buildToolsVersion');
-
-        // متغيرات
-        let selectedIcon = null;
-        let isConverting = false;
-        let buildId = null;
-        let apkUrl = null;
-        let apkBlob = null; // تخزين محتوى APK الفعلي
-        
-        // توسيع/طي الإعدادات المتقدمة
-        advancedSettingsToggle.addEventListener('click', function() {
-            if (advancedSettingsContent.style.display === 'none' || advancedSettingsContent.style.display === '') {
-                advancedSettingsContent.style.display = 'block';
-                this.querySelector('span').textContent = '▼';
-            } else {
-                advancedSettingsContent.style.display = 'none';
-                this.querySelector('span').textContent = '▶';
-            }
-        });
-        
-        // إظهار الإشعارات
-        function showNotification(message, type) {
-            notification.textContent = message;
-            notification.className = `notification ${type}`;
-            notification.style.display = 'block';
-            
-            // إظهار الإشعار بتأثير التلاشي
-            setTimeout(() => {
-                notification.style.opacity = '1';
-            }, 10);
-            
-            // إخفاء الإشعار بعد 5 ثوانٍ
-            setTimeout(() => {
-                notification.style.opacity = '0';
-                setTimeout(() => {
-                    notification.style.display = 'none';
-                }, 300);
-            }, 5000);
-        }
-        
-        // هزة للعناصر عند حدوث خطأ
-        function shakeElement(element) {
-            element.classList.add('error-shake');
-            setTimeout(() => {
-                element.classList.remove('error-shake');
-            }, 500);
-        }
-        
-        // استماع لأحداث اختيار الأيقونة
-        appIconInput.addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                if (file.type !== 'image/png') {
-                    logToConsole('خطأ: يجب اختيار صورة بصيغة PNG.', 'error');
-                    shakeElement(this.parentElement);
-                    return;
-                }
-                
-                // التحقق من حجم وأبعاد الصورة
-                const img = new Image();
-                const objectUrl = URL.createObjectURL(file);
-                
-                // التحقق من حجم الملف بالميجابايت
-                const fileSizeMB = file.size / (1024 * 1024);
-                if (fileSizeMB > 2) {
-                    logToConsole('تحذير: حجم الأيقونة كبير جدًا. يفضل أن يكون أقل من 2 ميجابايت.', 'error');
-                }
-                
-                img.onload = function() {
-                    if (img.width < 512 || img.height < 512) {
-                        logToConsole('تحذير: يفضل أن تكون الأيقونة بحجم 512×512 على الأقل. قد تظهر الأيقونة بجودة منخفضة.', 'error');
-                    }
-                    
-                    selectedIcon = file;
-                    iconNameDisplay.textContent = `تم اختيار: ${file.name} (${Math.round(file.size / 1024)} كيلوبايت)`;
-                    logToConsole(`تم اختيار الأيقونة: ${file.name} (${img.width}×${img.height})`);
-                    
-                    URL.revokeObjectURL(objectUrl);
-                };
-                
-                img.src = objectUrl;
-            }
-        });
-        
-        // وظيفة كتابة السجل في وحدة التحكم
-        function logToConsole(message, type = '') {
-            const now = new Date();
-            const timestamp = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}`;
-            
-            let formattedMessage = `[${timestamp}] ${message}`;
-            let className = '';
-            
-            if (type === 'error') {
-                formattedMessage = `[${timestamp}] ! ${message}`;
-                className = 'error';
-            } else if (type === 'success') {
-                formattedMessage = `[${timestamp}] ✓ ${message}`;
-                className = 'success';
-            } else if (type === 'warning') {
-                formattedMessage = `[${timestamp}] ⚠ ${message}`;
-                className = 'warning';
-            }
-            
-            const messageElement = document.createElement('div');
-            messageElement.textContent = `> ${formattedMessage}`;
-            if (className) {
-                messageElement.classList.add(className);
-            }
-            
-            consoleOutput.appendChild(messageElement);
-            consoleOutput.scrollTop = consoleOutput.scrollHeight;
-            
-            return formattedMessage;
-        }
-        
-        // وظيفة إنشاء حزمة تطبيق افتراضية
-        function generatePackageName(appName) {
-            if (!appName) return '';
-            
-            // تحويل الاسم إلى حروف لاتينية صغيرة وإزالة الأحرف الخاصة
-            const sanitized = appName
-                .toLowerCase()
-                .replace(/\s+/g, '')
-                .replace(/[^a-z0-9]/g, '')
-                .substring(0, 15);
-            
-            return `com.webapp.${sanitized}`;
-        }
-        
-        // وظيفة التحقق من الإدخال
-        function validateInputs() {
-            const url = websiteUrlInput.value.trim();
-            const appName = appNameInput.value.trim();
-            const packageName = appPackageInput.value.trim();
-            let isValid = true;
-            
-            if (!url) {
-                logToConsole('يرجى إدخال رابط الموقع', 'error');
-                shakeElement(websiteUrlInput);
-                isValid = false;
-            } else {
-                try {
-                    new URL(url);
-                } catch (e) {
-                    logToConsole('رابط الموقع غير صالح. يرجى إدخال عنوان URL كامل يبدأ بـ http:// أو https://', 'error');
-                    shakeElement(websiteUrlInput);
-                    isValid = false;
-                }
-            }
-            
-            if (!appName) {
-                logToConsole('يرجى إدخال اسم التطبيق', 'error');
-                shakeElement(appNameInput);
-                isValid = false;
-            }
-            
-            if (!packageName) {
-                logToConsole('يرجى إدخال اسم حزمة التطبيق', 'error');
-                shakeElement(appPackageInput);
-                isValid = false;
-            } else {
-                // التحقق من تنسيق حزمة التطبيق
-                const packageRegex = /^[a-z][a-z0-9_]*(\.[a-z0-9_]+)+[0-9a-z_]$/i;
-                if (!packageRegex.test(packageName)) {
-                    logToConsole('حزمة التطبيق غير صالحة. يجب أن تكون بتنسيق مثل: com.example.app', 'error');
-                    shakeElement(appPackageInput);
-                    isValid = false;
-                }
-            }
-            
-            if (!selectedIcon) {
-                logToConsole('يرجى اختيار أيقونة للتطبيق', 'error');
-                shakeElement(appIconInput.parentElement);
-                isValid = false;
-            }
-            
-            return isValid;
-        }
-
-        // وظيفة تحويل الويب إلى تطبيق APK
-        async function convertWebToApk() {
-            if (!validateInputs() || isConverting) {
-                return;
-            }
-
-            try {
-                isConverting = true;
-                demoBtn.disabled = true;
-                pwaBuilderBtn.disabled = true;
-                progressContainer.style.display = 'block';
-                downloadBtn.style.display = 'none';
-                
-                // تحديث حالة العملية
-                statusLabel.textContent = 'قيد المعالجة';
-                statusLabel.className = 'status-label status-processing';
-                
-                const url = websiteUrlInput.value.trim();
-                const appName = appNameInput.value.trim();
-                const packageName = appPackageInput.value.trim();
-                const apiLevel = targetSDK.value;
-                const cacheEnabled = enableCache.checked;
-                const jsEnabled = enableJavascript.checked;
-                const navBarEnabled = enableNavBar.checked;
-                const screenOrientation = orientation.value;
-                
-                // الإعدادات المتقدمة
-                const deepLinksEnabled = enableDeepLinks?.checked || false;
-                const offlineModeEnabled = enableOfflineMode?.checked || false;
-                const pushEnabled = enablePush?.checked || false;
-                const gpsEnabled = enableGPS?.checked || false;
-                const minimumSDK = minSDK?.value || "24";
-                const buildTools = buildToolsVersion?.value || "33.0.0";
-                
-                logToConsole(`بدء تحويل ${url} إلى تطبيق APK`);
-                logToConsole(`اسم التطبيق: "${appName}"`);
-                logToConsole(`حزمة التطبيق: ${packageName}`);
-                
-                // سجل الإعدادات
-                const settingsLog = [];
-                settingsLog.push(`Android API ${apiLevel}`);
-                settingsLog.push(`API الأدنى: ${minimumSDK}`);
-                settingsLog.push(`التخزين المؤقت: ${cacheEnabled ? 'مفعل' : 'معطل'}`);
-                settingsLog.push(`JavaScript: ${jsEnabled ? 'مفعل' : 'معطل'}`);
-                settingsLog.push(`شريط التنقل: ${navBarEnabled ? 'ظاهر' : 'مخفي'}`);
-                
-                let orientationText = 'كلاهما';
-                if (screenOrientation === 'portrait') orientationText = 'رأسي فقط';
-                else if (screenOrientation === 'landscape') orientationText = 'أفقي فقط';
-                settingsLog.push(`اتجاه الشاشة: ${orientationText}`);
-                
-                logToConsole(`الإعدادات: ${settingsLog.join(' | ')}`);
-                
-                // سجل الإعدادات المتقدمة
-                if (deepLinksEnabled || offlineModeEnabled || pushEnabled || gpsEnabled) {
-                    const advancedLog = [];
-                    if (deepLinksEnabled) advancedLog.push('الروابط العميقة');
-                    if (offlineModeEnabled) advancedLog.push('وضع عدم الاتصال');
-                    if (pushEnabled) advancedLog.push('إشعارات الدفع');
-                    if (gpsEnabled) advancedLog.push('صلاحيات GPS');
-                    
-                    logToConsole(`الإعدادات المتقدمة: ${advancedLog.join(' | ')}`);
-                }
-                
-                updateProgress(5);
-
-                // تنبيه المستخدم أن هذا نموذج تجريبي
-                logToConsole("تنبيه: هذا ملف محاكاة تجريبي وليس APK حقيقي!", 'warning');
-                
-                // تجهيز بيانات الأيقونة
-                let iconBase64 = null;
-                if (selectedIcon) {
-                    logToConsole("تجهيز أيقونة التطبيق...");
-                    iconBase64 = await convertImageToBase64(selectedIcon);
-                    updateProgress(10);
-                }
-
-                // إنشاء ملف APK فعلي
-                logToConsole("تهيئة بيئة العمل...");
-                updateProgress(15);
-
-                // بدء عملية بناء التطبيق
-                buildId = await startBuild();
-                
-                logToConsole(`تم بدء عملية بناء التطبيق بمعرّف: ${buildId}`);
-                updateProgress(25);
-
-                // مراقبة حالة البناء
-                await monitorBuildProgress();
-                
-                // إنشاء ملف APK حقيقي
-                await generateRealApk(url, appName, packageName, iconBase64, {
-                    apiLevel: parseInt(apiLevel),
-                    minApiLevel: parseInt(minimumSDK),
-                    buildTools: buildTools,
-                    enableCache: cacheEnabled,
-                    enableJavascript: jsEnabled,
-                    showNavBar: navBarEnabled,
-                    orientation: screenOrientation,
-                    enableDeepLinks: deepLinksEnabled,
-                    enableOfflineMode: offlineModeEnabled,
-                    enablePush: pushEnabled,
-                    enableGPS: gpsEnabled
-                });
-                
-                logToConsole("تم إنشاء ملف APK بنجاح!", 'success');
-                logToConsole(`اسم التطبيق: ${appName}`);
-                logToConsole(`حزمة التطبيق: ${packageName}`);
-                logToConsole(`الموقع المضمن: ${url}`);
-                updateProgress(100);
-                
-                downloadBtn.style.display = 'block';
-                statusLabel.textContent = 'مكتمل';
-                statusLabel.className = 'status-label status-complete';
-                
-                // إظهار تنبيه للمستخدم بأن هذا نموذج تجريبي
-                showNotification("تم بناء النموذج التجريبي بنجاح. ملاحظة: هذا ملف تجريبي وليس APK قابل للتثبيت.", "warning");
-                logToConsole("ملاحظة: هذا ملف محاكاة تجريبي وليس APK حقيقي. استخدم الخدمات المذكورة أدناه لإنشاء ملف APK قابل للتثبيت.", 'warning');
-            } catch (error) {
-                logToConsole(`خطأ: ${error.message}`, 'error');
-                showNotification(`فشل في بناء التطبيق: ${error.message}`, "error");
-                statusLabel.textContent = 'جاهز';
-                statusLabel.className = 'status-label status-ready';
-            } finally {
-                isConverting = false;
-                demoBtn.disabled = false;
-                pwaBuilderBtn.disabled = false;
-            }
-        }
-
-        // تحويل الصورة إلى تنسيق Base64
-        function convertImageToBase64(imageFile) {
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.onload = () => resolve(reader.result.split(',')[1]);
-                reader.onerror = () => reject(new Error("فشل في قراءة ملف الصورة"));
-                reader.readAsDataURL(imageFile);
-            });
-        }
-        
-        // بدء عملية بناء التطبيق
-        async function startBuild() {
-            logToConsole("إرسال البيانات إلى خادم التحويل...");
-            
-            await new Promise(resolve => setTimeout(resolve, 1500));
-            
-            const buildId = "build_" + Math.random().toString(36).substring(2, 15);
-            logToConsole("تم قبول طلب التحويل من الخادم");
-            return buildId;
-        }
-        
-        // مراقبة تقدم عملية البناء
-        async function monitorBuildProgress() {
-            const buildSteps = [
-                { progress: 30, message: "تحميل مكتبات Android SDK..." },
-                { progress: 35, message: "تهيئة بنية WebView..." },
-                { progress: 40, message: "إنشاء بنية المشروع..." },
-                { progress: 45, message: "تحليل عنوان URL والتحقق من توافقه..." },
-                { progress: 50, message: "إضافة الإعدادات المخصصة..." },
-                { progress: 55, message: "إضافة صلاحيات الإنترنت للتطبيق..." },
-                { progress: 60, message: "تكوين WebView مع الإعدادات المحددة..." },
-                { progress: 65, message: "معالجة أيقونة التطبيق..." },
-                { progress: 70, message: "تجهيز ملفات Android Manifest..." },
-                { progress: 75, message: "إنشاء ملفات Java الرئيسية..." },
-                { progress: 80, message: "تضمين كود للتعامل مع حالات الشبكة..." },
-                { progress: 85, message: "بناء حزمة التطبيق..." },
-                { progress: 90, message: "توقيع حزمة APK..." },
-                { progress: 95, message: "تحسين وضغط الملفات..." }
-            ];
-
-            for (const step of buildSteps) {
-                await new Promise(resolve => setTimeout(resolve, 800 + Math.random() * 1200));
-                updateProgress(step.progress);
-                logToConsole(step.message);
-            }
-            
-            await new Promise(resolve => setTimeout(resolve, 1500));
-            logToConsole("اكتمال عملية بناء التطبيق!");
-        }
-        
-        // إنشاء ملف APK فعلي
-        async function generateRealApk(url, appName, packageName, iconBase64, settings) {
-            logToConsole("إنشاء ملف APK تجريبي...");
-            
-            // إضافة تحليل للإعدادات وكيفية تأثيرها على حل مشكلة Parsing Package
-            logToConsole("تحليل توافق الإعدادات مع أجهزة Android المختلفة...");
-            
-            if (settings.minApiLevel < 21) {
-                logToConsole("تحذير: استخدام API أقل من 21 (Android 5.0) قد يسبب مشاكل في التوافق.", 'warning');
-            }
-            
-            // 1. إنشاء نص XML لتكوين AndroidManifest مع تحسينات لحل مشكلة parsing
-            const androidManifest = `<?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="${packageName}"
-    android:versionCode="1"
-    android:versionName="1.0"
-    android:compileSdkVersion="${settings.apiLevel}"
-    android:targetSdkVersion="${settings.apiLevel}"
-    android:minSdkVersion="${settings.minApiLevel}">
-
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    ${settings.enableOfflineMode ? '<uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />' : ''}
-    ${settings.enableGPS ? '<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />' : ''}
-    ${settings.enablePush ? '<uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />\n    <uses-permission android:name="android.permission.VIBRATE" />' : ''}
-    
-    <application
-        android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
-        android:label="${appName}"
-        android:supportsRtl="true"
-        android:usesCleartextTraffic="true"
-        android:theme="@style/AppTheme">
-        
-        <activity
-            android:name=".MainActivity"
-            android:exported="true"
-            android:configChanges="orientation|keyboardHidden|screenSize"
-            ${settings.orientation === 'portrait' ? 'android:screenOrientation="portrait"' : 
-              settings.orientation === 'landscape' ? 'android:screenOrientation="landscape"' : ''}>
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-            
-            ${settings.enableDeepLinks ? `<intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="https" android:host="${new URL(url).hostname}" />
-            </intent-filter>` : ''}
-        </activity>
-        
-        ${settings.enableOfflineMode ? `<service
-            android:name=".OfflineService"
-            android:enabled="true"
-            android:exported="false" />` : ''}
-    </application>
-</manifest>`;
-
-            // 2. إنشاء نص Java محسن لنشاط MainActivity مع معالجة أفضل للأخطاء
-            const mainActivity = `package ${packageName};
-
-import android.annotation.SuppressLint;
-import android.app.Activity;
-import android.content.Intent;
-import android.graphics.Bitmap;
-import android.net.Uri;
-import android.os.Build;
-import android.os.Bundle;
-import android.view.KeyEvent;
-import android.view.View;
-import android.webkit.WebChromeClient;
-import android.webkit.WebResourceError;
-import android.webkit.WebResourceRequest;
-import android.webkit.WebSettings;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
-import android.widget.ProgressBar;
-import android.widget.Toast;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.content.Context;
-import java.io.File;
-import java.io.IOException;
-
-public class MainActivity extends Activity {
-    private WebView webView;
-    private ProgressBar progressBar;
-    private String url = "${url}";
-    private boolean isOfflineMode = ${settings.enableOfflineMode};
-    private boolean isDeepLinksEnabled = ${settings.enableDeepLinks};
-
-    @SuppressLint("SetJavaScriptEnabled")
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
-        progressBar = findViewById(R.id.progressBar);
-        webView = findViewById(R.id.webView);
-        
-        // تكوين WebView
-        WebSettings webSettings = webView.getSettings();
-        webSettings.setJavaScriptEnabled(${settings.enableJavascript});
-        webSettings.setDomStorageEnabled(true);
-        webSettings.setDatabaseEnabled(true);
-        webSettings.setAllowFileAccess(true);
-        webSettings.setAllowContentAccess(true);
-        ${settings.enableCache ? 
-            'webSettings.setCacheMode(WebSettings.LOAD_DEFAULT);' : 
-            'webSettings.setCacheMode(WebSettings.LOAD_NO_CACHE);'
-        }
-        webSettings.setAppCacheEnabled(${settings.enableCache});
-        webSettings.setUseWideViewPort(true);
-        webSettings.setLoadWithOverviewMode(true);
-        webSettings.setSupportZoom(true);
-        webSettings.setBuiltInZoomControls(true);
-        webSettings.setDisplayZoomControls(false);
-        
-        // معالجة الإصدارات المختلفة من Android
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            webSettings.setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
-            CookieManager.getInstance().setAcceptThirdPartyCookies(webView, true);
-        }
-        
-        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP_MR1) {
-            webSettings.setAllowUniversalAccessFromFileURLs(true);
-            webSettings.setAllowFileAccessFromFileURLs(true);
-        }
-        
-        webView.setWebChromeClient(new WebChromeClient() {
-            @Override
-            public void onProgressChanged(WebView view, int newProgress) {
-                progressBar.setProgress(newProgress);
-                if (newProgress == 100) {
-                    progressBar.setVisibility(View.GONE);
-                } else {
-                    progressBar.setVisibility(View.VISIBLE);
-                }
-            }
-        });
-
-        webView.setWebViewClient(new WebViewClient() {
-            @Override
-            public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                if (url != null) {
-                    // معالجة الروابط الخارجية
-                    if (!url.startsWith("http://") && !url.startsWith("https://") && !url.startsWith("file://")) {
-                        try {
-                            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-                            startActivity(intent);
-                            return true;
-                        } catch (Exception e) {
-                            Toast.makeText(MainActivity.this, "لا يمكن فتح الرابط: " + url, Toast.LENGTH_SHORT).show();
-                            return true;
-                        }
-                    }
-                }
-                return false;
-            }
-            
-            @Override
-            public void onPageStarted(WebView view, String url, Bitmap favicon) {
-                progressBar.setVisibility(View.VISIBLE);
-            }
-            
-            @Override
-            public void onPageFinished(WebView view, String url) {
-                progressBar.setVisibility(View.GONE);
-                
-                // حفظ الصفحة للوضع غير المتصل إذا كان مفعلاً
-                if (isOfflineMode && isNetworkAvailable()) {
-                    savePageForOffline();
-                }
-            }
-            
-            @Override
-            public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
-                if (!isNetworkAvailable()) {
-                    if (isOfflineMode) {
-                        loadOfflinePage();
-                    } else {
-                        webView.loadUrl("file:///android_asset/offline.html");
-                    }
-                }
-            }
-        });
-        
-        // معالجة الروابط العميقة
-        if (isDeepLinksEnabled) {
-            handleDeepLinks();
-        } else if (isNetworkAvailable()) {
-            webView.loadUrl(url);
-        } else if (isOfflineMode) {
-            loadOfflinePage();
-        } else {
-            webView.loadUrl("file:///android_asset/offline.html");
-            Toast.makeText(this, "لا يوجد اتصال بالإنترنت", Toast.LENGTH_LONG).show();
-        }
-    }
-    
-    private void handleDeepLinks() {
-        Intent intent = getIntent();
-        Uri data = intent.getData();
-        
-        if (data != null) {
-            String deepLinkUrl = data.toString();
-            webView.loadUrl(deepLinkUrl);
-        } else {
-            webView.loadUrl(url);
-        }
-    }
-    
-    private void savePageForOffline() {
-        // تنفيذ حفظ المحتوى للعمل في وضع عدم الاتصال
-        // هذا مجرد مثال وسيحتاج إلى تنفيذ فعلي لحفظ المحتوى
-    }
-    
-    private void loadOfflinePage() {
-        // تحميل المحتوى المحفوظ سابقًا إذا كان متوفرًا
-        // إذا لم يكن هناك محتوى محفوظ، تحميل صفحة عدم الاتصال
-        webView.loadUrl("file:///android_asset/offline.html");
-    }
-    
-    private boolean isNetworkAvailable() {
-        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
-        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
-    }
-
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (event.getAction() == KeyEvent.ACTION_DOWN) {
-            if (keyCode == KeyEvent.KEYCODE_BACK) {
-                if (webView.canGoBack()) {
-                    webView.goBack();
-                } else {
-                    finish();
-                }
-                return true;
-            }
-        }
-        return super.onKeyDown(keyCode, event);
-    }
-    
-    @Override
-    protected void onDestroy() {
-        // تنظيف الموارد
-        if (webView != null) {
-            webView.destroy();
-        }
-        super.onDestroy();
-    }
-}`;
-
-            // 3. إنشاء صفحة محسنة في حالة عدم الاتصال
-            const offlineHtml = `<!DOCTYPE html>
-<html dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            padding: 20px;
-            background-color: #f5f5f5;
-            color: #333;
-            line-height: 1.6;
-        }
-        .container {
-            max-width: 500px;
-            margin: 0 auto;
-            background-color: #fff;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        .icon {
-            font-size: 80px;
-            margin-bottom: 20px;
-        }
-        .message {
-            font-size: 22px;
-            margin-bottom: 20px;
-            font-weight: bold;
-        }
-        .retry-btn {
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            text-align: center;
-            text-decoration: none;
-            display: inline-block;
-            font-size: 16px;
-            margin: 20px 0;
-            cursor: pointer;
-            border-radius: 4px;
-            transition: background-color 0.3s;
-        }
-        .retry-btn:hover {
-            background-color: #45a049;
-        }
-        .troubleshoot {
-            margin-top: 30px;
-            font-size: 14px;
-            color: #666;
-            text-align: right;
-        }
-        .troubleshoot h3 {
-            color: #333;
-            margin-bottom: 10px;
-        }
-        .troubleshoot ul {
-            text-align: right;
-        }
-    </style>
-    <title>لا يوجد اتصال بالإنترنت</title>
-</head>
-<body>
-    <div class="container">
-        <div class="icon">📶</div>
-        <div class="message">لا يوجد اتصال بالإنترنت</div>
-        <p>يرجى التحقق من اتصالك بالإنترنت والمحاولة مرة أخرى.</p>
-        <button class="retry-btn" onclick="location.reload()">إعادة المحاولة</button>
-        
-        <div class="troubleshoot">
-            <h3>حلول مقترحة:</h3>
+    <header>
+        <a href="#" class="logo">Photofix</a>
+        <nav>
             <ul>
-                <li>تأكد من تشغيل بيانات الهاتف أو WiFi.</li>
-                <li>تحقق من وضع الطيران إذا كان مفعلاً.</li>
-                <li>أعد تشغيل جهاز التوجيه (الراوتر).</li>
-                <li>تحقق من توفر شبكة الإنترنت في موقعك.</li>
+                <li><a href="#">الرئيسية</a></li>
+                <li><a href="#features">المميزات</a></li>
+                <li><a href="#gallery">معرض الصور</a></li>
+                <li><a href="#encrypt">تشفير الصور</a></li>
             </ul>
+        </nav>
+        <div class="auth-buttons">
+            <a href="#" class="login-btn">تسجيل الدخول</a>
+            <a href="#" class="signup-btn">إنشاء حساب</a>
+        </div>
+    </header>
+    
+    <section class="hero">
+        <h1>احفظ صورك وشفّرها بطريقة آمنة</h1>
+        <p>مع Photofix، يمكنك تخزين صورك الثمينة مع خيار تشفيرها لحماية خصوصيتك. كل ما تحتاجه في مكان واحد.</p>
+        <button class="get-started" id="uploadBtn">ابدأ الآن</button>
+    </section>
+    
+    <section class="features" id="features">
+        <div class="feature">
+            <div class="feature-icon">🔒</div>
+            <h3>تشفير متقدم</h3>
+            <p>استخدم خوارزميات تشفير قوية لحماية صورك من الوصول غير المصرح به.</p>
+        </div>
+        <div class="feature">
+            <div class="feature-icon">☁️</div>
+            <h3>تخزين سحابي</h3>
+            <p>وصول إلى صورك من أي مكان وأي جهاز مع مساحة تخزين سحابية غير محدودة.</p>
+        </div>
+        <div class="feature">
+            <div class="feature-icon">🔄</div>
+            <h3>مزامنة تلقائية</h3>
+            <p>مزامنة تلقائية لصورك بين جميع أجهزتك بسلاسة.</p>
+        </div>
+    </section>
+    
+    <section class="gallery" id="gallery">
+        <h2>معرض الصور</h2>
+        <div class="images-grid">
+            <div class="image-card"></div>
+            <div class="image-card"></div>
+            <div class="image-card"></div>
+            <div class="image-card"></div>
+            <div class="image-card"></div>
+            <div class="image-card"></div>
+            <div class="image-card"></div>
+            <div class="image-card"></div>
+        </div>
+    </section>
+    
+    <section class="encrypt-banner" id="encrypt">
+        <h2>حماية الصور المهمة بكلمة مرور</h2>
+        <p>استخدم ميزة التشفير لدينا لحماية صورك الخاصة. يمكنك تحديد صور معينة لتشفيرها بكلمة مرور فريدة، مما يضمن أنك أنت فقط من يستطيع الوصول إليها.</p>
+        <button class="get-started" id="encryptBtn">تشفير الصور الآن</button>
+    </section>
+    
+    <footer>
+        <p>© 2025 Photofix - جميع الحقوق محفوظة</p>
+        <div class="social-links">
+            <a href="#">📱</a>
+            <a href="#">💻</a>
+            <a href="#">📷</a>
+        </div>
+        <p>اتصل بنا: info@photofix.com</p>
+    </footer>
+    
+    <div class="upload-modal" id="uploadModal">
+        <span class="close">&times;</span>
+        <div class="modal-content">
+            <h2>رفع صورة جديدة</h2>
+            <div class="dropzone" id="dropzone">
+                انقر هنا أو اسحب الصور لرفعها
+            </div>
+            <div class="encrypt-toggle">
+                <span>تشفير:</span>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="encryptToggle">
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <input type="password" class="password-input" id="passwordInput" placeholder="أدخل كلمة المرور للتشفير">
+            <button class="upload-btn">رفع الصورة</button>
         </div>
     </div>
-
+    
     <script>
-        // التحقق من الاتصال كل 5 ثوانٍ
-        setInterval(function() {
-            if (navigator.onLine) {
-                location.reload();
-            }
-        }, 5000);
-    </script>
-</body>
-</html>`;
-
-            // 4. إنشاء تخطيط XML محسن لواجهة المستخدم
-            const activityMainXml = `<?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
-    <WebView
-        android:id="@+id/webView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" 
-        android:overScrollMode="never" />
-
-    <ProgressBar
-        android:id="@+id/progressBar"
-        style="?android:attr/progressBarStyleHorizontal"
-        android:layout_width="match_parent"
-        android:layout_height="3dp"
-        android:layout_alignParentTop="true"
-        android:progressDrawable="@drawable/progress_drawable"
-        android:visibility="gone" />
-
-    ${settings.showNavBar ? `<LinearLayout
-        android:id="@+id/navBar"
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:layout_alignParentBottom="true"
-        android:background="#333333"
-        android:orientation="horizontal">
-
-        <ImageButton
-            android:id="@+id/backButton"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="?android:attr/selectableItemBackground"
-            android:src="@drawable/ic_arrow_back" />
-
-        <ImageButton
-            android:id="@+id/forwardButton"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="?android:attr/selectableItemBackground"
-            android:src="@drawable/ic_arrow_forward" />
-
-        <ImageButton
-            android:id="@+id/refreshButton"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="?android:attr/selectableItemBackground"
-            android:src="@drawable/ic_refresh" />
-
-        <ImageButton
-            android:id="@+id/homeButton"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="?android:attr/selectableItemBackground"
-            android:src="@drawable/ic_home" />
-    </LinearLayout>` : ''}
-
-</RelativeLayout>`;
-
-            // 5. إضافة ملف خصائص Gradle لحل مشاكل التوافق
-            const buildGradle = `apply plugin: 'com.android.application'
-
-android {
-    compileSdkVersion ${settings.apiLevel}
-    buildToolsVersion "${settings.buildTools}"
-
-    defaultConfig {
-        applicationId "${packageName}"
-        minSdkVersion ${settings.minApiLevel}
-        targetSdkVersion ${settings.apiLevel}
-        versionCode 1
-        versionName "1.0"
-        vectorDrawables.useSupportLibrary = true
-        multiDexEnabled true
-    }
-
-    buildTypes {
-        release {
-            minifyEnabled true
-            shrinkResources true
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            signingConfig signingConfigs.release
-        }
-        debug {
-            minifyEnabled false
-            debuggable true
-        }
-    }
-
-    signingConfigs {
-        release {
-            storeFile file("keystore.jks")
-            storePassword "password"
-            keyAlias "key0"
-            keyPassword "password"
-        }
-    }
-
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
-    }
-
-    lintOptions {
-        checkReleaseBuilds false
-        abortOnError false
-    }
-
-    packagingOptions {
-        exclude 'META-INF/LICENSE'
-        exclude 'META-INF/LICENSE.txt'
-        exclude 'META-INF/NOTICE'
-        exclude 'META-INF/NOTICE.txt'
-    }
-}
-
-dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'androidx.appcompat:appcompat:1.3.1'
-    implementation 'androidx.core:core:1.6.0'
-    implementation 'androidx.multidex:multidex:2.0.1'
-    ${settings.enableOfflineMode ? "implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'" : ''}
-    ${settings.enablePush ? "implementation 'com.google.firebase:firebase-messaging:22.0.0'" : ''}
-}
-
-${settings.enablePush ? "apply plugin: 'com.google.gms.google-services'" : ''}`;
-
-            // 6. إضافة ملف ProGuard لتحسين حجم التطبيق وتوافقه
-            const proguardRules = `# حفظ البيانات الوصفية للتطبيق
--keepattributes Signature
--keepattributes *Annotation*
--keepattributes EnclosingMethod
--keepattributes InnerClasses
-
-# حفظ classes المستخدمة في WebView
--keep class android.webkit.** { *; }
--keep class android.net.** { *; }
-
-# تجنب تعتيم WebView
--keepclassmembers class * extends android.webkit.WebViewClient {
-    public void *(android.webkit.WebView, java.lang.String, android.graphics.Bitmap);
-    public boolean *(android.webkit.WebView, java.lang.String);
-    public void *(android.webkit.WebView, java.lang.String);
-}
-
-# حفظ JavascriptInterface
--keepclassmembers class * {
-    @android.webkit.JavascriptInterface <methods>;
-}
-
-# تحسين أساسي
--optimizationpasses 5
--dontusemixedcaseclassnames
--dontskipnonpubliclibraryclasses
--dontpreverify
--verbose
--optimizations !code/simplification/arithmetic,!field/*,!class/merging/*`;
-
-            // 7. إضافة دليل حل المشاكل في APK
-            const troubleshootingHtml = `<!DOCTYPE html>
-<html dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            padding: 20px;
-            color: #333;
-            max-width: 600px;
-            margin: 0 auto;
-            line-height: 1.6;
-        }
-        h1 {
-            color: #4CAF50;
-            border-bottom: 2px solid #eee;
-            padding-bottom: 10px;
-        }
-        h2 {
-            color: #2196F3;
-            margin-top: 30px;
-        }
-        .problem {
-            background-color: #f9f9f9;
-            border-right: 4px solid #ff5722;
-            padding: 15px;
-            margin-bottom: 20px;
-            border-radius: 5px;
-        }
-        .solution {
-            background-color: #f0f8ff;
-            border-right: 4px solid #4CAF50;
-            padding: 15px;
-            margin-bottom: 30px;
-            border-radius: 5px;
-        }
-        .tip {
-            background-color: #fffde7;
-            border-right: 4px solid #ffc107;
-            padding: 10px 15px;
-            margin: 10px 0;
-            border-radius: 5px;
-            font-size: 14px;
-        }
-    </style>
-    <title>دليل حل المشاكل</title>
-</head>
-<body>
-    <h1>دليل حل مشاكل تثبيت التطبيق</h1>
-    
-    <h2>مشكلة: "There was a problem parsing the package"</h2>
-    
-    <div class="problem">
-        <p>تظهر هذه الرسالة عندما يواجه Android مشكلة في تحليل ملف APK أثناء عملية التثبيت.</p>
-    </div>
-    
-    <div class="solution">
-        <p><strong>الحلول المقترحة:</strong></p>
-        <ol>
-            <li><strong>التأكد من اكتمال التنزيل:</strong> تحقق من اكتمال تنزيل ملف APK. حاول تنزيله مرة أخرى.</li>
-            <li><strong>توافق إصدار Android:</strong> تأكد من أن جهازك يلبي متطلبات إصدار Android الأدنى للتطبيق (${settings.minApiLevel}).</li>
-            <li><strong>تفعيل "التثبيت من مصادر غير معروفة":</strong> انتقل إلى الإعدادات > الأمان، وفعّل "التثبيت من مصادر غير معروفة".</li>
-            <li><strong>مسح ذاكرة التخزين المؤقت:</strong> انتقل إلى الإعدادات > التطبيقات > Google Play Store > التخزين > مسح ذاكرة التخزين المؤقت.</li>
-            <li><strong>تحقق من مساحة التخزين:</strong> تأكد من وجود مساحة كافية على جهازك.</li>
-            <li><strong>استخدام الخدمات المتخصصة:</strong> للحصول على ملف APK متوافق، استخدم خدمات مثل PWA Builder أو Trusted Web Activities.</li>
-        </ol>
-    </div>
-    
-    <div class="tip">
-        <p><strong>نصيحة:</strong> دائمًا قم بتنزيل التطبيقات من مصادر موثوقة مثل Google Play Store لتجنب مشاكل التوافق والأمان.</p>
-    </div>
-    
-    <h2>مشاكل أخرى شائعة</h2>
-    
-    <div class="problem">
-        <p><strong>التطبيق يتوقف فجأة أو يتعطل</strong></p>
-    </div>
-    
-    <div class="solution">
-        <ol>
-            <li>تأكد من تحديث متصفح WebView على جهازك</li>
-            <li>امسح بيانات وذاكرة التخزين المؤقت للتطبيق</li>
-            <li>تحقق من اتصالك بالإنترنت</li>
-            <li>أعد تثبيت التطبيق</li>
-        </ol>
-    </div>
-    
-    <div class="problem">
-        <p><strong>مشاكل في عرض الموقع</strong></p>
-    </div>
-    
-    <div class="solution">
-        <ol>
-            <li>تأكد من تفعيل JavaScript في إعدادات التطبيق</li>
-            <li>حاول تحديث التطبيق إلى أحدث إصدار</li>
-            <li>تحقق من تحديث WebView System على جهازك</li>
-        </ol>
-    </div>
-    
-    <p style="margin-top: 40px; color: #888; font-size: 14px; text-align: center;">
-        تم إنشاء هذا الدليل لمساعدتك في حل المشاكل الشائعة. للحصول على مزيد من المساعدة، يرجى التواصل مع مطور التطبيق.
-    </p>
-</body>
-</html>`;
-
-            // 8. إنشاء ملف مخصص للأصول المختلفة
-            const assetsFiles = [
-                { name: "AndroidManifest.xml", content: androidManifest },
-                { name: "MainActivity.java", content: mainActivity },
-                { name: "activity_main.xml", content: activityMainXml },
-                { name: "offline.html", content: offlineHtml },
-                { name: "troubleshooting.html", content: troubleshootingHtml },
-                { name: "build.gradle", content: buildGradle },
-                { name: "proguard-rules.pro", content: proguardRules },
-                { name: "url", content: url },
-                { name: "app_name", content: appName },
-                { name: "package_name", content: packageName }
-            ];
-            
-            // تحويل المحتوى إلى ملف ZIP (محاكاة لملف APK)
-            window.apkBlob = await createZipFile(assetsFiles);
-            logToConsole("تم تجهيز ملف APK التجريبي للتنزيل");
-        }
+        // الحصول على العناصر
+        const uploadBtn = document.getElementById('uploadBtn');
+        const encryptBtn = document.getElementById('encryptBtn');
+        const uploadModal = document.getElementById('uploadModal');
+        const closeBtn = document.querySelector('.close');
+        const encryptToggle = document.getElementById('encryptToggle');
+        const passwordInput = document.getElementById('passwordInput');
+        const dropzone = document.getElementById('dropzone');
         
-        // إنشاء ملف ZIP لمحاكاة ملف APK
-        async function createZipFile(files) {
-            // هذه محاكاة بسيطة لإنشاء ملف ZIP
-            // في الواقع، نحتاج إلى استخدام مكتبة مثل JSZip لإنشاء ملف ZIP حقيقي
-            
-            // للتبسيط، نحول المحتوى إلى JSON ونضعه في بلوب
-            const jsonContent = JSON.stringify(files, null, 2);
-            
-            // إنشاء بلوب كبير الحجم لمحاكاة ملف APK حقيقي
-            // سنضيف بعض البيانات العشوائية لزيادة الحجم
-            
-            // إنشاء مصفوفة من البيانات العشوائية لمحاكاة حجم APK (حوالي 5 ميجابايت)
-            const dummySize = 5 * 1024 * 1024; // 5 ميجابايت
-            const dummyData = new Uint8Array(dummySize);
-            
-            // ملء المصفوفة ببيانات عشوائية
-            for (let i = 0; i < dummySize; i++) {
-                dummyData[i] = Math.floor(Math.random() * 256);
-            }
-            
-            // دمج البيانات الفعلية مع البيانات العشوائية
-            const jsonEncoder = new TextEncoder();
-            const jsonData = jsonEncoder.encode(jsonContent);
-            
-            // إنشاء بلوب يمثل ملف APK النهائي
-            const combinedData = new Uint8Array(jsonData.length + dummyData.length);
-            combinedData.set(jsonData);
-            combinedData.set(dummyData, jsonData.length);
-            
-            // إنشاء بلوب مع نوع MIME المناسب لملف APK
-            return new Blob([combinedData], { type: "application/vnd.android.package-archive" });
-        }
+        // فتح النافذة المنبثقة عند النقر على زر "ابدأ الآن" أو "تشفير الصور الآن"
+        uploadBtn.addEventListener('click', () => {
+            uploadModal.style.display = 'flex';
+        });
         
-        // تنزيل ملف APK
-        function downloadApk() {
-            if (!window.apkBlob) {
-                showNotification("حدث خطأ: لم يتم العثور على ملف APK", "error");
-                return;
-            }
-            
-            // إضافة تنبيه
-            logToConsole("تنبيه: هذا ملف محاكاة وليس APK حقيقي", 'warning');
-            showNotification("ملاحظة: هذا ملف تجريبي وليس APK قابل للتثبيت", "warning");
-            
-            logToConsole("بدء تنزيل ملف APK النموذجي...");
-            
-            // إنشاء اسم الملف
-            const fileName = `${appNameInput.value.trim().replace(/\s+/g, '_')}_demo_${(new Date()).toISOString().split('T')[0].replace(/-/g, '')}.apk`;
-            
-            // إنشاء رابط تنزيل باستخدام البلوب
-            const url = URL.createObjectURL(window.apkBlob);
-            
-            // إنشاء عنصر رابط لبدء التنزيل
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = fileName;
-            document.body.appendChild(a);
-            a.click();
-            
-            // تنظيف
-            setTimeout(() => {
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
-            }, 100);
-            
-            logToConsole(`تم بدء تنزيل النموذج التجريبي: ${fileName}`);
-            
-            // إظهار نصائح لحل مشكلة Parse Package
-            setTimeout(() => {
-                logToConsole("نصيحة: للحصول على APK قابل للتثبيت، استخدم PWA Builder أو Trusted Web Activities.", 'warning');
-                logToConsole("للمزيد من النصائح لحل مشكلة parsing، راجع قسم حل المشكلات أدناه.", 'warning');
-            }, 1000);
-        }
+        encryptBtn.addEventListener('click', () => {
+            uploadModal.style.display = 'flex';
+            encryptToggle.checked = true;
+            passwordInput.style.display = 'block';
+        });
         
-        // توجيه المستخدم إلى PWA Builder
-        function redirectToPWABuilder() {
-            const url = websiteUrlInput.value.trim();
-            if (!url) {
-                showNotification("يرجى إدخال رابط الموقع أولاً", "error");
-                shakeElement(websiteUrlInput);
-                return;
-            }
-            
-            try {
-                new URL(url); // التحقق من صحة عنوان URL
-                const pwaBuilderUrl = `https://www.pwabuilder.com/builder?url=${encodeURIComponent(url)}`;
-                logToConsole("جاري توجيهك إلى خدمة PWA Builder لإنشاء APK حقيقي...", 'success');
-                window.open(pwaBuilderUrl, '_blank');
-            } catch (e) {
-                showNotification("رابط الموقع غير صالح", "error");
-                shakeElement(websiteUrlInput);
-            }
-        }
+        // إغلاق النافذة المنبثقة
+        closeBtn.addEventListener('click', () => {
+            uploadModal.style.display = 'none';
+        });
         
-        // وظيفة تحديث شريط التقدم
-        function updateProgress(percent) {
-            progressBar.style.width = `${percent}%`;
-            progressText.textContent = `${percent}%`;
-        }
-        
-        // إضافة المستمعين للأحداث
-        demoBtn.addEventListener('click', convertWebToApk);
-        pwaBuilderBtn.addEventListener('click', redirectToPWABuilder);
-        downloadBtn.addEventListener('click', downloadApk);
-        
-        // توفير أمثلة تلقائية للتسهيل على المستخدم
-        websiteUrlInput.addEventListener('focus', function() {
-            if (!this.value) {
-                this.value = 'https://';
+        // إغلاق النافذة المنبثقة عند النقر خارجها
+        window.addEventListener('click', (e) => {
+            if (e.target === uploadModal) {
+                uploadModal.style.display = 'none';
             }
         });
         
-        // إنشاء اسم حزمة افتراضي عند كتابة اسم التطبيق
-        appNameInput.addEventListener('input', function() {
-            if (!appPackageInput.value.trim() || appPackageInput.value.trim() === appPackageInput.defaultValue) {
-                const packageName = generatePackageName(this.value);
-                if (packageName) {
-                    appPackageInput.value = packageName;
-                }
+        // إظهار/إخفاء حقل كلمة المرور حسب حالة زر التبديل
+        encryptToggle.addEventListener('change', () => {
+            if (encryptToggle.checked) {
+                passwordInput.style.display = 'block';
+            } else {
+                passwordInput.style.display = 'none';
             }
         });
         
-        // تهيئة التطبيق
-        window.addEventListener('DOMContentLoaded', () => {
-            logToConsole('تهيئة التطبيق...');
-            setTimeout(() => {
-                logToConsole('تم تحميل خدمة تحويل الويب إلى APK');
-                logToConsole('جاهز للاستخدام! أدخل تفاصيل الموقع لبدء عملية التحويل.');
-            }, 500);
-            
-            // تعيين قيمة افتراضية لاسم الحزمة
-            appPackageInput.defaultValue = 'com.webapp.app';
-            appPackageInput.value = 'com.webapp.app';
-            
-            // تلميحات للاستخدام
-            setTimeout(() => {
-                const tips = [
-                    "تلميح: تأكد من أن الموقع يدعم العرض المحمول للحصول على أفضل تجربة",
-                    "تلميح: يفضل استخدام أيقونة بدقة عالية لتحسين مظهر التطبيق",
-                    "تلميح: تأكد من إدخال حزمة فريدة للتطبيق لتجنب تعارض التثبيت",
-                    "تلميح: للحصول على APK قابل للتثبيت، استخدم خدمة PWA Builder",
-                    "تلميح: يُفضل استخدام Android 7.0 أو أحدث للتوافق الأمثل"
-                ];
-                
-                logToConsole(tips[Math.floor(Math.random() * tips.length)]);
-                
-                // نصيحة خاصة بمشكلة Parsing Package
-                setTimeout(() => {
-                    logToConsole("تلميح: لتجنب مشكلة Parsing Package، استخدم API مستهدف متوافق مع جهازك.", 'warning');
-                }, 2000);
-            }, 3000);
+        // محاكاة رفع الصور عند النقر على منطقة الإفلات
+        dropzone.addEventListener('click', () => {
+            alert('سيتم فتح نافذة اختيار الملفات في التطبيق الحقيقي');
+        });
+        
+        // محاكاة رفع الصور بالسحب والإفلات
+        dropzone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropzone.style.backgroundColor = '#444';
+        });
+        
+        dropzone.addEventListener('dragleave', () => {
+            dropzone.style.backgroundColor = 'transparent';
+        });
+        
+        dropzone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropzone.style.backgroundColor = 'transparent';
+            alert('تم استلام الملفات في التطبيق الحقيقي');
+        });
+        
+        // تغيير شفافية الهيدر عند التمرير
+        window.addEventListener('scroll', () => {
+            const header = document.querySelector('header');
+            if (window.scrollY > 100) {
+                header.style.backgroundColor = 'rgba(0, 0, 0, 0.9)';
+            } else {
+                header.style.backgroundColor = 'rgba(0, 0, 0, 0.9)';
+            }
         });
     </script>
 </body>
 </html>
+
