@@ -3,1025 +3,2513 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>منصة الحلقات المفضلة</title>
+    <title>منصة حلقات أنيمي</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700&display=swap');
+        @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css');
+
         :root {
             --primary-color: #f47521; 
             --dark-bg: #23252b;
             --darker-bg: #191b1f;
             --light-text: #ffffff;
             --gray-text: #9fadbd;
+            --card-bg: #2a2c32;
+            --transition: all 0.3s ease;
         }
-        
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Cairo', sans-serif;
+            font-family: 'Tajawal', sans-serif;
         }
-        
+
         body {
-            background-color: var(--darker-bg);
+            background-color: var(--dark-bg);
             color: var(--light-text);
+            transition: var(--transition);
             min-height: 100vh;
         }
-        
+
+        body.light-mode {
+            --dark-bg: #f5f5f5;
+            --darker-bg: #e5e5e5;
+            --light-text: #333333;
+            --gray-text: #666666;
+            --card-bg: #ffffff;
+        }
+
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
         header {
-            background-color: var(--dark-bg);
-            padding: 15px 20px;
+            background-color: var(--darker-bg);
+            padding: 15px 0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
         }
-        
+
         .logo {
             display: flex;
             align-items: center;
             gap: 10px;
         }
-        
-        .logo img {
-            height: 40px;
-        }
-        
+
         .logo h1 {
+            font-size: 24px;
             color: var(--primary-color);
-            font-size: 1.5rem;
         }
-        
-        .controls {
+
+        .logo-image {
+            width: 40px;
+            height: 40px;
+            background-color: var(--primary-color);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .header-controls {
             display: flex;
             gap: 15px;
         }
-        
-        .controls button {
-            background-color: var(--primary-color);
+
+        .theme-toggle, .cast-button, .fullscreen-button {
+            background: none;
+            border: none;
+            color: var(--light-text);
+            cursor: pointer;
+            font-size: 20px;
+            padding: 5px;
+            transition: var(--transition);
+        }
+
+        .theme-toggle:hover, .cast-button:hover, .fullscreen-button:hover {
+            color: var(--primary-color);
+        }
+
+        main {
+            padding: 30px 0;
+        }
+
+        .video-player-section {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .player-wrapper {
+            position: relative;
+            width: 100%;
+            background-color: var(--darker-bg);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .video-container {
+            position: relative;
+            padding-top: 56.25%; /* 16:9 Aspect Ratio */
+            width: 100%;
+        }
+
+        video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            background-color: black;
+        }
+
+        .watermark {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background-color: rgba(0, 0, 0, 0.5);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 14px;
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        .controls {
+            background-color: var(--darker-bg);
+            padding: 15px;
+            border-radius: 0 0 8px 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .control-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        button {
+            background-color: var(--card-bg);
             color: var(--light-text);
             border: none;
             padding: 8px 15px;
             border-radius: 5px;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: var(--transition);
+            font-weight: 500;
         }
-        
-        .controls button:hover {
-            background-color: #d35c0d;
-        }
-        
-        main {
-            display: flex;
-            height: calc(100vh - 70px);
-        }
-        
-        .player-section {
-            flex: 3;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .video-container {
-            width: 100%;
-            position: relative;
-            background-color: #000;
-            border-radius: 8px;
-            overflow: hidden;
-            margin-bottom: 20px;
-            flex-grow: 1;
-        }
-        
-        .video-container video {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-        }
-        
-        .watermark {
-            position: absolute;
-            bottom: 20px;
-            right: 20px;
-            opacity: 0.7;
-            pointer-events: none;
-        }
-        
-        .episode-info {
-            background-color: var(--dark-bg);
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-        }
-        
-        .episode-info h2 {
-            color: var(--primary-color);
-            margin-bottom: 10px;
-        }
-        
-        .episode-info p {
-            color: var(--gray-text);
-            line-height: 1.5;
-        }
-        
-        .custom-controls {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            background-color: var(--dark-bg);
-            padding: 12px;
-            border-radius: 8px;
-        }
-        
-        .custom-controls button {
-            background-color: transparent;
-            color: var(--light-text);
-            border: none;
-            padding: 8px 12px;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        
-        .custom-controls button:hover {
-            background-color: rgba(255, 255, 255, 0.1);
-        }
-        
-        .custom-controls button.active {
+
+        button:hover {
             background-color: var(--primary-color);
         }
-        
+
+        button.primary {
+            background-color: var(--primary-color);
+        }
+
+        button.primary:hover {
+            background-color: #e06010;
+        }
+
         .volume-control {
             display: flex;
             align-items: center;
-            gap: 8px;
-            margin-right: auto;
+            gap: 10px;
         }
-        
-        .volume-control input {
+
+        .volume-slider {
             width: 100px;
-            accent-color: var(--primary-color);
+            height: 5px;
+            background-color: var(--card-bg);
+            border-radius: 5px;
+            appearance: none;
         }
-        
-        .playlist {
-            flex: 1;
-            background-color: var(--dark-bg);
-            padding: 20px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            max-width: 350px;
+
+        .volume-slider::-webkit-slider-thumb {
+            appearance: none;
+            width: 15px;
+            height: 15px;
+            background-color: var(--primary-color);
+            border-radius: 50%;
+            cursor: pointer;
         }
-        
-        .playlist h3 {
-            margin-bottom: 15px;
-            color: var(--primary-color);
-            font-size: 1.2rem;
+
+        .now-playing {
+            background-color: var(--card-bg);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
-        
-        .schedule-toggle {
-            background-color: var(--darker-bg);
-            color: var(--light-text);
-            border: none;
-            padding: 5px 10px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 0.8rem;
-        }
-        
-        .episodes {
+
+        .now-playing-info h2 {
+            font-size: 18px;
+            margin-bottom: 5px;
             display: flex;
-            flex-direction: column;
-            gap: 15px;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .now-playing-info h2 span {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .now-playing-info p {
+            color: var(--gray-text);
+            font-size: 14px;
+        }
+
+        .next-episode {
+            padding: 5px 10px;
+            background-color: rgba(244, 117, 33, 0.1);
+            border-radius: 5px;
+            color: var(--primary-color);
+            font-size: 14px;
+        }
+
+        .playlist-section {
+            margin-top: 30px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             margin-bottom: 20px;
         }
-        
+
+        .section-header h2 {
+            font-size: 24px;
+            color: var(--primary-color);
+        }
+
+        .episodes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 20px;
+        }
+
         .episode-card {
-            background-color: var(--darker-bg);
+            background-color: var(--card-bg);
             border-radius: 8px;
             overflow: hidden;
+            transition: var(--transition);
             cursor: pointer;
-            transition: transform 0.3s ease;
-            position: relative;
+            will-change: transform; /* تحسين الأداء */
         }
-        
+
         .episode-card:hover {
-            transform: translateY(-3px);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
         }
-        
-        .episode-card.playing {
-            border: 2px solid var(--primary-color);
+
+        .episode-thumbnail {
+            position: relative;
+            padding-top: 56.25%; /* 16:9 Aspect Ratio */
+            background-color: #333;
+            overflow: hidden;
         }
-        
-        .episode-card img {
+
+        .episode-thumbnail img {
+            position: absolute;
+            top: 0;
+            left: 0;
             width: 100%;
-            aspect-ratio: 16/9;
+            height: 100%;
             object-fit: cover;
+            transition: var(--transition);
+            will-change: transform; /* تحسين الأداء */
         }
-        
-        .episode-card .info {
-            padding: 10px;
+
+        .episode-card:hover .episode-thumbnail img {
+            transform: scale(1.05);
         }
-        
-        .episode-card .info h4 {
+
+        .episode-number {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: var(--primary-color);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+
+        .episode-info {
+            padding: 15px;
+        }
+
+        .episode-info h3 {
+            font-size: 16px;
             margin-bottom: 5px;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
         }
-        
-        .episode-card .info p {
+
+        .episode-info p {
             color: var(--gray-text);
-            font-size: 0.8rem;
+            font-size: 14px;
         }
-        
-        .duration {
+
+        .episode-card.active {
+            border: 2px solid var(--primary-color);
+        }
+
+        .loading {
             position: absolute;
-            bottom: 65px;
-            right: 10px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
             background-color: rgba(0, 0, 0, 0.7);
-            color: #fff;
-            padding: 3px 6px;
-            border-radius: 3px;
-            font-size: 0.7rem;
+            padding: 10px 20px;
+            border-radius: 5px;
+            z-index: 3;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .spinner {
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top: 3px solid var(--primary-color);
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
         }
         
-        .schedule-panel {
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .session-timer {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--gray-text);
+        }
+
+        .download-section {
+            margin-top: 30px;
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            padding: 20px;
+        }
+
+        .download-section h2 {
+            margin-bottom: 15px;
+            color: var(--primary-color);
+        }
+
+        .download-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        footer {
+            background-color: var(--darker-bg);
+            padding: 20px 0;
+            margin-top: 50px;
+            text-align: center;
+        }
+
+        footer p {
+            color: var(--gray-text);
+            font-size: 14px;
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .control-buttons {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .now-playing {
+                flex-direction: column;
+                gap: 10px;
+                text-align: center;
+            }
+
+            .episodes-grid {
+                grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            }
+        }
+
+        /* Admin Panel Styles */
+        .admin-panel {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 30px;
+            display: none;
+        }
+
+        .admin-panel.active {
+            display: block;
+        }
+
+        .admin-panel h2 {
+            margin-bottom: 20px;
+            color: var(--primary-color);
+        }
+
+        .admin-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .admin-episodes {
             background-color: var(--darker-bg);
             border-radius: 8px;
             padding: 15px;
-            margin-top: 20px;
-            display: none;
         }
-        
-        .schedule-panel h4 {
-            margin-bottom: 10px;
-            color: var(--primary-color);
-        }
-        
-        .schedule-item {
+
+        .admin-episode-item {
             display: flex;
             justify-content: space-between;
-            padding: 8px 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid var(--dark-bg);
         }
-        
-        .schedule-item:last-child {
+
+        .admin-episode-item:last-child {
             border-bottom: none;
         }
-        
-        .schedule-time {
-            color: var(--primary-color);
-            font-weight: bold;
+
+        .drag-handle {
+            cursor: move;
+            margin-right: 10px;
         }
-        
-        #admin-panel {
+
+        /* Cast Device Dialog */
+        .cast-dialog {
             position: fixed;
-            inset: 0;
-            background-color: rgba(0, 0, 0, 0.8);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
-        
-        .admin-container {
-            background-color: var(--dark-bg);
-            width: 90%;
-            max-width: 800px;
-            max-height: 90vh;
-            border-radius: 10px;
-            overflow-y: auto;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.9);
+            background-color: var(--card-bg);
+            border-radius: 8px;
             padding: 20px;
+            width: 90%;
+            max-width: 400px;
+            z-index: 1000;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s;
         }
-        
-        .admin-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
+
+        .cast-dialog.active {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translate(-50%, -50%) scale(1);
         }
-        
-        .admin-header h2 {
+
+        .cast-dialog h3 {
+            margin-bottom: 15px;
             color: var(--primary-color);
         }
-        
-        .close-admin {
-            background: none;
-            border: none;
-            color: var(--light-text);
-            font-size: 1.5rem;
-            cursor: pointer;
+
+        .cast-devices {
+            margin-bottom: 20px;
         }
-        
-        .admin-tabs {
+
+        .cast-device {
             display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-        
-        .admin-tabs button {
-            background-color: var(--darker-bg);
-            color: var(--light-text);
-            border: none;
-            padding: 10px 15px;
-            border-radius: 5px;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
             cursor: pointer;
+            transition: var(--transition);
         }
-        
-        .admin-tabs button.active {
-            background-color: var(--primary-color);
+
+        .cast-device:hover {
+            background-color: rgba(244, 117, 33, 0.1);
         }
-        
-        .tab-content {
-            display: none;
+
+        .device-icon {
+            margin-right: 15px;
+            font-size: 24px;
         }
-        
-        .tab-content.active {
-            display: block;
+
+        .device-info {
+            flex: 1;
         }
-        
-        .upload-area {
-            border: 2px dashed var(--gray-text);
-            padding: 30px;
-            text-align: center;
-            border-radius: 8px;
-            margin-bottom: 20px;
+
+        .device-name {
+            font-weight: 500;
         }
-        
-        .upload-area:hover {
-            border-color: var(--primary-color);
-        }
-        
-        .settings-form {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-        }
-        
-        .form-group {
-            margin-bottom: 15px;
-        }
-        
-        .form-group label {
-            display: block;
-            margin-bottom: 5px;
+
+        .device-status {
+            font-size: 12px;
             color: var(--gray-text);
         }
-        
-        .form-group input, .form-group select, .form-group textarea {
-            width: 100%;
-            padding: 10px;
-            background-color: var(--darker-bg);
-            border: 1px solid var(--gray-text);
-            border-radius: 5px;
-            color: var(--light-text);
-        }
-        
-        .form-group input[type="color"] {
-            height: 40px;
-        }
-        
-        .save-btn {
-            background-color: var(--primary-color);
-            color: var(--light-text);
-            border: none;
-            padding: 10px 15px;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            grid-column: span 2;
-        }
-        
-        .save-btn:hover {
-            background-color: #d35c0d;
-        }
-        
-        .episode-sorter {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-        
-        .sortable-episode {
-            background-color: var(--darker-bg);
-            padding: 10px;
-            border-radius: 5px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            cursor: move;
-        }
-        
-        @media (max-width: 768px) {
-            main {
-                flex-direction: column;
-                height: auto;
-            }
-            
-            .playlist {
-                max-width: 100%;
-                height: 300px;
-            }
-            
-            .settings-form {
-                grid-template-columns: 1fr;
-            }
-            
-            .save-btn {
-                grid-column: span 1;
-            }
-            
-            .custom-controls {
-                flex-wrap: wrap;
-            }
-            
-            .volume-control {
-                margin-right: 0;
-                width: 100%;
-                justify-content: center;
-                margin-top: 10px;
-            }
-        }
-        
-        /* For the fullscreen functionality */
-        .video-container.fullscreen {
+
+        .overlay {
             position: fixed;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 1000;
-            background: #000;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            display: none;
+            backdrop-filter: blur(3px); /* إضافة ضبابية للتأثير البصري */
+        }
+
+        .overlay.active {
+            display: block;
+        }
+
+        /* تأثير الظل للأجسام */
+        .episode-card, .now-playing, .player-wrapper, .admin-panel, .cast-dialog {
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        /* زر إغلاق للنوافذ المنبثقة */
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: none;
+            border: none;
+            color: var(--gray-text);
+            font-size: 18px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .close-btn:hover {
+            color: var(--primary-color);
+        }
+
+        /* تحسينات للأزرار */
+        button i {
+            margin-right: 5px;
+        }
+
+        .tooltip {
+            position: relative;
+        }
+
+        .tooltip:hover::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            white-space: nowrap;
+            z-index: 10;
+        }
+
+        /* إضافة تأثير الومضة للحلقة النشطة */
+        .episode-card.active::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border: 2px solid var(--primary-color);
+            border-radius: 8px;
+            animation: pulse 1.5s infinite;
+            pointer-events: none;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.6; }
+            50% { opacity: 1; }
+            100% { opacity: 0.6; }
         }
     </style>
 </head>
 <body>
     <header>
-        <div class="logo">
-            <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iI2Y0NzUyMSI+PHBhdGggZD0iTTggNmg4djEySDhWNnptMi0yaDR2MmgtNFY0em0tMiAxNmg4djJIOFYyMHptMTItMTRoMnY4aC0yVjZ6TTIgNmgydjhoLTJWNnptMjAtMkg0QzIuOSA0IDIgNC45IDIgNnYxMmMwIDEuMS45IDIgMiAyaDE2YzEuMSAwIDItLjkgMi0yVjZjMC0xLjEtLjktMi0yLTJ6Ii8+PC9zdmc+" alt="Logo">
-            <h1>منصتي</h1>
-        </div>
-        <div class="controls">
-            <button id="admin-toggle">لوحة الإدارة</button>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <div class="logo-image">A</div>
+                    <h1>أنيمي بلاس</h1>
+                </div>
+                <div class="header-controls">
+                    <button class="theme-toggle tooltip" id="themeToggle" data-tooltip="تبديل المظهر">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                    <button class="cast-button tooltip" id="castButton" data-tooltip="عرض على جهاز آخر">
+                        <i class="fas fa-cast"></i>
+                    </button>
+                    <button class="fullscreen-button tooltip" id="fullscreenButton" data-tooltip="ملء الشاشة">
+                        <i class="fas fa-expand"></i>
+                    </button>
+                </div>
+            </div>
         </div>
     </header>
-    
-    <main>
-        <section class="player-section">
-            <div class="video-container">
-                <video id="main-video" controls></video>
-                <img class="watermark" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iI2ZmZmZmZiIgb3BhY2l0eT0iMC43Ij48cGF0aCBkPSJNOCA2aDh2MTJIOFY2em0yLTJoNHYyaC00VjR6bS0yIDE2aDh2Mkg4VjIwem0xMi0xNGgydjhoLTJWNnpNMiA2aDJ2OGgtMlY2em0yMC0ySDRDMi45IDQgMiA0LjkgMiA2djEyYzAgMS4xLjkgMiAyIDJoMTZjMS4xIDAgMi0uOSAyLTJWNmMwLTEuMS0uOS0yLTItMnoiLz48L3N2Zz4=" alt="Watermark">
+
+    <main class="container">
+        <section class="now-playing">
+            <div class="now-playing-info">
+                <h2><span>الآن يُعرض</span> <span id="currentEpisodeTitle">الحلقة 1: البداية</span></h2>
+                <p><i class="far fa-clock"></i> مدة العرض: <span id="currentEpisodeDuration">24:30</span></p>
             </div>
-            
-            <div class="custom-controls">
-                <button id="play-pause"><i class="fas fa-play"></i> تشغيل</button>
-                <button id="previous"><i class="fas fa-step-backward"></i> السابق</button>
-                <button id="next"><i class="fas fa-step-forward"></i> التالي</button>
-                <button id="fullscreen"><i class="fas fa-expand"></i> ملء الشاشة</button>
-                <button id="cast"><i class="fas fa-cast"></i> Chromecast</button>
-                <div class="volume-control">
-                    <i class="fas fa-volume-up"></i>
-                    <input type="range" id="volume" min="0" max="1" step="0.1" value="1">
-                </div>
-            </div>
-            
-            <div class="episode-info">
-                <h2 id="current-title">عنوان الحلقة</h2>
-                <p id="current-description">وصف الحلقة سيظهر هنا. يمكنك إضافة تفاصيل حول المحتوى ومدته وأي معلومات إضافية.</p>
+            <div class="next-episode">
+                <i class="fas fa-step-forward"></i> التالي: <span id="nextEpisodeTitle">الحلقة 2: المغامرة</span>
             </div>
         </section>
-        
-        <section class="playlist">
-            <h3>
-                قائمة الحلقات
-                <button class="schedule-toggle" id="toggle-schedule">عرض الجدول</button>
-            </h3>
-            
-            <div class="episodes" id="episodes-list">
-                <!-- ستتم إضافة الحلقات هنا بواسطة JavaScript -->
-            </div>
-            
-            <div class="schedule-panel" id="schedule-panel">
-                <h4>القادم في القناة</h4>
-                <div class="schedule-list">
-                    <div class="schedule-item">
-                        <div class="schedule-title">الحلقة الخاصة</div>
-                        <div class="schedule-time">20:00</div>
-                    </div>
-                    <div class="schedule-item">
-                        <div class="schedule-title">بث مباشر</div>
-                        <div class="schedule-time">21:30</div>
-                    </div>
-                    <div class="schedule-item">
-                        <div class="schedule-title">استوديو تحليلي</div>
-                        <div class="schedule-time">22:15</div>
+
+        <section class="video-player-section">
+            <div class="player-wrapper">
+                <div class="video-container">
+                    <video id="animePlayer" preload="metadata">
+                        <source src="" type="video/mp4">
+                        <track kind="subtitles" src="" srclang="ar" label="العربية">
+                        <track kind="subtitles" src="" srclang="en" label="English">
+                        عذراً، متصفحك لا يدعم تشغيل الفيديو.
+                    </video>
+                    <div class="watermark">أنيمي بلاس</div>
+                    <div class="loading" id="loadingIndicator" style="display: none;">
+                        <div class="spinner"></div>
+                        جاري التحميل...
                     </div>
                 </div>
+                <div class="controls">
+                    <div class="control-buttons">
+                        <button id="playPauseBtn" class="primary"><i class="fas fa-play"></i> تشغيل</button>
+                        <button id="prevEpisodeBtn"><i class="fas fa-step-backward"></i> الحلقة السابقة</button>
+                        <button id="nextEpisodeBtn">الحلقة التالية <i class="fas fa-step-forward"></i></button>
+                        <button id="startChannelBtn"><i class="fas fa-sync-alt"></i> تشغيل القناة</button>
+                    </div>
+                    <div class="volume-control">
+                        <i class="fas fa-volume-up"></i>
+                        <input type="range" class="volume-slider" id="volumeSlider" min="0" max="1" step="0.1" value="1">
+                    </div>
+                    <div class="session-timer">
+                        <i class="fas fa-stopwatch"></i>
+                        <span id="sessionTime">00:00:00</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="playlist-section">
+            <div class="section-header">
+                <h2><i class="fas fa-list"></i> قائمة الحلقات</h2>
+                <button id="toggleAdminBtn"><i class="fas fa-cog"></i> إدارة القناة</button>
+            </div>
+            <div class="episodes-grid" id="episodesGrid">
+                <!-- ستتم إضافة الحلقات هنا بواسطة جافاسكريبت -->
+            </div>
+        </section>
+
+        <section class="download-section">
+            <h2><i class="fas fa-download"></i> تحميل ومشاركة</h2>
+            <div class="download-options">
+                <button id="downloadFullSeriesBtn"><i class="fas fa-download"></i> تحميل السلسلة كاملة</button>
+                <button id="downloadCurrentEpisodeBtn"><i class="fas fa-file-download"></i> تحميل الحلقة الحالية</button>
+                <button id="shareBtn"><i class="fas fa-share-alt"></i> مشاركة</button>
+            </div>
+        </section>
+
+        <section class="admin-panel" id="adminPanel">
+            <h2><i class="fas fa-tools"></i> لوحة إدارة القناة</h2>
+            <div class="admin-controls">
+                <button id="addEpisodeBtn"><i class="fas fa-plus"></i> إضافة حلقة</button>
+                <button id="savePlaylistBtn" class="primary"><i class="fas fa-save"></i> حفظ قائمة التشغيل</button>
+                <button id="clearCacheBtn"><i class="fas fa-trash"></i> مسح الذاكرة المؤقتة</button>
+                <button id="toggleTimerBtn"><i class="fas fa-clock"></i> ضبط المؤقت</button>
+            </div>
+            <div class="admin-episodes" id="adminEpisodesList">
+                <!-- ستتم إضافة قائمة الإدارة هنا بواسطة جافاسكريبت -->
             </div>
         </section>
     </main>
-    
-    <div id="admin-panel">
-        <div class="admin-container">
-            <div class="admin-header">
-                <h2>لوحة الإدارة</h2>
-                <button class="close-admin">&times;</button>
+
+    <div class="overlay" id="overlay"></div>
+    <div class="cast-dialog" id="castDialog">
+        <button class="close-btn" id="closeCastDialog"><i class="fas fa-times"></i></button>
+        <h3><i class="fas fa-cast"></i> اختر جهاز العرض</h3>
+        <div class="cast-devices" id="castDevices">
+            <div class="cast-device">
+                <div class="device-icon"><i class="fas fa-tv"></i></div>
+                <div class="device-info">
+                    <div class="device-name">تلفاز غرفة المعيشة</div>
+                    <div class="device-status">متاح</div>
+                </div>
             </div>
-            
-            <div class="admin-tabs">
-                <button class="tab-btn active" data-tab="episodes">إدارة الحلقات</button>
-                <button class="tab-btn" data-tab="schedule">جدول البث</button>
-                <button class="tab-btn" data-tab="appearance">المظهر</button>
-                <button class="tab-btn" data-tab="settings">الإعدادات</button>
-            </div>
-            
-            <div class="tab-content active" id="episodes-tab">
-                <div class="upload-area" id="upload-area">
-                    <p>اسحب وأفلت الملفات هنا أو انقر للتصفح</p>
-                    <input type="file" id="file-upload" accept="video/*" multiple style="display: none;">
+            <div class="cast-device">
+                <div class="device-icon"><i class="fas fa-mobile-alt"></i></div>
+                <div class="device-info">
+                    <div class="device-name">هاتف محمد</div>
+                    <div class="device-status">متاح</div>
                 </div>
-                
-                <h4>ترتيب الحلقات</h4>
-                <div class="episode-sorter" id="episode-sorter">
-                    <!-- سيتم إضافة عناصر الترتيب هنا -->
-                </div>
-                
-                <button class="save-btn">حفظ التغييرات</button>
-            </div>
-            
-            <div class="tab-content" id="schedule-tab">
-                <h4>جدول البث</h4>
-                <div class="form-group">
-                    <label>إضافة عنصر للجدول</label>
-                    <div style="display: flex; gap: 10px;">
-                        <input type="text" placeholder="اسم البرنامج">
-                        <input type="time">
-                        <button style="background-color: var(--primary-color); color: white; border: none; padding: 5px 10px; border-radius: 5px;">إضافة</button>
-                    </div>
-                </div>
-                
-                <div class="schedule-panel" style="display: block;">
-                    <div class="schedule-list">
-                        <div class="schedule-item">
-                            <div class="schedule-title">الحلقة الخاصة</div>
-                            <div class="schedule-time">20:00</div>
-                        </div>
-                        <div class="schedule-item">
-                            <div class="schedule-title">بث مباشر</div>
-                            <div class="schedule-time">21:30</div>
-                        </div>
-                        <div class="schedule-item">
-                            <div class="schedule-title">استوديو تحليلي</div>
-                            <div class="schedule-time">22:15</div>
-                        </div>
-                    </div>
-                </div>
-                
-                <button class="save-btn">حفظ التغييرات</button>
-            </div>
-            
-            <div class="tab-content" id="appearance-tab">
-                <h4>تخصيص المظهر</h4>
-                <div class="settings-form">
-                    <div class="form-group">
-                        <label>اللون الرئيسي</label>
-                        <input type="color" id="primary-color" value="#f47521">
-                    </div>
-                    <div class="form-group">
-                        <label>لون الخلفية</label>
-                        <input type="color" id="bg-color" value="#191b1f">
-                    </div>
-                    <div class="form-group">
-                        <label>رفع الشعار</label>
-                        <input type="file" accept="image/*">
-                    </div>
-                    <div class="form-group">
-                        <label>Watermark</label>
-                        <input type="file" accept="image/*">
-                    </div>
-                    <div class="form-group">
-                        <label>صورة الخلفية</label>
-                        <input type="file" accept="image/*">
-                    </div>
-                    <div class="form-group">
-                        <label>مقدمة الفيديو</label>
-                        <input type="file" accept="video/*">
-                    </div>
-                </div>
-                
-                <button class="save-btn">حفظ التغييرات</button>
-            </div>
-            
-            <div class="tab-content" id="settings-tab">
-                <h4>إعدادات عامة</h4>
-                <div class="settings-form">
-                    <div class="form-group">
-                        <label>اسم القناة</label>
-                        <input type="text" value="منصتي">
-                    </div>
-                    <div class="form-group">
-                        <label>التشغيل التلقائي</label>
-                        <select>
-                            <option value="1">مفعل</option>
-                            <option value="0">غير مفعل</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>الانتقال التلقائي</label>
-                        <select>
-                            <option value="1">مفعل</option>
-                            <option value="0">غير مفعل</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>الفاصل بين الحلقات</label>
-                        <select>
-                            <option value="none">بدون</option>
-                            <option value="intro">مقدمة</option>
-                            <option value="ad">إعلان</option>
-                        </select>
-                    </div>
-                </div>
-                
-                <button class="save-btn">حفظ التغييرات</button>
             </div>
         </div>
+        <button id="cancelCastBtn"><i class="fas fa-times"></i> إلغاء</button>
     </div>
-    
+
+    <footer>
+        <div class="container">
+            <p>© 2025 أنيمي بلاس - جميع الحقوق محفوظة</p>
+        </div>
+    </footer>
+
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // بيانات الحلقات
-            const episodes = [
+        // بيانات الأنيمي (يمكن استبدالها بطلب JSON من الخادم)
+        const animeData = {
+            title: "ناروتو شيبودن",
+            episodes: [
                 {
                     id: 1,
-                    title: "الحلقة الأولى",
-                    description: "هذه الحلقة الأولى من المسلسل، استمتع بمشاهدة بداية القصة المشوقة.",
-                    thumbnail: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMjAgMTgwIiBmaWxsPSIjMjMyNTJiIj48cmVjdCB3aWR0aD0iMzIwIiBoZWlnaHQ9IjE4MCIgZmlsbD0iIzIzMjUyYiIvPjx0ZXh0IHg9IjE2MCIgeT0iOTAiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIyNCIgZmlsbD0iI2Y0NzUyMSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSI+2KfZhNit2YTZgtipINin2YTYo9mI2YTZiTwvdGV4dD48L3N2Zz4=",
-                    duration: "22:30",
-                    videoUrl: "#video-url-1"
+                    title: "الحلقة 1: البداية",
+                    description: "بداية مغامرة ناروتو الجديدة بعد عودته إلى القرية",
+                    duration: "24:30",
+                    videoUrl: "https://example.com/episodes/naruto-1.mp4", // ستحتاج لاستبدال هذا برابط فيديو حقيقي
+                    thumbnail: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='500' height='281' viewBox='0 0 500 281'%3E%3Crect width='500' height='281' fill='%23333'/%3E%3Ctext x='50%25' y='50%25' font-family='Arial' font-size='30' fill='%23f47521' text-anchor='middle' dominant-baseline='middle'%3Eالحلقة 1%3C/text%3E%3C/svg%3E",
+                    subtitles: {
+                        ar: "subtitles/ep1-ar.vtt",
+                        en: "subtitles/ep1-en.vtt"
+                    }
                 },
                 {
                     id: 2,
-                    title: "الحلقة الثانية",
-                    description: "استكمال القصة في الحلقة الثانية المليئة بالأحداث المثيرة.",
-                    thumbnail: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMjAgMTgwIiBmaWxsPSIjMjMyNTJiIj48cmVjdCB3aWR0aD0iMzIwIiBoZWlnaHQ9IjE4MCIgZmlsbD0iIzIzMjUyYiIvPjx0ZXh0IHg9IjE2MCIgeT0iOTAiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIyNCIgZmlsbD0iI2Y0NzUyMSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSI+2KfZhNit2YTZgtipINin2YTYq9in2YbZitipPC90ZXh0Pjwvc3ZnPg==",
-                    duration: "24:15",
-                    videoUrl: "#video-url-2"
+                    title: "الحلقة 2: المغامرة",
+                    description: "ناروتو يبدأ مهمته الأولى مع الفريق الجديد",
+                    duration: "23:45",
+                    videoUrl: "https://example.com/episodes/naruto-2.mp4",
+                    thumbnail: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='500' height='281' viewBox='0 0 500 281'%3E%3Crect width='500' height='281' fill='%23333'/%3E%3Ctext x='50%25' y='50%25' font-family='Arial' font-size='30' fill='%23f47521' text-anchor='middle' dominant-baseline='middle'%3Eالحلقة 2%3C/text%3E%3C/svg%3E",
+                    subtitles: {
+                        ar: "subtitles/ep2-ar.vtt",
+                        en: "subtitles/ep2-en.vtt"
+                    }
                 },
                 {
                     id: 3,
-                    title: "الحلقة الثالثة",
-                    description: "تستمر الأحداث في التصاعد، حلقة مليئة بالمفاجآت والتشويق.",
-                    thumbnail: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMjAgMTgwIiBmaWxsPSIjMjMyNTJiIj48cmVjdCB3aWR0aD0iMzIwIiBoZWlnaHQ9IjE4MCIgZmlsbD0iIzIzMjUyYiIvPjx0ZXh0IHg9IjE2MCIgeT0iOTAiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIyNCIgZmlsbD0iI2Y0NzUyMSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSI+2KfZhNit2YTZgtipINin2YTYq9in2YTYq9ipPC90ZXh0Pjwvc3ZnPg==",
-                    duration: "23:45",
-                    videoUrl: "#video-url-3"
+                    title: "الحلقة 3: التدريب",
+                    description: "كاكاشي يبدأ بتدريب الفريق على تقنيات جديدة",
+                    duration: "24:15",
+                    videoUrl: "https://example.com/episodes/naruto-3.mp4",
+                    thumbnail: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='500' height='281' viewBox='0 0 500 281'%3E%3Crect width='500' height='281' fill='%23333'/%3E%3Ctext x='50%25' y='50%25' font-family='Arial' font-size='30' fill='%23f47521' text-anchor='middle' dominant-baseline='middle'%3Eالحلقة 3%3C/text%3E%3C/svg%3E",
+                    subtitles: {
+                        ar: "subtitles/ep3-ar.vtt",
+                        en: "subtitles/ep3-en.vtt"
+                    }
                 },
                 {
                     id: 4,
-                    title: "الحلقة الرابعة",
-                    description: "حلقة مميزة تكشف الكثير من أسرار الشخصيات وتطور الأحداث بشكل مثير.",
-                    thumbnail: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMjAgMTgwIiBmaWxsPSIjMjMyNTJiIj48cmVjdCB3aWR0aD0iMzIwIiBoZWlnaHQ9IjE4MCIgZmlsbD0iIzIzMjUyYiIvPjx0ZXh0IHg9IjE2MCIgeT0iOTAiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIyNCIgZmlsbD0iI2Y0NzUyMSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSI+2KfZhNit2YTZgtipINin2YTYsdin2KjYudipPC90ZXh0Pjwvc3ZnPg==",
-                    duration: "25:10",
-                    videoUrl: "#video-url-4"
+                    title: "الحلقة 4: الامتحان",
+                    description: "الفريق يستعد لامتحان التشونين",
+                    duration: "25:00",
+                    videoUrl: "https://example.com/episodes/naruto-4.mp4",
+                    thumbnail: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='500' height='281' viewBox='0 0 500 281'%3E%3Crect width='500' height='281' fill='%23333'/%3E%3Ctext x='50%25' y='50%25' font-family='Arial' font-size='30' fill='%23f47521' text-anchor='middle' dominant-baseline='middle'%3Eالحلقة 4%3C/text%3E%3C/svg%3E",
+                    subtitles: {
+                        ar: "subtitles/ep4-ar.vtt",
+                        en: "subtitles/ep4-en.vtt"
+                    }
                 },
                 {
                     id: 5,
-                    title: "الحلقة الخامسة",
-                    description: "الحلقة الخامسة تأخذ القصة إلى منعطف جديد وغير متوقع.",
-                    thumbnail: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMjAgMTgwIiBmaWxsPSIjMjMyNTJiIj48cmVjdCB3aWR0aD0iMzIwIiBoZWlnaHQ9IjE4MCIgZmlsbD0iIzIzMjUyYiIvPjx0ZXh0IHg9IjE2MCIgeT0iOTAiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIyNCIgZmlsbD0iI2Y0NzUyMSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSI+2KfZhNit2YTZgtipINin2YTYrtin2YXYs9ipPC90ZXh0Pjwvc3ZnPg==",
-                    duration: "26:20",
-                    videoUrl: "#video-url-5"
-                }
-            ];
-            
-            // الحلقة الحالية
-            let currentEpisodeIndex = 0;
-            let autoplayEnabled = true;
-            let autoplayNext = true;
-            
-            // المراجع إلى العناصر
-            const videoPlayer = document.getElementById('main-video');
-            const episodesList = document.getElementById('episodes-list');
-            const currentTitle = document.getElementById('current-title');
-            const currentDescription = document.getElementById('current-description');
-            const playPauseBtn = document.getElementById('play-pause');
-            const prevBtn = document.getElementById('previous');
-            const nextBtn = document.getElementById('next');
-            const fullscreenBtn = document.getElementById('fullscreen');
-            const castBtn = document.getElementById('cast');
-            const volumeControl = document.getElementById('volume');
-            const toggleScheduleBtn = document.getElementById('toggle-schedule');
-            const schedulePanel = document.getElementById('schedule-panel');
-            const adminToggle = document.getElementById('admin-toggle');
-            const adminPanel = document.getElementById('admin-panel');
-            const closeAdmin = document.querySelector('.close-admin');
-            const tabBtns = document.querySelectorAll('.tab-btn');
-            const tabContents = document.querySelectorAll('.tab-content');
-            const videoContainer = document.querySelector('.video-container');
-            const uploadArea = document.getElementById('upload-area');
-            const fileUpload = document.getElementById('file-upload');
-            const episodeSorter = document.getElementById('episode-sorter');
-            
-            // إضافة الحلقات إلى القائمة
-            function renderEpisodes() {
-                episodesList.innerHTML = '';
-                episodes.forEach((episode, index) => {
-                    const episodeCard = document.createElement('div');
-                    episodeCard.className = `episode-card ${index === currentEpisodeIndex ? 'playing' : ''}`;
-                    episodeCard.innerHTML = `
-                        <img src="${episode.thumbnail}" alt="${episode.title}">
-                        <div class="duration">${episode.duration}</div>
-                        <div class="info">
-                            <h4>${episode.title}</h4>
-                            <p>${episode.description.substring(0, 50)}...</p>
-                        </div>
-                    `;
-                    episodeCard.addEventListener('click', () => {
-                        playEpisode(index);
-                    });
-                    episodesList.appendChild(episodeCard);
-                });
-                
-                // تحديث قائمة ترتيب الحلقات في لوحة الإدارة
-                episodeSorter.innerHTML = '';
-                episodes.forEach((episode, index) => {
-                    const sortableItem = document.createElement('div');
-                    sortableItem.className = 'sortable-episode';
-                    sortableItem.setAttribute('draggable', 'true');
-                    sortableItem.setAttribute('data-index', index);
-                    sortableItem.innerHTML = `
-                        <span>${episode.title}</span>
-                        <div>
-                            <button class="move-up" style="background: none; border: none; cursor: pointer; color: #fff;">⬆️</button>
-                            <button class="move-down" style="background: none; border: none; cursor: pointer; color: #fff;">⬇️</button>
-                        </div>
-                    `;
-                    episodeSorter.appendChild(sortableItem);
-                });
-                
-                // إضافة وظائف السحب والإفلات للترتيب
-                const sortableEpisodes = document.querySelectorAll('.sortable-episode');
-                sortableEpisodes.forEach(item => {
-                    item.addEventListener('dragstart', handleDragStart);
-                    item.addEventListener('dragover', handleDragOver);
-                    item.addEventListener('drop', handleDrop);
-                    
-                    const moveUpBtn = item.querySelector('.move-up');
-                    const moveDownBtn = item.querySelector('.move-down');
-                    
-                    moveUpBtn.addEventListener('click', () => {
-                        const index = parseInt(item.getAttribute('data-index'));
-                        if (index > 0) {
-                            // تغيير ترتيب العناصر في المصفوفة
-                            [episodes[index], episodes[index - 1]] = [episodes[index - 1], episodes[index]];
-                            renderEpisodes();
-                        }
-                    });
-                    
-                    moveDownBtn.addEventListener('click', () => {
-                        const index = parseInt(item.getAttribute('data-index'));
-                        if (index < episodes.length - 1) {
-                            // تغيير ترتيب العناصر في المصفوفة
-                            [episodes[index], episodes[index + 1]] = [episodes[index + 1], episodes[index]];
-                            renderEpisodes();
-                        }
-                    });
-                });
-            }
-            
-            // وظائف السحب والإفلات
-            let draggedItem = null;
-            
-            function handleDragStart(e) {
-                draggedItem = this;
-                e.dataTransfer.effectAllowed = 'move';
-                e.dataTransfer.setData('text/html', this.outerHTML);
-            }
-            
-            function handleDragOver(e) {
-                e.preventDefault();
-                e.dataTransfer.dropEffect = 'move';
-                return false;
-            }
-            
-            function handleDrop(e) {
-                e.preventDefault();
-                if (draggedItem !== this) {
-                    const fromIndex = parseInt(draggedItem.getAttribute('data-index'));
-                    const toIndex = parseInt(this.getAttribute('data-index'));
-                    
-                    // تغيير ترتيب العناصر في المصفوفة
-                    const temp = episodes[fromIndex];
-                    
-                    if (fromIndex < toIndex) {
-                        for (let i = fromIndex; i < toIndex; i++) {
-                            episodes[i] = episodes[i + 1];
-                        }
-                        episodes[toIndex] = temp;
-                    } else {
-                        for (let i = fromIndex; i > toIndex; i--) {
-                            episodes[i] = episodes[i - 1];
-                        }
-                        episodes[toIndex] = temp;
+                    title: "الحلقة 5: المواجهة",
+                    description: "ناروتو يواجه منافسه القوي للمرة الأولى",
+                    duration: "24:30",
+                    videoUrl: "https://example.com/episodes/naruto-5.mp4",
+                    thumbnail: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='500' height='281' viewBox='0 0 500 281'%3E%3Crect width='500' height='281' fill='%23333'/%3E%3Ctext x='50%25' y='50%25' font-family='Arial' font-size='30' fill='%23f47521' text-anchor='middle' dominant-baseline='middle'%3Eالحلقة 5%3C/text%3E%3C/svg%3E",
+                    subtitles: {
+                        ar: "subtitles/ep5-ar.vtt",
+                        en: "subtitles/ep5-en.vtt"
                     }
-                    
-                    renderEpisodes();
+                },
+                {
+                    id: 6,
+                    title: "الحلقة 6: النتيجة",
+                    description: "نتائج المواجهة ومستقبل قرية كونوها",
+                    duration: "24:00",
+                    videoUrl: "https://example.com/episodes/naruto-6.mp4",
+                    thumbnail: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='500' height='281' viewBox='0 0 500 281'%3E%3Crect width='500' height='281' fill='%23333'/%3E%3Ctext x='50%25' y='50%25' font-family='Arial' font-size='30' fill='%23f47521' text-anchor='middle' dominant-baseline='middle'%3Eالحلقة 6%3C/text%3E%3C/svg%3E",
+                    subtitles: {
+                        ar: "subtitles/ep6-ar.vtt",
+                        en: "subtitles/ep6-en.vtt"
+                    }
                 }
-                return false;
-            }
-            
-            // تشغيل حلقة
-            function playEpisode(index) {
+            ],
+            intros: [
+                {
+                    title: "المقدمة 1",
+                    duration: "1:30",
+                    videoUrl: "https://example.com/intros/naruto-intro-1.mp4"
+                }
+            ],
+            outros: [
+                {
+                    title: "الخاتمة 1",
+                    duration: "1:30",
+                    videoUrl: "https://example.com/outros/naruto-outro-1.mp4"
+                }
+            ]
+        };
+
+        // الثوابت والمتغيرات العامة
+        const TRANSITION_DELAY = 2000; // 2 ثانية للانتقال بين الحلقات
+        const PRELOAD_TIMEOUT = 10000; // 10 ثوان كمهلة قصوى للتحميل المسبق
+        const MAX_RETRY_ATTEMPTS = 3; // عدد محاولات إعادة المحاولة القصوى
+        const VOLUME_STORAGE_KEY = 'animePlayerVolume';
+        const THEME_STORAGE_KEY = 'animePlayerTheme';
+        const PLAYLIST_STORAGE_KEY = 'animePlaylist';
+        
+        // المتغيرات التي ستستخدم في التطبيق
+        let currentEpisodeIndex = 0;
+        let isPlaying = false;
+        let sessionStartTime = null;
+        let sessionTimer = null;
+        let isChannelMode = false;
+        let isLightMode = false;
+        let preloadedEpisodes = {};
+        let castAvailable = false;
+        let isFullscreen = false;
+        let retryAttempts = 0;
+        let watchLaterList = [];
+        let volumeBeforeMute = 1;
+        let playbackTimer = null;
+        let inactivityTimer = null;
+        let notificationsEnabled = true;
+        let autoplayEnabled = true;
+        let subtitlesEnabled = true;
+
+        // الحصول على عناصر DOM
+        const player = document.getElementById('animePlayer');
+        const playPauseBtn = document.getElementById('playPauseBtn');
+        const prevEpisodeBtn = document.getElementById('prevEpisodeBtn');
+        const nextEpisodeBtn = document.getElementById('nextEpisodeBtn');
+        const startChannelBtn = document.getElementById('startChannelBtn');
+        const volumeSlider = document.getElementById('volumeSlider');
+        const episodesGrid = document.getElementById('episodesGrid');
+        const currentEpisodeTitle = document.getElementById('currentEpisodeTitle');
+        const nextEpisodeTitle = document.getElementById('nextEpisodeTitle');
+        const currentEpisodeDuration = document.getElementById('currentEpisodeDuration');
+        const sessionTime = document.getElementById('sessionTime');
+        const loadingIndicator = document.getElementById('loadingIndicator');
+        const themeToggle = document.getElementById('themeToggle');
+        const downloadFullSeriesBtn = document.getElementById('downloadFullSeriesBtn');
+        const downloadCurrentEpisodeBtn = document.getElementById('downloadCurrentEpisodeBtn');
+        const shareBtn = document.getElementById('shareBtn');
+        const fullscreenButton = document.getElementById('fullscreenButton');
+        const castButton = document.getElementById('castButton');
+        const castDialog = document.getElementById('castDialog');
+        const overlay = document.getElementById('overlay');
+        const cancelCastBtn = document.getElementById('cancelCastBtn');
+        const closeCastDialog = document.getElementById('closeCastDialog');
+        const toggleAdminBtn = document.getElementById('toggleAdminBtn');
+        const adminPanel = document.getElementById('adminPanel');
+        const adminEpisodesList = document.getElementById('adminEpisodesList');
+        const addEpisodeBtn = document.getElementById('addEpisodeBtn');
+        const savePlaylistBtn = document.getElementById('savePlaylistBtn');
+        const clearCacheBtn = document.getElementById('clearCacheBtn');
+        const toggleTimerBtn = document.getElementById('toggleTimerBtn');
+
+        // وظائف المساعدة
+
+        /**
+         * تقوم بتحميل الحلقة المحددة وعرضها
+         * @param {number} index - فهرس الحلقة في المصفوفة
+         * @param {boolean} autoplay - هل يتم التشغيل تلقائياً
+         * @param {boolean} showLoading - هل يتم عرض مؤشر التحميل
+         * @returns {Promise} وعد بانتهاء تحميل الحلقة
+         */
+        function loadEpisode(index, autoplay = true, showLoading = true) {
+            return new Promise((resolve, reject) => {
+                // التحقق من صحة الفهرس
+                if (index < 0 || index >= animeData.episodes.length) {
+                    console.error('رقم الحلقة غير صالح:', index);
+                    reject(new Error('رقم حلقة غير صالح'));
+                    return;
+                }
+
+                // عرض مؤشر التحميل إذا كان مطلوباً
+                if (showLoading) {
+                    loadingIndicator.style.display = 'block';
+                }
+                
+                const episode = animeData.episodes[index];
                 currentEpisodeIndex = index;
                 
-                // في تطبيق حقيقي، هنا يمكن تغيير مصدر الفيديو
-                // videoPlayer.src = episodes[index].videoUrl;
+                // تسجيل محاولة تحميل الحلقة
+                console.log(`جاري تحميل الحلقة ${index + 1}: ${episode.title}`);
                 
-                currentTitle.textContent = episodes[index].title;
-                currentDescription.textContent = episodes[index].description;
+                // تحديث واجهة المستخدم
+                updateUIForNewEpisode(episode, index);
                 
-                // تحديث حالة التشغيل في قائمة الحلقات
-                document.querySelectorAll('.episode-card').forEach((card, i) => {
-                    if (i === index) {
-                        card.classList.add('playing');
-                    } else {
-                        card.classList.remove('playing');
-                    }
-                });
+                // تأكد من توقف التشغيل قبل تغيير المصدر
+                player.pause();
                 
-                if (autoplayEnabled) {
-                    videoPlayer.play();
+                // تخزين المصدر الحالي للفيديو
+                const currentSrc = player.src;
+                
+                // تطبيق المصدر الجديد فقط إذا كان مختلفًا عن المصدر الحالي
+                if (currentSrc !== episode.videoUrl) {
+                    player.src = episode.videoUrl;
+                    
+                    // إعادة تعيين الترجمات
+                    resetSubtitles(episode);
+                    
+                    // تحميل الفيديو الجديد
+                    player.load();
+                }
+                
+                // معالجة أحداث الوسائط
+                setupMediaEvents(autoplay, resolve, reject);
+            }).catch(error => {
+                console.error('خطأ في تحميل الحلقة:', error);
+                
+                // محاولة إعادة التحميل إذا كان عدد المحاولات أقل من الحد الأقصى
+                if (retryAttempts < MAX_RETRY_ATTEMPTS) {
+                    retryAttempts++;
+                    console.log(`محاولة إعادة التحميل ${retryAttempts} من ${MAX_RETRY_ATTEMPTS}`);
+                    return loadEpisode(index, autoplay, showLoading);
+                } else {
+                    retryAttempts = 0;
+                    showNotification('تعذر تحميل الحلقة بعد عدة محاولات. يرجى التحقق من اتصالك بالإنترنت.', 'error');
+                    throw error;
+                }
+            });
+        }
+
+        /**
+         * تحديث واجهة المستخدم لعرض معلومات الحلقة الجديدة
+         * @param {Object} episode - كائن الحلقة
+         * @param {number} index - فهرس الحلقة
+         */
+        function updateUIForNewEpisode(episode, index) {
+            // تحديث عنوان الحلقة الحالية والمدة
+            currentEpisodeTitle.textContent = episode.title;
+            currentEpisodeDuration.textContent = episode.duration;
+            
+            // تحديث عنوان الحلقة التالية
+            const nextIndex = (index + 1) % animeData.episodes.length;
+            nextEpisodeTitle.textContent = animeData.episodes[nextIndex].title;
+            
+            // تحديث حالة الحلقة النشطة في القائمة
+            updateActiveEpisode();
+
+            // تحديث عنوان الصفحة
+            document.title = `${episode.title} - أنيمي بلاس`;
+        }
+
+        /**
+         * إعادة تعيين مسارات الترجمة للحلقة
+         * @param {Object} episode - كائن الحلقة
+         */
+        function resetSubtitles(episode) {
+            // إزالة جميع العناصر الحالية من track داخل عنصر الفيديو
+            const trackElements = player.querySelectorAll('track');
+            trackElements.forEach(track => track.remove());
+            
+            // إضافة الترجمات الجديدة
+            if (episode.subtitles) {
+                if (episode.subtitles.ar) {
+                    addSubtitleTrack('ar', 'العربية', episode.subtitles.ar);
+                }
+                
+                if (episode.subtitles.en) {
+                    addSubtitleTrack('en', 'English', episode.subtitles.en);
                 }
             }
+        }
+
+        /**
+         * إضافة مسار ترجمة للفيديو
+         * @param {string} lang - رمز اللغة
+         * @param {string} label - اسم اللغة المعروض
+         * @param {string} src - مصدر ملف الترجمة
+         */
+        function addSubtitleTrack(lang, label, src) {
+            const track = document.createElement('track');
+            track.kind = 'subtitles';
+            track.src = src;
+            track.srclang = lang;
+            track.label = label;
             
-            // تشغيل/إيقاف الفيديو
-            playPauseBtn.addEventListener('click', () => {
-                if (videoPlayer.paused) {
-                    videoPlayer.play();
-                    playPauseBtn.innerHTML = '<i class="fas fa-pause"></i> إيقاف';
+            // تفعيل الترجمة إذا كانت الترجمات مفعلة
+            if (subtitlesEnabled && lang === 'ar') {
+                track.default = true;
+            }
+            
+            player.appendChild(track);
+        }
+
+        /**
+         * إعداد مستمعي أحداث الوسائط
+         * @param {boolean} autoplay - هل يتم التشغيل تلقائياً
+         * @param {Function} resolve - دالة النجاح للوعد
+         * @param {Function} reject - دالة الفشل للوعد
+         */
+        function setupMediaEvents(autoplay, resolve, reject) {
+            // إزالة جميع المستمعين السابقة لتجنب التداخل
+            player.onloadeddata = null;
+            player.oncanplay = null;
+            player.onplaying = null;
+            player.onerror = null;
+            
+            // عند جاهزية البيانات
+            player.oncanplay = () => {
+                loadingIndicator.style.display = 'none';
+                
+                if (autoplay && autoplayEnabled) {
+                    startPlayback();
                 } else {
-                    videoPlayer.pause();
-                    playPauseBtn.innerHTML = '<i class="fas fa-play"></i> تشغيل';
+                    isPlaying = false;
+                    updatePlayPauseButton();
                 }
+                
+                // تحميل مسبق للحلقة التالية
+                preloadNextEpisode();
+                
+                // حل الوعد
+                resolve();
+            };
+            
+            // عند بدء التشغيل
+            player.onplaying = () => {
+                isPlaying = true;
+                updatePlayPauseButton();
+                loadingIndicator.style.display = 'none';
+            };
+            
+            // عند حدوث خطأ
+            player.onerror = (e) => {
+                console.error('خطأ في تحميل الفيديو:', player.error);
+                loadingIndicator.style.display = 'none';
+                
+                // رفض الوعد مع تفاصيل الخطأ
+                const errorInfo = {
+                    code: player.error ? player.error.code : 'unknown',
+                    message: getMediaErrorMessage(player.error)
+                };
+                
+                reject(errorInfo);
+            };
+        }
+
+        /**
+         * الحصول على رسالة خطأ مفهومة من كود خطأ الوسائط
+         * @param {MediaError} error - كائن خطأ الوسائط
+         * @returns {string} - رسالة الخطأ المفهومة
+         */
+        function getMediaErrorMessage(error) {
+            if (!error) return 'حدث خطأ غير معروف';
+            
+            switch (error.code) {
+                case 1:
+                    return 'تم إلغاء تحميل الوسائط.';
+                case 2:
+                    return 'حدث خطأ في الشبكة أثناء تحميل الوسائط.';
+                case 3:
+                    return 'حدث خطأ أثناء فك ترميز الوسائط.';
+                case 4:
+                    return 'الوسائط غير مدعومة أو غير متوفرة.';
+                default:
+                    return `خطأ غير معروف: ${error.code}`;
+            }
+        }
+
+        /**
+         * بدء تشغيل الفيديو مع معالجة الأخطاء المحتملة
+         */
+        function startPlayback() {
+            player.play()
+                .then(() => {
+                    isPlaying = true;
+                    updatePlayPauseButton();
+                })
+                .catch(err => {
+                    console.error('فشل التشغيل التلقائي:', err);
+                    // قد يكون الخطأ بسبب قيود المتصفح على التشغيل التلقائي
+                    if (err.name === 'NotAllowedError') {
+                        showNotification('المتصفح يمنع التشغيل التلقائي. يرجى النقر على زر التشغيل.', 'info');
+                    }
+                    isPlaying = false;
+                    updatePlayPauseButton();
+                });
+        }
+
+        /**
+         * تحديث حالة زر التشغيل/الإيقاف
+         */
+        function updatePlayPauseButton() {
+            const icon = isPlaying ? '<i class="fas fa-pause"></i> إيقاف' : '<i class="fas fa-play"></i> تشغيل';
+            playPauseBtn.innerHTML = icon;
+            
+            // تحديث متغير الحالة للمشغل
+            player.dataset.playing = isPlaying ? 'true' : 'false';
+        }
+
+        /**
+         * تحديث الحلقة النشطة في قائمة الحلقات
+         */
+        function updateActiveEpisode() {
+            // إزالة الفئة النشطة من جميع الحلقات
+            const episodeCards = document.querySelectorAll('.episode-card');
+            episodeCards.forEach(card => {
+                card.classList.remove('active');
             });
             
-            // الانتقال إلى الحلقة السابقة
-            prevBtn.addEventListener('click', () => {
-                if (currentEpisodeIndex > 0) {
-                    playEpisode(currentEpisodeIndex - 1);
+            // إضافة الفئة النشطة للحلقة الحالية
+            const currentCard = document.querySelector(`.episode-card[data-id="${animeData.episodes[currentEpisodeIndex].id}"]`);
+            if (currentCard) {
+                currentCard.classList.add('active');
+                
+                // تمرير إلى الحلقة النشطة بنعومة
+                // استخدام requestAnimationFrame لضمان أن التمرير سيحدث بعد إضافة الفئة النشطة
+                requestAnimationFrame(() => {
+                    currentCard.scrollIntoView({ 
+                        behavior: 'smooth', 
+                        block: 'nearest',
+                        inline: 'nearest'
+                    });
+                });
+            }
+        }
+
+        /**
+         * التحميل المسبق للحلقة التالية لتحسين تجربة المستخدم
+         */
+        function preloadNextEpisode() {
+            const nextIndex = (currentEpisodeIndex + 1) % animeData.episodes.length;
+            const nextEpisode = animeData.episodes[nextIndex];
+            
+            // إذا كانت الحلقة التالية لم يتم تحميلها مسبقًا
+            if (!preloadedEpisodes[nextIndex]) {
+                console.log(`بدء التحميل المسبق للحلقة ${nextIndex + 1}`);
+                
+                // إنشاء عنصر ارتباط للتحميل المسبق
+                const preloadLink = document.createElement('link');
+                preloadLink.rel = 'preload';
+                preloadLink.as = 'video';
+                preloadLink.href = nextEpisode.videoUrl;
+                preloadLink.id = `preload-${nextIndex}`;
+                
+                // إزالة أي عناصر تحميل مسبق سابقة للحلقة نفسها
+                const existingPreload = document.getElementById(`preload-${nextIndex}`);
+                if (existingPreload) {
+                    existingPreload.remove();
                 }
-            });
+                
+                // إضافة عنصر التحميل المسبق إلى الرأس
+                document.head.appendChild(preloadLink);
+                
+                // وضع علامة على الحلقة بأنه تم تحميلها مسبقًا
+                preloadedEpisodes[nextIndex] = true;
+                
+                // إعداد مهلة للتحميل المسبق
+                setTimeout(() => {
+                    // يمكن إزالة عنصر التحميل المسبق بعد المهلة المحددة
+                    if (preloadLink.parentNode) {
+                        preloadLink.remove();
+                    }
+                }, PRELOAD_TIMEOUT);
+                
+                console.log(`اكتمل التحميل المسبق للحلقة ${nextIndex + 1}`);
+            }
+        }
+
+        /**
+         * الانتقال إلى الحلقة التالية
+         */
+        function playNextEpisode() {
+            // إظهار التنبيه
+            showNotification('جارٍ تحميل الحلقة التالية...', 'info');
+            
+            // حفظ التقدم للحلقة الحالية
+            saveProgress();
             
             // الانتقال إلى الحلقة التالية
-            nextBtn.addEventListener('click', () => {
-                if (currentEpisodeIndex < episodes.length - 1) {
-                    playEpisode(currentEpisodeIndex + 1);
+            const nextIndex = (currentEpisodeIndex + 1) % animeData.episodes.length;
+            loadEpisode(nextIndex, true)
+                .then(() => {
+                    console.log(`تم الانتقال إلى الحلقة ${nextIndex + 1}`);
+                    resetInactivityTimer();
+                })
+                .catch(error => {
+                    console.error('فشل في تحميل الحلقة التالية:', error);
+                    showNotification('تعذر تحميل الحلقة التالية. يرجى المحاولة مرة أخرى.', 'error');
+                });
+        }
+
+        /**
+         * الانتقال إلى الحلقة السابقة
+         */
+        function playPreviousEpisode() {
+            // إظهار التنبيه
+            showNotification('جارٍ تحميل الحلقة السابقة...', 'info');
+            
+            // حفظ التقدم للحلقة الحالية
+            saveProgress();
+            
+            // الانتقال إلى الحلقة السابقة
+            const prevIndex = (currentEpisodeIndex - 1 + animeData.episodes.length) % animeData.episodes.length;
+            loadEpisode(prevIndex, true)
+                .then(() => {
+                    console.log(`تم الانتقال إلى الحلقة ${prevIndex + 1}`);
+                    resetInactivityTimer();
+                })
+                .catch(error => {
+                    console.error('فشل في تحميل الحلقة السابقة:', error);
+                    showNotification('تعذر تحميل الحلقة السابقة. يرجى المحاولة مرة أخرى.', 'error');
+                });
+        }
+
+        /**
+         * حفظ تقدم المشاهدة للحلقة الحالية
+         */
+        function saveProgress() {
+            // فقط إذا كان هناك تقدم في الفيديو
+            if (player.currentTime > 0) {
+                const currentEpisode = animeData.episodes[currentEpisodeIndex];
+                const progress = {
+                    episodeId: currentEpisode.id,
+                    currentTime: player.currentTime,
+                    duration: player.duration,
+                    percentage: Math.floor((player.currentTime / player.duration) * 100),
+                    timestamp: new Date().toISOString()
+                };
+                
+                // تخزين التقدم في التخزين المحلي
+                try {
+                    const savedProgress = JSON.parse(localStorage.getItem('animeProgress') || '{}');
+                    savedProgress[currentEpisode.id] = progress;
+                    localStorage.setItem('animeProgress', JSON.stringify(savedProgress));
+                    console.log(`تم حفظ التقدم للحلقة ${currentEpisodeIndex + 1}: ${progress.percentage}%`);
+                } catch (e) {
+                    console.error('فشل في حفظ التقدم:', e);
                 }
+            }
+        }
+
+        /**
+         * استرجاع تقدم المشاهدة للحلقة المحددة
+         * @param {number} episodeId - معرف الحلقة
+         * @returns {Object|null} - بيانات التقدم أو null إذا لم يكن هناك تقدم
+         */
+        function getProgress(episodeId) {
+            try {
+                const savedProgress = JSON.parse(localStorage.getItem('animeProgress') || '{}');
+                return savedProgress[episodeId] || null;
+            } catch (e) {
+                console.error('فشل في استرجاع التقدم:', e);
+                return null;
+            }
+        }
+
+        /**
+         * بدء تشغيل القناة في وضع البث المستمر
+         */
+        function startChannel() {
+            isChannelMode = true;
+            
+            // تحديث الواجهة
+            startChannelBtn.innerHTML = '<i class="fas fa-stop"></i> إيقاف القناة';
+            startChannelBtn.classList.add('active');
+            
+            // إظهار التنبيه
+            showNotification('تم تفعيل وضع البث المستمر. سيتم الانتقال تلقائيًا بين الحلقات.', 'success');
+            
+            // بدء مؤقت الجلسة إذا لم يكن بدأ بالفعل
+            if (!sessionStartTime) {
+                sessionStartTime = new Date();
+                updateSessionTimer();
+                
+                // بدء التحديث الدوري لمؤقت الجلسة
+                if (!sessionTimer) {
+                    sessionTimer = setInterval(updateSessionTimer, 1000);
+                }
+            }
+            
+            // بدء تشغيل أول حلقة أو الحلقة الحالية
+            loadEpisode(currentEpisodeIndex, true);
+        }
+
+        /**
+         * إيقاف تشغيل القناة
+         */
+        function stopChannel() {
+            isChannelMode = false;
+            
+            // تحديث الواجهة
+            startChannelBtn.innerHTML = '<i class="fas fa-sync-alt"></i> تشغيل القناة';
+            startChannelBtn.classList.remove('active');
+            
+            // إظهار التنبيه
+            showNotification('تم إيقاف وضع البث المستمر.', 'info');
+            
+            // إيقاف مؤقت الجلسة
+            if (sessionTimer) {
+                clearInterval(sessionTimer);
+                sessionTimer = null;
+            }
+        }
+
+        /**
+         * تحديث مؤقت جلسة المشاهدة
+         */
+        function updateSessionTimer() {
+            if (!sessionStartTime) return;
+            
+            const now = new Date();
+            const diff = now - sessionStartTime;
+            
+            const hours = Math.floor(diff / 3600000);
+            const minutes = Math.floor((diff % 3600000) / 60000);
+            const seconds = Math.floor((diff % 60000) / 1000);
+            
+            sessionTime.textContent = 
+                (hours < 10 ? '0' : '') + hours + ':' +
+                (minutes < 10 ? '0' : '') + minutes + ':' +
+                (seconds < 10 ? '0' : '') + seconds;
+        }
+
+        /**
+         * تبديل وضع السمة (فاتح/داكن)
+         */
+        function toggleTheme() {
+            isLightMode = !isLightMode;
+            document.body.classList.toggle('light-mode', isLightMode);
+            
+            // تحديث أيقونة الزر
+            themeToggle.innerHTML = isLightMode ? 
+                '<i class="fas fa-sun"></i>' : 
+                '<i class="fas fa-moon"></i>';
+            
+            // حفظ الإعداد في التخزين المحلي
+            localStorage.setItem(THEME_STORAGE_KEY, isLightMode ? 'light' : 'dark');
+            
+            // إظهار التنبيه
+            showNotification(`تم التبديل إلى الوضع ${isLightMode ? 'الفاتح' : 'الداكن'}`, 'info');
+        }
+
+        /**
+         * إظهار تنبيه للمستخدم
+         * @param {string} message - نص الرسالة
+         * @param {string} type - نوع التنبيه (success, error, info, warning)
+         * @param {number} duration - مدة ظهور التنبيه بالمللي ثانية
+         */
+        function showNotification(message, type = 'info', duration = 3000) {
+            // إذا كانت التنبيهات معطلة، لا تظهر شيئًا
+            if (!notificationsEnabled) return;
+            
+            // إزالة أي تنبيهات سابقة
+            const existingNotifications = document.querySelectorAll('.notification');
+            existingNotifications.forEach(notification => {
+                notification.remove();
             });
             
-            // تكبير الشاشة
-            fullscreenBtn.addEventListener('click', () => {
-                if (!document.fullscreenElement) {
-                    videoContainer.classList.add('fullscreen');
-                    if (videoContainer.requestFullscreen) {
-                        videoContainer.requestFullscreen();
-                    } else if (videoContainer.webkitRequestFullscreen) {
-                        videoContainer.webkitRequestFullscreen();
-                    } else if (videoContainer.msRequestFullscreen) {
-                        videoContainer.msRequestFullscreen();
+            // إنشاء عنصر التنبيه
+            const notification = document.createElement('div');
+            notification.className = `notification notification-${type}`;
+            
+            // إضافة أيقونة حسب النوع
+            let icon = '';
+            switch (type) {
+                case 'success':
+                    icon = '<i class="fas fa-check-circle"></i>';
+                    break;
+                case 'error':
+                    icon = '<i class="fas fa-times-circle"></i>';
+                    break;
+                case 'warning':
+                    icon = '<i class="fas fa-exclamation-triangle"></i>';
+                    break;
+                default:
+                    icon = '<i class="fas fa-info-circle"></i>';
+            }
+            
+            notification.innerHTML = `
+                ${icon}
+                <span>${message}</span>
+                <button class="close-notification"><i class="fas fa-times"></i></button>
+            `;
+            
+            // إضافة أنماط CSS للتنبيه
+            notification.style.position = 'fixed';
+            notification.style.bottom = '20px';
+            notification.style.left = '50%';
+            notification.style.transform = 'translateX(-50%)';
+            notification.style.backgroundColor = 'var(--card-bg)';
+            notification.style.color = 'var(--light-text)';
+            notification.style.padding = '10px 20px';
+            notification.style.borderRadius = '8px';
+            notification.style.boxShadow = '0 4px 12px rgba(0,0,0,0.2)';
+            notification.style.zIndex = '1000';
+            notification.style.display = 'flex';
+            notification.style.alignItems = 'center';
+            notification.style.gap = '10px';
+            notification.style.opacity = '0';
+            notification.style.transition = 'opacity 0.3s';
+            notification.style.borderRight = `4px solid ${getTypeColor(type)}`;
+            
+            // إضافة أنماط لزر الإغلاق
+            const closeButton = notification.querySelector('.close-notification');
+            closeButton.style.background = 'none';
+            closeButton.style.border = 'none';
+            closeButton.style.color = 'var(--gray-text)';
+            closeButton.style.cursor = 'pointer';
+            closeButton.style.marginRight = '-5px';
+            closeButton.style.marginLeft = '5px';
+            
+            // إضافة التنبيه إلى الصفحة
+            document.body.appendChild(notification);
+            
+            // إظهار التنبيه بتأثير متدرج
+            setTimeout(() => {
+                notification.style.opacity = '1';
+            }, 10);
+            
+            // إضافة مستمع لزر الإغلاق
+            closeButton.addEventListener('click', () => {
+                notification.style.opacity = '0';
+                setTimeout(() => {
+                    notification.remove();
+                }, 300);
+            });
+            
+            // إخفاء التنبيه تلقائيًا بعد المدة المحددة
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.remove();
                     }
+                }, 300);
+            }, duration);
+        }
+
+        /**
+         * الحصول على لون حسب نوع التنبيه
+         * @param {string} type - نوع التنبيه
+         * @returns {string} - الكود اللوني المناسب
+         */
+        function getTypeColor(type) {
+            switch (type) {
+                case 'success':
+                    return '#28a745';
+                case 'error':
+                    return '#dc3545';
+                case 'warning':
+                    return '#ffc107';
+                default:
+                    return '#17a2b8';
+            }
+        }
+
+        /**
+         * تحميل السلسلة كاملة
+         */
+        function downloadFullSeries() {
+            showNotification('جاري تجهيز ملف السلسلة كاملة للتنزيل...', 'info');
+            
+            // إنشاء قائمة بالحلقات
+            let episodesList = '';
+            animeData.episodes.forEach((episode, index) => {
+                episodesList += `${index + 1}. ${episode.title}\n`;
+            });
+            
+            // تطبيق واقعي: إنشاء ملف نصي يحتوي على روابط الحلقات
+            const blob = new Blob([
+                `${animeData.title}\n`,
+                `${new Date().toLocaleDateString()}\n\n`,
+                `قائمة الحلقات:\n`,
+                episodesList,
+                `\n\nروابط التحميل:\n`,
+                animeData.episodes.map(ep => `${ep.title}: ${ep.videoUrl}`).join('\n')
+            ], { type: 'text/plain;charset=utf-8' });
+            
+            // إنشاء رابط التنزيل
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `${animeData.title} - قائمة الحلقات.txt`;
+            
+            // النقر على الرابط لبدء التنزيل
+            document.body.appendChild(link);
+            link.click();
+            
+            // تنظيف الموارد
+            setTimeout(() => {
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+                showNotification('تم تنزيل قائمة الحلقات بنجاح!', 'success');
+            }, 100);
+        }
+
+        /**
+         * تحميل الحلقة الحالية
+         */
+        function downloadCurrentEpisode() {
+            const episode = animeData.episodes[currentEpisodeIndex];
+            
+            // التحقق من وجود الحلقة
+            if (!episode) {
+                showNotification('الحلقة غير متوفرة للتنزيل.', 'error');
+                return;
+            }
+            
+            // إظهار التنبيه
+            showNotification('جاري تجهيز الحلقة للتنزيل...', 'info');
+            
+            // إنشاء رابط التنزيل
+            const link = document.createElement('a');
+            link.href = episode.videoUrl;
+            link.download = episode.title.replace(/:/g, '-').replace(/\s+/g, '_') + '.mp4';
+            link.target = '_blank'; // فتح في نافذة جديدة لأجل التنزيل المباشر
+            
+            // بدء التنزيل
+            document.body.appendChild(link);
+            link.click();
+            
+            // تنظيف الموارد
+            setTimeout(() => {
+                document.body.removeChild(link);
+                showNotification('تم بدء تنزيل الحلقة.', 'success');
+            }, 100);
+        }
+
+        /**
+         * مشاركة محتوى الحلقة
+         */
+        function shareContent() {
+            const currentEpisode = animeData.episodes[currentEpisodeIndex];
+            const shareTitle = `${animeData.title} - ${currentEpisode.title}`;
+            const shareText = `شاهد ${currentEpisode.title} على أنيمي بلاس`;
+            const shareUrl = `${window.location.origin}${window.location.pathname}?episode=${currentEpisodeIndex + 1}`;
+            
+            // استخدام واجهة المشاركة الأصلية إذا كانت متوفرة
+            if (navigator.share) {
+                navigator.share({
+                    title: shareTitle,
+                    text: shareText,
+                    url: shareUrl
+                })
+                .then(() => {
+                    console.log('تمت المشاركة بنجاح');
+                })
+                .catch(err => {
+                    console.error('خطأ في المشاركة:', err);
+                    // نسخ الرابط للحافظة كبديل
+                    copyToClipboard(shareUrl);
+                });
+            } else {
+                // نسخ الرابط للحافظة
+                copyToClipboard(shareUrl);
+            }
+        }
+
+        /**
+         * نسخ النص إلى الحافظة
+         * @param {string} text - النص المراد نسخه
+         */
+        function copyToClipboard(text) {
+            // استخدام واجهة Clipboard API الحديثة إذا كانت متوفرة
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text)
+                    .then(() => {
+                        showNotification('تم نسخ الرابط إلى الحافظة', 'success');
+                    })
+                    .catch((err) => {
+                        console.error('فشل في نسخ النص: ', err);
+                        fallbackCopyToClipboard(text);
+                    });
+            } else {
+                // استخدام الطريقة البديلة
+                fallbackCopyToClipboard(text);
+            }
+        }
+
+        /**
+         * طريقة بديلة لنسخ النص إلى الحافظة
+         * @param {string} text - النص المراد نسخه
+         */
+        function fallbackCopyToClipboard(text) {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            textarea.style.position = 'fixed';
+            textarea.style.opacity = '0';
+            document.body.appendChild(textarea);
+            textarea.focus();
+            textarea.select();
+            
+            try {
+                const successful = document.execCommand('copy');
+                if (successful) {
+                    showNotification('تم نسخ الرابط إلى الحافظة', 'success');
                 } else {
-                    videoContainer.classList.remove('fullscreen');
-                    if (document.exitFullscreen) {
-                        document.exitFullscreen();
-                    } else if (document.webkitExitFullscreen) {
-                        document.webkitExitFullscreen();
-                    } else if (document.msExitFullscreen) {
-                        document.msExitFullscreen();
-                    }
+                    showNotification('فشل في نسخ الرابط. يرجى نسخه يدويًا: ' + text, 'error', 6000);
                 }
+            } catch (err) {
+                console.error('فشل في نسخ النص: ', err);
+                showNotification('فشل في نسخ الرابط. يرجى نسخه يدويًا: ' + text, 'error', 6000);
+            }
+            
+            document.body.removeChild(textarea);
+        }
+
+        /**
+         * تبديل وضع ملء الشاشة
+         */
+        function toggleFullscreen() {
+            if (!isFullscreen) {
+                enterFullscreen();
+                fullscreenButton.innerHTML = '<i class="fas fa-compress"></i>';
+                isFullscreen = true;
+            } else {
+                exitFullscreen();
+                fullscreenButton.innerHTML = '<i class="fas fa-expand"></i>';
+                isFullscreen = false;
+            }
+        }
+
+        /**
+         * الدخول إلى وضع ملء الشاشة
+         */
+        function enterFullscreen() {
+            const container = document.querySelector('.player-wrapper');
+            
+            if (container.requestFullscreen) {
+                container.requestFullscreen();
+            } else if (container.mozRequestFullScreen) {
+                container.mozRequestFullScreen();
+            } else if (container.webkitRequestFullscreen) {
+                container.webkitRequestFullscreen();
+            } else if (container.msRequestFullscreen) {
+                container.msRequestFullscreen();
+            }
+        }
+
+        /**
+         * الخروج من وضع ملء الشاشة
+         */
+        function exitFullscreen() {
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            } else if (document.mozCancelFullScreen) {
+                document.mozCancelFullScreen();
+            } else if (document.webkitExitFullscreen) {
+                document.webkitExitFullscreen();
+            } else if (document.msExitFullscreen) {
+                document.msExitFullscreen();
+            }
+        }
+
+        /**
+         * فتح أو إغلاق حوار البث
+         */
+        function toggleCastDialog() {
+            castDialog.classList.toggle('active');
+            overlay.classList.toggle('active');
+            
+            // إظهار أجهزة البث المتاحة إذا كان الحوار مفتوحًا
+            if (castDialog.classList.contains('active')) {
+                // يمكن إضافة كود لاكتشاف الأجهزة هنا
+                refreshCastDevices();
+            }
+        }
+
+        /**
+         * تحديث قائمة أجهزة البث المتاحة
+         */
+        function refreshCastDevices() {
+            // في تطبيق واقعي، سيتم استخدام API للبحث عن الأجهزة المتاحة
+            // هنا نقوم فقط بمحاكاة العملية
+            const castDevices = document.getElementById('castDevices');
+            
+            // إظهار رسالة تحميل أثناء البحث
+            castDevices.innerHTML = `
+                <div style="text-align: center; padding: 20px;">
+                    <div class="spinner" style="display: inline-block;"></div>
+                    <p style="margin-top: 10px;">جارٍ البحث عن الأجهزة المتاحة...</p>
+                </div>
+            `;
+            
+            // محاكاة وقت البحث
+            setTimeout(() => {
+                // إنشاء قائمة بالأجهزة المكتشفة
+                castDevices.innerHTML = `
+                    <div class="cast-device">
+                        <div class="device-icon"><i class="fas fa-tv"></i></div>
+                        <div class="device-info">
+                            <div class="device-name">تلفاز غرفة المعيشة</div>
+                            <div class="device-status">متاح</div>
+                        </div>
+                    </div>
+                    <div class="cast-device">
+                        <div class="device-icon"><i class="fas fa-mobile-alt"></i></div>
+                        <div class="device-info">
+                            <div class="device-name">هاتف محمد</div>
+                            <div class="device-status">متاح</div>
+                        </div>
+                    </div>
+                    <div class="cast-device">
+                        <div class="device-icon"><i class="fas fa-tablet-alt"></i></div>
+                        <div class="device-info">
+                            <div class="device-name">جهاز لوحي</div>
+                            <div class="device-status">متاح</div>
+                        </div>
+                    </div>
+                `;
+                
+                // إضافة مستمعي الأحداث لأجهزة البث
+                attachCastDeviceListeners();
+            }, 1500);
+        }
+
+        /**
+         * إضافة مستمعي الأحداث لأجهزة البث
+         */
+        function attachCastDeviceListeners() {
+            const castDevices = document.querySelectorAll('.cast-device');
+            castDevices.forEach(device => {
+                device.addEventListener('click', () => {
+                    const deviceName = device.querySelector('.device-name').textContent;
+                    startCasting(deviceName);
+                });
+            });
+        }
+
+        /**
+         * بدء البث إلى جهاز محدد
+         * @param {string} deviceName - اسم الجهاز
+         */
+        function startCasting(deviceName) {
+            // إغلاق حوار البث
+            toggleCastDialog();
+            
+            // إظهار تنبيه
+            showNotification(`جارٍ الاتصال بـ ${deviceName}...`, 'info');
+            
+            // محاكاة الاتصال
+            setTimeout(() => {
+                // تغيير أيقونة زر البث
+                castButton.innerHTML = '<i class="fas fa-cast-connected"></i>';
+                
+                // إظهار تنبيه نجاح الاتصال
+                showNotification(`تم الاتصال بـ ${deviceName} بنجاح. جارٍ البث...`, 'success');
+                
+                // في تطبيق واقعي، سيتم استخدام API للبث
+                console.log(`بدء البث إلى ${deviceName}`);
+            }, 2000);
+        }
+
+        /**
+         * تبديل لوحة الإدارة
+         */
+        function toggleAdminPanel() {
+            adminPanel.classList.toggle('active');
+            
+            // تحديث القائمة إذا تم فتح اللوحة
+            if (adminPanel.classList.contains('active')) {
+                renderAdminEpisodesList();
+                toggleAdminBtn.innerHTML = '<i class="fas fa-times"></i> إغلاق لوحة الإدارة';
+            } else {
+                toggleAdminBtn.innerHTML = '<i class="fas fa-cog"></i> إدارة القناة';
+            }
+        }
+
+        /**
+         * عرض قائمة الحلقات في لوحة الإدارة
+         */
+        function renderAdminEpisodesList() {
+            adminEpisodesList.innerHTML = '';
+            
+            animeData.episodes.forEach((episode, index) => {
+                const episodeItem = document.createElement('div');
+                episodeItem.className = 'admin-episode-item';
+                episodeItem.innerHTML = `
+                    <span class="drag-handle"><i class="fas fa-grip-lines"></i></span>
+                    <span>${episode.title}</span>
+                    <div>
+                        <button class="edit-btn" data-id="${episode.id}"><i class="fas fa-edit"></i></button>
+                        <button class="delete-btn" data-id="${episode.id}"><i class="fas fa-trash"></i></button>
+                    </div>
+                `;
+                adminEpisodesList.appendChild(episodeItem);
             });
             
-            // تكبير الشاشة الذي سيتم تشغيله عندما تنتهي حالة ملء الشاشة
-            document.addEventListener('fullscreenchange', () => {
-                if (!document.fullscreenElement) {
-                    videoContainer.classList.remove('fullscreen');
-                }
-            });
-            
-            // تغيير مستوى الصوت
-            volumeControl.addEventListener('input', () => {
-                videoPlayer.volume = volumeControl.value;
-            });
-            
-            // الاستماع إلى انتهاء الفيديو للانتقال تلقائيًا
-            videoPlayer.addEventListener('ended', () => {
-                if (autoplayNext && currentEpisodeIndex < episodes.length - 1) {
-                    playEpisode(currentEpisodeIndex + 1);
-                }
-            });
-            
-            // تغيير حالة التشغيل/الإيقاف لزر التشغيل
-            videoPlayer.addEventListener('play', () => {
-                playPauseBtn.innerHTML = '<i class="fas fa-pause"></i> إيقاف';
-            });
-            
-            videoPlayer.addEventListener('pause', () => {
-                playPauseBtn.innerHTML = '<i class="fas fa-play"></i> تشغيل';
-            });
-            
-            // زر Chromecast
-            castBtn.addEventListener('click', () => {
-                alert('تم تفعيل ميزة Chromecast. في التطبيق الحقيقي، سيتم بدء عملية البث على جهاز خارجي.');
-            });
-            
-            // عرض/إخفاء جدول البث
-            toggleScheduleBtn.addEventListener('click', () => {
-                if (schedulePanel.style.display === 'block') {
-                    schedulePanel.style.display = 'none';
-                    toggleScheduleBtn.textContent = 'عرض الجدول';
-                } else {
-                    schedulePanel.style.display = 'block';
-                    toggleScheduleBtn.textContent = 'إخفاء الجدول';
-                }
-            });
-            
-            // فتح/إغلاق لوحة الإدارة
-            adminToggle.addEventListener('click', () => {
-                adminPanel.style.display = 'flex';
-            });
-            
-            closeAdmin.addEventListener('click', () => {
-                adminPanel.style.display = 'none';
-            });
-            
-            // التبديل بين علامات تبويب الإدارة
-            tabBtns.forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const tabId = btn.getAttribute('data-tab');
-                    
-                    tabBtns.forEach(b => b.classList.remove('active'));
-                    tabContents.forEach(c => c.classList.remove('active'));
-                    
-                    btn.classList.add('active');
-                    document.getElementById(`${tabId}-tab`).classList.add('active');
+            // إضافة مستمعي الأحداث لأزرار التحرير والحذف
+            attachAdminButtonListeners();
+        }
+
+        /**
+         * إضافة مستمعي الأحداث لأزرار لوحة الإدارة
+         */
+        function attachAdminButtonListeners() {
+            // أزرار التحرير
+            const editButtons = adminEpisodesList.querySelectorAll('.edit-btn');
+            editButtons.forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const episodeId = parseInt(e.currentTarget.dataset.id);
+                    editEpisode(episodeId);
+                    e.stopPropagation();
                 });
             });
             
-            // منطقة رفع الملفات
-            uploadArea.addEventListener('click', () => {
-                fileUpload.click();
+            // أزرار الحذف
+            const deleteButtons = adminEpisodesList.querySelectorAll('.delete-btn');
+            deleteButtons.forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const episodeId = parseInt(e.currentTarget.dataset.id);
+                    deleteEpisode(episodeId);
+                    e.stopPropagation();
+                });
             });
+        }
+
+        /**
+         * تحرير حلقة
+         * @param {number} episodeId - معرف الحلقة
+         */
+        function editEpisode(episodeId) {
+            const episode = animeData.episodes.find(ep => ep.id === episodeId);
             
-            uploadArea.addEventListener('dragover', (e) => {
-                e.preventDefault();
-                uploadArea.style.borderColor = 'var(--primary-color)';
-            });
-            
-            uploadArea.addEventListener('dragleave', () => {
-                uploadArea.style.borderColor = 'var(--gray-text)';
-            });
-            
-            uploadArea.addEventListener('drop', (e) => {
-                e.preventDefault();
-                uploadArea.style.borderColor = 'var(--gray-text)';
-                
-                const files = e.dataTransfer.files;
-                handleFiles(files);
-            });
-            
-            fileUpload.addEventListener('change', (e) => {
-                const files = e.target.files;
-                handleFiles(files);
-            });
-            
-            function handleFiles(files) {
-                // في تطبيق حقيقي، هنا سيتم رفع الملفات إلى الخادم
-                for (let i = 0; i < files.length; i++) {
-                    const file = files[i];
-                    if (file.type.startsWith('video/')) {
-                        const newEpisode = {
-                            id: episodes.length + 1,
-                            title: `حلقة جديدة ${episodes.length + 1}`,
-                            description: `تم إضافة هذه الحلقة: ${file.name}`,
-                            thumbnail: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMjAgMTgwIiBmaWxsPSIjMjMyNTJiIj48cmVjdCB3aWR0aD0iMzIwIiBoZWlnaHQ9IjE4MCIgZmlsbD0iIzIzMjUyYiIvPjx0ZXh0IHg9IjE2MCIgeT0iOTAiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIyNCIgZmlsbD0iI2Y0NzUyMSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSI+2KfZhNit2YTZgtipINin2YTYrNiv2YrYrtipPC90ZXh0Pjwvc3ZnPg==",
-                            duration: "00:00", // في تطبيق حقيقي، سيتم استخراج المدة الفعلية
-                            videoUrl: URL.createObjectURL(file) // رابط مؤقت للملف
-                        };
-                        episodes.push(newEpisode);
-                    }
-                }
-                renderEpisodes();
-                alert(`تم إضافة ${files.length} ملف(ات) بنجاح!`);
+            if (!episode) {
+                showNotification('الحلقة غير موجودة!', 'error');
+                return;
             }
             
-            // تهيئة القائمة وتشغيل الحلقة الأولى
-            renderEpisodes();
-            playEpisode(0);
-        });
+            // في تطبيق واقعي، يجب فتح نموذج تحرير
+            const newTitle = prompt('أدخل عنوان الحلقة الجديد:', episode.title);
+            
+            if (newTitle !== null && newTitle.trim() !== '') {
+                episode.title = newTitle.trim();
+                
+                // تحديث واجهة المستخدم
+                renderAdminEpisodesList();
+                renderEpisodesGrid();
+                
+                // إذا كانت الحلقة الحالية، قم بتحديث العنوان في الواجهة
+                if (episode.id === animeData.episodes[currentEpisodeIndex].id) {
+                    currentEpisodeTitle.textContent = episode.title;
+                }
+                
+                showNotification('تم تحديث الحلقة بنجاح!', 'success');
+            }
+        }
+
+        /**
+         * حذف حلقة
+         * @param {number} episodeId - معرف الحلقة
+         */
+        function deleteEpisode(episodeId) {
+            // التأكيد قبل الحذف
+            if (confirm('هل أنت متأكد من حذف هذه الحلقة؟')) {
+                const index = animeData.episodes.findIndex(ep => ep.id === episodeId);
+                
+                if (index !== -1) {
+                    // حذف الحلقة من المصفوفة
+                    animeData.episodes.splice(index, 1);
+                    
+                    // إذا لم تعد هناك حلقات، أضف حلقة افتراضية
+                    if (animeData.episodes.length === 0) {
+                        animeData.episodes.push({
+                            id: 1,
+                            title: "حلقة افتراضية",
+                            description: "يرجى إضافة حلقات جديدة",
+                            duration: "00:00",
+                            videoUrl: "",
+                            thumbnail: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='500' height='281' viewBox='0 0 500 281'%3E%3Crect width='500' height='281' fill='%23333'/%3E%3Ctext x='50%25' y='50%25' font-family='Arial' font-size='30' fill='%23f47521' text-anchor='middle' dominant-baseline='middle'%3Eلا توجد حلقات%3C/text%3E%3C/svg%3E"
+                        });
+                    }
+                    
+                    // إذا كانت الحلقة المحذوفة هي الحالية، انتقل إلى الحلقة الأولى
+                    if (episodeId === animeData.episodes[currentEpisodeIndex]?.id) {
+                        currentEpisodeIndex = 0;
+                        loadEpisode(currentEpisodeIndex, false);
+                    }
+                    
+                    // تحديث واجهة المستخدم
+                    renderAdminEpisodesList();
+                    renderEpisodesGrid();
+                    
+                    showNotification('تم حذف الحلقة بنجاح!', 'success');
+                }
+            }
+        }
+
+        /**
+         * إضافة حلقة جديدة
+         */
+        function addNewEpisode() {
+            // في تطبيق واقعي، يفتح نموذج إضافة حلقة
+            const title = prompt('أدخل عنوان الحلقة:');
+            
+            if (title !== null && title.trim() !== '') {
+                // إنشاء معرف جديد
+                const newId = animeData.episodes.length > 0 ? 
+                    Math.max(...animeData.episodes.map(ep => ep.id)) + 1 : 1;
+                
+                // إضافة الحلقة الجديدة
+                animeData.episodes.push({
+                    id: newId,
+                    title: title.trim(),
+                    description: "وصف الحلقة الجديدة",
+                    duration: "00:00",
+                    videoUrl: "https://example.com/episodes/new-episode.mp4",
+                    thumbnail: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='500' height='281' viewBox='0 0 500 281'%3E%3Crect width='500' height='281' fill='%23333'/%3E%3Ctext x='50%25' y='50%25' font-family='Arial' font-size='30' fill='%23f47521' text-anchor='middle' dominant-baseline='middle'%3Eحلقة جديدة%3C/text%3E%3C/svg%3E",
+                    subtitles: {
+                        ar: "subtitles/new-ep-ar.vtt",
+                        en: "subtitles/new-ep-en.vtt"
+                    }
+                });
+                
+                // تحديث واجهة المستخدم
+                renderAdminEpisodesList();
+                renderEpisodesGrid();
+                
+                showNotification('تمت إضافة الحلقة الجديدة بنجاح!', 'success');
+            }
+        }
+
+        /**
+         * حفظ قائمة التشغيل في التخزين المحلي
+         */
+        function savePlaylist() {
+            try {
+                localStorage.setItem(PLAYLIST_STORAGE_KEY, JSON.stringify(animeData));
+                showNotification('تم حفظ قائمة التشغيل بنجاح!', 'success');
+            } catch (error) {
+                console.error('فشل في حفظ قائمة التشغيل:', error);
+                showNotification('فشل في حفظ قائمة التشغيل. قد تكون مساحة التخزين المحلي ممتلئة.', 'error');
+            }
+        }
+
+        /**
+         * مسح الذاكرة المؤقتة
+         */
+        function clearCache() {
+            // التأكيد قبل المسح
+            if (confirm('هل أنت متأكد من مسح الذاكرة المؤقتة؟ سيتم مسح جميع البيانات المحفوظة.')) {
+                try {
+                    // مسح كافة البيانات المتعلقة بالتطبيق
+                    localStorage.removeItem(PLAYLIST_STORAGE_KEY);
+                    localStorage.removeItem('animeProgress');
+                    localStorage.removeItem(VOLUME_STORAGE_KEY);
+                    
+                    // إعادة تعيين المتغيرات
+                    preloadedEpisodes = {};
+                    
+                    // إزالة عناصر التحميل المسبق
+                    const preloadLinks = document.querySelectorAll('link[rel="preload"]');
+                    preloadLinks.forEach(link => link.remove());
+                    
+                    showNotification('تم مسح الذاكرة المؤقتة بنجاح!', 'success');
+                } catch (error) {
+                    console.error('فشل في مسح الذاكرة المؤقتة:', error);
+                    showNotification('فشل في مسح الذاكرة المؤقتة.', 'error');
+                }
+            }
+        }
+
+        /**
+         * ضبط مؤقت للمشاهدة
+         */
+        function setViewingTimer() {
+            const minutes = prompt('أدخل مدة المشاهدة بالدقائق:', '60');
+            
+            if (minutes !== null && !isNaN(minutes) && parseInt(minutes) > 0) {
+                const minutesInt = parseInt(minutes);
+                const milliseconds = minutesInt * 60 * 1000;
+                
+                // إعداد المؤقت
+                if (playbackTimer) {
+                    clearTimeout(playbackTimer);
+                }
+                
+                playbackTimer = setTimeout(() => {
+                    // إيقاف التشغيل عند انتهاء المؤقت
+                    player.pause();
+                    isPlaying = false;
+                    updatePlayPauseButton();
+                    
+                    // إظهار تنبيه
+                    showNotification(`انتهت مدة المشاهدة المحددة (${minutesInt} دقيقة)`, 'info');
+                    
+                    // إيقاف وضع القناة إذا كان مفعلاً
+                    if (isChannelMode) {
+                        stopChannel();
+                    }
+                }, milliseconds);
+                
+                showNotification(`تم ضبط مؤقت المشاهدة لـ ${minutesInt} دقيقة`, 'success');
+            }
+        }
+
+        /**
+         * إنشاء قائمة الحلقات
+         */
+        function renderEpisodesGrid() {
+            episodesGrid.innerHTML = '';
+            
+            // استخدام شظايا المستند لتحسين الأداء
+            const fragment = document.createDocumentFragment();
+            
+            animeData.episodes.forEach((episode, index) => {
+                const episodeCard = document.createElement('div');
+                episodeCard.className = 'episode-card';
+                episodeCard.dataset.id = episode.id;
+                
+                // استرجاع تقدم المشاهدة للحلقة إن وجد
+                const progress = getProgress(episode.id);
+                const progressIndicator = progress ? 
+                    `<div class="progress-bar" style="position: absolute; bottom: 0; left: 0; height: 3px; width: ${progress.percentage}%; background-color: var(--primary-color);"></div>` : '';
+                
+                episodeCard.innerHTML = `
+                    <div class="episode-thumbnail">
+                        <img src="${episode.thumbnail}" alt="${episode.title}" loading="lazy">
+                        <div class="episode-number">${index + 1}</div>
+                        ${progressIndicator}
+                    </div>
+                    <div class="episode-info">
+                        <h3>${episode.title}</h3>
+                        <p>${episode.description}</p>
+                    </div>
+                `;
+                
+                episodeCard.addEventListener('click', () => {
+                    loadEpisode(index, true);
+                });
+                
+                fragment.appendChild(episodeCard);
+            });
+            
+            episodesGrid.appendChild(fragment);
+            
+            // تحديث الحلقة النشطة
+            updateActiveEpisode();
+        }
+
+        /**
+         * إعادة تعيين مؤقت عدم النشاط
+         */
+        function resetInactivityTimer() {
+            // إلغاء أي مؤقت سابق
+            if (inactivityTimer) {
+                clearTimeout(inactivityTimer);
+            }
+            
+            // إعداد مؤقت جديد
+            inactivityTimer = setTimeout(() => {
+                // إخفاء عناصر واجهة المستخدم عند عدم النشاط
+                document.body.classList.add('inactive');
+            }, 5000); // 5 ثوانٍ
+        }
+
+        /**
+         * إضافة كل أحداث المستمعين للتطبيق
+         */
+        function setupEventListeners() {
+            // مستمع انتهاء الفيديو
+            player.addEventListener('ended', handleVideoEnded);
+            
+            // مستمعي تقدم الفيديو
+            player.addEventListener('timeupdate', handleTimeUpdate);
+            player.addEventListener('seeking', () => {
+                loadingIndicator.style.display = 'block';
+            });
+            player.addEventListener('seeked', () => {
+                loadingIndicator.style.display = 'none';
+            });
+            
+            // مستمعي حالة التحميل
+            player.addEventListener('waiting', () => {
+                loadingIndicator.style.display = 'block';
+            });
+            player.addEventListener('canplay', () => {
+                loadingIndicator.style.display = 'none';
+            });
+            
+            // زر التشغيل/الإيقاف
+            playPauseBtn.addEventListener('click', togglePlayPause);
+            
+            // أزرار التنقل
+            nextEpisodeBtn.addEventListener('click', playNextEpisode);
+            prevEpisodeBtn.addEventListener('click', playPreviousEpisode);
+            
+            // زر وضع القناة
+            startChannelBtn.addEventListener('click', toggleChannelMode);
+            
+            // التحكم في الصوت
+            volumeSlider.addEventListener('input', handleVolumeChange);
+            
+            // تبديل السمة
+            themeToggle.addEventListener('click', toggleTheme);
+            
+            // أزرار التحميل والمشاركة
+            downloadFullSeriesBtn.addEventListener('click', downloadFullSeries);
+            downloadCurrentEpisodeBtn.addEventListener('click', downloadCurrentEpisode);
+            shareBtn.addEventListener('click', shareContent);
+            
+            // ملء الشاشة
+            fullscreenButton.addEventListener('click', toggleFullscreen);
+            
+            // مستمع تغيير حالة ملء الشاشة
+            document.addEventListener('fullscreenchange', handleFullscreenChange);
+            document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+            document.addEventListener('mozfullscreenchange', handleFullscreenChange);
+            document.addEventListener('MSFullscreenChange', handleFullscreenChange);
+            
+            // أزرار البث
+            castButton.addEventListener('click', toggleCastDialog);
+            cancelCastBtn.addEventListener('click', toggleCastDialog);
+            closeCastDialog.addEventListener('click', toggleCastDialog);
+            overlay.addEventListener('click', () => {
+                castDialog.classList.remove('active');
+                overlay.classList.remove('active');
+            });
+            
+            // أحداث لوحة الإدارة
+            toggleAdminBtn.addEventListener('click', toggleAdminPanel);
+            addEpisodeBtn.addEventListener('click', addNewEpisode);
+            savePlaylistBtn.addEventListener('click', savePlaylist);
+            clearCacheBtn.addEventListener('click', clearCache);
+            toggleTimerBtn.addEventListener('click', setViewingTimer);
+            
+            // استعادة حالة الصوت عند تحميل الصفحة
+            document.addEventListener('DOMContentLoaded', () => {
+                // استرجاع مستوى الصوت المحفوظ
+                const savedVolume = localStorage.getItem(VOLUME_STORAGE_KEY);
+                if (savedVolume !== null) {
+                    player.volume = parseFloat(savedVolume);
+                    volumeSlider.value = parseFloat(savedVolume);
+                }
+            });
+            
+            // حفظ مستوى الصوت عند إغلاق الصفحة
+            window.addEventListener('beforeunload', () => {
+                localStorage.setItem(VOLUME_STORAGE_KEY, player.volume);
+                saveProgress(); // حفظ تقدم المشاهدة قبل إغلاق الصفحة
+            });
+            
+            // مستمع حركة الماوس لإعادة ضبط مؤقت عدم النشاط
+            document.addEventListener('mousemove', () => {
+                document.body.classList.remove('inactive');
+                resetInactivityTimer();
+            });
+            
+            // مستمع النقر لإعادة ضبط مؤقت عدم النشاط
+            document.addEventListener('click', () => {
+                document.body.classList.remove('inactive');
+                resetInactivityTimer();
+            });
+        }
+
+        /**
+         * معالجة انتهاء الفيديو
+         */
+        function handleVideoEnded() {
+            console.log('انتهى تشغيل الفيديو');
+            
+            // في وضع القناة، انتقل تلقائيًا إلى الحلقة التالية
+            if (isChannelMode) {
+                setTimeout(() => {
+                    playNextEpisode();
+                }, TRANSITION_DELAY);
+            } else {
+                isPlaying = false;
+                updatePlayPauseButton();
+                
+                // إظهار تنبيه الحلقة التالية
+                showNextEpisodeNotification();
+            }
+        }
+
+        /**
+         * معالجة تغيير مستوى الصوت
+         */
+        function handleVolumeChange() {
+            player.volume = volumeSlider.value;
+            
+            // تحديث أيقونة الصوت
+            const volumeIcon = document.querySelector('.volume-control i');
+            
+            if (player.volume === 0) {
+                volumeIcon.className = 'fas fa-volume-mute';
+            } else if (player.volume < 0.5) {
+                volumeIcon.className = 'fas fa-volume-down';
+            } else {
+                volumeIcon.className = 'fas fa-volume-up';
+            }
+            
+            // حفظ إعداد الصوت
+            localStorage.setItem(VOLUME_STORAGE_KEY, player.volume);
+        }
+
+        /**
+         * معالجة تحديث وقت التشغيل
+         */
+        function handleTimeUpdate() {
+            // تحديث شريط التقدم
+            const progressPercent = (player.currentTime / player.duration) * 100;
+            
+            // حفظ التقدم كل 10 ثوانٍ
+            if (Math.floor(player.currentTime) % 10 === 0 && player.currentTime > 0) {
+                saveProgress();
+            }
+        }
+
+        /**
+         * معالجة تغيير حالة ملء الشاشة
+         */
+        function handleFullscreenChange() {
+            isFullscreen = !!(document.fullscreenElement || document.webkitFullscreenElement || 
+                             document.mozFullScreenElement || document.msFullscreenElement);
+            
+            fullscreenButton.innerHTML = isFullscreen ? 
+                '<i class="fas fa-compress"></i>' : 
+                '<i class="fas fa-expand"></i>';
+        }
+
+        /**
+         * تبديل تشغيل/إيقاف الفيديو
+         */
+        function togglePlayPause() {
+            if (isPlaying) {
+                player.pause();
+            } else {
+                startPlayback();
+            }
+        }
+
+        /**
+         * تبديل وضع القناة
+         */
+        function toggleChannelMode() {
+            if (isChannelMode) {
+                stopChannel();
+            } else {
+                startChannel();
+            }
+        }
+
+        /**
+         * عرض تنبيه الحلقة التالية
+         */
+        function showNextEpisodeNotification() {
+            const nextIndex = (currentEpisodeIndex + 1) % animeData.episodes.length;
+            const nextEpisode = animeData.episodes[nextIndex];
+            
+            // إنشاء عنصر التنبيه
+            const notification = document.createElement('div');
+            notification.className = 'next-episode-notification';
+            notification.innerHTML = `
+                <h3>الحلقة التالية</h3>
+                <p>${nextEpisode.title}</p>
+                <div class="next-episode-buttons">
+                    <button class="watch-next-button primary">مشاهدة الآن</button>
+                    <button class="cancel-next-button">إلغاء</button>
+                </div>
+                <div class="countdown">سيتم التشغيل تلقائيًا خلال <span>10</span> ثوانٍ</div>
+            `;
+            
+            // إضافة أنماط CSS
+            notification.style.position = 'absolute';
+            notification.style.bottom = '20px';
+            notification.style.right = '20px';
+            notification.style.backgroundColor = 'var(--card-bg)';
+            notification.style.padding = '15px';
+            notification.style.borderRadius = '8px';
+            notification.style.boxShadow = '0 4px 12px rgba(0,0,0,0.3)';
+            notification.style.zIndex = '5';
+            notification.style.minWidth = '250px';
+            
+            // إضافة التنبيه إلى مشغل الفيديو
+            const videoContainer = document.querySelector('.video-container');
+            videoContainer.appendChild(notification);
+            
+            // بدء العد التنازلي
+            let countdown = 10;
+            const countdownElement = notification.querySelector('.countdown span');
+            
+            const countdownInterval = setInterval(() => {
+                countdown--;
+                countdownElement.textContent = countdown;
+                
+                if (countdown <= 0) {
+                    clearInterval(countdownInterval);
+                    notification.remove();
+                    playNextEpisode();
+                }
+            }, 1000);
+            
+            // إضافة مستمعي الأحداث للأزرار
+            const watchButton = notification.querySelector('.watch-next-button');
+            const cancelButton = notification.querySelector('.cancel-next-button');
+            
+            watchButton.addEventListener('click', () => {
+                clearInterval(countdownInterval);
+                notification.remove();
+                playNextEpisode();
+            });
+            
+            cancelButton.addEventListener('click', () => {
+                clearInterval(countdownInterval);
+                notification.remove();
+            });
+        }
+
+        /**
+         * التحقق من معلمات URL
+         */
+        function checkUrlParams() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const episodeParam = urlParams.get('episode');
+            
+            if (episodeParam && !isNaN(episodeParam)) {
+                const episodeIndex = parseInt(episodeParam) - 1;
+                if (episodeIndex >= 0 && episodeIndex < animeData.episodes.length) {
+                    currentEpisodeIndex = episodeIndex;
+                    console.log(`تم تعيين الحلقة البادئة من معلمات URL: ${episodeIndex + 1}`);
+                }
+            }
+        }
+
+        /**
+         * استعادة البيانات المحفوظة
+         */
+        function loadSavedData() {
+            try {
+                // استرجاع قائمة التشغيل المحفوظة
+                const savedPlaylist = localStorage.getItem(PLAYLIST_STORAGE_KEY);
+                if (savedPlaylist) {
+                    const parsedData = JSON.parse(savedPlaylist);
+                    
+                    // التحقق من صحة البيانات قبل استخدامها
+                    if (parsedData && parsedData.episodes && parsedData.episodes.length > 0) {
+                        animeData.episodes = parsedData.episodes;
+                        console.log('تم تحميل قائمة التشغيل المحفوظة');
+                    }
+                }
+                
+                // استرجاع إعداد السمة
+                const savedTheme = localStorage.getItem(THEME_STORAGE_KEY);
+                if (savedTheme) {
+                    isLightMode = savedTheme === 'light';
+                    document.body.classList.toggle('light-mode', isLightMode);
+                    themeToggle.innerHTML = isLightMode ? 
+                        '<i class="fas fa-sun"></i>' : 
+                        '<i class="fas fa-moon"></i>';
+                }
+            } catch (error) {
+                console.error('خطأ في تحميل البيانات المحفوظة:', error);
+            }
+        }
+
+        /**
+         * التحقق من دعم ميزات الوسائط المتقدمة
+         */
+        function checkMediaFeatures() {
+            // التحقق من دعم Picture-in-Picture
+            if ('pictureInPictureEnabled' in document) {
+                console.log('وضع صورة داخل صورة مدعوم');
+                // يمكن إضافة زر صورة داخل صورة هنا
+            }
+            
+            // التحقق من دعم تقنيات البث
+            if (window.chrome && window.chrome.cast) {
+                castAvailable = true;
+                console.log('Google Cast متاح');
+            }
+            
+            // التحقق من دعم MediaSession API
+            if ('mediaSession' in navigator) {
+                console.log('MediaSession API متاح');
+                setupMediaSession();
+            }
+        }
+
+        /**
+         * إعداد MediaSession API للتحكم في الوسائط من الجهاز
+         */
+        function setupMediaSession() {
+            if ('mediaSession' in navigator) {
+                navigator.mediaSession.metadata = new MediaMetadata({
+                    title: animeData.episodes[currentEpisodeIndex].title,
+                    artist: animeData.title,
+                    album: 'أنيمي بلاس',
+                    artwork: [
+                        { src: animeData.episodes[currentEpisodeIndex].thumbnail, type: 'image/png' }
+                    ]
+                });
+                
+                // إعداد أزرار التحكم
+                navigator.mediaSession.setActionHandler('play', () => {
+                    startPlayback();
+                });
+                
+                navigator.mediaSession.setActionHandler('pause', () => {
+                    player.pause();
+                    isPlaying = false;
+                    updatePlayPauseButton();
+                });
+                
+                navigator.mediaSession.setActionHandler('nexttrack', () => {
+                    playNextEpisode();
+                });
+                
+                navigator.mediaSession.setActionHandler('previoustrack', () => {
+                    playPreviousEpisode();
+                });
+            }
+        }
+
+        /**
+         * تحديث وسائط MediaSession عند تغيير الحلقة
+         */
+        function updateMediaSession() {
+            if ('mediaSession' in navigator) {
+                navigator.mediaSession.metadata = new MediaMetadata({
+                    title: animeData.episodes[currentEpisodeIndex].title,
+                    artist: animeData.title,
+                    album: 'أنيمي بلاس',
+                    artwork: [
+                        { src: animeData.episodes[currentEpisodeIndex].thumbnail, type: 'image/png' }
+                    ]
+                });
+            }
+        }
+
+        /**
+         * تهيئة التطبيق
+         */
+        function init() {
+            // استعادة البيانات المحفوظة
+            loadSavedData();
+            
+            // التحقق من معلمات URL
+            checkUrlParams();
+            
+            // إنشاء قائمة الحلقات
+            renderEpisodesGrid();
+            
+            // إعداد أحداث المستمعين
+            setupEventListeners();
+            
+            // التحقق من دعم ميزات الوسائط المتقدمة
+            checkMediaFeatures();
+            
+            // تحميل الحلقة الأولى بدون تشغيل تلقائي
+            loadEpisode(currentEpisodeIndex, false);
+            
+            // بدء مؤقت عدم النشاط
+            resetInactivityTimer();
+            
+            console.log('تم تهيئة التطبيق بنجاح!');
+        }
+
+        // تشغيل التطبيق عند اكتمال تحميل المستند
+        document.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
 </html>
