@@ -3,566 +3,1025 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Photofix - تخزين وتشفير صورك</title>
+    <title>منصة الحلقات المفضلة</title>
     <style>
         :root {
-            --primary-color: #e50914;
-            --dark-color: #111;
-            --light-color: #f3f3f3;
-            --gray-color: #333;
+            --primary-color: #f47521; 
+            --dark-bg: #23252b;
+            --darker-bg: #191b1f;
+            --light-text: #ffffff;
+            --gray-text: #9fadbd;
         }
         
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Cairo', sans-serif;
         }
         
         body {
-            background-color: var(--dark-color);
-            color: white;
-            direction: rtl;
+            background-color: var(--darker-bg);
+            color: var(--light-text);
+            min-height: 100vh;
         }
         
         header {
+            background-color: var(--dark-bg);
+            padding: 15px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 20px 50px;
-            position: fixed;
-            top: 0;
-            width: 100%;
-            z-index: 100;
-            transition: 0.5s;
-            background-color: rgba(0, 0, 0, 0.9);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
         }
         
         .logo {
-            color: var(--primary-color);
-            font-size: 32px;
-            font-weight: bold;
-            text-decoration: none;
-        }
-        
-        nav ul {
             display: flex;
-            list-style: none;
-        }
-        
-        nav ul li {
-            margin-left: 20px;
-        }
-        
-        nav ul li a {
-            color: white;
-            text-decoration: none;
-            font-size: 16px;
-            transition: 0.3s;
-        }
-        
-        nav ul li a:hover {
-            color: var(--primary-color);
-        }
-        
-        .auth-buttons a {
-            margin-right: 15px;
-            text-decoration: none;
-        }
-        
-        .login-btn {
-            color: white;
-            background: transparent;
-            border: none;
-            font-size: 16px;
-            cursor: pointer;
-        }
-        
-        .signup-btn {
-            background-color: var(--primary-color);
-            color: white;
-            padding: 8px 16px;
-            border-radius: 4px;
-            border: none;
-            font-size: 16px;
-            cursor: pointer;
-        }
-        
-        .hero {
-            height: 80vh;
-            background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800" viewBox="0 0 1200 800"><rect width="1200" height="800" fill="%23222"/><circle cx="600" cy="400" r="200" fill="%23333"/></svg>');
-            background-size: cover;
-            background-position: center;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
             align-items: center;
-            text-align: center;
-            padding: 0 20px;
+            gap: 10px;
         }
         
-        .hero h1 {
-            font-size: 3rem;
-            margin-bottom: 20px;
+        .logo img {
+            height: 40px;
         }
         
-        .hero p {
-            font-size: 1.5rem;
-            margin-bottom: 30px;
-            max-width: 800px;
-        }
-        
-        .get-started {
-            background-color: var(--primary-color);
-            color: white;
-            padding: 15px 25px;
-            font-size: 18px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-        
-        .get-started:hover {
-            background-color: #f40612;
-        }
-        
-        .features {
-            padding: 50px;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
-            background-color: black;
-        }
-        
-        .feature {
-            text-align: center;
-            padding: 30px;
-            background-color: var(--gray-color);
-            border-radius: 8px;
-            transition: transform 0.3s;
-        }
-        
-        .feature:hover {
-            transform: translateY(-10px);
-        }
-        
-        .feature-icon {
-            font-size: 3rem;
-            margin-bottom: 20px;
+        .logo h1 {
             color: var(--primary-color);
-        }
-        
-        .feature h3 {
-            margin-bottom: 15px;
             font-size: 1.5rem;
         }
         
-        .gallery {
-            padding: 50px;
-            background-color: var(--dark-color);
-        }
-        
-        .gallery h2 {
-            text-align: center;
-            font-size: 2rem;
-            margin-bottom: 30px;
-        }
-        
-        .images-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        .controls {
+            display: flex;
             gap: 15px;
         }
         
-        .image-card {
-            height: 150px;
-            background-color: var(--gray-color);
-            border-radius: 4px;
-            overflow: hidden;
-            transition: transform 0.3s;
-            cursor: pointer;
-            position: relative;
-        }
-        
-        .image-card:hover {
-            transform: scale(1.05);
-        }
-        
-        .encrypt-banner {
+        .controls button {
             background-color: var(--primary-color);
-            padding: 50px;
-            text-align: center;
-            margin: 50px 0;
+            color: var(--light-text);
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
         }
         
-        .encrypt-banner h2 {
-            font-size: 2rem;
+        .controls button:hover {
+            background-color: #d35c0d;
+        }
+        
+        main {
+            display: flex;
+            height: calc(100vh - 70px);
+        }
+        
+        .player-section {
+            flex: 3;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .video-container {
+            width: 100%;
+            position: relative;
+            background-color: #000;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 20px;
+            flex-grow: 1;
+        }
+        
+        .video-container video {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        
+        .watermark {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            opacity: 0.7;
+            pointer-events: none;
+        }
+        
+        .episode-info {
+            background-color: var(--dark-bg);
+            padding: 15px;
+            border-radius: 8px;
             margin-bottom: 20px;
         }
         
-        .encrypt-banner p {
-            font-size: 1.2rem;
-            margin-bottom: 25px;
-            max-width: 800px;
-            margin-left: auto;
+        .episode-info h2 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+        
+        .episode-info p {
+            color: var(--gray-text);
+            line-height: 1.5;
+        }
+        
+        .custom-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            background-color: var(--dark-bg);
+            padding: 12px;
+            border-radius: 8px;
+        }
+        
+        .custom-controls button {
+            background-color: transparent;
+            color: var(--light-text);
+            border: none;
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .custom-controls button:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .custom-controls button.active {
+            background-color: var(--primary-color);
+        }
+        
+        .volume-control {
+            display: flex;
+            align-items: center;
+            gap: 8px;
             margin-right: auto;
         }
         
-        footer {
-            background-color: var(--gray-color);
-            padding: 30px 50px;
-            text-align: center;
+        .volume-control input {
+            width: 100px;
+            accent-color: var(--primary-color);
         }
         
-        footer p {
-            margin-bottom: 20px;
-        }
-        
-        .social-links {
+        .playlist {
+            flex: 1;
+            background-color: var(--dark-bg);
+            padding: 20px;
+            overflow-y: auto;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
+            max-width: 350px;
+        }
+        
+        .playlist h3 {
+            margin-bottom: 15px;
+            color: var(--primary-color);
+            font-size: 1.2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .schedule-toggle {
+            background-color: var(--darker-bg);
+            color: var(--light-text);
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+        
+        .episodes {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
             margin-bottom: 20px;
         }
         
-        .social-links a {
-            color: white;
-            margin: 0 10px;
-            font-size: 1.5rem;
+        .episode-card {
+            background-color: var(--darker-bg);
+            border-radius: 8px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            position: relative;
         }
         
-        .upload-modal {
+        .episode-card:hover {
+            transform: translateY(-3px);
+        }
+        
+        .episode-card.playing {
+            border: 2px solid var(--primary-color);
+        }
+        
+        .episode-card img {
+            width: 100%;
+            aspect-ratio: 16/9;
+            object-fit: cover;
+        }
+        
+        .episode-card .info {
+            padding: 10px;
+        }
+        
+        .episode-card .info h4 {
+            margin-bottom: 5px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .episode-card .info p {
+            color: var(--gray-text);
+            font-size: 0.8rem;
+        }
+        
+        .duration {
+            position: absolute;
+            bottom: 65px;
+            right: 10px;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: #fff;
+            padding: 3px 6px;
+            border-radius: 3px;
+            font-size: 0.7rem;
+        }
+        
+        .schedule-panel {
+            background-color: var(--darker-bg);
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
             display: none;
+        }
+        
+        .schedule-panel h4 {
+            margin-bottom: 10px;
+            color: var(--primary-color);
+        }
+        
+        .schedule-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .schedule-item:last-child {
+            border-bottom: none;
+        }
+        
+        .schedule-time {
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+        
+        #admin-panel {
+            position: fixed;
+            inset: 0;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        
+        .admin-container {
+            background-color: var(--dark-bg);
+            width: 90%;
+            max-width: 800px;
+            max-height: 90vh;
+            border-radius: 10px;
+            overflow-y: auto;
+            padding: 20px;
+        }
+        
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .admin-header h2 {
+            color: var(--primary-color);
+        }
+        
+        .close-admin {
+            background: none;
+            border: none;
+            color: var(--light-text);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+        
+        .admin-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .admin-tabs button {
+            background-color: var(--darker-bg);
+            color: var(--light-text);
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        .admin-tabs button.active {
+            background-color: var(--primary-color);
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .upload-area {
+            border: 2px dashed var(--gray-text);
+            padding: 30px;
+            text-align: center;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .upload-area:hover {
+            border-color: var(--primary-color);
+        }
+        
+        .settings-form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: var(--gray-text);
+        }
+        
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            background-color: var(--darker-bg);
+            border: 1px solid var(--gray-text);
+            border-radius: 5px;
+            color: var(--light-text);
+        }
+        
+        .form-group input[type="color"] {
+            height: 40px;
+        }
+        
+        .save-btn {
+            background-color: var(--primary-color);
+            color: var(--light-text);
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            grid-column: span 2;
+        }
+        
+        .save-btn:hover {
+            background-color: #d35c0d;
+        }
+        
+        .episode-sorter {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .sortable-episode {
+            background-color: var(--darker-bg);
+            padding: 10px;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: move;
+        }
+        
+        @media (max-width: 768px) {
+            main {
+                flex-direction: column;
+                height: auto;
+            }
+            
+            .playlist {
+                max-width: 100%;
+                height: 300px;
+            }
+            
+            .settings-form {
+                grid-template-columns: 1fr;
+            }
+            
+            .save-btn {
+                grid-column: span 1;
+            }
+            
+            .custom-controls {
+                flex-wrap: wrap;
+            }
+            
+            .volume-control {
+                margin-right: 0;
+                width: 100%;
+                justify-content: center;
+                margin-top: 10px;
+            }
+        }
+        
+        /* For the fullscreen functionality */
+        .video-container.fullscreen {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.8);
             z-index: 1000;
-            justify-content: center;
-            align-items: center;
-        }
-        
-        .modal-content {
-            background-color: var(--gray-color);
-            padding: 30px;
-            border-radius: 8px;
-            width: 90%;
-            max-width: 500px;
-            text-align: center;
-        }
-        
-        .close {
-            position: absolute;
-            top: 15px;
-            right: 20px;
-            font-size: 30px;
-            cursor: pointer;
-            color: white;
-        }
-        
-        .dropzone {
-            border: 2px dashed var(--primary-color);
-            padding: 40px;
-            margin: 20px 0;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        
-        .encrypt-toggle {
-            margin: 20px 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .toggle-switch {
-            position: relative;
-            display: inline-block;
-            width: 60px;
-            height: 34px;
-            margin: 0 10px;
-        }
-        
-        .toggle-switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-        
-        .slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: #ccc;
-            transition: .4s;
-            border-radius: 34px;
-        }
-        
-        .slider:before {
-            position: absolute;
-            content: "";
-            height: 26px;
-            width: 26px;
-            left: 4px;
-            bottom: 4px;
-            background-color: white;
-            transition: .4s;
-            border-radius: 50%;
-        }
-        
-        input:checked + .slider {
-            background-color: var(--primary-color);
-        }
-        
-        input:checked + .slider:before {
-            transform: translateX(26px);
-        }
-        
-        .password-input {
-            width: 100%;
-            padding: 10px;
-            margin-top: 10px;
-            display: none;
-            border-radius: 4px;
-            border: 1px solid #555;
-            background-color: #444;
-            color: white;
-        }
-        
-        .upload-btn {
-            background-color: var(--primary-color);
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            margin-top: 20px;
-            font-size: 16px;
-        }
-        
-        /* Mobile Responsive */
-        @media (max-width: 768px) {
-            header {
-                padding: 15px 20px;
-                flex-direction: column;
-                align-items: flex-start;
-            }
-            
-            nav {
-                width: 100%;
-                margin-top: 15px;
-            }
-            
-            nav ul {
-                flex-direction: column;
-            }
-            
-            nav ul li {
-                margin: 10px 0;
-                margin-left: 0;
-            }
-            
-            .auth-buttons {
-                margin-top: 15px;
-                display: flex;
-                width: 100%;
-                justify-content: space-between;
-            }
-            
-            .hero h1 {
-                font-size: 2rem;
-            }
-            
-            .hero p {
-                font-size: 1rem;
-            }
-            
-            .features {
-                padding: 30px 20px;
-            }
-            
-            .gallery {
-                padding: 30px 20px;
-            }
-            
-            .encrypt-banner {
-                padding: 30px 20px;
-            }
-            
-            footer {
-                padding: 20px;
-            }
+            background: #000;
         }
     </style>
 </head>
 <body>
     <header>
-        <a href="#" class="logo">Photofix</a>
-        <nav>
-            <ul>
-                <li><a href="#">الرئيسية</a></li>
-                <li><a href="#features">المميزات</a></li>
-                <li><a href="#gallery">معرض الصور</a></li>
-                <li><a href="#encrypt">تشفير الصور</a></li>
-            </ul>
-        </nav>
-        <div class="auth-buttons">
-            <a href="#" class="login-btn">تسجيل الدخول</a>
-            <a href="#" class="signup-btn">إنشاء حساب</a>
+        <div class="logo">
+            <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iI2Y0NzUyMSI+PHBhdGggZD0iTTggNmg4djEySDhWNnptMi0yaDR2MmgtNFY0em0tMiAxNmg4djJIOFYyMHptMTItMTRoMnY4aC0yVjZ6TTIgNmgydjhoLTJWNnptMjAtMkg0QzIuOSA0IDIgNC45IDIgNnYxMmMwIDEuMS45IDIgMiAyaDE2YzEuMSAwIDItLjkgMi0yVjZjMC0xLjEtLjktMi0yLTJ6Ii8+PC9zdmc+" alt="Logo">
+            <h1>منصتي</h1>
+        </div>
+        <div class="controls">
+            <button id="admin-toggle">لوحة الإدارة</button>
         </div>
     </header>
     
-    <section class="hero">
-        <h1>احفظ صورك وشفّرها بطريقة آمنة</h1>
-        <p>مع Photofix، يمكنك تخزين صورك الثمينة مع خيار تشفيرها لحماية خصوصيتك. كل ما تحتاجه في مكان واحد.</p>
-        <button class="get-started" id="uploadBtn">ابدأ الآن</button>
-    </section>
-    
-    <section class="features" id="features">
-        <div class="feature">
-            <div class="feature-icon">🔒</div>
-            <h3>تشفير متقدم</h3>
-            <p>استخدم خوارزميات تشفير قوية لحماية صورك من الوصول غير المصرح به.</p>
-        </div>
-        <div class="feature">
-            <div class="feature-icon">☁️</div>
-            <h3>تخزين سحابي</h3>
-            <p>وصول إلى صورك من أي مكان وأي جهاز مع مساحة تخزين سحابية غير محدودة.</p>
-        </div>
-        <div class="feature">
-            <div class="feature-icon">🔄</div>
-            <h3>مزامنة تلقائية</h3>
-            <p>مزامنة تلقائية لصورك بين جميع أجهزتك بسلاسة.</p>
-        </div>
-    </section>
-    
-    <section class="gallery" id="gallery">
-        <h2>معرض الصور</h2>
-        <div class="images-grid">
-            <div class="image-card"></div>
-            <div class="image-card"></div>
-            <div class="image-card"></div>
-            <div class="image-card"></div>
-            <div class="image-card"></div>
-            <div class="image-card"></div>
-            <div class="image-card"></div>
-            <div class="image-card"></div>
-        </div>
-    </section>
-    
-    <section class="encrypt-banner" id="encrypt">
-        <h2>حماية الصور المهمة بكلمة مرور</h2>
-        <p>استخدم ميزة التشفير لدينا لحماية صورك الخاصة. يمكنك تحديد صور معينة لتشفيرها بكلمة مرور فريدة، مما يضمن أنك أنت فقط من يستطيع الوصول إليها.</p>
-        <button class="get-started" id="encryptBtn">تشفير الصور الآن</button>
-    </section>
-    
-    <footer>
-        <p>© 2025 Photofix - جميع الحقوق محفوظة</p>
-        <div class="social-links">
-            <a href="#">📱</a>
-            <a href="#">💻</a>
-            <a href="#">📷</a>
-        </div>
-        <p>اتصل بنا: info@photofix.com</p>
-    </footer>
-    
-    <div class="upload-modal" id="uploadModal">
-        <span class="close">&times;</span>
-        <div class="modal-content">
-            <h2>رفع صورة جديدة</h2>
-            <div class="dropzone" id="dropzone">
-                انقر هنا أو اسحب الصور لرفعها
+    <main>
+        <section class="player-section">
+            <div class="video-container">
+                <video id="main-video" controls></video>
+                <img class="watermark" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iI2ZmZmZmZiIgb3BhY2l0eT0iMC43Ij48cGF0aCBkPSJNOCA2aDh2MTJIOFY2em0yLTJoNHYyaC00VjR6bS0yIDE2aDh2Mkg4VjIwem0xMi0xNGgydjhoLTJWNnpNMiA2aDJ2OGgtMlY2em0yMC0ySDRDMi45IDQgMiA0LjkgMiA2djEyYzAgMS4xLjkgMiAyIDJoMTZjMS4xIDAgMi0uOSAyLTJWNmMwLTEuMS0uOS0yLTItMnoiLz48L3N2Zz4=" alt="Watermark">
             </div>
-            <div class="encrypt-toggle">
-                <span>تشفير:</span>
-                <label class="toggle-switch">
-                    <input type="checkbox" id="encryptToggle">
-                    <span class="slider"></span>
-                </label>
+            
+            <div class="custom-controls">
+                <button id="play-pause"><i class="fas fa-play"></i> تشغيل</button>
+                <button id="previous"><i class="fas fa-step-backward"></i> السابق</button>
+                <button id="next"><i class="fas fa-step-forward"></i> التالي</button>
+                <button id="fullscreen"><i class="fas fa-expand"></i> ملء الشاشة</button>
+                <button id="cast"><i class="fas fa-cast"></i> Chromecast</button>
+                <div class="volume-control">
+                    <i class="fas fa-volume-up"></i>
+                    <input type="range" id="volume" min="0" max="1" step="0.1" value="1">
+                </div>
             </div>
-            <input type="password" class="password-input" id="passwordInput" placeholder="أدخل كلمة المرور للتشفير">
-            <button class="upload-btn">رفع الصورة</button>
+            
+            <div class="episode-info">
+                <h2 id="current-title">عنوان الحلقة</h2>
+                <p id="current-description">وصف الحلقة سيظهر هنا. يمكنك إضافة تفاصيل حول المحتوى ومدته وأي معلومات إضافية.</p>
+            </div>
+        </section>
+        
+        <section class="playlist">
+            <h3>
+                قائمة الحلقات
+                <button class="schedule-toggle" id="toggle-schedule">عرض الجدول</button>
+            </h3>
+            
+            <div class="episodes" id="episodes-list">
+                <!-- ستتم إضافة الحلقات هنا بواسطة JavaScript -->
+            </div>
+            
+            <div class="schedule-panel" id="schedule-panel">
+                <h4>القادم في القناة</h4>
+                <div class="schedule-list">
+                    <div class="schedule-item">
+                        <div class="schedule-title">الحلقة الخاصة</div>
+                        <div class="schedule-time">20:00</div>
+                    </div>
+                    <div class="schedule-item">
+                        <div class="schedule-title">بث مباشر</div>
+                        <div class="schedule-time">21:30</div>
+                    </div>
+                    <div class="schedule-item">
+                        <div class="schedule-title">استوديو تحليلي</div>
+                        <div class="schedule-time">22:15</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    
+    <div id="admin-panel">
+        <div class="admin-container">
+            <div class="admin-header">
+                <h2>لوحة الإدارة</h2>
+                <button class="close-admin">&times;</button>
+            </div>
+            
+            <div class="admin-tabs">
+                <button class="tab-btn active" data-tab="episodes">إدارة الحلقات</button>
+                <button class="tab-btn" data-tab="schedule">جدول البث</button>
+                <button class="tab-btn" data-tab="appearance">المظهر</button>
+                <button class="tab-btn" data-tab="settings">الإعدادات</button>
+            </div>
+            
+            <div class="tab-content active" id="episodes-tab">
+                <div class="upload-area" id="upload-area">
+                    <p>اسحب وأفلت الملفات هنا أو انقر للتصفح</p>
+                    <input type="file" id="file-upload" accept="video/*" multiple style="display: none;">
+                </div>
+                
+                <h4>ترتيب الحلقات</h4>
+                <div class="episode-sorter" id="episode-sorter">
+                    <!-- سيتم إضافة عناصر الترتيب هنا -->
+                </div>
+                
+                <button class="save-btn">حفظ التغييرات</button>
+            </div>
+            
+            <div class="tab-content" id="schedule-tab">
+                <h4>جدول البث</h4>
+                <div class="form-group">
+                    <label>إضافة عنصر للجدول</label>
+                    <div style="display: flex; gap: 10px;">
+                        <input type="text" placeholder="اسم البرنامج">
+                        <input type="time">
+                        <button style="background-color: var(--primary-color); color: white; border: none; padding: 5px 10px; border-radius: 5px;">إضافة</button>
+                    </div>
+                </div>
+                
+                <div class="schedule-panel" style="display: block;">
+                    <div class="schedule-list">
+                        <div class="schedule-item">
+                            <div class="schedule-title">الحلقة الخاصة</div>
+                            <div class="schedule-time">20:00</div>
+                        </div>
+                        <div class="schedule-item">
+                            <div class="schedule-title">بث مباشر</div>
+                            <div class="schedule-time">21:30</div>
+                        </div>
+                        <div class="schedule-item">
+                            <div class="schedule-title">استوديو تحليلي</div>
+                            <div class="schedule-time">22:15</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <button class="save-btn">حفظ التغييرات</button>
+            </div>
+            
+            <div class="tab-content" id="appearance-tab">
+                <h4>تخصيص المظهر</h4>
+                <div class="settings-form">
+                    <div class="form-group">
+                        <label>اللون الرئيسي</label>
+                        <input type="color" id="primary-color" value="#f47521">
+                    </div>
+                    <div class="form-group">
+                        <label>لون الخلفية</label>
+                        <input type="color" id="bg-color" value="#191b1f">
+                    </div>
+                    <div class="form-group">
+                        <label>رفع الشعار</label>
+                        <input type="file" accept="image/*">
+                    </div>
+                    <div class="form-group">
+                        <label>Watermark</label>
+                        <input type="file" accept="image/*">
+                    </div>
+                    <div class="form-group">
+                        <label>صورة الخلفية</label>
+                        <input type="file" accept="image/*">
+                    </div>
+                    <div class="form-group">
+                        <label>مقدمة الفيديو</label>
+                        <input type="file" accept="video/*">
+                    </div>
+                </div>
+                
+                <button class="save-btn">حفظ التغييرات</button>
+            </div>
+            
+            <div class="tab-content" id="settings-tab">
+                <h4>إعدادات عامة</h4>
+                <div class="settings-form">
+                    <div class="form-group">
+                        <label>اسم القناة</label>
+                        <input type="text" value="منصتي">
+                    </div>
+                    <div class="form-group">
+                        <label>التشغيل التلقائي</label>
+                        <select>
+                            <option value="1">مفعل</option>
+                            <option value="0">غير مفعل</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>الانتقال التلقائي</label>
+                        <select>
+                            <option value="1">مفعل</option>
+                            <option value="0">غير مفعل</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>الفاصل بين الحلقات</label>
+                        <select>
+                            <option value="none">بدون</option>
+                            <option value="intro">مقدمة</option>
+                            <option value="ad">إعلان</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <button class="save-btn">حفظ التغييرات</button>
+            </div>
         </div>
     </div>
     
     <script>
-        // الحصول على العناصر
-        const uploadBtn = document.getElementById('uploadBtn');
-        const encryptBtn = document.getElementById('encryptBtn');
-        const uploadModal = document.getElementById('uploadModal');
-        const closeBtn = document.querySelector('.close');
-        const encryptToggle = document.getElementById('encryptToggle');
-        const passwordInput = document.getElementById('passwordInput');
-        const dropzone = document.getElementById('dropzone');
-        
-        // فتح النافذة المنبثقة عند النقر على زر "ابدأ الآن" أو "تشفير الصور الآن"
-        uploadBtn.addEventListener('click', () => {
-            uploadModal.style.display = 'flex';
-        });
-        
-        encryptBtn.addEventListener('click', () => {
-            uploadModal.style.display = 'flex';
-            encryptToggle.checked = true;
-            passwordInput.style.display = 'block';
-        });
-        
-        // إغلاق النافذة المنبثقة
-        closeBtn.addEventListener('click', () => {
-            uploadModal.style.display = 'none';
-        });
-        
-        // إغلاق النافذة المنبثقة عند النقر خارجها
-        window.addEventListener('click', (e) => {
-            if (e.target === uploadModal) {
-                uploadModal.style.display = 'none';
+        document.addEventListener('DOMContentLoaded', function() {
+            // بيانات الحلقات
+            const episodes = [
+                {
+                    id: 1,
+                    title: "الحلقة الأولى",
+                    description: "هذه الحلقة الأولى من المسلسل، استمتع بمشاهدة بداية القصة المشوقة.",
+                    thumbnail: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMjAgMTgwIiBmaWxsPSIjMjMyNTJiIj48cmVjdCB3aWR0aD0iMzIwIiBoZWlnaHQ9IjE4MCIgZmlsbD0iIzIzMjUyYiIvPjx0ZXh0IHg9IjE2MCIgeT0iOTAiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIyNCIgZmlsbD0iI2Y0NzUyMSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSI+2KfZhNit2YTZgtipINin2YTYo9mI2YTZiTwvdGV4dD48L3N2Zz4=",
+                    duration: "22:30",
+                    videoUrl: "#video-url-1"
+                },
+                {
+                    id: 2,
+                    title: "الحلقة الثانية",
+                    description: "استكمال القصة في الحلقة الثانية المليئة بالأحداث المثيرة.",
+                    thumbnail: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMjAgMTgwIiBmaWxsPSIjMjMyNTJiIj48cmVjdCB3aWR0aD0iMzIwIiBoZWlnaHQ9IjE4MCIgZmlsbD0iIzIzMjUyYiIvPjx0ZXh0IHg9IjE2MCIgeT0iOTAiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIyNCIgZmlsbD0iI2Y0NzUyMSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSI+2KfZhNit2YTZgtipINin2YTYq9in2YbZitipPC90ZXh0Pjwvc3ZnPg==",
+                    duration: "24:15",
+                    videoUrl: "#video-url-2"
+                },
+                {
+                    id: 3,
+                    title: "الحلقة الثالثة",
+                    description: "تستمر الأحداث في التصاعد، حلقة مليئة بالمفاجآت والتشويق.",
+                    thumbnail: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMjAgMTgwIiBmaWxsPSIjMjMyNTJiIj48cmVjdCB3aWR0aD0iMzIwIiBoZWlnaHQ9IjE4MCIgZmlsbD0iIzIzMjUyYiIvPjx0ZXh0IHg9IjE2MCIgeT0iOTAiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIyNCIgZmlsbD0iI2Y0NzUyMSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSI+2KfZhNit2YTZgtipINin2YTYq9in2YTYq9ipPC90ZXh0Pjwvc3ZnPg==",
+                    duration: "23:45",
+                    videoUrl: "#video-url-3"
+                },
+                {
+                    id: 4,
+                    title: "الحلقة الرابعة",
+                    description: "حلقة مميزة تكشف الكثير من أسرار الشخصيات وتطور الأحداث بشكل مثير.",
+                    thumbnail: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMjAgMTgwIiBmaWxsPSIjMjMyNTJiIj48cmVjdCB3aWR0aD0iMzIwIiBoZWlnaHQ9IjE4MCIgZmlsbD0iIzIzMjUyYiIvPjx0ZXh0IHg9IjE2MCIgeT0iOTAiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIyNCIgZmlsbD0iI2Y0NzUyMSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSI+2KfZhNit2YTZgtipINin2YTYsdin2KjYudipPC90ZXh0Pjwvc3ZnPg==",
+                    duration: "25:10",
+                    videoUrl: "#video-url-4"
+                },
+                {
+                    id: 5,
+                    title: "الحلقة الخامسة",
+                    description: "الحلقة الخامسة تأخذ القصة إلى منعطف جديد وغير متوقع.",
+                    thumbnail: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMjAgMTgwIiBmaWxsPSIjMjMyNTJiIj48cmVjdCB3aWR0aD0iMzIwIiBoZWlnaHQ9IjE4MCIgZmlsbD0iIzIzMjUyYiIvPjx0ZXh0IHg9IjE2MCIgeT0iOTAiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIyNCIgZmlsbD0iI2Y0NzUyMSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSI+2KfZhNit2YTZgtipINin2YTYrtin2YXYs9ipPC90ZXh0Pjwvc3ZnPg==",
+                    duration: "26:20",
+                    videoUrl: "#video-url-5"
+                }
+            ];
+            
+            // الحلقة الحالية
+            let currentEpisodeIndex = 0;
+            let autoplayEnabled = true;
+            let autoplayNext = true;
+            
+            // المراجع إلى العناصر
+            const videoPlayer = document.getElementById('main-video');
+            const episodesList = document.getElementById('episodes-list');
+            const currentTitle = document.getElementById('current-title');
+            const currentDescription = document.getElementById('current-description');
+            const playPauseBtn = document.getElementById('play-pause');
+            const prevBtn = document.getElementById('previous');
+            const nextBtn = document.getElementById('next');
+            const fullscreenBtn = document.getElementById('fullscreen');
+            const castBtn = document.getElementById('cast');
+            const volumeControl = document.getElementById('volume');
+            const toggleScheduleBtn = document.getElementById('toggle-schedule');
+            const schedulePanel = document.getElementById('schedule-panel');
+            const adminToggle = document.getElementById('admin-toggle');
+            const adminPanel = document.getElementById('admin-panel');
+            const closeAdmin = document.querySelector('.close-admin');
+            const tabBtns = document.querySelectorAll('.tab-btn');
+            const tabContents = document.querySelectorAll('.tab-content');
+            const videoContainer = document.querySelector('.video-container');
+            const uploadArea = document.getElementById('upload-area');
+            const fileUpload = document.getElementById('file-upload');
+            const episodeSorter = document.getElementById('episode-sorter');
+            
+            // إضافة الحلقات إلى القائمة
+            function renderEpisodes() {
+                episodesList.innerHTML = '';
+                episodes.forEach((episode, index) => {
+                    const episodeCard = document.createElement('div');
+                    episodeCard.className = `episode-card ${index === currentEpisodeIndex ? 'playing' : ''}`;
+                    episodeCard.innerHTML = `
+                        <img src="${episode.thumbnail}" alt="${episode.title}">
+                        <div class="duration">${episode.duration}</div>
+                        <div class="info">
+                            <h4>${episode.title}</h4>
+                            <p>${episode.description.substring(0, 50)}...</p>
+                        </div>
+                    `;
+                    episodeCard.addEventListener('click', () => {
+                        playEpisode(index);
+                    });
+                    episodesList.appendChild(episodeCard);
+                });
+                
+                // تحديث قائمة ترتيب الحلقات في لوحة الإدارة
+                episodeSorter.innerHTML = '';
+                episodes.forEach((episode, index) => {
+                    const sortableItem = document.createElement('div');
+                    sortableItem.className = 'sortable-episode';
+                    sortableItem.setAttribute('draggable', 'true');
+                    sortableItem.setAttribute('data-index', index);
+                    sortableItem.innerHTML = `
+                        <span>${episode.title}</span>
+                        <div>
+                            <button class="move-up" style="background: none; border: none; cursor: pointer; color: #fff;">⬆️</button>
+                            <button class="move-down" style="background: none; border: none; cursor: pointer; color: #fff;">⬇️</button>
+                        </div>
+                    `;
+                    episodeSorter.appendChild(sortableItem);
+                });
+                
+                // إضافة وظائف السحب والإفلات للترتيب
+                const sortableEpisodes = document.querySelectorAll('.sortable-episode');
+                sortableEpisodes.forEach(item => {
+                    item.addEventListener('dragstart', handleDragStart);
+                    item.addEventListener('dragover', handleDragOver);
+                    item.addEventListener('drop', handleDrop);
+                    
+                    const moveUpBtn = item.querySelector('.move-up');
+                    const moveDownBtn = item.querySelector('.move-down');
+                    
+                    moveUpBtn.addEventListener('click', () => {
+                        const index = parseInt(item.getAttribute('data-index'));
+                        if (index > 0) {
+                            // تغيير ترتيب العناصر في المصفوفة
+                            [episodes[index], episodes[index - 1]] = [episodes[index - 1], episodes[index]];
+                            renderEpisodes();
+                        }
+                    });
+                    
+                    moveDownBtn.addEventListener('click', () => {
+                        const index = parseInt(item.getAttribute('data-index'));
+                        if (index < episodes.length - 1) {
+                            // تغيير ترتيب العناصر في المصفوفة
+                            [episodes[index], episodes[index + 1]] = [episodes[index + 1], episodes[index]];
+                            renderEpisodes();
+                        }
+                    });
+                });
             }
-        });
-        
-        // إظهار/إخفاء حقل كلمة المرور حسب حالة زر التبديل
-        encryptToggle.addEventListener('change', () => {
-            if (encryptToggle.checked) {
-                passwordInput.style.display = 'block';
-            } else {
-                passwordInput.style.display = 'none';
+            
+            // وظائف السحب والإفلات
+            let draggedItem = null;
+            
+            function handleDragStart(e) {
+                draggedItem = this;
+                e.dataTransfer.effectAllowed = 'move';
+                e.dataTransfer.setData('text/html', this.outerHTML);
             }
-        });
-        
-        // محاكاة رفع الصور عند النقر على منطقة الإفلات
-        dropzone.addEventListener('click', () => {
-            alert('سيتم فتح نافذة اختيار الملفات في التطبيق الحقيقي');
-        });
-        
-        // محاكاة رفع الصور بالسحب والإفلات
-        dropzone.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            dropzone.style.backgroundColor = '#444';
-        });
-        
-        dropzone.addEventListener('dragleave', () => {
-            dropzone.style.backgroundColor = 'transparent';
-        });
-        
-        dropzone.addEventListener('drop', (e) => {
-            e.preventDefault();
-            dropzone.style.backgroundColor = 'transparent';
-            alert('تم استلام الملفات في التطبيق الحقيقي');
-        });
-        
-        // تغيير شفافية الهيدر عند التمرير
-        window.addEventListener('scroll', () => {
-            const header = document.querySelector('header');
-            if (window.scrollY > 100) {
-                header.style.backgroundColor = 'rgba(0, 0, 0, 0.9)';
-            } else {
-                header.style.backgroundColor = 'rgba(0, 0, 0, 0.9)';
+            
+            function handleDragOver(e) {
+                e.preventDefault();
+                e.dataTransfer.dropEffect = 'move';
+                return false;
             }
+            
+            function handleDrop(e) {
+                e.preventDefault();
+                if (draggedItem !== this) {
+                    const fromIndex = parseInt(draggedItem.getAttribute('data-index'));
+                    const toIndex = parseInt(this.getAttribute('data-index'));
+                    
+                    // تغيير ترتيب العناصر في المصفوفة
+                    const temp = episodes[fromIndex];
+                    
+                    if (fromIndex < toIndex) {
+                        for (let i = fromIndex; i < toIndex; i++) {
+                            episodes[i] = episodes[i + 1];
+                        }
+                        episodes[toIndex] = temp;
+                    } else {
+                        for (let i = fromIndex; i > toIndex; i--) {
+                            episodes[i] = episodes[i - 1];
+                        }
+                        episodes[toIndex] = temp;
+                    }
+                    
+                    renderEpisodes();
+                }
+                return false;
+            }
+            
+            // تشغيل حلقة
+            function playEpisode(index) {
+                currentEpisodeIndex = index;
+                
+                // في تطبيق حقيقي، هنا يمكن تغيير مصدر الفيديو
+                // videoPlayer.src = episodes[index].videoUrl;
+                
+                currentTitle.textContent = episodes[index].title;
+                currentDescription.textContent = episodes[index].description;
+                
+                // تحديث حالة التشغيل في قائمة الحلقات
+                document.querySelectorAll('.episode-card').forEach((card, i) => {
+                    if (i === index) {
+                        card.classList.add('playing');
+                    } else {
+                        card.classList.remove('playing');
+                    }
+                });
+                
+                if (autoplayEnabled) {
+                    videoPlayer.play();
+                }
+            }
+            
+            // تشغيل/إيقاف الفيديو
+            playPauseBtn.addEventListener('click', () => {
+                if (videoPlayer.paused) {
+                    videoPlayer.play();
+                    playPauseBtn.innerHTML = '<i class="fas fa-pause"></i> إيقاف';
+                } else {
+                    videoPlayer.pause();
+                    playPauseBtn.innerHTML = '<i class="fas fa-play"></i> تشغيل';
+                }
+            });
+            
+            // الانتقال إلى الحلقة السابقة
+            prevBtn.addEventListener('click', () => {
+                if (currentEpisodeIndex > 0) {
+                    playEpisode(currentEpisodeIndex - 1);
+                }
+            });
+            
+            // الانتقال إلى الحلقة التالية
+            nextBtn.addEventListener('click', () => {
+                if (currentEpisodeIndex < episodes.length - 1) {
+                    playEpisode(currentEpisodeIndex + 1);
+                }
+            });
+            
+            // تكبير الشاشة
+            fullscreenBtn.addEventListener('click', () => {
+                if (!document.fullscreenElement) {
+                    videoContainer.classList.add('fullscreen');
+                    if (videoContainer.requestFullscreen) {
+                        videoContainer.requestFullscreen();
+                    } else if (videoContainer.webkitRequestFullscreen) {
+                        videoContainer.webkitRequestFullscreen();
+                    } else if (videoContainer.msRequestFullscreen) {
+                        videoContainer.msRequestFullscreen();
+                    }
+                } else {
+                    videoContainer.classList.remove('fullscreen');
+                    if (document.exitFullscreen) {
+                        document.exitFullscreen();
+                    } else if (document.webkitExitFullscreen) {
+                        document.webkitExitFullscreen();
+                    } else if (document.msExitFullscreen) {
+                        document.msExitFullscreen();
+                    }
+                }
+            });
+            
+            // تكبير الشاشة الذي سيتم تشغيله عندما تنتهي حالة ملء الشاشة
+            document.addEventListener('fullscreenchange', () => {
+                if (!document.fullscreenElement) {
+                    videoContainer.classList.remove('fullscreen');
+                }
+            });
+            
+            // تغيير مستوى الصوت
+            volumeControl.addEventListener('input', () => {
+                videoPlayer.volume = volumeControl.value;
+            });
+            
+            // الاستماع إلى انتهاء الفيديو للانتقال تلقائيًا
+            videoPlayer.addEventListener('ended', () => {
+                if (autoplayNext && currentEpisodeIndex < episodes.length - 1) {
+                    playEpisode(currentEpisodeIndex + 1);
+                }
+            });
+            
+            // تغيير حالة التشغيل/الإيقاف لزر التشغيل
+            videoPlayer.addEventListener('play', () => {
+                playPauseBtn.innerHTML = '<i class="fas fa-pause"></i> إيقاف';
+            });
+            
+            videoPlayer.addEventListener('pause', () => {
+                playPauseBtn.innerHTML = '<i class="fas fa-play"></i> تشغيل';
+            });
+            
+            // زر Chromecast
+            castBtn.addEventListener('click', () => {
+                alert('تم تفعيل ميزة Chromecast. في التطبيق الحقيقي، سيتم بدء عملية البث على جهاز خارجي.');
+            });
+            
+            // عرض/إخفاء جدول البث
+            toggleScheduleBtn.addEventListener('click', () => {
+                if (schedulePanel.style.display === 'block') {
+                    schedulePanel.style.display = 'none';
+                    toggleScheduleBtn.textContent = 'عرض الجدول';
+                } else {
+                    schedulePanel.style.display = 'block';
+                    toggleScheduleBtn.textContent = 'إخفاء الجدول';
+                }
+            });
+            
+            // فتح/إغلاق لوحة الإدارة
+            adminToggle.addEventListener('click', () => {
+                adminPanel.style.display = 'flex';
+            });
+            
+            closeAdmin.addEventListener('click', () => {
+                adminPanel.style.display = 'none';
+            });
+            
+            // التبديل بين علامات تبويب الإدارة
+            tabBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const tabId = btn.getAttribute('data-tab');
+                    
+                    tabBtns.forEach(b => b.classList.remove('active'));
+                    tabContents.forEach(c => c.classList.remove('active'));
+                    
+                    btn.classList.add('active');
+                    document.getElementById(`${tabId}-tab`).classList.add('active');
+                });
+            });
+            
+            // منطقة رفع الملفات
+            uploadArea.addEventListener('click', () => {
+                fileUpload.click();
+            });
+            
+            uploadArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadArea.style.borderColor = 'var(--primary-color)';
+            });
+            
+            uploadArea.addEventListener('dragleave', () => {
+                uploadArea.style.borderColor = 'var(--gray-text)';
+            });
+            
+            uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadArea.style.borderColor = 'var(--gray-text)';
+                
+                const files = e.dataTransfer.files;
+                handleFiles(files);
+            });
+            
+            fileUpload.addEventListener('change', (e) => {
+                const files = e.target.files;
+                handleFiles(files);
+            });
+            
+            function handleFiles(files) {
+                // في تطبيق حقيقي، هنا سيتم رفع الملفات إلى الخادم
+                for (let i = 0; i < files.length; i++) {
+                    const file = files[i];
+                    if (file.type.startsWith('video/')) {
+                        const newEpisode = {
+                            id: episodes.length + 1,
+                            title: `حلقة جديدة ${episodes.length + 1}`,
+                            description: `تم إضافة هذه الحلقة: ${file.name}`,
+                            thumbnail: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMjAgMTgwIiBmaWxsPSIjMjMyNTJiIj48cmVjdCB3aWR0aD0iMzIwIiBoZWlnaHQ9IjE4MCIgZmlsbD0iIzIzMjUyYiIvPjx0ZXh0IHg9IjE2MCIgeT0iOTAiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIyNCIgZmlsbD0iI2Y0NzUyMSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSI+2KfZhNit2YTZgtipINin2YTYrNiv2YrYrtipPC90ZXh0Pjwvc3ZnPg==",
+                            duration: "00:00", // في تطبيق حقيقي، سيتم استخراج المدة الفعلية
+                            videoUrl: URL.createObjectURL(file) // رابط مؤقت للملف
+                        };
+                        episodes.push(newEpisode);
+                    }
+                }
+                renderEpisodes();
+                alert(`تم إضافة ${files.length} ملف(ات) بنجاح!`);
+            }
+            
+            // تهيئة القائمة وتشغيل الحلقة الأولى
+            renderEpisodes();
+            playEpisode(0);
         });
     </script>
 </body>
 </html>
-
