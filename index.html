@@ -442,142 +442,6 @@
             }
         }
 
-        /* واجهة المشغل المخصصة */
-        .custom-player {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: #000;
-            z-index: 5;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-
-        .video-element {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: #000;
-        }
-
-        .player-controls {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
-            padding: 10px;
-            transition: opacity 0.3s ease;
-            z-index: 10;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .player-controls.hidden {
-            opacity: 0;
-            pointer-events: none;
-        }
-
-        .progress-container {
-            width: 100%;
-            height: 8px;
-            background-color: rgba(255, 255, 255, 0.2);
-            border-radius: 4px;
-            cursor: pointer;
-            position: relative;
-        }
-
-        .progress-bar {
-            height: 100%;
-            background-color: var(--primary-color);
-            border-radius: 4px;
-            width: 0;
-            transition: width 0.1s linear;
-        }
-
-        .progress-handle {
-            position: absolute;
-            top: 50%;
-            transform: translate(-50%, -50%);
-            width: 16px;
-            height: 16px;
-            background-color: var(--light-text);
-            border-radius: 50%;
-            pointer-events: none;
-            box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
-        }
-
-        .control-buttons {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .left-controls, .right-controls {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .player-btn {
-            background: transparent;
-            border: none;
-            color: var(--light-text);
-            font-size: 1.2rem;
-            cursor: pointer;
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-            transition: background-color 0.3s ease;
-        }
-
-        .player-btn:hover {
-            background-color: rgba(255, 255, 255, 0.1);
-        }
-
-        .time-display {
-            color: var(--light-text);
-            font-size: 0.9rem;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .volume-container {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .volume-slider {
-            width: 80px;
-            height: 6px;
-            background-color: rgba(255, 255, 255, 0.2);
-            border-radius: 3px;
-            cursor: pointer;
-            position: relative;
-        }
-
-        .volume-level {
-            height: 100%;
-            background-color: var(--light-text);
-            border-radius: 3px;
-            width: 80%;
-        }
-
-        .fullscreen-toggle {
-            margin-left: 10px;
-        }
-
         /* الشاشات الصغيرة */
         @media (max-width: 768px) {
             .controls {
@@ -614,24 +478,6 @@
                 padding: 8px 15px;
                 font-size: 0.9rem;
             }
-
-            .control-buttons {
-                flex-direction: column;
-                gap: 10px;
-            }
-
-            .left-controls, .right-controls {
-                width: 100%;
-                justify-content: space-between;
-            }
-
-            .time-display {
-                font-size: 0.8rem;
-            }
-
-            .volume-slider {
-                width: 60px;
-            }
         }
     </style>
 </head>
@@ -644,47 +490,8 @@
 
     <div class="container">
         <div class="player-section">
-            <div class="video-container" id="video-wrapper">
-                <div id="custom-player" class="custom-player">
-                    <video id="video-element" class="video-element" preload="metadata"></video>
-                    <div id="player-controls" class="player-controls">
-                        <div class="progress-container" id="progress-container">
-                            <div class="progress-bar" id="progress-bar"></div>
-                            <div class="progress-handle" id="progress-handle"></div>
-                        </div>
-                        <div class="control-buttons">
-                            <div class="left-controls">
-                                <button id="play-pause-btn" class="player-btn">
-                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                                        <path d="M8 5v14l11-7z"></path>
-                                    </svg>
-                                </button>
-                                <div class="time-display">
-                                    <span id="current-time">0:00</span>
-                                    <span>/</span>
-                                    <span id="duration">0:00</span>
-                                </div>
-                            </div>
-                            <div class="right-controls">
-                                <div class="volume-container">
-                                    <button id="mute-btn" class="player-btn">
-                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                                            <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"></path>
-                                        </svg>
-                                    </button>
-                                    <div class="volume-slider" id="volume-slider">
-                                        <div class="volume-level" id="volume-level"></div>
-                                    </div>
-                                </div>
-                                <button id="fullscreen-btn" class="player-btn fullscreen-toggle">
-                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                                        <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"></path>
-                                    </svg>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            <div class="video-container">
+                <iframe id="video-player" frameborder="0" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"></iframe>
                 <div class="loading" id="loading-indicator">
                     <div class="spinner"></div>
                     <div>جاري التحميل...</div>
@@ -775,20 +582,7 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // عناصر DOM
-            const videoWrapper = document.getElementById('video-wrapper');
-            const videoElement = document.getElementById('video-element');
-            const playerControls = document.getElementById('player-controls');
-            const playPauseBtn = document.getElementById('play-pause-btn');
-            const muteBtn = document.getElementById('mute-btn');
-            const fullscreenBtn = document.getElementById('fullscreen-btn');
-            const progressContainer = document.getElementById('progress-container');
-            const progressBar = document.getElementById('progress-bar');
-            const progressHandle = document.getElementById('progress-handle');
-            const volumeSlider = document.getElementById('volume-slider');
-            const volumeLevel = document.getElementById('volume-level');
-            const currentTimeDisplay = document.getElementById('current-time');
-            const durationDisplay = document.getElementById('duration');
-            const customPlayer = document.getElementById('custom-player');
+            const videoPlayer = document.getElementById('video-player');
             const loadingIndicator = document.getElementById('loading-indicator');
             const prevEpisodeBtn = document.getElementById('prev-episode');
             const nextEpisodeBtn = document.getElementById('next-episode');
@@ -820,18 +614,9 @@
             let isAdmin = false;
             let continuousPlay = false;
             let videoEnded = false;
-            let controlsTimeout;
-            let isDragging = false;
-            let isFullscreen = false;
-            let isMuted = false;
-            let volume = 1;
-            let videoSources = {};
             
             // استعادة البيانات المحفوظة (إن وجدت)
             loadSavedData();
-            
-            // تهيئة واجهة المشغل المخصصة
-            setupCustomPlayer();
             
             // الاستماع للأحداث
             prevEpisodeBtn.addEventListener('click', () => changeContent(-1));
@@ -843,283 +628,22 @@
             accessBtn.addEventListener('click', checkAccessCode);
             continuousPlayToggle.addEventListener('change', toggleContinuousPlay);
             
-            // إعداد مشغل الفيديو المخصص
-            function setupCustomPlayer() {
-                // أزرار التحكم
-                playPauseBtn.addEventListener('click', togglePlay);
-                muteBtn.addEventListener('click', toggleMute);
-                fullscreenBtn.addEventListener('click', toggleFullscreen);
-
-                // شريط التقدم
-                progressContainer.addEventListener('mousedown', startProgressDrag);
-                progressContainer.addEventListener('click', seekToPosition);
-                
-                // شريط الصوت
-                volumeSlider.addEventListener('click', changeVolume);
-                
-                // إخفاء/إظهار أزرار التحكم عند تحريك الماوس
-                customPlayer.addEventListener('mousemove', showControls);
-                customPlayer.addEventListener('mouseleave', () => {
-                    if (!videoElement.paused) {
-                        hideControls();
-                    }
-                });
-
-                // تحديث شريط التقدم أثناء التشغيل
-                videoElement.addEventListener('timeupdate', updateProgressBar);
-                
-                // عند تحميل البيانات الوصفية
-                videoElement.addEventListener('loadedmetadata', () => {
-                    updateDurationDisplay();
-                    loadingIndicator.style.display = 'none';
-                });
-                
-                // عند انتهاء الفيديو
-                videoElement.addEventListener('ended', () => {
-                    videoEnded = true;
-                    if (continuousPlay) {
-                        setTimeout(() => changeContent(1), 1500);
-                    }
-                });
-                
-                // عند تحميل الفيديو
-                videoElement.addEventListener('canplay', () => {
-                    loadingIndicator.style.display = 'none';
-                });
-                
-                // عند بدء تحميل الفيديو
-                videoElement.addEventListener('waiting', () => {
-                    loadingIndicator.style.display = 'flex';
-                });
-                
-                // إضافة مستمعات للمستندات
-                document.addEventListener('mouseup', stopProgressDrag);
-                document.addEventListener('mousemove', updateDragPosition);
-                
-                // إضافة مستمع لتغيير الحالة في وضع ملء الشاشة
-                document.addEventListener('fullscreenchange', updateFullscreenButton);
-                document.addEventListener('webkitfullscreenchange', updateFullscreenButton);
-                document.addEventListener('mozfullscreenchange', updateFullscreenButton);
-                document.addEventListener('MSFullscreenChange', updateFullscreenButton);
-            }
-
-            // تشغيل/إيقاف الفيديو
-            function togglePlay() {
-                if (videoElement.paused || videoElement.ended) {
-                    videoElement.play();
-                    updatePlayPauseButton(false);
-                } else {
-                    videoElement.pause();
-                    updatePlayPauseButton(true);
+            // إضافة مستمع لنهاية الفيديو للتشغيل المستمر
+            videoPlayer.addEventListener('load', function() {
+                try {
+                    videoPlayer.onload = function() {
+                        // محاولة إضافة مستمع لنهاية الفيديو للـ iframe
+                        videoPlayer.contentWindow.document.querySelector('video').addEventListener('ended', function() {
+                            videoEnded = true;
+                            if (continuousPlay) {
+                                changeContent(1);
+                            }
+                        });
+                    };
+                } catch (e) {
+                    // تجاهل الخطأ - هذا متوقع بسبب سياسات الأمان عبر النطاقات
                 }
-            }
-            
-            // تحديث أيقونة زر التشغيل/الإيقاف
-            function updatePlayPauseButton(isPaused) {
-                if (isPaused) {
-                    playPauseBtn.innerHTML = `
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M8 5v14l11-7z"></path>
-                        </svg>
-                    `;
-                } else {
-                    playPauseBtn.innerHTML = `
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"></path>
-                        </svg>
-                    `;
-                }
-            }
-
-            // كتم/إلغاء كتم الصوت
-            function toggleMute() {
-                isMuted = !isMuted;
-                videoElement.muted = isMuted;
-                updateMuteButton();
-                
-                // تحديث شريط مستوى الصوت
-                volumeLevel.style.width = isMuted ? '0%' : (volume * 100) + '%';
-            }
-            
-            // تحديث أيقونة زر كتم الصوت
-            function updateMuteButton() {
-                if (isMuted || volume === 0) {
-                    muteBtn.innerHTML = `
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"></path>
-                        </svg>
-                    `;
-                } else if (volume < 0.5) {
-                    muteBtn.innerHTML = `
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M7 9v6h4l5 5V4l-5 5H7z"></path>
-                            <path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"></path>
-                        </svg>
-                    `;
-                } else {
-                    muteBtn.innerHTML = `
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"></path>
-                        </svg>
-                    `;
-                }
-            }
-
-            // تبديل وضع ملء الشاشة
-            function toggleFullscreen() {
-                if (!isFullscreen) {
-                    if (videoWrapper.requestFullscreen) {
-                        videoWrapper.requestFullscreen();
-                    } else if (videoWrapper.webkitRequestFullscreen) {
-                        videoWrapper.webkitRequestFullscreen();
-                    } else if (videoWrapper.msRequestFullscreen) {
-                        videoWrapper.msRequestFullscreen();
-                    } else if (videoWrapper.mozRequestFullScreen) {
-                        videoWrapper.mozRequestFullScreen();
-                    }
-                } else {
-                    if (document.exitFullscreen) {
-                        document.exitFullscreen();
-                    } else if (document.webkitExitFullscreen) {
-                        document.webkitExitFullscreen();
-                    } else if (document.msExitFullscreen) {
-                        document.msExitFullscreen();
-                    } else if (document.mozCancelFullScreen) {
-                        document.mozCancelFullScreen();
-                    }
-                }
-            }
-
-            // تحديث أيقونة زر ملء الشاشة
-            function updateFullscreenButton() {
-                isFullscreen = !!(document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement);
-                
-                if (isFullscreen) {
-                    fullscreenBtn.innerHTML = `
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M5 16h3v3h2v-5H5v2zm3-8H5v2h5V5H8v3zm6 11h2v-3h3v-2h-5v5zm2-11V5h-2v5h5V8h-3z"></path>
-                        </svg>
-                    `;
-                } else {
-                    fullscreenBtn.innerHTML = `
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"></path>
-                        </svg>
-                    `;
-                }
-            }
-
-            // البدء في سحب شريط التقدم
-            function startProgressDrag(e) {
-                e.preventDefault();
-                isDragging = true;
-                updateDragPosition(e);
-                // منع إخفاء أزرار التحكم أثناء السحب
-                showControls();
-                clearTimeout(controlsTimeout);
-            }
-
-            // إيقاف سحب شريط التقدم
-            function stopProgressDrag() {
-                if (isDragging) {
-                    isDragging = false;
-                    // إعادة تفعيل إخفاء أزرار التحكم
-                    if (!videoElement.paused) {
-                        hideControls();
-                    }
-                }
-            }
-
-            // تحديث موضع السحب
-            function updateDragPosition(e) {
-                if (isDragging && videoElement.duration) {
-                    const rect = progressContainer.getBoundingClientRect();
-                    const pos = (e.clientX - rect.left) / rect.width;
-                    const seekTime = pos * videoElement.duration;
-                    
-                    // تحديث شريط التقدم
-                    progressBar.style.width = (pos * 100) + '%';
-                    progressHandle.style.left = (pos * 100) + '%';
-                    
-                    // تحديث عرض الوقت الحالي
-                    currentTimeDisplay.textContent = formatTime(seekTime);
-                    
-                    // الانتقال إلى الموضع عند إفلات الماوس
-                    if (!e.buttons && e.type !== 'mousedown') {
-                        videoElement.currentTime = seekTime;
-                        isDragging = false;
-                    }
-                }
-            }
-
-            // الانتقال إلى موضع معين في الفيديو
-            function seekToPosition(e) {
-                const rect = progressContainer.getBoundingClientRect();
-                const pos = (e.clientX - rect.left) / rect.width;
-                videoElement.currentTime = pos * videoElement.duration;
-            }
-
-            // تغيير مستوى الصوت
-            function changeVolume(e) {
-                const rect = volumeSlider.getBoundingClientRect();
-                volume = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
-                
-                videoElement.volume = volume;
-                volumeLevel.style.width = (volume * 100) + '%';
-                
-                // تحديث حالة كتم الصوت
-                isMuted = volume === 0;
-                videoElement.muted = isMuted;
-                updateMuteButton();
-            }
-
-            // تحديث شريط التقدم أثناء التشغيل
-            function updateProgressBar() {
-                if (!isDragging && videoElement.duration) {
-                    const progress = (videoElement.currentTime / videoElement.duration) * 100;
-                    progressBar.style.width = progress + '%';
-                    progressHandle.style.left = progress + '%';
-                    currentTimeDisplay.textContent = formatTime(videoElement.currentTime);
-                }
-            }
-
-            // تحديث عرض المدة الإجمالية
-            function updateDurationDisplay() {
-                if (videoElement.duration && !isNaN(videoElement.duration)) {
-                    durationDisplay.textContent = formatTime(videoElement.duration);
-                } else {
-                    durationDisplay.textContent = '0:00';
-                }
-            }
-
-            // تنسيق الوقت (تحويل الثواني إلى صيغة دقائق:ثواني)
-            function formatTime(seconds) {
-                if (isNaN(seconds)) return '0:00';
-                
-                const minutes = Math.floor(seconds / 60);
-                const remainingSeconds = Math.floor(seconds % 60);
-                return `${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
-            }
-
-            // عرض أزرار التحكم
-            function showControls() {
-                playerControls.classList.remove('hidden');
-                
-                // إعادة ضبط مؤقت إخفاء أزرار التحكم
-                clearTimeout(controlsTimeout);
-                
-                // إخفاء أزرار التحكم بعد فترة من الزمن إذا كان الفيديو يعمل
-                if (!videoElement.paused) {
-                    controlsTimeout = setTimeout(hideControls, 3000);
-                }
-            }
-
-            // إخفاء أزرار التحكم
-            function hideControls() {
-                if (!isDragging) {
-                    playerControls.classList.add('hidden');
-                }
-            }
+            });
             
             // التحقق من كود الوصول
             function checkAccessCode() {
@@ -1151,16 +675,13 @@
                 } else {
                     showNotification('تم إلغاء وضع التشغيل المستمر');
                 }
-                
-                // حفظ الإعداد في التخزين المحلي
-                saveData();
             }
             
             // تحميل الفيديو
             function loadVideo() {
                 if (currentIndex < 0 || currentIndex >= playlist.length || !playlist[currentIndex]) {
                     episodeTitleElement.textContent = 'لا يوجد محتوى متاح';
-                    videoElement.src = '';
+                    videoPlayer.src = '';
                     return;
                 }
                 
@@ -1177,6 +698,9 @@
                     return;
                 }
                 
+                // إنشاء رابط التضمين المخصص مع معلمات إضافية لمنع التفاعل مع Google Drive
+                const embedUrl = createSecureEmbedUrl(fileId);
+                
                 // تحديث عنوان الحلقة والعداد
                 episodeTitleElement.textContent = currentItem.title || (currentItem.type === 'episode' ? `الحلقة ${currentItem.number}` : `فاصل ${currentItem.number}`);
                 currentEpisodeSpan.textContent = getCurrentEpisodeNumber();
@@ -1184,63 +708,38 @@
                 // تحديث أزرار الحلقات
                 updateEpisodeButtons();
                 
-                // التحقق من وجود الملف في الذاكرة المؤقتة
-                if (videoSources[fileId]) {
-                    videoElement.src = videoSources[fileId];
-                    videoElement.load();
-                } else {
-                    // الحصول على رابط التشغيل المباشر
-                    getDirectStreamUrl(fileId)
-                        .then(url => {
-                            if (url) {
-                                videoSources[fileId] = url;
-                                videoElement.src = url;
-                                videoElement.load();
-                            } else {
-                                showNotification('فشل في تحميل الفيديو، يرجى المحاولة مرة أخرى');
-                                loadingIndicator.style.display = 'none';
-                            }
-                        })
-                        .catch(err => {
-                            console.error('خطأ في تحميل الفيديو:', err);
-                            showNotification('حدث خطأ أثناء تحميل الفيديو');
-                            loadingIndicator.style.display = 'none';
-                        });
-                }
+                // تحميل الفيديو
+                videoPlayer.src = embedUrl;
+                
+                // إخفاء مؤشر التحميل عند اكتمال التحميل
+                videoPlayer.onload = function() {
+                    loadingIndicator.style.display = 'none';
+                    // إضافة مستمع للرسائل من iframe
+                    setupMessageListener();
+                };
                 
                 // إعادة تعيين متغير حالة نهاية الفيديو
                 videoEnded = false;
-                
-                // إعادة ضبط أزرار التحكم
-                updatePlayPauseButton(true);
             }
             
-            // الحصول على رابط البث المباشر من Google Drive
-            function getDirectStreamUrl(fileId) {
-                return new Promise((resolve, reject) => {
-                    // إنشاء رابط التنزيل المباشر
-                    const directUrl = `https://drive.google.com/uc?export=download&id=${fileId}`;
-                    
-                    // استخدام خدمة بروكسي CORS لتجاوز قيود Google Drive
-                    const proxyUrl = `https://cors-anywhere.herokuapp.com/${directUrl}`;
-                    
-                    // محاولة استخراج رابط البث المباشر
-                    fetch(proxyUrl, { method: 'HEAD' })
-                        .then(response => {
-                            if (response.redirected) {
-                                resolve(response.url);
-                            } else if (response.ok) {
-                                resolve(directUrl);
-                            } else {
-                                // استخدام النهج البديل - رابط مشاهدة مباشرة من Google Drive
-                                resolve(`https://drive.google.com/file/d/${fileId}/preview?autoplay=1`);
+            // إنشاء رابط تضمين آمن
+            function createSecureEmbedUrl(fileId) {
+                // إضافة معلمات لمنع فتح واجهة Google Drive الكاملة مع السماح بالتحكم في الفيديو
+                return `https://drive.google.com/file/d/${fileId}/preview?usp=sharing&rm=minimal&disablekb=0&showinfo=0&rel=0&modestbranding=1&controls=1&autohide=1`;
+            }
+            
+            // إعداد مستمع للرسائل من iframe
+            function setupMessageListener() {
+                window.addEventListener('message', function(event) {
+                    // التحقق من أن المصدر هو iframe
+                    if (event.source === videoPlayer.contentWindow) {
+                        if (event.data === 'videoEnded') {
+                            videoEnded = true;
+                            if (continuousPlay) {
+                                changeContent(1);
                             }
-                        })
-                        .catch(err => {
-                            console.warn('خطأ في استخراج رابط البث المباشر:', err);
-                            // استخدام النهج البديل - رابط تشغيل مباشر من Google Drive
-                            resolve(`https://drive.google.com/get_video_info?docid=${fileId}`);
-                        });
+                        }
+                    }
                 });
             }
             
@@ -1362,16 +861,12 @@
                 if (confirm('هل أنت متأكد من رغبتك في حذف كل المحتوى؟')) {
                     playlist = [];
                     currentIndex = 0;
-                    videoSources = {}; // مسح الذاكرة المؤقتة للفيديوهات
                     
                     // تحديث واجهة المستخدم
                     updateContentList();
                     updateTotalEpisodesCount();
                     createEpisodeButtons();
-                    
-                    // إيقاف الفيديو الحالي
-                    videoElement.src = '';
-                    episodeTitleElement.textContent = 'لا يوجد محتوى متاح';
+                    loadVideo();
                     
                     showNotification('تم حذف كل المحتوى بنجاح');
                 }
@@ -1379,16 +874,7 @@
             
             // حذف محتوى محدد
             function deleteContent(index) {
-                const deletedItem = playlist[index];
                 playlist.splice(index, 1);
-                
-                // مسح الفيديو من الذاكرة المؤقتة
-                if (deletedItem) {
-                    const fileId = extractGoogleDriveFileId(deletedItem.url);
-                    if (fileId && videoSources[fileId]) {
-                        delete videoSources[fileId];
-                    }
-                }
                 
                 // ضبط المؤشر الحالي إذا تم حذف العنصر الحالي أو عنصر قبله
                 if (index <= currentIndex) {
@@ -1399,14 +885,7 @@
                 updateContentList();
                 updateTotalEpisodesCount();
                 createEpisodeButtons();
-                
-                // إعادة تحميل الفيديو الحالي
-                if (playlist.length > 0) {
-                    loadVideo();
-                } else {
-                    videoElement.src = '';
-                    episodeTitleElement.textContent = 'لا يوجد محتوى متاح';
-                }
+                loadVideo();
                 
                 showNotification('تم حذف المحتوى بنجاح');
             }
@@ -1670,130 +1149,76 @@
                 }
             }
 
-            // التشغيل التلقائي للموضع الذي وصل إليه المستخدم
-            function setupAutoResume() {
-                // حفظ الموضع الحالي للفيديو كل 5 ثوانٍ
-                setInterval(() => {
-                    if (videoElement.currentTime > 0 && !videoElement.paused && !videoElement.ended) {
-                        // حفظ الموضع الحالي للفيديو الحالي
-                        const currentItem = playlist[currentIndex];
-                        if (currentItem) {
-                            const fileId = extractGoogleDriveFileId(currentItem.url);
-                            if (fileId) {
-                                localStorage.setItem(`videoPosition_${fileId}`, videoElement.currentTime);
-                            }
-                        }
-                    }
-                }, 5000);
+            // تحسين أمان مشغل الفيديو
+            function enhanceVideoSecurity() {
+                // إضافة معلمات sandbox للـ iframe لمنع الوصول إلى Google Drive مع السماح بالتحكم بالفيديو
+                videoPlayer.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-presentation allow-popups');
                 
-                // استعادة الموضع المحفوظ عند تحميل فيديو جديد
-                videoElement.addEventListener('loadedmetadata', () => {
-                    const currentItem = playlist[currentIndex];
-                    if (currentItem) {
-                        const fileId = extractGoogleDriveFileId(currentItem.url);
-                        if (fileId) {
-                            const savedPosition = localStorage.getItem(`videoPosition_${fileId}`);
-                            if (savedPosition && !isNaN(savedPosition)) {
-                                videoElement.currentTime = parseFloat(savedPosition);
+                // منع التفاعل مع أي روابط داخل الفيديو
+                videoPlayer.addEventListener('load', function() {
+                    try {
+                        const iframeDocument = videoPlayer.contentWindow.document;
+                        
+                        // إضافة CSS للـ iframe لمنع التفاعل مع روابط Google Drive
+                        const style = iframeDocument.createElement('style');
+                        style.textContent = `
+                            .docs-ml-header-item, .docs-ml-header, .goog-toolbar, .docs-details-sidebar, 
+                            .docs-butterbar-container, .docs-branding-icon, .docs-title-save-label,
+                            .docs-title-input, .docs-title-widget, .docs-title-inner, .docs-title-button-row,
+                            .goog-inline-block.goog-toolbar-button, .goog-toolbar-menu-button,
+                            a[href*="drive.google.com"], .drive-viewer-head, .drive-viewer-toolstrip {
+                                display: none !important;
+                                visibility: hidden !important;
+                                pointer-events: none !important;
                             }
-                        }
+                            
+                            /* السماح فقط بعناصر التحكم في الفيديو */
+                            .docs-material-gm-media-controls, .docs-material-gm-media-controls * {
+                                display: block !important;
+                                visibility: visible !important;
+                                pointer-events: auto !important;
+                            }
+                            
+                            /* منع النقر على أي شيء خارج عناصر التحكم بالفيديو */
+                            body > *:not(.docs-material-gm-media-controls) {
+                                pointer-events: none !important;
+                            }
+                            
+                            /* ولكن السماح بالنقر على أزرار التحكم */
+                            .html5-video-player .ytp-chrome-bottom {
+                                pointer-events: auto !important;
+                            }
+                        `;
+                        
+                        iframeDocument.head.appendChild(style);
+                        
+                        // تعطيل الروابط والأزرار التي تؤدي إلى Google Drive
+                        const disableGoogleDriveLinks = () => {
+                            const links = iframeDocument.querySelectorAll('a');
+                            links.forEach(link => {
+                                if (link.href.includes('drive.google.com')) {
+                                    link.onclick = (e) => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        return false;
+                                    };
+                                    link.style.pointerEvents = 'none';
+                                }
+                            });
+                        };
+                        
+                        // تطبيق تعطيل الروابط عند التحميل وبشكل دوري لمنع التغييرات الديناميكية
+                        disableGoogleDriveLinks();
+                        setInterval(disableGoogleDriveLinks, 1000);
+                        
+                    } catch (e) {
+                        // تجاهل الأخطاء الناتجة عن سياسات الأمان بين المواقع
                     }
                 });
             }
             
-            // دعم اختصارات لوحة المفاتيح للتحكم في المشغل
-            function setupKeyboardShortcuts() {
-                document.addEventListener('keydown', (e) => {
-                    // منع التصرف الافتراضي فقط إذا كان التركيز على مشغل الفيديو أو المستند
-                    const isInputFocused = document.activeElement.tagName === 'INPUT' || 
-                                         document.activeElement.tagName === 'TEXTAREA' || 
-                                         document.activeElement.tagName === 'SELECT';
-                    
-                    if (!isInputFocused) {
-                        switch (e.key) {
-                            case ' ':
-                            case 'k':
-                                e.preventDefault();
-                                togglePlay();
-                                break;
-                            case 'ArrowRight':
-                                e.preventDefault();
-                                videoElement.currentTime += 10;
-                                break;
-                            case 'ArrowLeft':
-                                e.preventDefault();
-                                videoElement.currentTime -= 10;
-                                break;
-                            case 'ArrowUp':
-                                e.preventDefault();
-                                volume = Math.min(1, volume + 0.1);
-                                videoElement.volume = volume;
-                                volumeLevel.style.width = (volume * 100) + '%';
-                                updateMuteButton();
-                                break;
-                            case 'ArrowDown':
-                                e.preventDefault();
-                                volume = Math.max(0, volume - 0.1);
-                                videoElement.volume = volume;
-                                volumeLevel.style.width = (volume * 100) + '%';
-                                updateMuteButton();
-                                break;
-                            case 'm':
-                                e.preventDefault();
-                                toggleMute();
-                                break;
-                            case 'f':
-                                e.preventDefault();
-                                toggleFullscreen();
-                                break;
-                            case 'n':
-                                e.preventDefault();
-                                changeContent(1);
-                                break;
-                            case 'p':
-                                e.preventDefault();
-                                changeContent(-1);
-                                break;
-                        }
-                    }
-                });
-            }
-            
-            // تطبيق الوظائف الإضافية
-            setupAutoResume();
-            setupKeyboardShortcuts();
-            
-            // تعطيل التفاعل مع واجهة Google Drive
-            function preventGoogleDriveAccess() {
-                // إذا كان المشغل يستخدم iframe، فسنضيف مستمع للرسائل
-                window.addEventListener('message', function(event) {
-                    // تجاهل الرسائل من Google Drive التي تحاول إعادة توجيه المستخدم
-                    if (event.origin.includes('drive.google.com') && event.data && (
-                        event.data.type === 'navigate' || 
-                        event.data.action === 'redirect' || 
-                        event.data.action === 'open'
-                    )) {
-                        event.stopPropagation();
-                        event.preventDefault();
-                        return false;
-                    }
-                }, true);
-                
-                // منع فتح نوافذ جديدة من المشغل
-                document.addEventListener('click', function(e) {
-                    if (e.target.closest('#video-wrapper')) {
-                        const currentTarget = e.target;
-                        if (currentTarget.tagName === 'A' || currentTarget.closest('a')) {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            return false;
-                        }
-                    }
-                }, true);
-            }
-            
-            // تطبيق الحماية من الوصول إلى Google Drive
-            preventGoogleDriveAccess();
+            // تطبيق تحسينات الأمان
+            enhanceVideoSecurity();
         });
     </script>
 </body>
