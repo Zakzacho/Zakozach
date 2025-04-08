@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>مشاهدة المسلسلات</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --primary-color: #f47521;
@@ -11,6 +12,13 @@
             --darker-bg: #191b1f;
             --light-text: #ffffff;
             --gray-text: #9fadbd;
+            --secondary-color: #2c3e50;
+            --success-color: #27ae60;
+            --error-color: #e74c3c;
+            --hover-color: #ff8c3a;
+            --button-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            --card-shadow: 0 10px 15px rgba(0, 0, 0, 0.2);
+            --transition-speed: 0.3s;
         }
 
         * {
@@ -24,6 +32,7 @@
             background-color: var(--darker-bg);
             color: var(--light-text);
             direction: rtl;
+            line-height: 1.6;
         }
 
         .container {
@@ -36,11 +45,16 @@
             background-color: var(--dark-bg);
             padding: 15px 0;
             border-bottom: 2px solid var(--primary-color);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            position: relative;
+            z-index: 10;
         }
 
         header h1 {
             text-align: center;
             color: var(--primary-color);
+            font-size: 2rem;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
         }
 
         .player-section {
@@ -57,6 +71,8 @@
             overflow: hidden;
             position: relative;
             padding-top: 56.25%; /* 16:9 نسبة العرض للفيديو */
+            box-shadow: var(--card-shadow);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .video-container iframe {
@@ -77,14 +93,44 @@
             background-color: var(--dark-bg);
             padding: 15px;
             border-radius: 8px;
+            box-shadow: var(--card-shadow);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .episodes-navigation {
             display: flex;
-            gap: 10px;
+            gap: 15px;
             justify-content: center;
-            flex-wrap: wrap;
             align-items: center;
+            flex-wrap: wrap;
+            width: 100%;
+        }
+
+        .episode-info {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0 10px;
+        }
+
+        .episode-title {
+            font-size: 1.2rem;
+            color: var(--primary-color);
+            margin-bottom: 5px;
+            text-align: center;
+            max-width: 300px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .episode-counter {
+            color: var(--light-text);
+            font-weight: bold;
+            background-color: var(--secondary-color);
+            padding: 5px 10px;
+            border-radius: 20px;
+            display: inline-block;
         }
 
         .episode-buttons {
@@ -102,11 +148,33 @@
             border: 1px solid var(--primary-color);
             border-radius: 5px;
             cursor: pointer;
+            transition: all var(--transition-speed) ease;
+        }
+
+        .episode-button:hover {
+            background-color: var(--hover-color);
+            color: var(--light-text);
+            transform: translateY(-2px);
+            box-shadow: var(--button-shadow);
         }
 
         .episode-button.active {
             background-color: var(--primary-color);
             color: var(--light-text);
+            font-weight: bold;
+            transform: translateY(-2px);
+            box-shadow: var(--button-shadow);
+        }
+
+        .episode-type {
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: var(--light-text);
+            padding: 3px 8px;
+            border-radius: 3px;
+            font-size: 0.8rem;
         }
 
         .admin-panel {
@@ -114,72 +182,67 @@
             background-color: var(--dark-bg);
             padding: 15px;
             border-radius: 8px;
-            display: none; /* إخفاء لوحة الإدارة بشكل افتراضي */
+            display: none; /* إخفاء الإعدادات بشكل افتراضي */
+            box-shadow: var(--card-shadow);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .admin-panel h3 {
             color: var(--primary-color);
             margin-bottom: 15px;
+            text-align: center;
+            border-bottom: 1px solid var(--gray-text);
+            padding-bottom: 10px;
         }
 
-        .settings-row {
+        .admin-section {
+            margin-bottom: 20px;
+        }
+
+        .admin-section h4 {
+            color: var(--light-text);
+            margin-bottom: 10px;
+            background-color: var(--secondary-color);
+            padding: 8px;
+            border-radius: 5px;
+        }
+
+        .input-group {
             display: flex;
             gap: 15px;
             margin-bottom: 15px;
             flex-wrap: wrap;
+            align-items: center;
         }
 
-        .settings-row label {
+        .input-group label {
             color: var(--gray-text);
             min-width: 150px;
         }
 
-        .settings-row input, .settings-row select {
-            padding: 8px;
+        .input-group input, .input-group select {
+            padding: 10px;
             border-radius: 5px;
             border: 1px solid var(--gray-text);
             background-color: var(--darker-bg);
             color: var(--light-text);
             flex-grow: 1;
+            transition: border-color var(--transition-speed) ease;
         }
 
-        .notification {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background-color: var(--primary-color);
-            color: var(--light-text);
-            padding: 15px;
-            border-radius: 5px;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            z-index: 1000;
-        }
-
-        .admin-access {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-top: 20px;
-            gap: 10px;
-        }
-
-        .admin-access input {
-            padding: 8px;
-            border-radius: 5px;
-            border: 1px solid var(--gray-text);
-            background-color: var(--darker-bg);
-            color: var(--light-text);
-            width: 250px;
+        .input-group input:focus, .input-group select:focus {
+            border-color: var(--primary-color);
+            outline: none;
         }
 
         .content-list {
             margin-top: 15px;
             max-height: 300px;
             overflow-y: auto;
-            background-color: var(--darker-bg);
+            border: 1px solid var(--gray-text);
             border-radius: 5px;
             padding: 10px;
+            background-color: var(--darker-bg);
         }
 
         .content-item {
@@ -187,29 +250,38 @@
             justify-content: space-between;
             align-items: center;
             padding: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            background-color: rgba(0, 0, 0, 0.2);
             margin-bottom: 5px;
-            background-color: var(--dark-bg);
             border-radius: 5px;
-            border-right: 3px solid var(--primary-color);
+            transition: background-color var(--transition-speed) ease;
         }
 
-        .content-item.break {
-            border-right-color: #4a90e2;
+        .content-item:hover {
+            background-color: rgba(0, 0, 0, 0.4);
         }
 
         .content-item-info {
             flex-grow: 1;
         }
 
-        .content-item-name {
-            font-weight: bold;
+        .content-item-title {
             color: var(--light-text);
+            font-weight: bold;
+        }
+
+        .content-item-type {
+            color: var(--primary-color);
+            font-size: 0.9rem;
         }
 
         .content-item-url {
-            font-size: 0.8em;
             color: var(--gray-text);
-            word-break: break-all;
+            font-size: 0.8rem;
+            max-width: 300px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
 
         .content-item-actions {
@@ -217,23 +289,56 @@
             gap: 5px;
         }
 
-        .continuous-play {
-            display: flex;
-            justify-content: center;
-            margin-top: 15px;
+        .btn {
+            padding: 10px 20px;
+            background-color: var(--primary-color);
+            color: var(--light-text);
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all var(--transition-speed) ease;
+            box-shadow: var(--button-shadow);
         }
 
-        .switch-container {
+        .btn:hover {
+            opacity: 0.9;
+            transform: scale(1.05);
+        }
+
+        .btn-sm {
+            padding: 5px 10px;
+            font-size: 0.9rem;
+        }
+
+        .btn-danger {
+            background-color: var(--error-color);
+        }
+
+        .btn-success {
+            background-color: var(--success-color);
+        }
+
+        .btn-secondary {
+            background-color: var(--secondary-color);
+        }
+
+        .continuous-play {
             display: flex;
             align-items: center;
+            justify-content: center;
+            margin-top: 15px;
             gap: 10px;
+            background-color: rgba(0, 0, 0, 0.2);
+            padding: 10px;
+            border-radius: 5px;
         }
 
         .switch {
             position: relative;
             display: inline-block;
-            width: 60px;
-            height: 28px;
+            width: 50px;
+            height: 24px;
         }
 
         .switch input {
@@ -249,19 +354,19 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background-color: var(--dark-bg);
+            background-color: var(--secondary-color);
             transition: .4s;
-            border-radius: 34px;
+            border-radius: 24px;
         }
 
         .slider:before {
             position: absolute;
             content: "";
-            height: 20px;
-            width: 20px;
+            height: 16px;
+            width: 16px;
             left: 4px;
             bottom: 4px;
-            background-color: var(--gray-text);
+            background-color: white;
             transition: .4s;
             border-radius: 50%;
         }
@@ -270,24 +375,108 @@
             background-color: var(--primary-color);
         }
 
-        input:checked + .slider:before {
-            transform: translateX(32px);
-            background-color: white;
+        input:focus + .slider {
+            box-shadow: 0 0 1px var(--primary-color);
         }
 
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: var(--primary-color);
+            color: var(--light-text);
+            padding: 15px;
+            border-radius: 5px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 1000;
+            box-shadow: var(--card-shadow);
+        }
+
+        .admin-access {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 20px;
+            gap: 10px;
+        }
+
+        .admin-access input {
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid var(--gray-text);
+            background-color: var(--darker-bg);
+            color: var(--light-text);
+            width: 250px;
+        }
+
+        /* حالة التحميل */
+        .loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(255, 255, 255, 0.1);
+            border-top-color: var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* الشاشات الصغيرة */
         @media (max-width: 768px) {
-            .settings-row {
+            .controls {
                 flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .input-group {
+                flex-direction: column;
+                align-items: stretch;
                 gap: 5px;
             }
             
-            .controls {
-                flex-direction: column;
+            .input-group label {
+                min-width: unset;
             }
             
-            .episode-input {
+            .content-item {
                 flex-direction: column;
-                align-items: stretch;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            
+            .content-item-actions {
+                width: 100%;
+                justify-content: flex-end;
+            }
+            
+            .episode-info {
+                width: 100%;
+            }
+            
+            .btn {
+                padding: 8px 15px;
+                font-size: 0.9rem;
             }
         }
     </style>
@@ -302,29 +491,34 @@
     <div class="container">
         <div class="player-section">
             <div class="video-container">
-                <iframe id="video-player" frameborder="0" allowfullscreen></iframe>
+                <iframe id="video-player" frameborder="0" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"></iframe>
+                <div class="loading" id="loading-indicator">
+                    <div class="spinner"></div>
+                    <div>جاري التحميل...</div>
+                </div>
             </div>
 
             <div class="controls">
                 <div class="episodes-navigation">
-                    <button id="prev-episode">الحلقة السابقة</button>
-                    <div>
-                        <span>الحلقة: </span>
-                        <span id="current-episode">0</span>
-                        <span> / </span>
-                        <span id="total-episodes">0</span>
+                    <button id="prev-episode" class="btn">الحلقة السابقة</button>
+                    <div class="episode-info">
+                        <div id="episode-title" class="episode-title">اختر حلقة للمشاهدة</div>
+                        <div class="episode-counter">
+                            <span>الحلقة: </span>
+                            <span id="current-episode">0</span>
+                            <span> / </span>
+                            <span id="total-episodes">0</span>
+                        </div>
                     </div>
-                    <button id="next-episode">الحلقة التالية</button>
+                    <button id="next-episode" class="btn">الحلقة التالية</button>
                 </div>
                 
                 <div class="continuous-play">
-                    <div class="switch-container">
-                        <label for="continuous-play-toggle">البث المستمر:</label>
-                        <label class="switch">
-                            <input type="checkbox" id="continuous-play-toggle">
-                            <span class="slider"></span>
-                        </label>
-                    </div>
+                    <label for="continuous-play-toggle">تشغيل مستمر: </label>
+                    <label class="switch">
+                        <input type="checkbox" id="continuous-play-toggle">
+                        <span class="slider"></span>
+                    </label>
                 </div>
             </div>
 
@@ -332,40 +526,54 @@
             
             <div class="admin-access">
                 <input type="password" id="access-code" placeholder="أدخل كود الوصول للإعدادات">
-                <button id="access-btn">دخول</button>
+                <button id="access-btn" class="btn">دخول</button>
             </div>
         </div>
 
         <div class="admin-panel" id="admin-panel">
-            <h3>إدارة المحتوى</h3>
+            <h3>لوحة التحكم</h3>
             
-            <div class="settings-row">
-                <label for="content-type">نوع المحتوى:</label>
-                <select id="content-type">
-                    <option value="episode">حلقة</option>
-                    <option value="break">فاصل</option>
-                </select>
+            <div class="admin-section">
+                <h4>إضافة محتوى جديد</h4>
+                
+                <div class="input-group">
+                    <label for="content-type">نوع المحتوى:</label>
+                    <select id="content-type">
+                        <option value="episode">حلقة</option>
+                        <option value="ad">فاصل</option>
+                    </select>
+                </div>
+                
+                <div class="input-group">
+                    <label for="content-title">عنوان المحتوى:</label>
+                    <input type="text" id="content-title" placeholder="أدخل عنوان المحتوى هنا">
+                </div>
+                
+                <div class="input-group">
+                    <label for="content-number">رقم المحتوى:</label>
+                    <input type="number" id="content-number" min="1" value="1">
+                </div>
+                
+                <div class="input-group">
+                    <label for="content-url">رابط المحتوى:</label>
+                    <input type="text" id="content-url" placeholder="أدخل رابط المحتوى من Google Drive">
+                </div>
+                
+                <button id="add-content" class="btn btn-success">إضافة المحتوى</button>
             </div>
             
-            <div class="settings-row">
-                <label for="content-name">اسم المحتوى:</label>
-                <input type="text" id="content-name" placeholder="مثال: الحلقة الأولى">
+            <div class="admin-section">
+                <h4>المحتوى المضاف</h4>
+                <div class="content-list" id="content-list">
+                    <!-- سيتم إضافة العناصر هنا بشكل ديناميكي -->
+                </div>
             </div>
             
-            <div class="settings-row">
-                <label for="content-number">الترتيب:</label>
-                <input type="number" id="content-number" min="1" value="1">
+            <div class="admin-section">
+                <button id="clear-all-content" class="btn btn-danger">حذف كل المحتوى</button>
+                <button id="save-content" class="btn btn-success">حفظ التغييرات</button>
+                <button id="admin-logout" class="btn btn-secondary">خروج</button>
             </div>
-            
-            <div class="settings-row">
-                <label for="content-url">رابط المحتوى:</label>
-                <input type="text" id="content-url" placeholder="أدخل رابط الفيديو من Google Drive">
-            </div>
-            
-            <button id="add-content-btn">إضافة المحتوى</button>
-            
-            <h3 style="margin-top: 20px;">قائمة المحتوى</h3>
-            <div class="content-list" id="content-list"></div>
         </div>
     </div>
 
@@ -375,21 +583,26 @@
         document.addEventListener('DOMContentLoaded', function() {
             // عناصر DOM
             const videoPlayer = document.getElementById('video-player');
+            const loadingIndicator = document.getElementById('loading-indicator');
             const prevEpisodeBtn = document.getElementById('prev-episode');
             const nextEpisodeBtn = document.getElementById('next-episode');
             const currentEpisodeSpan = document.getElementById('current-episode');
             const totalEpisodesSpan = document.getElementById('total-episodes');
+            const episodeTitleElement = document.getElementById('episode-title');
             const episodeButtonsContainer = document.getElementById('episode-buttons');
             const notification = document.getElementById('notification');
             const accessCodeInput = document.getElementById('access-code');
             const accessBtn = document.getElementById('access-btn');
             const adminPanel = document.getElementById('admin-panel');
             const contentTypeSelect = document.getElementById('content-type');
-            const contentNameInput = document.getElementById('content-name');
+            const contentTitleInput = document.getElementById('content-title');
             const contentNumberInput = document.getElementById('content-number');
             const contentUrlInput = document.getElementById('content-url');
-            const addContentBtn = document.getElementById('add-content-btn');
+            const addContentBtn = document.getElementById('add-content');
             const contentListContainer = document.getElementById('content-list');
+            const clearAllContentBtn = document.getElementById('clear-all-content');
+            const saveContentBtn = document.getElementById('save-content');
+            const adminLogoutBtn = document.getElementById('admin-logout');
             const continuousPlayToggle = document.getElementById('continuous-play-toggle');
             
             // كود الوصول للإعدادات
@@ -397,20 +610,40 @@
             
             // متغيرات لإدارة الحالة
             let currentIndex = 0;
-            let contentItems = [];
+            let playlist = [];
             let isAdmin = false;
-            let isContinuousPlay = false;
-            let isPlayingContent = false;
+            let continuousPlay = false;
+            let videoEnded = false;
             
             // استعادة البيانات المحفوظة (إن وجدت)
             loadSavedData();
             
             // الاستماع للأحداث
-            prevEpisodeBtn.addEventListener('click', () => navigateContent(-1));
-            nextEpisodeBtn.addEventListener('click', () => navigateContent(1));
+            prevEpisodeBtn.addEventListener('click', () => changeContent(-1));
+            nextEpisodeBtn.addEventListener('click', () => changeContent(1));
+            addContentBtn.addEventListener('click', addContent);
+            clearAllContentBtn.addEventListener('click', clearAllContent);
+            saveContentBtn.addEventListener('click', saveChanges);
+            adminLogoutBtn.addEventListener('click', adminLogout);
             accessBtn.addEventListener('click', checkAccessCode);
-            addContentBtn.addEventListener('click', addContentItem);
-            continuousPlayToggle.addEventListener('click', toggleContinuousPlay);
+            continuousPlayToggle.addEventListener('change', toggleContinuousPlay);
+            
+            // إضافة مستمع لنهاية الفيديو للتشغيل المستمر
+            videoPlayer.addEventListener('load', function() {
+                try {
+                    videoPlayer.onload = function() {
+                        // محاولة إضافة مستمع لنهاية الفيديو للـ iframe
+                        videoPlayer.contentWindow.document.querySelector('video').addEventListener('ended', function() {
+                            videoEnded = true;
+                            if (continuousPlay) {
+                                changeContent(1);
+                            }
+                        });
+                    };
+                } catch (e) {
+                    // تجاهل الخطأ - هذا متوقع بسبب سياسات الأمان عبر النطاقات
+                }
+            });
             
             // التحقق من كود الوصول
             function checkAccessCode() {
@@ -418,336 +651,77 @@
                     isAdmin = true;
                     adminPanel.style.display = 'block';
                     accessCodeInput.value = '';
-                    showNotification('تم الوصول إلى لوحة الإدارة بنجاح');
-                    renderContentList();
+                    showNotification('تم الوصول إلى لوحة التحكم بنجاح');
+                    
+                    // تحديث قائمة المحتوى
+                    updateContentList();
                 } else {
                     showNotification('كود الوصول غير صحيح');
                 }
             }
             
-            // إضافة عنصر محتوى (حلقة أو فاصل)
-            function addContentItem() {
-                const type = contentTypeSelect.value;
-                const name = contentNameInput.value.trim();
-                const number = parseInt(contentNumberInput.value) || 1;
-                const url = contentUrlInput.value.trim();
-                
-                if (!name) {
-                    showNotification('الرجاء إدخال اسم المحتوى');
-                    return;
-                }
-                
-                if (!url) {
-                    showNotification('الرجاء إدخال رابط المحتوى');
-                    return;
-                }
-                
-                // استخراج معرف الملف من رابط Google Drive
-                const fileId = extractGoogleDriveFileId(url);
-                if (!fileId) {
-                    showNotification('رابط غير صالح. الرجاء إدخال رابط صحيح من Google Drive');
-                    return;
-                }
-                
-                // التحقق من عدم تكرار الرابط
-                const isDuplicate = contentItems.some(item => {
-                    const itemFileId = extractGoogleDriveFileId(item.url);
-                    return itemFileId === fileId;
-                });
-                
-                if (isDuplicate) {
-                    showNotification('هذا الرابط موجود بالفعل في القائمة');
-                    return;
-                }
-                
-                // إضافة عنصر المحتوى
-                const newItem = {
-                    type,
-                    name,
-                    number,
-                    url
-                };
-                
-                contentItems.push(newItem);
-                
-                // ترتيب العناصر حسب الرقم
-                contentItems.sort((a, b) => a.number - b.number);
-                
-                // تحديث واجهة المستخدم
-                renderContentList();
-                createEpisodeButtons();
-                saveData();
-                
-                // مسح حقول الإدخال
-                contentNameInput.value = '';
-                contentNumberInput.value = number + 1;
-                contentUrlInput.value = '';
-                
-                showNotification(`تم إضافة ${type === 'episode' ? 'الحلقة' : 'الفاصل'} بنجاح`);
+            // تسجيل خروج المدير
+            function adminLogout() {
+                isAdmin = false;
+                adminPanel.style.display = 'none';
+                showNotification('تم الخروج من لوحة التحكم بنجاح');
             }
             
-            // عرض قائمة المحتوى في لوحة الإدارة
-            function renderContentList() {
-                contentListContainer.innerHTML = '';
-                
-                if (contentItems.length === 0) {
-                    contentListContainer.innerHTML = '<p>لا يوجد محتوى في القائمة</p>';
-                    return;
-                }
-                
-                contentItems.forEach((item, index) => {
-                    const itemElement = document.createElement('div');
-                    itemElement.className = `content-item ${item.type}`;
-                    
-                    const itemInfo = document.createElement('div');
-                    itemInfo.className = 'content-item-info';
-                    
-                    const itemName = document.createElement('div');
-                    itemName.className = 'content-item-name';
-                    itemName.textContent = `${item.number}. ${item.name} (${item.type === 'episode' ? 'حلقة' : 'فاصل'})`;
-                    
-                    const itemUrl = document.createElement('div');
-                    itemUrl.className = 'content-item-url';
-                    itemUrl.textContent = item.url;
-                    
-                    itemInfo.appendChild(itemName);
-                    itemInfo.appendChild(itemUrl);
-                    
-                    const itemActions = document.createElement('div');
-                    itemActions.className = 'content-item-actions';
-                    
-                    const deleteBtn = document.createElement('button');
-                    deleteBtn.textContent = 'حذف';
-                    deleteBtn.onclick = () => deleteContentItem(index);
-                    
-                    itemActions.appendChild(deleteBtn);
-                    
-                    itemElement.appendChild(itemInfo);
-                    itemElement.appendChild(itemActions);
-                    
-                    contentListContainer.appendChild(itemElement);
-                });
-            }
-            
-            // حذف عنصر محتوى
-            function deleteContentItem(index) {
-                contentItems.splice(index, 1);
-                renderContentList();
-                createEpisodeButtons();
-                saveData();
-                
-                // إذا كان العنصر الحالي هو المحذوف، انتقل إلى العنصر الأول
-                if (currentIndex >= contentItems.length) {
-                    currentIndex = contentItems.length > 0 ? 0 : -1;
-                    updateCurrentContent();
-                }
-                
-                showNotification('تم حذف العنصر بنجاح');
-            }
-            
-            // تبديل وضع البث المستمر
+            // تبديل وضع التشغيل المستمر
             function toggleContinuousPlay() {
-                isContinuousPlay = continuousPlayToggle.checked;
-                saveData();
-                
-                showNotification(`تم ${isContinuousPlay ? 'تفعيل' : 'إلغاء'} وضع البث المستمر`);
-            }
-            
-            // التنقل بين عناصر المحتوى
-            function navigateContent(direction) {
-                // احسب فقط الحلقات وليس الفواصل إذا لم يكن في وضع البث المستمر
-                if (!isContinuousPlay) {
-                    const episodes = contentItems.filter(item => item.type === 'episode');
-                    const currentEpisodeIndex = episodes.findIndex((_, i) => {
-                        const episodeIndices = contentItems
-                            .map((item, index) => item.type === 'episode' ? index : -1)
-                            .filter(index => index !== -1);
-                        return episodeIndices[i] === currentIndex;
-                    });
-                    
-                    if (currentEpisodeIndex !== -1) {
-                        const nextEpisodeIndex = currentEpisodeIndex + direction;
-                        if (nextEpisodeIndex >= 0 && nextEpisodeIndex < episodes.length) {
-                            const episodeIndices = contentItems
-                                .map((item, index) => item.type === 'episode' ? index : -1)
-                                .filter(index => index !== -1);
-                            currentIndex = episodeIndices[nextEpisodeIndex];
-                        } else {
-                            showNotification('لا توجد حلقات أخرى في هذا الاتجاه');
-                            return;
-                        }
-                    } else {
-                        // إذا لم نكن على حلقة، انتقل إلى أول حلقة
-                        const firstEpisodeIndex = contentItems.findIndex(item => item.type === 'episode');
-                        if (firstEpisodeIndex !== -1) {
-                            currentIndex = firstEpisodeIndex;
-                        } else {
-                            showNotification('لا توجد حلقات في القائمة');
-                            return;
-                        }
-                    }
+                continuousPlay = continuousPlayToggle.checked;
+                if (continuousPlay) {
+                    showNotification('تم تفعيل وضع التشغيل المستمر');
                 } else {
-                    // في وضع البث المستمر، انتقل إلى العنصر التالي بغض النظر عن نوعه
-                    const newIndex = currentIndex + direction;
-                    if (newIndex >= 0 && newIndex < contentItems.length) {
-                        currentIndex = newIndex;
-                    } else {
-                        showNotification('لا يوجد محتوى آخر في هذا الاتجاه');
-                        return;
-                    }
+                    showNotification('تم إلغاء وضع التشغيل المستمر');
                 }
-                
-                updateCurrentContent();
-                saveData();
             }
             
-            // تحديث المحتوى الحالي
-            function updateCurrentContent() {
-                if (currentIndex >= 0 && currentIndex < contentItems.length) {
-                    const currentItem = contentItems[currentIndex];
-                    
-                    // تحديث عنوان الحلقة
-                    if (currentItem.type === 'episode') {
-                        const episodeNumber = countEpisodesBeforeCurrent() + 1;
-                        const totalEpisodes = contentItems.filter(item => item.type === 'episode').length;
-                        currentEpisodeSpan.textContent = episodeNumber;
-                        totalEpisodesSpan.textContent = totalEpisodes;
-                    }
-                    
-                    // تحميل الفيديو
-                    loadContentVideo(currentItem.url);
-                    
-                    // تحديث أزرار المحتوى
-                    updateEpisodeButtons();
-                } else {
-                    currentEpisodeSpan.textContent = '0';
+            // تحميل الفيديو
+            function loadVideo() {
+                if (currentIndex < 0 || currentIndex >= playlist.length || !playlist[currentIndex]) {
+                    episodeTitleElement.textContent = 'لا يوجد محتوى متاح';
                     videoPlayer.src = '';
-                }
-            }
-            
-            // حساب عدد الحلقات قبل العنصر الحالي
-            function countEpisodesBeforeCurrent() {
-                let count = 0;
-                for (let i = 0; i < currentIndex; i++) {
-                    if (contentItems[i].type === 'episode') {
-                        count++;
-                    }
-                }
-                return count;
-            }
-            
-            // تحميل فيديو المحتوى
-            function loadContentVideo(url) {
-                // استخراج معرف الملف من رابط Google Drive
-                const fileId = extractGoogleDriveFileId(url);
-                if (!fileId) {
-                    showNotification('رابط غير صالح');
                     return;
                 }
                 
-                // إنشاء رابط التضمين
-                const embedUrl = createProtectedEmbedUrl(fileId);
+                const currentItem = playlist[currentIndex];
+                
+                // عرض مؤشر التحميل
+                loadingIndicator.style.display = 'flex';
+                
+                // استخراج معرف الملف من رابط Google Drive
+                const fileId = extractGoogleDriveFileId(currentItem.url);
+                if (!fileId) {
+                    showNotification('رابط غير صالح للمحتوى الحالي');
+                    loadingIndicator.style.display = 'none';
+                    return;
+                }
+                
+                // إنشاء رابط التضمين المخصص
+                const embedUrl = createEmbedUrl(fileId);
+                
+                // تحديث عنوان الحلقة والعداد
+                episodeTitleElement.textContent = currentItem.title || (currentItem.type === 'episode' ? `الحلقة ${currentItem.number}` : `فاصل ${currentItem.number}`);
+                currentEpisodeSpan.textContent = getCurrentEpisodeNumber();
+                
+                // تحديث أزرار الحلقات
+                updateEpisodeButtons();
+                
+                // تحميل الفيديو
                 videoPlayer.src = embedUrl;
                 
-                // تسجيل انتهاء الفيديو للبث المستمر
-                isPlayingContent = true;
-                listenForVideoEnd();
+                // إخفاء مؤشر التحميل عند اكتمال التحميل
+                videoPlayer.onload = function() {
+                    loadingIndicator.style.display = 'none';
+                };
+                
+                // إعادة تعيين متغير حالة نهاية الفيديو
+                videoEnded = false;
             }
             
-            // الاستماع لانتهاء الفيديو من أجل البث المستمر
-            function listenForVideoEnd() {
-                if (!videoPlayer.contentWindow) {
-                    setTimeout(listenForVideoEnd, 1000);
-                    return;
-                }
-                
-                try {
-                    videoPlayer.addEventListener('load', function() {
-                        try {
-                            // محاولة تسجيل حدث عند انتهاء الفيديو
-                            videoPlayer.contentWindow.document.addEventListener('ended', handleVideoEnd);
-                        } catch (e) {
-                            // في حالة فشل طريقة واحدة، نستخدم طريقة التحقق الدوري
-                            checkVideoStatus();
-                        }
-                    });
-                } catch (e) {
-                    // استخدام التحقق الدوري في حالة فشل الطرق الأخرى
-                    checkVideoStatus();
-                }
-            }
-            
-            // التحقق من حالة الفيديو بشكل دوري للبث المستمر
-            function checkVideoStatus() {
-                if (!isPlayingContent || !isContinuousPlay) return;
-                
-                try {
-                    // محاولة الوصول إلى عنصر الفيديو داخل الـ iframe (قد يفشل بسبب سياسة نفس المنشأ)
-                    const videoElement = videoPlayer.contentWindow.document.querySelector('video');
-                    if (videoElement && videoElement.ended) {
-                        handleVideoEnd();
-                    } else {
-                        setTimeout(checkVideoStatus, 2000);
-                    }
-                } catch (e) {
-                    // في حالة عدم القدرة على الوصول إلى الفيديو، استخدم وسيلة أخرى للتحقق
-                    // مثل التحقق من تغير مصدر الـ iframe كعلامة على انتهاء الفيديو
-                    setTimeout(checkVideoStatus, 2000);
-                }
-            }
-            
-            // معالجة انتهاء الفيديو (للبث المستمر)
-            function handleVideoEnd() {
-                if (isContinuousPlay) {
-                    // الانتقال إلى العنصر التالي في البث المستمر
-                    navigateContent(1);
-                }
-            }
-            
-            // إنشاء أزرار الحلقات
-            function createEpisodeButtons() {
-                episodeButtonsContainer.innerHTML = '';
-                
-                // إظهار أزرار للحلقات فقط وليس الفواصل
-                const episodes = contentItems.filter(item => item.type === 'episode');
-                
-                episodes.forEach((episode, index) => {
-                    const button = document.createElement('button');
-                    button.className = 'episode-button';
-                    button.textContent = index + 1;
-                    button.dataset.index = contentItems.indexOf(episode);
-                    
-                    button.addEventListener('click', () => {
-                        currentIndex = parseInt(button.dataset.index);
-                        updateCurrentContent();
-                        saveData();
-                    });
-                    
-                    episodeButtonsContainer.appendChild(button);
-                });
-                
-                updateEpisodeButtons();
-            }
-            
-            // تحديث حالة أزرار الحلقات
-            function updateEpisodeButtons() {
-                const buttons = episodeButtonsContainer.querySelectorAll('.episode-button');
-                
-                buttons.forEach(button => {
-                    const index = parseInt(button.dataset.index);
-                    
-                    // إزالة كل الفئات المتعلقة بالحالة
-                    button.classList.remove('active');
-                    
-                    // إضافة الفئة المناسبة
-                    if (index === currentIndex) {
-                        button.classList.add('active');
-                    }
-                });
-            }
-            
-            // إنشاء رابط تضمين محمي
-            function createProtectedEmbedUrl(fileId) {
+            // إنشاء رابط تضمين
+            function createEmbedUrl(fileId) {
                 return `https://drive.google.com/file/d/${fileId}/preview`;
             }
             
@@ -770,6 +744,317 @@
                 return null;
             }
             
+            // الحصول على رقم الحلقة الحالية (بدون الفواصل)
+            function getCurrentEpisodeNumber() {
+                let episodeCount = 0;
+                let currentEpisodeNumber = 0;
+                
+                for (let i = 0; i < playlist.length; i++) {
+                    if (playlist[i].type === 'episode') {
+                        episodeCount++;
+                        if (i === currentIndex) {
+                            currentEpisodeNumber = episodeCount;
+                        }
+                    }
+                }
+                
+                // إذا كان المحتوى الحالي فاصلًا، نعرض رقم الحلقة السابقة
+                if (playlist[currentIndex] && playlist[currentIndex].type === 'ad') {
+                    currentEpisodeNumber = 'فاصل';
+                    return currentEpisodeNumber;
+                }
+                
+                return currentEpisodeNumber;
+            }
+            
+            // الحصول على إجمالي عدد الحلقات (بدون الفواصل)
+            function getTotalEpisodesCount() {
+                let count = 0;
+                
+                for (let item of playlist) {
+                    if (item.type === 'episode') {
+                        count++;
+                    }
+                }
+                
+                return count;
+            }
+            
+            // تغيير المحتوى الحالي
+            function changeContent(direction) {
+                const newIndex = currentIndex + direction;
+                
+                if (newIndex >= 0 && newIndex < playlist.length) {
+                    currentIndex = newIndex;
+                    loadVideo();
+                } else {
+                    if (newIndex < 0) {
+                        showNotification('أنت في بداية قائمة التشغيل');
+                    } else {
+                        showNotification('أنت في نهاية قائمة التشغيل');
+                    }
+                }
+            }
+            
+            // إضافة محتوى جديد (حلقة أو فاصل)
+            function addContent() {
+                const type = contentTypeSelect.value;
+                const title = contentTitleInput.value.trim();
+                const number = parseInt(contentNumberInput.value) || 1;
+                const url = contentUrlInput.value.trim();
+                
+                if (!url) {
+                    showNotification('الرجاء إدخال رابط المحتوى');
+                    return;
+                }
+                
+                // التحقق من عدم تكرار نفس الرابط
+                const isDuplicate = playlist.some(item => item.url === url);
+                if (isDuplicate) {
+                    showNotification('هذا الرابط موجود بالفعل في قائمة التشغيل');
+                    return;
+                }
+                
+                // إضافة المحتوى الجديد
+                const newItem = {
+                    type,
+                    title,
+                    number,
+                    url
+                };
+                
+                playlist.push(newItem);
+                
+                // تحديث واجهة المستخدم
+                updateContentList();
+                updateTotalEpisodesCount();
+                createEpisodeButtons();
+                
+                // إعادة تعيين حقول الإدخال
+                contentTitleInput.value = '';
+                contentNumberInput.value = (number + 1).toString();
+                contentUrlInput.value = '';
+                
+                showNotification(`تمت إضافة ${type === 'episode' ? 'الحلقة' : 'الفاصل'} بنجاح`);
+            }
+            
+            // حذف كل المحتوى
+            function clearAllContent() {
+                if (confirm('هل أنت متأكد من رغبتك في حذف كل المحتوى؟')) {
+                    playlist = [];
+                    currentIndex = 0;
+                    
+                    // تحديث واجهة المستخدم
+                    updateContentList();
+                    updateTotalEpisodesCount();
+                    createEpisodeButtons();
+                    loadVideo();
+                    
+                    showNotification('تم حذف كل المحتوى بنجاح');
+                }
+            }
+            
+            // حذف محتوى محدد
+            function deleteContent(index) {
+                playlist.splice(index, 1);
+                
+                // ضبط المؤشر الحالي إذا تم حذف العنصر الحالي أو عنصر قبله
+                if (index <= currentIndex) {
+                    currentIndex = Math.max(0, currentIndex - 1);
+                }
+                
+                // تحديث واجهة المستخدم
+                updateContentList();
+                updateTotalEpisodesCount();
+                createEpisodeButtons();
+                loadVideo();
+                
+                showNotification('تم حذف المحتوى بنجاح');
+            }
+            
+            // تحريك المحتوى للأعلى
+            function moveContentUp(index) {
+                if (index <= 0) return;
+                
+                const temp = playlist[index];
+                playlist[index] = playlist[index - 1];
+                playlist[index - 1] = temp;
+                
+                // تحديث المؤشر الحالي إذا تم تحريك العنصر الحالي أو العنصر قبله
+                if (index === currentIndex) {
+                    currentIndex--;
+                } else if (index - 1 === currentIndex) {
+                    currentIndex++;
+                }
+                
+                // تحديث واجهة المستخدم
+                updateContentList();
+                createEpisodeButtons();
+                
+                showNotification('تم تحريك المحتوى للأعلى');
+            }
+            
+            // تحريك المحتوى للأسفل
+            function moveContentDown(index) {
+                if (index >= playlist.length - 1) return;
+                
+                const temp = playlist[index];
+                playlist[index] = playlist[index + 1];
+                playlist[index + 1] = temp;
+                
+                // تحديث المؤشر الحالي إذا تم تحريك العنصر الحالي أو العنصر بعده
+                if (index === currentIndex) {
+                    currentIndex++;
+                } else if (index + 1 === currentIndex) {
+                    currentIndex--;
+                }
+                
+                // تحديث واجهة المستخدم
+                updateContentList();
+                createEpisodeButtons();
+                
+                showNotification('تم تحريك المحتوى للأسفل');
+            }
+            
+            // حفظ التغييرات
+            function saveChanges() {
+                saveData();
+                showNotification('تم حفظ التغييرات بنجاح');
+            }
+            
+            // تحديث قائمة المحتوى في لوحة التحكم
+            function updateContentList() {
+                contentListContainer.innerHTML = '';
+                
+                if (playlist.length === 0) {
+                    const emptyMessage = document.createElement('div');
+                    emptyMessage.textContent = 'لا يوجد محتوى مضاف بعد';
+                    emptyMessage.style.textAlign = 'center';
+                    emptyMessage.style.padding = '20px';
+                    emptyMessage.style.color = 'var(--gray-text)';
+                    contentListContainer.appendChild(emptyMessage);
+                    return;
+                }
+                
+                playlist.forEach((item, index) => {
+                    const itemElement = document.createElement('div');
+                    itemElement.className = 'content-item';
+                    
+                    const infoElement = document.createElement('div');
+                    infoElement.className = 'content-item-info';
+                    
+                    const titleElement = document.createElement('div');
+                    titleElement.className = 'content-item-title';
+                    titleElement.textContent = item.title || (item.type === 'episode' ? `الحلقة ${item.number}` : `فاصل ${item.number}`);
+                    
+                    const typeElement = document.createElement('div');
+                    typeElement.className = 'content-item-type';
+                    typeElement.textContent = item.type === 'episode' ? 'حلقة' : 'فاصل';
+                    
+                    const urlElement = document.createElement('div');
+                    urlElement.className = 'content-item-url';
+                    urlElement.textContent = item.url;
+                    
+                    infoElement.appendChild(titleElement);
+                    infoElement.appendChild(typeElement);
+                    infoElement.appendChild(urlElement);
+                    
+                    const actionsElement = document.createElement('div');
+                    actionsElement.className = 'content-item-actions';
+                    
+                    const upButton = document.createElement('button');
+                    upButton.className = 'btn btn-sm btn-secondary';
+                    upButton.textContent = '↑';
+                    upButton.title = 'تحريك للأعلى';
+                    upButton.addEventListener('click', () => moveContentUp(index));
+                    
+                    const downButton = document.createElement('button');
+                    downButton.className = 'btn btn-sm btn-secondary';
+                    downButton.textContent = '↓';
+                    downButton.title = 'تحريك للأسفل';
+                    downButton.addEventListener('click', () => moveContentDown(index));
+                    
+                    const deleteButton = document.createElement('button');
+                    deleteButton.className = 'btn btn-sm btn-danger';
+                    deleteButton.textContent = 'حذف';
+                    deleteButton.addEventListener('click', () => deleteContent(index));
+                    
+                    actionsElement.appendChild(upButton);
+                    actionsElement.appendChild(downButton);
+                    actionsElement.appendChild(deleteButton);
+                    
+                    itemElement.appendChild(infoElement);
+                    itemElement.appendChild(actionsElement);
+                    
+                    contentListContainer.appendChild(itemElement);
+                });
+            }
+            
+            // تحديث عدد الحلقات الإجمالي
+            function updateTotalEpisodesCount() {
+                const totalEpisodes = getTotalEpisodesCount();
+                totalEpisodesSpan.textContent = totalEpisodes;
+            }
+            
+            // إنشاء أزرار الحلقات
+            function createEpisodeButtons() {
+                episodeButtonsContainer.innerHTML = '';
+                
+                let episodeCount = 0;
+                
+                for (let i = 0; i < playlist.length; i++) {
+                    const item = playlist[i];
+                    
+                    if (item.type === 'episode') {
+                        episodeCount++;
+                        
+                        const button = document.createElement('button');
+                        button.className = 'episode-button';
+                        button.textContent = episodeCount;
+                        button.dataset.index = i;
+                        
+                        button.addEventListener('click', () => {
+                            currentIndex = parseInt(button.dataset.index);
+                            loadVideo();
+                        });
+                        
+                        episodeButtonsContainer.appendChild(button);
+                    }
+                }
+                
+                updateEpisodeButtons();
+            }
+            
+            // تحديث حالة أزرار الحلقات
+            function updateEpisodeButtons() {
+                const buttons = episodeButtonsContainer.querySelectorAll('.episode-button');
+                
+                buttons.forEach(button => {
+                    const index = parseInt(button.dataset.index);
+                    
+                    // إزالة كل الفئات المتعلقة بالحالة
+                    button.classList.remove('active');
+                    
+                    // إضافة الفئة المناسبة للزر الحالي
+                    if (playlist[currentIndex]?.type === 'episode' && index === currentIndex) {
+                        button.classList.add('active');
+                    } else if (playlist[currentIndex]?.type === 'ad') {
+                        // إذا كان المحتوى الحالي فاصلاً، ابحث عن آخر حلقة قبله
+                        let lastEpisodeIndex = -1;
+                        for (let i = currentIndex - 1; i >= 0; i--) {
+                            if (playlist[i].type === 'episode') {
+                                lastEpisodeIndex = i;
+                                break;
+                            }
+                        }
+                        
+                        if (index === lastEpisodeIndex) {
+                            button.classList.add('active');
+                        }
+                    }
+                });
+            }
+            
             // عرض إشعار
             function showNotification(message) {
                 notification.textContent = message;
@@ -782,12 +1067,19 @@
             
             // تشفير البيانات قبل التخزين
             function encryptData(data) {
-                return btoa(encodeURIComponent(JSON.stringify(data)));
+                try {
+                    // تطبيق تشفير بسيط للبيانات باستخدام Base64
+                    return btoa(encodeURIComponent(JSON.stringify(data)));
+                } catch (e) {
+                    console.error('خطأ في تشفير البيانات:', e);
+                    return '';
+                }
             }
             
             // فك تشفير البيانات المستعادة
             function decryptData(encryptedData) {
                 try {
+                    // فك التشفير البسيط
                     return JSON.parse(decodeURIComponent(atob(encryptedData)));
                 } catch (error) {
                     console.error('خطأ في فك تشفير البيانات:', error);
@@ -799,8 +1091,8 @@
             function saveData() {
                 const data = {
                     currentIndex,
-                    contentItems,
-                    isContinuousPlay
+                    playlist,
+                    continuousPlay
                 };
                 
                 // تشفير البيانات قبل التخزين
@@ -820,13 +1112,18 @@
                         if (data) {
                             // استعادة متغيرات الحالة
                             currentIndex = data.currentIndex || 0;
-                            contentItems = data.contentItems || [];
-                            isContinuousPlay = data.isContinuousPlay || false;
+                            playlist = data.playlist || [];
+                            continuousPlay = data.continuousPlay || false;
                             
-                            // تحديث واجهة المستخدم
-                            continuousPlayToggle.checked = isContinuousPlay;
+                            // تحديث عناصر واجهة المستخدم
+                            continuousPlayToggle.checked = continuousPlay;
+                            updateTotalEpisodesCount();
                             createEpisodeButtons();
-                            updateCurrentContent();
+                            
+                            // تحميل الفيديو الحالي
+                            if (playlist.length > 0) {
+                                loadVideo();
+                            }
                         }
                     } catch (error) {
                         console.error('خطأ في استعادة البيانات المحفوظة:', error);
@@ -834,20 +1131,21 @@
                 }
             }
 
-            // تحسين أمان الفيديو
+            // تحسين أمان مشغل الفيديو
             function enhanceVideoSecurity() {
+                // إضافة معلمات sandbox للـ iframe لتقييد السلوك
                 videoPlayer.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-presentation');
                 
-                videoPlayer.addEventListener('load', function() {
-                    try {
-                        const frameDoc = videoPlayer.contentDocument || videoPlayer.contentWindow.document;
-                        const links = frameDoc.querySelectorAll('a[href*="google.com"]');
-                        links.forEach(link => {
-                            link.removeAttribute('href');
-                            link.style.pointerEvents = 'none';
-                        });
-                    } catch (e) {
-                        // خطأ الوصول عبر النطاق متوقع بسبب سياسة الأمان
+                // إضافة مستمع لنهاية الفيديو باستخدام رسائل postMessage
+                window.addEventListener('message', function(event) {
+                    // التحقق من أن الرسالة من iframe نفسه
+                    if (event.source === videoPlayer.contentWindow) {
+                        if (event.data === 'videoEnded') {
+                            videoEnded = true;
+                            if (continuousPlay) {
+                                changeContent(1);
+                            }
+                        }
                     }
                 });
             }
