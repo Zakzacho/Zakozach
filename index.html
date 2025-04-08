@@ -698,8 +698,8 @@
                     return;
                 }
                 
-                // إنشاء رابط التضمين المخصص
-                const embedUrl = createEmbedUrl(fileId);
+                // إنشاء رابط التضمين المخصص مع معلمات إضافية لمنع التفاعل مع Google Drive
+                const embedUrl = createSecureEmbedUrl(fileId);
                 
                 // تحديث عنوان الحلقة والعداد
                 episodeTitleElement.textContent = currentItem.title || (currentItem.type === 'episode' ? `الحلقة ${currentItem.number}` : `فاصل ${currentItem.number}`);
@@ -714,15 +714,33 @@
                 // إخفاء مؤشر التحميل عند اكتمال التحميل
                 videoPlayer.onload = function() {
                     loadingIndicator.style.display = 'none';
+                    // إضافة مستمع للرسائل من iframe
+                    setupMessageListener();
                 };
                 
                 // إعادة تعيين متغير حالة نهاية الفيديو
                 videoEnded = false;
             }
             
-            // إنشاء رابط تضمين
-            function createEmbedUrl(fileId) {
-                return `https://drive.google.com/file/d/${fileId}/preview`;
+            // إنشاء رابط تضمين آمن
+            function createSecureEmbedUrl(fileId) {
+                // إضافة معلمات لمنع فتح واجهة Google Drive الكاملة مع السماح بالتحكم في الفيديو
+                return `https://drive.google.com/file/d/${fileId}/preview?usp=sharing&rm=minimal&disablekb=0&showinfo=0&rel=0&modestbranding=1&controls=1&autohide=1`;
+            }
+            
+            // إعداد مستمع للرسائل من iframe
+            function setupMessageListener() {
+                window.addEventListener('message', function(event) {
+                    // التحقق من أن المصدر هو iframe
+                    if (event.source === videoPlayer.contentWindow) {
+                        if (event.data === 'videoEnded') {
+                            videoEnded = true;
+                            if (continuousPlay) {
+                                changeContent(1);
+                            }
+                        }
+                    }
+                });
             }
             
             // استخراج معرف الملف من رابط Google Drive
@@ -1133,19 +1151,68 @@
 
             // تحسين أمان مشغل الفيديو
             function enhanceVideoSecurity() {
-                // إضافة معلمات sandbox للـ iframe لتقييد السلوك
-                videoPlayer.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-presentation');
+                // إضافة معلمات sandbox للـ iframe لمنع الوصول إلى Google Drive مع السماح بالتحكم بالفيديو
+                videoPlayer.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-presentation allow-popups');
                 
-                // إضافة مستمع لنهاية الفيديو باستخدام رسائل postMessage
-                window.addEventListener('message', function(event) {
-                    // التحقق من أن الرسالة من iframe نفسه
-                    if (event.source === videoPlayer.contentWindow) {
-                        if (event.data === 'videoEnded') {
-                            videoEnded = true;
-                            if (continuousPlay) {
-                                changeContent(1);
+                // منع التفاعل مع أي روابط داخل الفيديو
+                videoPlayer.addEventListener('load', function() {
+                    try {
+                        const iframeDocument = videoPlayer.contentWindow.document;
+                        
+                        // إضافة CSS للـ iframe لمنع التفاعل مع روابط Google Drive
+                        const style = iframeDocument.createElement('style');
+                        style.textContent = `
+                            .docs-ml-header-item, .docs-ml-header, .goog-toolbar, .docs-details-sidebar, 
+                            .docs-butterbar-container, .docs-branding-icon, .docs-title-save-label,
+                            .docs-title-input, .docs-title-widget, .docs-title-inner, .docs-title-button-row,
+                            .goog-inline-block.goog-toolbar-button, .goog-toolbar-menu-button,
+                            a[href*="drive.google.com"], .drive-viewer-head, .drive-viewer-toolstrip {
+                                display: none !important;
+                                visibility: hidden !important;
+                                pointer-events: none !important;
                             }
-                        }
+                            
+                            /* السماح فقط بعناصر التحكم في الفيديو */
+                            .docs-material-gm-media-controls, .docs-material-gm-media-controls * {
+                                display: block !important;
+                                visibility: visible !important;
+                                pointer-events: auto !important;
+                            }
+                            
+                            /* منع النقر على أي شيء خارج عناصر التحكم بالفيديو */
+                            body > *:not(.docs-material-gm-media-controls) {
+                                pointer-events: none !important;
+                            }
+                            
+                            /* ولكن السماح بالنقر على أزرار التحكم */
+                            .html5-video-player .ytp-chrome-bottom {
+                                pointer-events: auto !important;
+                            }
+                        `;
+                        
+                        iframeDocument.head.appendChild(style);
+                        
+                        // تعطيل الروابط والأزرار التي تؤدي إلى Google Drive
+                        const disableGoogleDriveLinks = () => {
+                            const links = iframeDocument.querySelectorAll('a');
+                            links.forEach(link => {
+                                if (link.href.includes('drive.google.com')) {
+                                    link.onclick = (e) => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        return false;
+                                    };
+                                    link.style.pointerEvents = 'none';
+                                }
+                            });
+                        };
+                        
+                        // تطبيق تعطيل الروابط عند التحميل وبشكل دوري لمنع التغييرات الديناميكية
+                        disableGoogleDriveLinks();
+                        setInterval(disableGoogleDriveLinks, 1000);
+                        
+                    } catch (e) {
+                        // تجاهل الأخطاء الناتجة عن سياسات الأمان بين المواقع
                     }
                 });
             }
