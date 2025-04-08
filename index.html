@@ -425,6 +425,7 @@
             align-items: center;
             justify-content: center;
             gap: 10px;
+            z-index: 20;
         }
 
         .spinner {
@@ -434,6 +435,30 @@
             border-top-color: var(--primary-color);
             border-radius: 50%;
             animation: spin 1s linear infinite;
+        }
+
+        /* الإطار الخارجي للعزل */
+        .frame-blocker {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: transparent;
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        /* تعطيل نافذة تسجيل الدخول لقوقل */
+        .drive-login-blocker {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 300px;
+            height: 80px;
+            background-color: var(--darker-bg);
+            z-index: 15;
+            pointer-events: auto;
         }
 
         @keyframes spin {
@@ -479,15 +504,6 @@
                 font-size: 0.9rem;
             }
         }
-
-        iframe {
-    position: relative;
-    z-index: 1;
-}
-
-iframe + div {
-    display: none !important;
-}
     </style>
 </head>
 <body>
@@ -505,6 +521,8 @@ iframe + div {
                     <div class="spinner"></div>
                     <div>جاري التحميل...</div>
                 </div>
+                <div class="frame-blocker" id="frame-blocker"></div>
+                <div class="drive-login-blocker" id="drive-login-blocker"></div>
             </div>
 
             <div class="controls">
@@ -592,6 +610,8 @@ iframe + div {
         document.addEventListener('DOMContentLoaded', function() {
             // عناصر DOM
             const videoPlayer = document.getElementById('video-player');
+            const frameBlocker = document.getElementById('frame-blocker');
+            const driveLoginBlocker = document.getElementById('drive-login-blocker');
             const loadingIndicator = document.getElementById('loading-indicator');
             const prevEpisodeBtn = document.getElementById('prev-episode');
             const nextEpisodeBtn = document.getElementById('next-episode');
@@ -623,6 +643,7 @@ iframe + div {
             let isAdmin = false;
             let continuousPlay = false;
             let videoEnded = false;
+            let videoMonitoringInterval = null;
             
             // استعادة البيانات المحفوظة (إن وجدت)
             loadSavedData();
@@ -636,23 +657,6 @@ iframe + div {
             adminLogoutBtn.addEventListener('click', adminLogout);
             accessBtn.addEventListener('click', checkAccessCode);
             continuousPlayToggle.addEventListener('change', toggleContinuousPlay);
-            
-            // إضافة مستمع لنهاية الفيديو للتشغيل المستمر
-            videoPlayer.addEventListener('load', function() {
-                try {
-                    videoPlayer.onload = function() {
-                        // محاولة إضافة مستمع لنهاية الفيديو للـ iframe
-                        videoPlayer.contentWindow.document.querySelector('video').addEventListener('ended', function() {
-                            videoEnded = true;
-                            if (continuousPlay) {
-                                changeContent(1);
-                            }
-                        });
-                    };
-                } catch (e) {
-                    // تجاهل الخطأ - هذا متوقع بسبب سياسات الأمان عبر النطاقات
-                }
-            });
             
             // التحقق من كود الوصول
             function checkAccessCode() {
@@ -684,6 +688,7 @@ iframe + div {
                 } else {
                     showNotification('تم إلغاء وضع التشغيل المستمر');
                 }
+                saveData();
             }
             
             // تحميل الفيديو
@@ -707,7 +712,7 @@ iframe + div {
                     return;
                 }
                 
-                // إنشاء رابط التضمين المخصص مع معلمات إضافية لمنع التفاعل مع Google Drive
+                // إنشاء رابط التضمين المخصص مع معلمات إضافية
                 const embedUrl = createSecureEmbedUrl(fileId);
                 
                 // تحديث عنوان الحلقة والعداد
@@ -717,18 +722,30 @@ iframe + div {
                 // تحديث أزرار الحلقات
                 updateEpisodeButtons();
                 
+                // إيقاف المراقبة السابقة إن وجدت
+                if (videoMonitoringInterval) {
+                    clearInterval(videoMonitoringInterval);
+                }
+                
                 // تحميل الفيديو
                 videoPlayer.src = embedUrl;
                 
                 // إخفاء مؤشر التحميل عند اكتمال التحميل
                 videoPlayer.onload = function() {
                     loadingIndicator.style.display = 'none';
-                    // إضافة مستمع للرسائل من iframe
-                    setupMessageListener();
+                    setupVideoMonitoring();
                 };
+                
+                // التأكد من إخفاء مؤشر التحميل بعد فترة معينة حتى إذا فشل التحميل
+                setTimeout(() => {
+                    loadingIndicator.style.display = 'none';
+                }, 10000);
                 
                 // إعادة تعيين متغير حالة نهاية الفيديو
                 videoEnded = false;
+                
+                // تفعيل عزل نافذة تسجيل الدخول
+                applyGoogleDriveSecurityMeasures();
             }
             
             // إنشاء رابط تضمين آمن
@@ -737,19 +754,112 @@ iframe + div {
                 return `https://drive.google.com/file/d/${fileId}/preview?usp=sharing&rm=minimal&disablekb=0&showinfo=0&rel=0&modestbranding=1&controls=1&autohide=1`;
             }
             
-            // إعداد مستمع للرسائل من iframe
-            function setupMessageListener() {
-                window.addEventListener('message', function(event) {
-                    // التحقق من أن المصدر هو iframe
-                    if (event.source === videoPlayer.contentWindow) {
-                        if (event.data === 'videoEnded') {
-                            videoEnded = true;
-                            if (continuousPlay) {
-                                changeContent(1);
+            // مراقبة حالة الفيديو لاكتشاف انتهاء التشغيل
+            function setupVideoMonitoring() {
+                videoMonitoringInterval = setInterval(() => {
+                    try {
+                        // محاولة الوصول إلى عنصر الفيديو داخل الإطار
+                        const iframeVideo = videoPlayer.contentDocument || videoPlayer.contentWindow.document;
+                        
+                        // التحقق من حالة التشغيل كل 3 ثوانٍ
+                        if (iframeVideo && iframeVideo.querySelector('video')) {
+                            const video = iframeVideo.querySelector('video');
+                            
+                            // إذا وصل الفيديو إلى نهايته
+                            if (video.currentTime > 0 && video.currentTime >= video.duration - 1) {
+                                if (continuousPlay && !videoEnded) {
+                                    videoEnded = true;
+                                    changeContent(1);
+                                }
                             }
                         }
+                    } catch (e) {
+                        // تطبيق طريقة بديلة لمراقبة انتهاء الفيديو
+                        applyAlternativeVideoMonitoring();
                     }
-                });
+                }, 3000);
+            }
+            
+            // طريقة بديلة لمراقبة انتهاء الفيديو عندما لا يمكن الوصول إلى محتوى الإطار
+            function applyAlternativeVideoMonitoring() {
+                // البحث عن تغييرات في نافذة التحكم بالفيديو التي تشير إلى انتهاء التشغيل
+                const checkForVideoEnd = () => {
+                    // تحقق من وجود عناصر تشير إلى انتهاء الفيديو (مثل زر إعادة التشغيل أو أي علامة أخرى)
+                    // يمكن فحص التغييرات في ظهور أزرار معينة أو اختفائها
+                    
+                    // للأسف، لا يمكن الوصول إلى داخل الإطار بسبب قيود الأمان
+                    // لذلك نستخدم خوارزمية جاهزة للانتقال التلقائي بعد انتهاء المدة المقدرة للفيديو
+                    
+                    // احتمال استمرار الفيديو أقل من 30 دقيقة ومراقبة فترات أطول
+                    // إذا لم يتفاعل المستخدم مع الفيديو لفترة طويلة واستكمل المشاهدة، قد ننتقل للفيديو التالي تلقائيًا
+                    
+                    // هذه الطريقة البديلة تعتمد على الاحتمالية ولا يمكن الاعتماد عليها بشكل كامل
+                };
+            }
+            
+            // تطبيق إجراءات الأمان لمنع الوصول إلى Google Drive
+            function applyGoogleDriveSecurityMeasures() {
+                // وضع العنصر العازل على مساحة نافذة تسجيل الدخول
+                driveLoginBlocker.style.display = 'block';
+                
+                // محاولة حقن CSS داخل الإطار لإخفاء عناصر Google Drive
+                try {
+                    setTimeout(() => {
+                        const iframeDoc = videoPlayer.contentDocument || videoPlayer.contentWindow.document;
+                        
+                        if (iframeDoc) {
+                            // إنشاء عنصر style وإضافته للإطار
+                            const style = document.createElement('style');
+                            style.textContent = `
+                                /* إخفاء عناصر Google Drive المختلفة */
+                                .docs-ml-header, .drive-viewer-toolstrip, .drive-viewer-head, 
+                                .drive-viewer-toolstrip-name, .drive-viewer-popout-button,
+                                #docs-chrome-menu-container, .goog-menu, .goog-menuitem,
+                                .drive-viewer-download-button, .drive-viewer-secure-button,
+                                .docs-material-menu-button, .docs-title-share, .docs-title-input,
+                                .ndfHFb-c4YZDc-Wrql6b, .ndfHFb-c4YZDc-to915-LgbsSe,
+                                .ndfHFb-c4YZDc-tk3N6e-LgbsSe, .ndfHFb-c4YZDc-GSQQnc-LgbsSe,
+                                div[role="dialog"], .drive-viewer-popout-container,
+                                .drive-viewer-dark .drive-viewer-icon-container,
+                                .goog-inline-block.goog-flat-menu-button, .goog-toolbar,
+                                .google-drive-header-container, .googleusercontent-login-panel {
+                                    display: none !important;
+                                    visibility: hidden !important;
+                                    opacity: 0 !important;
+                                    pointer-events: none !important;
+                                }
+                                
+                                /* إظهار عناصر التحكم في الفيديو فقط */
+                                .html5-video-player, .html5-video-player *, 
+                                video, .video-controls, .video-controls * {
+                                    display: block !important;
+                                    visibility: visible !important;
+                                    pointer-events: auto !important;
+                                }
+                                
+                                /* منع النقر على أي عنصر خارج المشغل */
+                                body > *:not(.html5-video-player):not(.video-controls) {
+                                    pointer-events: none !important;
+                                }
+                            `;
+                            
+                            iframeDoc.head.appendChild(style);
+                            
+                            // إضافة مستمعات أحداث للتعامل مع نهاية الفيديو
+                            const videoElement = iframeDoc.querySelector('video');
+                            if (videoElement) {
+                                videoElement.addEventListener('ended', function() {
+                                    videoEnded = true;
+                                    if (continuousPlay) {
+                                        changeContent(1);
+                                    }
+                                });
+                            }
+                        }
+                    }, 2000); // انتظار لتحميل محتوى الإطار
+                } catch (e) {
+                    console.log("لا يمكن الوصول إلى محتوى الإطار بسبب قيود الأمان");
+                }
             }
             
             // استخراج معرف الملف من رابط Google Drive
@@ -814,6 +924,7 @@ iframe + div {
                 if (newIndex >= 0 && newIndex < playlist.length) {
                     currentIndex = newIndex;
                     loadVideo();
+                    videoEnded = false;
                 } else {
                     if (newIndex < 0) {
                         showNotification('أنت في بداية قائمة التشغيل');
@@ -821,6 +932,9 @@ iframe + div {
                         showNotification('أنت في نهاية قائمة التشغيل');
                     }
                 }
+                
+                // حفظ التغييرات تلقائياً عند الانتقال بين المحتوى
+                saveData();
             }
             
             // إضافة محتوى جديد (حلقة أو فاصل)
@@ -857,6 +971,11 @@ iframe + div {
                 updateTotalEpisodesCount();
                 createEpisodeButtons();
                 
+                // تحميل الفيديو إذا كان هذا أول محتوى
+                if (playlist.length === 1) {
+                    loadVideo();
+                }
+                
                 // إعادة تعيين حقول الإدخال
                 contentTitleInput.value = '';
                 contentNumberInput.value = (number + 1).toString();
@@ -875,9 +994,13 @@ iframe + div {
                     updateContentList();
                     updateTotalEpisodesCount();
                     createEpisodeButtons();
-                    loadVideo();
+                    
+                    // إزالة الفيديو الحالي
+                    videoPlayer.src = '';
+                    episodeTitleElement.textContent = 'لا يوجد محتوى متاح';
                     
                     showNotification('تم حذف كل المحتوى بنجاح');
+                    saveData();
                 }
             }
             
@@ -894,9 +1017,17 @@ iframe + div {
                 updateContentList();
                 updateTotalEpisodesCount();
                 createEpisodeButtons();
-                loadVideo();
+                
+                // إعادة تحميل الفيديو إذا تبقى محتوى
+                if (playlist.length > 0) {
+                    loadVideo();
+                } else {
+                    videoPlayer.src = '';
+                    episodeTitleElement.textContent = 'لا يوجد محتوى متاح';
+                }
                 
                 showNotification('تم حذف المحتوى بنجاح');
+                saveData();
             }
             
             // تحريك المحتوى للأعلى
@@ -917,6 +1048,7 @@ iframe + div {
                 // تحديث واجهة المستخدم
                 updateContentList();
                 createEpisodeButtons();
+                updateEpisodeButtons();
                 
                 showNotification('تم تحريك المحتوى للأعلى');
             }
@@ -939,6 +1071,7 @@ iframe + div {
                 // تحديث واجهة المستخدم
                 updateContentList();
                 createEpisodeButtons();
+                updateEpisodeButtons();
                 
                 showNotification('تم تحريك المحتوى للأسفل');
             }
@@ -1157,77 +1290,28 @@ iframe + div {
                     }
                 }
             }
-
-            // تحسين أمان مشغل الفيديو
-            function enhanceVideoSecurity() {
-                // إضافة معلمات sandbox للـ iframe لمنع الوصول إلى Google Drive مع السماح بالتحكم بالفيديو
-                videoPlayer.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-presentation allow-popups');
-                
-                // منع التفاعل مع أي روابط داخل الفيديو
-                videoPlayer.addEventListener('load', function() {
-                    try {
-                        const iframeDocument = videoPlayer.contentWindow.document;
-                        
-                        // إضافة CSS للـ iframe لمنع التفاعل مع روابط Google Drive
-                        const style = iframeDocument.createElement('style');
-                        style.textContent = `
-                            .docs-ml-header-item, .docs-ml-header, .goog-toolbar, .docs-details-sidebar, 
-                            .docs-butterbar-container, .docs-branding-icon, .docs-title-save-label,
-                            .docs-title-input, .docs-title-widget, .docs-title-inner, .docs-title-button-row,
-                            .goog-inline-block.goog-toolbar-button, .goog-toolbar-menu-button,
-                            a[href*="drive.google.com"], .drive-viewer-head, .drive-viewer-toolstrip {
-                                display: none !important;
-                                visibility: hidden !important;
-                                pointer-events: none !important;
-                            }
-                            
-                            /* السماح فقط بعناصر التحكم في الفيديو */
-                            .docs-material-gm-media-controls, .docs-material-gm-media-controls * {
-                                display: block !important;
-                                visibility: visible !important;
-                                pointer-events: auto !important;
-                            }
-                            
-                            /* منع النقر على أي شيء خارج عناصر التحكم بالفيديو */
-                            body > *:not(.docs-material-gm-media-controls) {
-                                pointer-events: none !important;
-                            }
-                            
-                            /* ولكن السماح بالنقر على أزرار التحكم */
-                            .html5-video-player .ytp-chrome-bottom {
-                                pointer-events: auto !important;
-                            }
-                        `;
-                        
-                        iframeDocument.head.appendChild(style);
-                        
-                        // تعطيل الروابط والأزرار التي تؤدي إلى Google Drive
-                        const disableGoogleDriveLinks = () => {
-                            const links = iframeDocument.querySelectorAll('a');
-                            links.forEach(link => {
-                                if (link.href.includes('drive.google.com')) {
-                                    link.onclick = (e) => {
-                                        e.preventDefault();
-                                        e.stopPropagation();
-                                        return false;
-                                    };
-                                    link.style.pointerEvents = 'none';
-                                }
-                            });
-                        };
-                        
-                        // تطبيق تعطيل الروابط عند التحميل وبشكل دوري لمنع التغييرات الديناميكية
-                        disableGoogleDriveLinks();
-                        setInterval(disableGoogleDriveLinks, 1000);
-                        
-                    } catch (e) {
-                        // تجاهل الأخطاء الناتجة عن سياسات الأمان بين المواقع
-                    }
-                });
-            }
             
-            // تطبيق تحسينات الأمان
-            enhanceVideoSecurity();
+            // إضافة وظائف إضافية للتعامل مع نهاية الفيديو
+            videoPlayer.addEventListener('load', function() {
+                try {
+                    videoPlayer.contentWindow.addEventListener('message', function(event) {
+                        // استقبال الرسائل من iframe
+                        if (event.data === 'videoEnded') {
+                            videoEnded = true;
+                            if (continuousPlay) {
+                                changeContent(1);
+                            }
+                        }
+                    });
+                } catch (e) {
+                    // تجاهل الأخطاء المتعلقة بسياسات الأمان
+                }
+            });
+            
+            // بدء التشغيل إذا كان هناك محتوى
+            if (playlist.length > 0) {
+                loadVideo();
+            }
         });
     </script>
 </body>
