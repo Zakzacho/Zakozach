@@ -11,6 +11,8 @@
             --darker-bg: #191b1f;
             --light-text: #ffffff;
             --gray-text: #9fadbd;
+            --accent-color: #4e9af1;
+            --success-color: #4CAF50;
         }
 
         * {
@@ -79,28 +81,165 @@
             border-radius: 8px;
         }
 
-        .episode-input {
+        .episodes-navigation {
             display: flex;
-            gap: 10px;
-            align-items: center;
-            flex-wrap: wrap;
+            gap: 15px;
             justify-content: center;
-            width: 100%;
+            flex-wrap: wrap;
+            align-items: center;
         }
 
-        .episode-input label {
+        .episode-buttons {
+            margin-top: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .episode-button {
+            padding: 10px 15px;
+            background-color: var(--dark-bg);
             color: var(--gray-text);
+            border: 1px solid var(--primary-color);
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .episode-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .episode-button.active {
+            background-color: var(--primary-color);
+            color: var(--light-text);
             font-weight: bold;
         }
 
-        .episode-input input {
+        .playlist-settings {
+            margin-top: 30px;
+            background-color: var(--dark-bg);
+            padding: 20px;
+            border-radius: 8px;
+            display: none; /* إخفاء الإعدادات بشكل افتراضي */
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            border-top: 3px solid var(--primary-color);
+        }
+
+        .playlist-settings h3 {
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 1.5rem;
+        }
+
+        .settings-group {
+            background-color: rgba(0, 0, 0, 0.2);
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+        }
+
+        .settings-group-title {
+            color: var(--accent-color);
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+            border-bottom: 1px solid var(--accent-color);
+            padding-bottom: 8px;
+        }
+
+        .settings-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .settings-row label {
+            color: var(--gray-text);
+            min-width: 150px;
+            font-weight: bold;
+        }
+
+        .settings-row input, .settings-row select {
             padding: 10px;
             border-radius: 5px;
             border: 1px solid var(--gray-text);
             background-color: var(--darker-bg);
             color: var(--light-text);
-            width: 100%;
-            max-width: 500px;
+            flex-grow: 1;
+            transition: all 0.3s ease;
+        }
+
+        .settings-row input:focus, .settings-row select:focus {
+            border-color: var(--primary-color);
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(244, 117, 33, 0.3);
+        }
+
+        .spacers-toggle {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .spacers-toggle input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .spacers-container {
+            display: none;
+        }
+
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: var(--primary-color);
+            color: var(--light-text);
+            padding: 15px 20px;
+            border-radius: 5px;
+            opacity: 0;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            z-index: 1000;
+            transform: translateY(20px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            max-width: 300px;
+        }
+
+        .notification.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .admin-access {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 20px;
+            gap: 10px;
+            position: relative;
+        }
+
+        .admin-access input {
+            padding: 12px;
+            border-radius: 5px;
+            border: 1px solid var(--gray-text);
+            background-color: var(--darker-bg);
+            color: var(--light-text);
+            width: 250px;
+            transition: all 0.3s ease;
+        }
+
+        .admin-access input:focus {
+            border-color: var(--primary-color);
+            outline: none;
         }
 
         button {
@@ -117,114 +256,72 @@
         button:hover {
             opacity: 0.9;
             transform: scale(1.05);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
 
-        .episodes-navigation {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-            flex-wrap: wrap;
+        .btn-success {
+            background-color: var(--success-color);
         }
 
-        .episode-buttons {
-            margin-top: 20px;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            justify-content: center;
+        .btn-accent {
+            background-color: var(--accent-color);
         }
 
-        .episode-button {
-            padding: 8px 15px;
-            background-color: var(--dark-bg);
-            color: var(--gray-text);
-            border: 1px solid var(--primary-color);
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        .episode-button.active {
+        .episode-count {
             background-color: var(--primary-color);
             color: var(--light-text);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            display: inline-block;
         }
 
-        .playlist-settings {
-            margin-top: 30px;
+        .tooltip {
+            position: relative;
+            display: inline-block;
+            margin-left: 5px;
+            cursor: help;
+        }
+
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 200px;
             background-color: var(--dark-bg);
-            padding: 15px;
-            border-radius: 8px;
-            display: none; /* إخفاء الإعدادات بشكل افتراضي */
-        }
-
-        .playlist-settings h3 {
-            color: var(--primary-color);
-            margin-bottom: 15px;
-        }
-
-        .settings-row {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 15px;
-            flex-wrap: wrap;
-        }
-
-        .settings-row label {
-            color: var(--gray-text);
-            min-width: 150px;
-        }
-
-        .settings-row input, .settings-row select {
-            padding: 8px;
-            border-radius: 5px;
-            border: 1px solid var(--gray-text);
-            background-color: var(--darker-bg);
             color: var(--light-text);
-            flex-grow: 1;
-        }
-
-        .notification {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background-color: var(--primary-color);
-            color: var(--light-text);
-            padding: 15px;
-            border-radius: 5px;
+            text-align: center;
+            border-radius: 6px;
+            padding: 10px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -100px;
             opacity: 0;
-            transition: opacity 0.3s ease;
-            z-index: 1000;
+            transition: opacity 0.3s;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--accent-color);
         }
 
-        .admin-access {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-top: 20px;
-            gap: 10px;
-        }
-
-        .admin-access input {
-            padding: 8px;
-            border-radius: 5px;
-            border: 1px solid var(--gray-text);
-            background-color: var(--darker-bg);
-            color: var(--light-text);
-            width: 250px;
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
         }
 
         @media (max-width: 768px) {
             .settings-row {
                 flex-direction: column;
                 gap: 5px;
+                align-items: flex-start;
             }
             
             .controls {
                 flex-direction: column;
             }
             
-            .episode-input {
-                flex-direction: column;
-                align-items: stretch;
+            .episode-count {
+                display: block;
+                width: fit-content;
+                margin: 0 auto;
             }
         }
     </style>
@@ -243,15 +340,9 @@
             </div>
 
             <div class="controls">
-                <div class="episode-input">
-                    <label for="video-url">رابط الفيديو من Google Drive:</label>
-                    <input type="text" id="video-url" placeholder="أدخل رابط الفيديو من Google Drive هنا...">
-                    <button id="load-video">تحميل الفيديو</button>
-                </div>
-
                 <div class="episodes-navigation">
                     <button id="prev-episode">الحلقة السابقة</button>
-                    <div>
+                    <div class="episode-count">
                         <span>الحلقة: </span>
                         <span id="current-episode">0</span>
                         <span> / </span>
@@ -272,42 +363,87 @@
         <div class="playlist-settings" id="playlist-settings">
             <h3>إعدادات قائمة التشغيل</h3>
             
-            <div class="settings-row">
-                <label for="episodes-count">عدد الحلقات:</label>
-                <input type="number" id="episodes-count" min="1" value="1">
+            <div class="settings-group">
+                <h4 class="settings-group-title">معلومات أساسية</h4>
+                <div class="settings-row">
+                    <label for="episodes-count">عدد الحلقات:</label>
+                    <input type="number" id="episodes-count" min="1" value="1">
+                    <div class="tooltip">؟
+                        <span class="tooltiptext">أدخل العدد الإجمالي للحلقات في المسلسل</span>
+                    </div>
+                </div>
+                
+                <div class="settings-row">
+                    <label for="base-url">رابط أساسي:</label>
+                    <input type="text" id="base-url" placeholder="أدخل الجزء الثابت من الرابط...">
+                    <div class="tooltip">؟
+                        <span class="tooltiptext">الجزء الثابت من الرابط الذي يتكرر في كل الحلقات</span>
+                    </div>
+                </div>
             </div>
             
-            <div class="settings-row">
-                <label for="base-url">رابط أساسي (اختياري):</label>
-                <input type="text" id="base-url" placeholder="أدخل الجزء الثابت من الرابط...">
+            <div class="settings-group">
+                <h4 class="settings-group-title">تنسيق أسماء الملفات</h4>
+                <div class="settings-row">
+                    <label for="prefix">بادئة اسم الملف:</label>
+                    <input type="text" id="prefix" placeholder="مثال: episode_">
+                    <div class="tooltip">؟
+                        <span class="tooltiptext">النص الذي يظهر قبل رقم الحلقة</span>
+                    </div>
+                </div>
+                
+                <div class="settings-row">
+                    <label for="start-number">رقم البداية:</label>
+                    <input type="number" id="start-number" min="0" value="1">
+                    <div class="tooltip">؟
+                        <span class="tooltiptext">الرقم الذي تبدأ به ترقيم الحلقات</span>
+                    </div>
+                </div>
+                
+                <div class="settings-row">
+                    <label for="padding">تنسيق الأرقام:</label>
+                    <select id="padding">
+                        <option value="0">بدون أصفار (1, 2, 3...)</option>
+                        <option value="1">رقم واحد (01, 02...)</option>
+                        <option value="2">رقمين (001, 002...)</option>
+                        <option value="3">ثلاثة أرقام (0001, 0002...)</option>
+                    </select>
+                </div>
+                
+                <div class="settings-row">
+                    <label for="extension">امتداد الملف:</label>
+                    <input type="text" id="extension" placeholder="مثال: mp4" value="mp4">
+                </div>
             </div>
             
-            <div class="settings-row">
-                <label for="prefix">بادئة اسم الملف:</label>
-                <input type="text" id="prefix" placeholder="مثال: episode_">
+            <div class="settings-group">
+                <h4 class="settings-group-title">إعدادات الفواصل (اختياري)</h4>
+                
+                <div class="spacers-toggle">
+                    <input type="checkbox" id="use-spacers">
+                    <label for="use-spacers">إضافة فواصل بين الحلقات</label>
+                    <div class="tooltip">؟
+                        <span class="tooltiptext">استخدم هذا الخيار إذا كان هناك فواصل (حلقات خاصة) بين الحلقات العادية</span>
+                    </div>
+                </div>
+                
+                <div class="spacers-container" id="spacers-container">
+                    <div class="settings-row">
+                        <label for="spacer-prefix">بادئة الفاصل:</label>
+                        <input type="text" id="spacer-prefix" placeholder="مثال: special_">
+                    </div>
+                    
+                    <div class="settings-row">
+                        <label for="spacer-positions">مواضع الفواصل:</label>
+                        <input type="text" id="spacer-positions" placeholder="مثال: 3,8,12 (أرقام الحلقات التي تسبق الفواصل)">
+                        <div class="tooltip">؟
+                            <span class="tooltiptext">أدخل أرقام الحلقات التي يأتي بعدها فواصل، مفصولة بفاصلة</span>
+                        </div>
+                    </div>
+                </div>
             </div>
             
-            <div class="settings-row">
-                <label for="start-number">رقم البداية:</label>
-                <input type="number" id="start-number" min="0" value="1">
-            </div>
-            
-            <div class="settings-row">
-                <label for="padding">تنسيق الأرقام:</label>
-                <select id="padding">
-                    <option value="0">بدون أصفار (1, 2, 3...)</option>
-                    <option value="1">رقم واحد (01, 02...)</option>
-                    <option value="2">رقمين (001, 002...)</option>
-                    <option value="3">ثلاثة أرقام (0001, 0002...)</option>
-                </select>
-            </div>
-            
-            <div class="settings-row">
-                <label for="extension">امتداد الملف:</label>
-                <input type="text" id="extension" placeholder="مثال: mp4" value="mp4">
-            </div>
-            
-            <button id="generate-playlist">إنشاء قائمة التشغيل</button>
+            <button id="generate-playlist" class="btn-success">إنشاء قائمة التشغيل</button>
         </div>
     </div>
 
@@ -317,8 +453,6 @@
         document.addEventListener('DOMContentLoaded', function() {
             // عناصر DOM
             const videoPlayer = document.getElementById('video-player');
-            const videoUrlInput = document.getElementById('video-url');
-            const loadVideoBtn = document.getElementById('load-video');
             const prevEpisodeBtn = document.getElementById('prev-episode');
             const nextEpisodeBtn = document.getElementById('next-episode');
             const currentEpisodeSpan = document.getElementById('current-episode');
@@ -337,6 +471,10 @@
             const paddingSelect = document.getElementById('padding');
             const extensionInput = document.getElementById('extension');
             const generatePlaylistBtn = document.getElementById('generate-playlist');
+            const useSpacersCheckbox = document.getElementById('use-spacers');
+            const spacersContainer = document.getElementById('spacers-container');
+            const spacerPrefixInput = document.getElementById('spacer-prefix');
+            const spacerPositionsInput = document.getElementById('spacer-positions');
             
             // كود الوصول للإعدادات
             const ACCESS_CODE = "F@20D&o0tTrR2#D0•Hh";
@@ -345,16 +483,18 @@
             let currentEpisode = 0;
             let episodes = [];
             let isAdmin = false;
+            let hasSpacers = false;
+            let spacerPositions = [];
             
             // استعادة البيانات المحفوظة (إن وجدت)
             loadSavedData();
             
             // الاستماع للأحداث
-            loadVideoBtn.addEventListener('click', loadVideo);
             prevEpisodeBtn.addEventListener('click', () => changeEpisode(-1));
             nextEpisodeBtn.addEventListener('click', () => changeEpisode(1));
             generatePlaylistBtn.addEventListener('click', generatePlaylist);
             accessBtn.addEventListener('click', checkAccessCode);
+            useSpacersCheckbox.addEventListener('change', toggleSpacersContainer);
             
             // التحقق من كود الوصول
             function checkAccessCode() {
@@ -368,38 +508,33 @@
                 }
             }
             
+            // تبديل عرض خيارات الفواصل
+            function toggleSpacersContainer() {
+                hasSpacers = useSpacersCheckbox.checked;
+                spacersContainer.style.display = hasSpacers ? 'block' : 'none';
+            }
+            
             // تحميل الفيديو
-            function loadVideo() {
-                const url = videoUrlInput.value.trim();
-                if (!url) {
-                    showNotification('الرجاء إدخال رابط الفيديو');
+            function loadVideo(index) {
+                if (!episodes[index]) {
+                    showNotification('لا يوجد رابط للحلقة المحددة');
                     return;
                 }
                 
                 // استخراج معرف الملف من رابط Google Drive
-                const fileId = extractGoogleDriveFileId(url);
+                const fileId = extractGoogleDriveFileId(episodes[index]);
                 if (!fileId) {
-                    showNotification('رابط غير صالح. الرجاء إدخال رابط صحيح من Google Drive');
+                    showNotification('رابط غير صالح للحلقة المحددة');
                     return;
                 }
                 
                 // إنشاء رابط التضمين المخصص لمنع الوصول إلى Google Drive
                 const embedUrl = createProtectedEmbedUrl(fileId);
                 videoPlayer.src = embedUrl;
-                
-                // حفظ الرابط الحالي
-                episodes[currentEpisode] = url;
-                saveData();
-                
-                showNotification('تم تحميل الفيديو بنجاح');
             }
             
             // إنشاء رابط تضمين محمي
             function createProtectedEmbedUrl(fileId) {
-                // بناء رابط يمنع الوصول إلى حساب Google
-                // sandbox يمنع الوصول إلى الكوكيز ويحد من التفاعل مع المستند الأصلي
-                // إعدادات إضافية لتحسين الأمان والتحكم في الفيديو
-                
                 return `https://drive.google.com/file/d/${fileId}/preview`;
             }
             
@@ -430,11 +565,8 @@
                     currentEpisode = newEpisode;
                     currentEpisodeSpan.textContent = currentEpisode + 1;
                     
-                    // تحديث إدخال الرابط وتحميل الفيديو إذا كان هناك رابط محفوظ
-                    videoUrlInput.value = episodes[currentEpisode] || '';
-                    if (episodes[currentEpisode]) {
-                        loadVideo();
-                    }
+                    // تحميل الفيديو إذا كان هناك رابط محفوظ
+                    loadVideo(currentEpisode);
                     
                     // تحديث أزرار الحلقات
                     updateEpisodeButtons();
@@ -453,29 +585,72 @@
                 const padding = parseInt(paddingSelect.value) || 0;
                 const extension = extensionInput.value.trim() || 'mp4';
                 
+                // معالجة الفواصل إذا كانت مفعلة
+                hasSpacers = useSpacersCheckbox.checked;
+                let spacerPrefix = '';
+                spacerPositions = [];
+                
+                if (hasSpacers) {
+                    spacerPrefix = spacerPrefixInput.value.trim();
+                    // تحويل إدخال المواضع إلى مصفوفة من الأرقام
+                    const positionsInput = spacerPositionsInput.value.trim();
+                    if (positionsInput) {
+                        spacerPositions = positionsInput.split(',')
+                            .map(pos => parseInt(pos.trim()))
+                            .filter(pos => !isNaN(pos) && pos > 0 && pos <= count);
+                    }
+                }
+                
+                // حساب العدد الإجمالي للحلقات مع الفواصل
+                const totalEpisodes = count + (hasSpacers ? spacerPositions.length : 0);
+                
                 // إنشاء مصفوفة فارغة بالحجم المطلوب
-                episodes = new Array(count).fill('');
+                episodes = new Array(totalEpisodes).fill('');
                 currentEpisode = 0;
                 
                 // إضافة الروابط إذا كان هناك رابط أساسي
                 if (baseUrl) {
-                    for (let i = 0; i < count; i++) {
-                        const num = startNumber + i;
-                        const paddedNum = num.toString().padStart(padding + 1, '0');
-                        episodes[i] = `${baseUrl}${prefix}${paddedNum}.${extension}`;
+                    let regularEpisodeIndex = 0;
+                    let currentArrayIndex = 0;
+                    
+                    for (let i = 0; i < totalEpisodes; i++) {
+                        // التحقق مما إذا كان هذا الموضع يجب أن يكون فاصلاً
+                        const isSpacerPosition = hasSpacers && spacerPositions.includes(regularEpisodeIndex + 1);
+                        
+                        if (isSpacerPosition) {
+                            // إضافة الفاصل
+                            const spacerNum = spacerPositions.indexOf(regularEpisodeIndex + 1) + 1;
+                            const paddedSpacerNum = spacerNum.toString().padStart(padding + 1, '0');
+                            episodes[currentArrayIndex] = `${baseUrl}${spacerPrefix}${paddedSpacerNum}.${extension}`;
+                            currentArrayIndex++;
+                        }
+                        
+                        // إضافة الحلقة العادية
+                        if (regularEpisodeIndex < count) {
+                            const num = startNumber + regularEpisodeIndex;
+                            const paddedNum = num.toString().padStart(padding + 1, '0');
+                            episodes[currentArrayIndex] = `${baseUrl}${prefix}${paddedNum}.${extension}`;
+                            
+                            regularEpisodeIndex++;
+                            currentArrayIndex++;
+                        }
                     }
                 }
                 
                 // تحديث واجهة المستخدم
                 currentEpisodeSpan.textContent = '1';
-                totalEpisodesSpan.textContent = count;
-                videoUrlInput.value = episodes[0] || '';
+                totalEpisodesSpan.textContent = totalEpisodes;
                 
                 // إنشاء أزرار الحلقات
                 createEpisodeButtons();
                 saveData();
                 
-                showNotification(`تم إنشاء قائمة تشغيل بـ ${count} حلقة`);
+                // تحميل الحلقة الأولى
+                if (episodes[0]) {
+                    loadVideo(0);
+                }
+                
+                showNotification(`تم إنشاء قائمة تشغيل بـ ${totalEpisodes} حلقة`);
             }
             
             // إنشاء أزرار الحلقات
@@ -485,16 +660,26 @@
                 for (let i = 0; i < episodes.length; i++) {
                     const button = document.createElement('button');
                     button.className = 'episode-button';
-                    button.textContent = i + 1;
+                    
+                    // التحقق مما إذا كانت الحلقة فاصلاً
+                    const isEpisodeSpacer = hasSpacers && isSpacerButton(i);
+                    
+                    // تعيين نص الزر
+                    if (isEpisodeSpacer) {
+                        button.textContent = `فاصل ${getSpacerNumber(i)}`;
+                        button.style.backgroundColor = 'var(--accent-color)';
+                    } else {
+                        button.textContent = getRegularEpisodeNumber(i);
+                    }
+                    
                     button.dataset.index = i;
                     
                     button.addEventListener('click', () => {
                         currentEpisode = parseInt(button.dataset.index);
                         currentEpisodeSpan.textContent = currentEpisode + 1;
-                        videoUrlInput.value = episodes[currentEpisode] || '';
                         
                         if (episodes[currentEpisode]) {
-                            loadVideo();
+                            loadVideo(currentEpisode);
                         }
                         
                         updateEpisodeButtons();
@@ -505,6 +690,62 @@
                 }
                 
                 updateEpisodeButtons();
+            }
+            
+            // التحقق مما إذا كان الزر يمثل فاصلاً
+            function isSpacerButton(index) {
+                if (!hasSpacers || spacerPositions.length === 0) return false;
+                
+                // فحص إذا كان الفهرس يمثل موضع فاصل
+                let regularEpisodeCount = 0;
+                let spacerCount = 0;
+                
+                for (let i = 0; i <= index; i++) {
+                    if (spacerCount < spacerPositions.length && 
+                        regularEpisodeCount === spacerPositions[spacerCount]) {
+                        // هذا فاصل
+                        if (i === index) return true;
+                        spacerCount++;
+                    } else {
+                        // هذه حلقة عادية
+                        regularEpisodeCount++;
+                    }
+                }
+                
+                return false;
+            }
+            
+            // الحصول على رقم الفاصل
+            function getSpacerNumber(index) {
+                let spacerCount = 0;
+                let regularEpisodeCount = 0;
+                
+                for (let i = 0; i <= index; i++) {
+                    if (spacerCount < spacerPositions.length && 
+                        regularEpisodeCount === spacerPositions[spacerCount]) {
+                        spacerCount++;
+                        if (i === index) return spacerCount;
+                    } else {
+                        regularEpisodeCount++;
+                    }
+                }
+                
+                return 0;
+            }
+            
+            // الحصول على رقم الحلقة العادية
+            function getRegularEpisodeNumber(index) {
+                let regularEpisodeCount = 0;
+                
+                for (let i = 0; i <= index; i++) {
+                    if (!isSpacerButton(i)) {
+                        regularEpisodeCount++;
+                    }
+                    
+                    if (i === index) return regularEpisodeCount;
+                }
+                
+                return 0;
             }
             
             // تحديث حالة أزرار الحلقات
@@ -527,10 +768,10 @@
             // عرض إشعار
             function showNotification(message) {
                 notification.textContent = message;
-                notification.style.opacity = '1';
+                notification.classList.add('show');
                 
                 setTimeout(() => {
-                    notification.style.opacity = '0';
+                    notification.classList.remove('show');
                 }, 3000);
             }
             
@@ -562,7 +803,10 @@
                         prefix: prefixInput.value,
                         startNumber: startNumberInput.value,
                         padding: paddingSelect.value,
-                        extension: extensionInput.value
+                        extension: extensionInput.value,
+                        hasSpacers: hasSpacers,
+                        spacerPrefix: spacerPrefixInput.value,
+                        spacerPositions: spacerPositionsInput.value
                     }
                 };
                 
@@ -593,19 +837,27 @@
                                 startNumberInput.value = data.settings.startNumber || 1;
                                 paddingSelect.value = data.settings.padding || 0;
                                 extensionInput.value = data.settings.extension || 'mp4';
+                                
+                                // استعادة إعدادات الفواصل
+                                hasSpacers = data.settings.hasSpacers || false;
+                                useSpacersCheckbox.checked = hasSpacers;
+                                spacerPrefixInput.value = data.settings.spacerPrefix || '';
+                                spacerPositionsInput.value = data.settings.spacerPositions || '';
+                                
+                                // تحديث عرض خيارات الفواصل
+                                toggleSpacersContainer();
                             }
                             
                             // تحديث واجهة المستخدم
                             currentEpisodeSpan.textContent = currentEpisode + 1;
                             totalEpisodesSpan.textContent = episodes.length;
-                            videoUrlInput.value = episodes[currentEpisode] || '';
                             
                             // إنشاء أزرار الحلقات
                             createEpisodeButtons();
                             
                             // تحميل الفيديو إذا كان هناك رابط
                             if (episodes[currentEpisode]) {
-                                loadVideo();
+                                loadVideo(currentEpisode);
                             }
                         }
                     } catch (error) {
