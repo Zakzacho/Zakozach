@@ -11,8 +11,6 @@
             --darker-bg: #191b1f;
             --light-text: #ffffff;
             --gray-text: #9fadbd;
-            --accent-color: #4e9af1;
-            --success-color: #4CAF50;
         }
 
         * {
@@ -83,10 +81,9 @@
 
         .episodes-navigation {
             display: flex;
-            gap: 15px;
+            gap: 10px;
             justify-content: center;
             flex-wrap: wrap;
-            align-items: center;
         }
 
         .episode-buttons {
@@ -98,56 +95,44 @@
         }
 
         .episode-button {
-            padding: 10px 15px;
+            padding: 8px 15px;
             background-color: var(--dark-bg);
             color: var(--gray-text);
             border: 1px solid var(--primary-color);
             border-radius: 5px;
             cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .episode-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
 
         .episode-button.active {
             background-color: var(--primary-color);
             color: var(--light-text);
-            font-weight: bold;
+        }
+
+        .break-button {
+            padding: 8px 15px;
+            background-color: var(--darker-bg);
+            color: var(--primary-color);
+            border: 1px dashed var(--primary-color);
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.8em;
+        }
+
+        .break-button.active {
+            background-color: rgba(244, 117, 33, 0.2);
         }
 
         .playlist-settings {
             margin-top: 30px;
             background-color: var(--dark-bg);
-            padding: 20px;
+            padding: 15px;
             border-radius: 8px;
             display: none; /* إخفاء الإعدادات بشكل افتراضي */
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-            border-top: 3px solid var(--primary-color);
         }
 
         .playlist-settings h3 {
             color: var(--primary-color);
-            margin-bottom: 20px;
-            text-align: center;
-            font-size: 1.5rem;
-        }
-
-        .settings-group {
-            background-color: rgba(0, 0, 0, 0.2);
-            padding: 15px;
-            border-radius: 6px;
-            margin-bottom: 20px;
-        }
-
-        .settings-group-title {
-            color: var(--accent-color);
             margin-bottom: 15px;
-            font-size: 1.2rem;
-            border-bottom: 1px solid var(--accent-color);
-            padding-bottom: 8px;
         }
 
         .settings-row {
@@ -155,46 +140,20 @@
             gap: 15px;
             margin-bottom: 15px;
             flex-wrap: wrap;
-            align-items: center;
         }
 
         .settings-row label {
             color: var(--gray-text);
             min-width: 150px;
-            font-weight: bold;
         }
 
         .settings-row input, .settings-row select {
-            padding: 10px;
+            padding: 8px;
             border-radius: 5px;
             border: 1px solid var(--gray-text);
             background-color: var(--darker-bg);
             color: var(--light-text);
             flex-grow: 1;
-            transition: all 0.3s ease;
-        }
-
-        .settings-row input:focus, .settings-row select:focus {
-            border-color: var(--primary-color);
-            outline: none;
-            box-shadow: 0 0 0 2px rgba(244, 117, 33, 0.3);
-        }
-
-        .spacers-toggle {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-
-        .spacers-toggle input[type="checkbox"] {
-            width: 18px;
-            height: 18px;
-            cursor: pointer;
-        }
-
-        .spacers-container {
-            display: none;
         }
 
         .notification {
@@ -203,19 +162,11 @@
             right: 20px;
             background-color: var(--primary-color);
             color: var(--light-text);
-            padding: 15px 20px;
+            padding: 15px;
             border-radius: 5px;
             opacity: 0;
-            transition: opacity 0.3s ease, transform 0.3s ease;
+            transition: opacity 0.3s ease;
             z-index: 1000;
-            transform: translateY(20px);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-            max-width: 300px;
-        }
-
-        .notification.show {
-            opacity: 1;
-            transform: translateY(0);
         }
 
         .admin-access {
@@ -224,104 +175,72 @@
             justify-content: center;
             margin-top: 20px;
             gap: 10px;
-            position: relative;
         }
 
         .admin-access input {
-            padding: 12px;
+            padding: 8px;
             border-radius: 5px;
             border: 1px solid var(--gray-text);
             background-color: var(--darker-bg);
             color: var(--light-text);
             width: 250px;
-            transition: all 0.3s ease;
         }
 
-        .admin-access input:focus {
-            border-color: var(--primary-color);
-            outline: none;
+        .checkbox-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
         }
 
-        button {
-            padding: 10px 20px;
-            background-color: var(--primary-color);
-            color: var(--light-text);
-            border: none;
-            border-radius: 5px;
+        .checkbox-row input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+        }
+
+        .tabs {
+            display: flex;
+            margin-bottom: 15px;
+            border-bottom: 1px solid var(--gray-text);
+        }
+
+        .tab {
+            padding: 10px 15px;
             cursor: pointer;
-            font-weight: bold;
-            transition: all 0.3s ease;
+            border-bottom: 2px solid transparent;
         }
 
-        button:hover {
-            opacity: 0.9;
-            transform: scale(1.05);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        .tab.active {
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--primary-color);
         }
 
-        .btn-success {
-            background-color: var(--success-color);
+        .tab-content {
+            display: none;
         }
 
-        .btn-accent {
-            background-color: var(--accent-color);
+        .tab-content.active {
+            display: block;
         }
 
-        .episode-count {
-            background-color: var(--primary-color);
-            color: var(--light-text);
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-weight: bold;
-            display: inline-block;
+        .breaks-settings {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid var(--gray-text);
         }
 
-        .tooltip {
-            position: relative;
-            display: inline-block;
-            margin-left: 5px;
-            cursor: help;
-        }
-
-        .tooltip .tooltiptext {
-            visibility: hidden;
-            width: 200px;
-            background-color: var(--dark-bg);
-            color: var(--light-text);
-            text-align: center;
-            border-radius: 6px;
-            padding: 10px;
-            position: absolute;
-            z-index: 1;
-            bottom: 125%;
-            left: 50%;
-            margin-left: -100px;
-            opacity: 0;
-            transition: opacity 0.3s;
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
-            border: 1px solid var(--accent-color);
-        }
-
-        .tooltip:hover .tooltiptext {
-            visibility: visible;
-            opacity: 1;
+        .hidden {
+            display: none;
         }
 
         @media (max-width: 768px) {
             .settings-row {
                 flex-direction: column;
                 gap: 5px;
-                align-items: flex-start;
             }
             
             .controls {
                 flex-direction: column;
-            }
-            
-            .episode-count {
-                display: block;
-                width: fit-content;
-                margin: 0 auto;
             }
         }
     </style>
@@ -342,7 +261,7 @@
             <div class="controls">
                 <div class="episodes-navigation">
                     <button id="prev-episode">الحلقة السابقة</button>
-                    <div class="episode-count">
+                    <div>
                         <span>الحلقة: </span>
                         <span id="current-episode">0</span>
                         <span> / </span>
@@ -361,43 +280,33 @@
         </div>
 
         <div class="playlist-settings" id="playlist-settings">
-            <h3>إعدادات قائمة التشغيل</h3>
-            
-            <div class="settings-group">
-                <h4 class="settings-group-title">معلومات أساسية</h4>
+            <div class="tabs">
+                <div class="tab active" data-tab="main-settings">إعدادات القائمة الرئيسية</div>
+                <div class="tab" data-tab="breaks-settings">إعدادات الفواصل</div>
+                <div class="tab" data-tab="url-settings">إضافة روابط مباشرة</div>
+            </div>
+
+            <div class="tab-content active" id="main-settings">
+                <h3>إعدادات قائمة التشغيل</h3>
+                
                 <div class="settings-row">
                     <label for="episodes-count">عدد الحلقات:</label>
                     <input type="number" id="episodes-count" min="1" value="1">
-                    <div class="tooltip">؟
-                        <span class="tooltiptext">أدخل العدد الإجمالي للحلقات في المسلسل</span>
-                    </div>
                 </div>
                 
                 <div class="settings-row">
-                    <label for="base-url">رابط أساسي:</label>
-                    <input type="text" id="base-url" placeholder="أدخل الجزء الثابت من الرابط...">
-                    <div class="tooltip">؟
-                        <span class="tooltiptext">الجزء الثابت من الرابط الذي يتكرر في كل الحلقات</span>
-                    </div>
+                    <label for="base-url">رابط أساسي (إلزامي):</label>
+                    <input type="text" id="base-url" placeholder="أدخل الجزء الثابت من رابط الحلقات...">
                 </div>
-            </div>
-            
-            <div class="settings-group">
-                <h4 class="settings-group-title">تنسيق أسماء الملفات</h4>
+                
                 <div class="settings-row">
                     <label for="prefix">بادئة اسم الملف:</label>
                     <input type="text" id="prefix" placeholder="مثال: episode_">
-                    <div class="tooltip">؟
-                        <span class="tooltiptext">النص الذي يظهر قبل رقم الحلقة</span>
-                    </div>
                 </div>
                 
                 <div class="settings-row">
                     <label for="start-number">رقم البداية:</label>
                     <input type="number" id="start-number" min="0" value="1">
-                    <div class="tooltip">؟
-                        <span class="tooltiptext">الرقم الذي تبدأ به ترقيم الحلقات</span>
-                    </div>
                 </div>
                 
                 <div class="settings-row">
@@ -414,36 +323,69 @@
                     <label for="extension">امتداد الملف:</label>
                     <input type="text" id="extension" placeholder="مثال: mp4" value="mp4">
                 </div>
-            </div>
-            
-            <div class="settings-group">
-                <h4 class="settings-group-title">إعدادات الفواصل (اختياري)</h4>
                 
-                <div class="spacers-toggle">
-                    <input type="checkbox" id="use-spacers">
-                    <label for="use-spacers">إضافة فواصل بين الحلقات</label>
-                    <div class="tooltip">؟
-                        <span class="tooltiptext">استخدم هذا الخيار إذا كان هناك فواصل (حلقات خاصة) بين الحلقات العادية</span>
-                    </div>
-                </div>
-                
-                <div class="spacers-container" id="spacers-container">
-                    <div class="settings-row">
-                        <label for="spacer-prefix">بادئة الفاصل:</label>
-                        <input type="text" id="spacer-prefix" placeholder="مثال: special_">
-                    </div>
-                    
-                    <div class="settings-row">
-                        <label for="spacer-positions">مواضع الفواصل:</label>
-                        <input type="text" id="spacer-positions" placeholder="مثال: 3,8,12 (أرقام الحلقات التي تسبق الفواصل)">
-                        <div class="tooltip">؟
-                            <span class="tooltiptext">أدخل أرقام الحلقات التي يأتي بعدها فواصل، مفصولة بفاصلة</span>
-                        </div>
-                    </div>
+                <div class="checkbox-row">
+                    <input type="checkbox" id="use-breaks">
+                    <label for="use-breaks">إضافة فواصل بين الحلقات</label>
                 </div>
             </div>
+
+            <div class="tab-content" id="breaks-settings">
+                <h3>إعدادات الفواصل</h3>
+                
+                <div class="settings-row">
+                    <label for="breaks-url">رابط أساسي للفواصل:</label>
+                    <input type="text" id="breaks-url" placeholder="أدخل الجزء الثابت من رابط الفواصل...">
+                </div>
+                
+                <div class="settings-row">
+                    <label for="breaks-prefix">بادئة اسم الفاصل:</label>
+                    <input type="text" id="breaks-prefix" placeholder="مثال: break_">
+                </div>
+                
+                <div class="settings-row">
+                    <label for="breaks-start-number">رقم البداية للفواصل:</label>
+                    <input type="number" id="breaks-start-number" min="0" value="1">
+                </div>
+                
+                <div class="settings-row">
+                    <label for="breaks-padding">تنسيق أرقام الفواصل:</label>
+                    <select id="breaks-padding">
+                        <option value="0">بدون أصفار (1, 2, 3...)</option>
+                        <option value="1">رقم واحد (01, 02...)</option>
+                        <option value="2">رقمين (001, 002...)</option>
+                        <option value="3">ثلاثة أرقام (0001, 0002...)</option>
+                    </select>
+                </div>
+                
+                <div class="settings-row">
+                    <label for="breaks-extension">امتداد ملف الفاصل:</label>
+                    <input type="text" id="breaks-extension" placeholder="مثال: mp4" value="mp4">
+                </div>
+            </div>
+
+            <div class="tab-content" id="url-settings">
+                <h3>إضافة روابط مباشرة</h3>
+                
+                <div class="settings-row">
+                    <label for="direct-url">رابط مباشر:</label>
+                    <input type="text" id="direct-url" placeholder="أدخل رابط Google Drive للفيديو...">
+                </div>
+                
+                <div class="settings-row">
+                    <label for="episode-index">رقم الحلقة:</label>
+                    <input type="number" id="episode-index" min="1" value="1">
+                </div>
+                
+                <div class="checkbox-row">
+                    <input type="checkbox" id="is-break">
+                    <label for="is-break">هذا الرابط لفاصل</label>
+                </div>
+                
+                <button id="add-direct-url">إضافة الرابط</button>
+            </div>
             
-            <button id="generate-playlist" class="btn-success">إنشاء قائمة التشغيل</button>
+            <button id="generate-playlist" style="margin-top: 15px;">إنشاء قائمة التشغيل</button>
         </div>
     </div>
 
@@ -462,6 +404,8 @@
             const accessCodeInput = document.getElementById('access-code');
             const accessBtn = document.getElementById('access-btn');
             const playlistSettings = document.getElementById('playlist-settings');
+            const tabs = document.querySelectorAll('.tab');
+            const tabContents = document.querySelectorAll('.tab-content');
             
             // عناصر إعدادات قائمة التشغيل
             const episodesCountInput = document.getElementById('episodes-count');
@@ -470,11 +414,22 @@
             const startNumberInput = document.getElementById('start-number');
             const paddingSelect = document.getElementById('padding');
             const extensionInput = document.getElementById('extension');
+            const useBreaksCheckbox = document.getElementById('use-breaks');
+            
+            // عناصر إعدادات الفواصل
+            const breaksUrlInput = document.getElementById('breaks-url');
+            const breaksPrefixInput = document.getElementById('breaks-prefix');
+            const breaksStartNumberInput = document.getElementById('breaks-start-number');
+            const breaksPaddingSelect = document.getElementById('breaks-padding');
+            const breaksExtensionInput = document.getElementById('breaks-extension');
+            
+            // عناصر إضافة الروابط المباشرة
+            const directUrlInput = document.getElementById('direct-url');
+            const episodeIndexInput = document.getElementById('episode-index');
+            const isBreakCheckbox = document.getElementById('is-break');
+            const addDirectUrlBtn = document.getElementById('add-direct-url');
+            
             const generatePlaylistBtn = document.getElementById('generate-playlist');
-            const useSpacersCheckbox = document.getElementById('use-spacers');
-            const spacersContainer = document.getElementById('spacers-container');
-            const spacerPrefixInput = document.getElementById('spacer-prefix');
-            const spacerPositionsInput = document.getElementById('spacer-positions');
             
             // كود الوصول للإعدادات
             const ACCESS_CODE = "F@20D&o0tTrR2#D0•Hh";
@@ -482,9 +437,9 @@
             // متغيرات لإدارة الحالة
             let currentEpisode = 0;
             let episodes = [];
+            let breaks = [];
             let isAdmin = false;
-            let hasSpacers = false;
-            let spacerPositions = [];
+            let currentContentType = 'episode'; // 'episode' أو 'break'
             
             // استعادة البيانات المحفوظة (إن وجدت)
             loadSavedData();
@@ -494,7 +449,64 @@
             nextEpisodeBtn.addEventListener('click', () => changeEpisode(1));
             generatePlaylistBtn.addEventListener('click', generatePlaylist);
             accessBtn.addEventListener('click', checkAccessCode);
-            useSpacersCheckbox.addEventListener('change', toggleSpacersContainer);
+            addDirectUrlBtn.addEventListener('click', addDirectUrl);
+            
+            // التبديل بين علامات التبويب
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tabContents.forEach(c => c.classList.remove('active'));
+                    
+                    tab.classList.add('active');
+                    document.getElementById(tab.dataset.tab).classList.add('active');
+                });
+            });
+            
+            // إضافة رابط مباشر
+            function addDirectUrl() {
+                const url = directUrlInput.value.trim();
+                if (!url) {
+                    showNotification('الرجاء إدخال رابط الفيديو');
+                    return;
+                }
+                
+                const index = parseInt(episodeIndexInput.value) - 1;
+                const isBreak = isBreakCheckbox.checked;
+                
+                // استخراج معرف الملف من رابط Google Drive
+                const fileId = extractGoogleDriveFileId(url);
+                if (!fileId) {
+                    showNotification('رابط غير صالح. الرجاء إدخال رابط صحيح من Google Drive');
+                    return;
+                }
+                
+                if (isBreak) {
+                    // إضافة الفاصل
+                    breaks[index] = url;
+                } else {
+                    // إضافة الحلقة
+                    // التأكد من أن المصفوفة كبيرة بما يكفي
+                    if (index >= episodes.length) {
+                        episodes.length = index + 1;
+                        for (let i = 0; i < episodes.length; i++) {
+                            if (!episodes[i]) episodes[i] = '';
+                        }
+                    }
+                    episodes[index] = url;
+                }
+                
+                saveData();
+                showNotification(`تم إضافة ${isBreak ? 'الفاصل' : 'الحلقة'} رقم ${index + 1} بنجاح`);
+                
+                // تحديث واجهة المستخدم
+                createEpisodeButtons();
+                totalEpisodesSpan.textContent = episodes.length;
+                
+                // إعادة تعيين حقول الإدخال
+                directUrlInput.value = '';
+                episodeIndexInput.value = '1';
+                isBreakCheckbox.checked = false;
+            }
             
             // التحقق من كود الوصول
             function checkAccessCode() {
@@ -508,29 +520,33 @@
                 }
             }
             
-            // تبديل عرض خيارات الفواصل
-            function toggleSpacersContainer() {
-                hasSpacers = useSpacersCheckbox.checked;
-                spacersContainer.style.display = hasSpacers ? 'block' : 'none';
-            }
-            
             // تحميل الفيديو
-            function loadVideo(index) {
-                if (!episodes[index]) {
-                    showNotification('لا يوجد رابط للحلقة المحددة');
+            function loadVideoById(index, type = 'episode') {
+                let url;
+                if (type === 'episode') {
+                    url = episodes[index];
+                } else if (type === 'break') {
+                    url = breaks[index];
+                }
+                
+                if (!url) {
+                    showNotification('لا يوجد رابط محدد لهذا المحتوى');
                     return;
                 }
                 
                 // استخراج معرف الملف من رابط Google Drive
-                const fileId = extractGoogleDriveFileId(episodes[index]);
+                const fileId = extractGoogleDriveFileId(url);
                 if (!fileId) {
-                    showNotification('رابط غير صالح للحلقة المحددة');
+                    showNotification('رابط غير صالح');
                     return;
                 }
                 
-                // إنشاء رابط التضمين المخصص لمنع الوصول إلى Google Drive
+                // إنشاء رابط التضمين المخصص
                 const embedUrl = createProtectedEmbedUrl(fileId);
                 videoPlayer.src = embedUrl;
+                
+                currentContentType = type;
+                saveData();
             }
             
             // إنشاء رابط تضمين محمي
@@ -559,14 +575,23 @@
             
             // تغيير الحلقة الحالية
             function changeEpisode(direction) {
+                // إذا كان المحتوى الحالي هو فاصل، انتقل إلى الحلقة المناسبة
+                if (currentContentType === 'break') {
+                    loadVideoById(direction > 0 ? currentEpisode + 1 : currentEpisode);
+                    return;
+                }
+                
                 const newEpisode = currentEpisode + direction;
                 
                 if (newEpisode >= 0 && newEpisode < episodes.length) {
-                    currentEpisode = newEpisode;
-                    currentEpisodeSpan.textContent = currentEpisode + 1;
-                    
-                    // تحميل الفيديو إذا كان هناك رابط محفوظ
-                    loadVideo(currentEpisode);
+                    // تحقق مما إذا كان هناك فاصل يجب عرضه قبل الانتقال للحلقة التالية
+                    if (direction > 0 && breaks[currentEpisode] && useBreaksCheckbox.checked) {
+                        loadVideoById(currentEpisode, 'break');
+                    } else {
+                        currentEpisode = newEpisode;
+                        currentEpisodeSpan.textContent = currentEpisode + 1;
+                        loadVideoById(currentEpisode);
+                    }
                     
                     // تحديث أزرار الحلقات
                     updateEpisodeButtons();
@@ -585,72 +610,53 @@
                 const padding = parseInt(paddingSelect.value) || 0;
                 const extension = extensionInput.value.trim() || 'mp4';
                 
-                // معالجة الفواصل إذا كانت مفعلة
-                hasSpacers = useSpacersCheckbox.checked;
-                let spacerPrefix = '';
-                spacerPositions = [];
-                
-                if (hasSpacers) {
-                    spacerPrefix = spacerPrefixInput.value.trim();
-                    // تحويل إدخال المواضع إلى مصفوفة من الأرقام
-                    const positionsInput = spacerPositionsInput.value.trim();
-                    if (positionsInput) {
-                        spacerPositions = positionsInput.split(',')
-                            .map(pos => parseInt(pos.trim()))
-                            .filter(pos => !isNaN(pos) && pos > 0 && pos <= count);
-                    }
+                if (!baseUrl) {
+                    showNotification('الرابط الأساسي إلزامي لإنشاء قائمة التشغيل');
+                    return;
                 }
                 
-                // حساب العدد الإجمالي للحلقات مع الفواصل
-                const totalEpisodes = count + (hasSpacers ? spacerPositions.length : 0);
-                
-                // إنشاء مصفوفة فارغة بالحجم المطلوب
-                episodes = new Array(totalEpisodes).fill('');
+                // إنشاء مصفوفة للحلقات
+                episodes = new Array(count).fill('');
                 currentEpisode = 0;
                 
-                // إضافة الروابط إذا كان هناك رابط أساسي
-                if (baseUrl) {
-                    let regularEpisodeIndex = 0;
-                    let currentArrayIndex = 0;
+                // إضافة الروابط باستخدام الرابط الأساسي
+                for (let i = 0; i < count; i++) {
+                    const num = startNumber + i;
+                    const paddedNum = num.toString().padStart(padding + 1, '0');
+                    episodes[i] = `${baseUrl}${prefix}${paddedNum}.${extension}`;
+                }
+                
+                // إضافة الفواصل إذا تم تحديد ذلك
+                if (useBreaksCheckbox.checked) {
+                    const breaksUrl = breaksUrlInput.value.trim();
+                    const breaksPrefix = breaksPrefixInput.value.trim();
+                    const breaksStartNumber = parseInt(breaksStartNumberInput.value) || 1;
+                    const breaksPadding = parseInt(breaksPaddingSelect.value) || 0;
+                    const breaksExtension = breaksExtensionInput.value.trim() || 'mp4';
                     
-                    for (let i = 0; i < totalEpisodes; i++) {
-                        // التحقق مما إذا كان هذا الموضع يجب أن يكون فاصلاً
-                        const isSpacerPosition = hasSpacers && spacerPositions.includes(regularEpisodeIndex + 1);
+                    if (breaksUrl) {
+                        breaks = new Array(count - 1).fill('');
                         
-                        if (isSpacerPosition) {
-                            // إضافة الفاصل
-                            const spacerNum = spacerPositions.indexOf(regularEpisodeIndex + 1) + 1;
-                            const paddedSpacerNum = spacerNum.toString().padStart(padding + 1, '0');
-                            episodes[currentArrayIndex] = `${baseUrl}${spacerPrefix}${paddedSpacerNum}.${extension}`;
-                            currentArrayIndex++;
-                        }
-                        
-                        // إضافة الحلقة العادية
-                        if (regularEpisodeIndex < count) {
-                            const num = startNumber + regularEpisodeIndex;
-                            const paddedNum = num.toString().padStart(padding + 1, '0');
-                            episodes[currentArrayIndex] = `${baseUrl}${prefix}${paddedNum}.${extension}`;
-                            
-                            regularEpisodeIndex++;
-                            currentArrayIndex++;
+                        for (let i = 0; i < count - 1; i++) {
+                            const num = breaksStartNumber + i;
+                            const paddedNum = num.toString().padStart(breaksPadding + 1, '0');
+                            breaks[i] = `${breaksUrl}${breaksPrefix}${paddedNum}.${breaksExtension}`;
                         }
                     }
                 }
                 
                 // تحديث واجهة المستخدم
                 currentEpisodeSpan.textContent = '1';
-                totalEpisodesSpan.textContent = totalEpisodes;
+                totalEpisodesSpan.textContent = count;
+                
+                // تحميل الحلقة الأولى
+                loadVideoById(0);
                 
                 // إنشاء أزرار الحلقات
                 createEpisodeButtons();
                 saveData();
                 
-                // تحميل الحلقة الأولى
-                if (episodes[0]) {
-                    loadVideo(0);
-                }
-                
-                showNotification(`تم إنشاء قائمة تشغيل بـ ${totalEpisodes} حلقة`);
+                showNotification(`تم إنشاء قائمة تشغيل بـ ${count} حلقة`);
             }
             
             // إنشاء أزرار الحلقات
@@ -658,108 +664,56 @@
                 episodeButtonsContainer.innerHTML = '';
                 
                 for (let i = 0; i < episodes.length; i++) {
+                    // إضافة زر الحلقة
                     const button = document.createElement('button');
                     button.className = 'episode-button';
-                    
-                    // التحقق مما إذا كانت الحلقة فاصلاً
-                    const isEpisodeSpacer = hasSpacers && isSpacerButton(i);
-                    
-                    // تعيين نص الزر
-                    if (isEpisodeSpacer) {
-                        button.textContent = `فاصل ${getSpacerNumber(i)}`;
-                        button.style.backgroundColor = 'var(--accent-color)';
-                    } else {
-                        button.textContent = getRegularEpisodeNumber(i);
-                    }
-                    
+                    button.textContent = i + 1;
                     button.dataset.index = i;
+                    button.dataset.type = 'episode';
                     
                     button.addEventListener('click', () => {
                         currentEpisode = parseInt(button.dataset.index);
                         currentEpisodeSpan.textContent = currentEpisode + 1;
-                        
-                        if (episodes[currentEpisode]) {
-                            loadVideo(currentEpisode);
-                        }
-                        
+                        loadVideoById(currentEpisode);
                         updateEpisodeButtons();
                         saveData();
                     });
                     
                     episodeButtonsContainer.appendChild(button);
+                    
+                    // إضافة زر الفاصل إذا كان موجودًا
+                    if (breaks[i] && i < episodes.length - 1 && useBreaksCheckbox.checked) {
+                        const breakButton = document.createElement('button');
+                        breakButton.className = 'break-button';
+                        breakButton.textContent = 'فاصل';
+                        breakButton.dataset.index = i;
+                        breakButton.dataset.type = 'break';
+                        
+                        breakButton.addEventListener('click', () => {
+                            currentEpisode = parseInt(breakButton.dataset.index);
+                            loadVideoById(currentEpisode, 'break');
+                            updateEpisodeButtons();
+                            saveData();
+                        });
+                        
+                        episodeButtonsContainer.appendChild(breakButton);
+                    }
                 }
                 
                 updateEpisodeButtons();
             }
             
-            // التحقق مما إذا كان الزر يمثل فاصلاً
-            function isSpacerButton(index) {
-                if (!hasSpacers || spacerPositions.length === 0) return false;
-                
-                // فحص إذا كان الفهرس يمثل موضع فاصل
-                let regularEpisodeCount = 0;
-                let spacerCount = 0;
-                
-                for (let i = 0; i <= index; i++) {
-                    if (spacerCount < spacerPositions.length && 
-                        regularEpisodeCount === spacerPositions[spacerCount]) {
-                        // هذا فاصل
-                        if (i === index) return true;
-                        spacerCount++;
-                    } else {
-                        // هذه حلقة عادية
-                        regularEpisodeCount++;
-                    }
-                }
-                
-                return false;
-            }
-            
-            // الحصول على رقم الفاصل
-            function getSpacerNumber(index) {
-                let spacerCount = 0;
-                let regularEpisodeCount = 0;
-                
-                for (let i = 0; i <= index; i++) {
-                    if (spacerCount < spacerPositions.length && 
-                        regularEpisodeCount === spacerPositions[spacerCount]) {
-                        spacerCount++;
-                        if (i === index) return spacerCount;
-                    } else {
-                        regularEpisodeCount++;
-                    }
-                }
-                
-                return 0;
-            }
-            
-            // الحصول على رقم الحلقة العادية
-            function getRegularEpisodeNumber(index) {
-                let regularEpisodeCount = 0;
-                
-                for (let i = 0; i <= index; i++) {
-                    if (!isSpacerButton(i)) {
-                        regularEpisodeCount++;
-                    }
-                    
-                    if (i === index) return regularEpisodeCount;
-                }
-                
-                return 0;
-            }
-            
             // تحديث حالة أزرار الحلقات
             function updateEpisodeButtons() {
-                const buttons = episodeButtonsContainer.querySelectorAll('.episode-button');
+                const buttons = episodeButtonsContainer.querySelectorAll('button');
                 
                 buttons.forEach(button => {
-                    const index = parseInt(button.dataset.index);
-                    
                     // إزالة كل الفئات المتعلقة بالحالة
                     button.classList.remove('active');
                     
                     // إضافة الفئة المناسبة
-                    if (index === currentEpisode) {
+                    if (parseInt(button.dataset.index) === currentEpisode && 
+                        button.dataset.type === currentContentType) {
                         button.classList.add('active');
                     }
                 });
@@ -768,23 +722,21 @@
             // عرض إشعار
             function showNotification(message) {
                 notification.textContent = message;
-                notification.classList.add('show');
+                notification.style.opacity = '1';
                 
                 setTimeout(() => {
-                    notification.classList.remove('show');
+                    notification.style.opacity = '0';
                 }, 3000);
             }
             
             // تشفير البيانات قبل التخزين
             function encryptData(data) {
-                // تطبيق تشفير بسيط للبيانات باستخدام كود الوصول كمفتاح
                 return btoa(encodeURIComponent(JSON.stringify(data)));
             }
             
             // فك تشفير البيانات المستعادة
             function decryptData(encryptedData) {
                 try {
-                    // فك التشفير البسيط
                     return JSON.parse(decodeURIComponent(atob(encryptedData)));
                 } catch (error) {
                     console.error('خطأ في فك تشفير البيانات:', error);
@@ -796,7 +748,9 @@
             function saveData() {
                 const data = {
                     currentEpisode,
+                    currentContentType,
                     episodes,
+                    breaks,
                     settings: {
                         episodesCount: episodesCountInput.value,
                         baseUrl: baseUrlInput.value,
@@ -804,9 +758,13 @@
                         startNumber: startNumberInput.value,
                         padding: paddingSelect.value,
                         extension: extensionInput.value,
-                        hasSpacers: hasSpacers,
-                        spacerPrefix: spacerPrefixInput.value,
-                        spacerPositions: spacerPositionsInput.value
+                        useBreaks: useBreaksCheckbox.checked,
+                        
+                        breaksUrl: breaksUrlInput.value,
+                        breaksPrefix: breaksPrefixInput.value,
+                        breaksStartNumber: breaksStartNumberInput.value,
+                        breaksPadding: breaksPaddingSelect.value,
+                        breaksExtension: breaksExtensionInput.value
                     }
                 };
                 
@@ -827,7 +785,9 @@
                         if (data) {
                             // استعادة متغيرات الحالة
                             currentEpisode = data.currentEpisode || 0;
+                            currentContentType = data.currentContentType || 'episode';
                             episodes = data.episodes || [];
+                            breaks = data.breaks || [];
                             
                             // استعادة إعدادات قائمة التشغيل
                             if (data.settings) {
@@ -837,15 +797,13 @@
                                 startNumberInput.value = data.settings.startNumber || 1;
                                 paddingSelect.value = data.settings.padding || 0;
                                 extensionInput.value = data.settings.extension || 'mp4';
+                                useBreaksCheckbox.checked = data.settings.useBreaks || false;
                                 
-                                // استعادة إعدادات الفواصل
-                                hasSpacers = data.settings.hasSpacers || false;
-                                useSpacersCheckbox.checked = hasSpacers;
-                                spacerPrefixInput.value = data.settings.spacerPrefix || '';
-                                spacerPositionsInput.value = data.settings.spacerPositions || '';
-                                
-                                // تحديث عرض خيارات الفواصل
-                                toggleSpacersContainer();
+                                breaksUrlInput.value = data.settings.breaksUrl || '';
+                                breaksPrefixInput.value = data.settings.breaksPrefix || '';
+                                breaksStartNumberInput.value = data.settings.breaksStartNumber || 1;
+                                breaksPaddingSelect.value = data.settings.breaksPadding || 0;
+                                breaksExtensionInput.value = data.settings.breaksExtension || 'mp4';
                             }
                             
                             // تحديث واجهة المستخدم
@@ -855,9 +813,11 @@
                             // إنشاء أزرار الحلقات
                             createEpisodeButtons();
                             
-                            // تحميل الفيديو إذا كان هناك رابط
-                            if (episodes[currentEpisode]) {
-                                loadVideo(currentEpisode);
+                            // تحميل الفيديو الحالي
+                            if (currentContentType === 'episode' && episodes[currentEpisode]) {
+                                loadVideoById(currentEpisode);
+                            } else if (currentContentType === 'break' && breaks[currentEpisode]) {
+                                loadVideoById(currentEpisode, 'break');
                             }
                         }
                     } catch (error) {
@@ -866,8 +826,7 @@
                 }
             }
 
-            // تغييرات إضافية لمنع الوصول إلى Google Drive من المستخدم
-            // استبدال مشغل iframe بمشغل أكثر أمانًا
+            // تحسينات أمان إضافية
             function enhanceVideoSecurity() {
                 // إضافة معامل sandbox للـ iframe لتقييد السلوك
                 videoPlayer.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-presentation');
@@ -884,7 +843,6 @@
                         });
                     } catch (e) {
                         // خطأ الوصول عبر النطاق متوقع بسبب سياسة الأمان نفسها
-                        // هذا أمر طبيعي ومتوقع
                     }
                 });
             }
