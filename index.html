@@ -621,413 +621,428 @@
     </div>
 
     <div class="notification" id="notification"></div>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // عناصر DOM
-            const videoPlayer = document.getElementById('video-player');
-            const loadingIndicator = document.getElementById('loading-indicator');
-            const prevEpisodeBtn = document.getElementById('prev-episode');
-            const nextEpisodeBtn = document.getElementById('next-episode');
-            const currentEpisodeSpan = document.getElementById('current-episode');
-            const totalEpisodesSpan = document.getElementById('total-episodes');
-            const episodeTitleElement = document.getElementById('episode-title');
-            const episodeButtonsContainer = document.getElementById('episode-buttons');
-            const notification = document.getElementById('notification');
-            const accessCodeInput = document.getElementById('access-code');
-            const accessBtn = document.getElementById('access-btn');
-            const adminPanel = document.getElementById('admin-panel');
-            const contentTypeSelect = document.getElementById('content-type');
-            const contentTitleInput = document.getElementById('content-title');
-            const contentNumberInput = document.getElementById('content-number');
-            const contentUrlInput = document.getElementById('content-url');
-            const addContentBtn = document.getElementById('add-content');
-            const contentListContainer = document.getElementById('content-list');
-            const clearAllContentBtn = document.getElementById('clear-all-content');
-            const saveContentBtn = document.getElementById('save-content');
-            const adminLogoutBtn = document.getElementById('admin-logout');
-            const continuousPlayToggle = document.getElementById('continuous-play-toggle');
-            
-            // كود الوصول للإعدادات
-            const ACCESS_CODE = "F@20D&o0tTrR2#D0•Hh";
-            
-            // متغيرات لإدارة الحالة
-            let currentIndex = 0;
-            let playlist = [];
-            let isAdmin = false;
-            let continuousPlay = false;
-            let videoEnded = false;
-            let videoLoaded = false;
-            
-            // استعادة البيانات المحفوظة (إن وجدت)
-            loadSavedData();
-            
-            // الاستماع للأحداث
-            prevEpisodeBtn.addEventListener('click', () => changeContent(-1));
-            nextEpisodeBtn.addEventListener('click', () => changeContent(1));
-            addContentBtn.addEventListener('click', addContent);
-            clearAllContentBtn.addEventListener('click', clearAllContent);
-            saveContentBtn.addEventListener('click', saveChanges);
-            adminLogoutBtn.addEventListener('click', adminLogout);
-            accessBtn.addEventListener('click', checkAccessCode);
-            continuousPlayToggle.addEventListener('change', toggleContinuousPlay);
-            
-            // إضافة مستمع للرسائل من iframe
-            window.addEventListener('message', function(event) {
-                if (event.data === 'videoEnded') {
-                    videoEnded = true;
-                    if (continuousPlay) {
-                        changeContent(1);
-                    }
-                }
-            });
-            
-            // التحقق من كود الوصول
-            function checkAccessCode() {
-                if (accessCodeInput.value === ACCESS_CODE) {
-                    isAdmin = true;
-                    adminPanel.style.display = 'block';
-                    accessCodeInput.value = '';
-                    showNotification('تم الوصول إلى لوحة التحكم بنجاح');
-                    
-                    // تحديث قائمة المحتوى
-                    updateContentList();
-                } else {
-                    showNotification('كود الوصول غير صحيح');
-                }
-            }
-            
-            // تسجيل خروج المدير
-            function adminLogout() {
-                isAdmin = false;
-                adminPanel.style.display = 'none';
-                showNotification('تم الخروج من لوحة التحكم بنجاح');
-            }
-            
-            // تبديل وضع التشغيل المستمر
-            function toggleContinuousPlay() {
-                continuousPlay = continuousPlayToggle.checked;
-                if (continuousPlay) {
-                    showNotification('تم تفعيل وضع التشغيل المستمر');
-                } else {
-                    showNotification('تم إلغاء وضع التشغيل المستمر');
-                }
-                saveData();
-            }
-            
-            // تحميل الفيديو
-            function loadVideo() {
-                if (currentIndex < 0 || currentIndex >= playlist.length || !playlist[currentIndex]) {
-                    episodeTitleElement.textContent = 'لا يوجد محتوى متاح';
-                    videoPlayer.src = '';
-                    return;
-                }
-                
-                const currentItem = playlist[currentIndex];
-                
-                // عرض مؤشر التحميل
-                loadingIndicator.style.display = 'flex';
-                videoLoaded = false;
-                
-                // استخراج معرف الملف من رابط Google Drive
-                const fileId = extractGoogleDriveFileId(currentItem.url);
-                if (!fileId) {
-                    showNotification('رابط غير صالح للمحتوى الحالي');
-                    loadingIndicator.style.display = 'none';
-                    return;
-                }
-                
-                // إنشاء رابط التضمين المخصص مع معلمات إضافية لمنع التفاعل مع Google Drive
-                const embedUrl = createSecureEmbedUrl(fileId);
-                
-                // تحديث عنوان الحلقة والعداد
-                episodeTitleElement.textContent = currentItem.title || (currentItem.type === 'episode' ? `الحلقة ${currentItem.number}` : `فاصل ${currentItem.number}`);
-                currentEpisodeSpan.textContent = getCurrentEpisodeNumber();
-                
-                // تحديث أزرار الحلقات
-                updateEpisodeButtons();
-                
-                // تحميل الفيديو
-                videoPlayer.src = embedUrl;
-                
-                // إخفاء مؤشر التحميل عند اكتمال التحميل
-                videoPlayer.onload = function() {
-                    setTimeout(() => {
-                        loadingIndicator.style.display = 'none';
-                        videoLoaded = true;
-                        
-                        try {
-                            // إضافة مستمع لانتهاء الفيديو
-                            injectVideoEndDetection(videoPlayer);
-                            
-                            // إضافة CSS لإخفاء العناصر غير المرغوب فيها
-                            injectCustomStyles(videoPlayer);
-                        } catch (e) {
-                            console.log('تعذر إعداد العناصر المخصصة في الـ iframe');
-                        }
-                    }, 1500); // تأخير قصير لضمان تحميل الفيديو بشكل كامل
-                };
-                
-                // تأكد من أن مؤشر التحميل سيختفي حتى لو فشلت عملية التحميل
-                setTimeout(() => {
-                    if (!videoLoaded) {
-                        loadingIndicator.style.display = 'none';
-                    }
-                }, 10000); // بعد 10 ثوانٍ، إخفاء المؤشر في جميع الحالات
-                
-                // إعادة تعيين متغير حالة نهاية الفيديو
-                videoEnded = false;
-            }
-            
-            // حقن كود JavaScript لاكتشاف نهاية الفيديو
-            function injectVideoEndDetection(iframe) {
-                try {
-                    const iframeWindow = iframe.contentWindow;
-                    if (!iframeWindow) return;
-                    
-                    setTimeout(() => {
-                        try {
-                            const videoElement = iframeWindow.document.querySelector('video');
-                            if (videoElement) {
-                                videoElement.addEventListener('ended', function() {
-                                    window.parent.postMessage('videoEnded', '*');
-                                });
-                            }
-                        } catch (e) {
-                            console.log('تعذر الوصول إلى عنصر الفيديو داخل الـ iframe');
-                        }
-                    }, 2000); // تأخير لضمان تحميل الفيديو
-                } catch (e) {
-                    console.log('تعذر الوصول إلى نافذة الـ iframe');
-                }
-            }
-            
-            // حقن CSS مخصص لإخفاء العناصر غير المرغوب فيها في Google Drive
-            function injectCustomStyles(iframe) {
-                try {
-                    const iframeDocument = iframe.contentWindow.document;
-                    
-                    // إنشاء عنصر style
-                    const styleElement = document.createElement('style');
-                    styleElement.textContent = `
-                        /* إخفاء عناصر Google Drive */
-                        .ndfHFb-c4YZDc-Wrql6b, .ndfHFb-c4YZDc-to915-LgbsSe, .ndfHFb-c4YZDc-MZArnb-ULSXJf-jNm5if,
-                        .drive-viewer-popout-button, .drive-viewer-toolstrip, .drive-viewer-details-panel,
-                        .drive-viewer-popout-button, .goog-menu, .goog-menuitem, .goog-menuitem-content, 
-                        .docs-title-save-label, .docs-title-input, .docs-title-widget, 
-                        [aria-label="التصفح في Drive"], .goog-toolbar, .docs-titlebar-buttons {
-                            display: none !important;
-                            visibility: hidden !important;
-                            opacity: 0 !important;
-                            pointer-events: none !important;
-                        }
-                        
-                        /* إخفاء شريط التوقيع الموجود في أعلى المستند */
-                        .ndfHFb-c4YZDc-tk7BMc, .ndfHFb-c4YZDc-nJjxad-nK2kYb, .ndfHFb-c4YZDc-GSQQnc-LgbsSe {
-                            display: none !important;
-                            visibility: hidden !important;
-                        }
-                        
-                        /* إخفاء أي شيء يتعلق بالإيميل ونسخة Google Drive */
-                        [role="dialog"], [aria-modal="true"], .ga-gb-Ee-n, .modal-dialog, 
-                        .drive-viewer-auth-required-notification, .identity-accounts-signin-dialog {
-                            display: none !important;
-                        }
-                        
-                        /* جعل الفيديو يملئ الإطار بالكامل */
-                        video {
-                            width: 100% !important;
-                            height: 100% !important;
-                            object-fit: contain !important;
-                        }
-                        
-                        /* السماح بعناصر التحكم في الفيديو */
-                        .html5-video-player .ytp-chrome-bottom, .ytp-chrome-controls {
-                            pointer-events: auto !important;
-                            display: block !important;
-                            visibility: visible !important;
-                        }
-                    `;
-                    
-                    try {
-                        iframeDocument.head.appendChild(styleElement);
-                    } catch (e) {
-                        // في حالة الخطأ، نحاول إضافته إلى body
-                        try {
-                            iframeDocument.body.appendChild(styleElement);
-                        } catch (e2) {
-                            console.log('تعذر إضافة CSS إلى iframe');
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // عناصر DOM
+        const videoPlayer = document.getElementById('video-player');
+        const loadingIndicator = document.getElementById('loading-indicator');
+        const prevEpisodeBtn = document.getElementById('prev-episode');
+        const nextEpisodeBtn = document.getElementById('next-episode');
+        const currentEpisodeSpan = document.getElementById('current-episode');
+        const totalEpisodesSpan = document.getElementById('total-episodes');
+        const episodeTitleElement = document.getElementById('episode-title');
+        const episodeButtonsContainer = document.getElementById('episode-buttons');
+        const notification = document.getElementById('notification');
+        const accessCodeInput = document.getElementById('access-code');
+        const accessBtn = document.getElementById('access-btn');
+        const adminPanel = document.getElementById('admin-panel');
+        const contentTypeSelect = document.getElementById('content-type');
+        const contentTitleInput = document.getElementById('content-title');
+        const contentNumberInput = document.getElementById('content-number');
+        const contentUrlInput = document.getElementById('content-url');
+        const addContentBtn = document.getElementById('add-content');
+        const contentListContainer = document.getElementById('content-list');
+        const clearAllContentBtn = document.getElementById('clear-all-content');
+        const saveContentBtn = document.getElementById('save-content');
+        const adminLogoutBtn = document.getElementById('admin-logout');
+        const continuousPlayToggle = document.getElementById('continuous-play-toggle');
+        
+        // كود الوصول للإعدادات
+        const ACCESS_CODE = "F@20D&o0tTrR2#D0•Hh";
+        
+        // متغيرات لإدارة الحالة
+        let currentIndex = 0;
+        let playlist = [];
+        let isAdmin = false;
+        let continuousPlay = false;
+        let videoEnded = false;
+        
+        // استعادة البيانات المحفوظة (إن وجدت)
+        loadSavedData();
+        
+        // الاستماع للأحداث
+        prevEpisodeBtn.addEventListener('click', () => changeContent(-1));
+        nextEpisodeBtn.addEventListener('click', () => changeContent(1));
+        addContentBtn.addEventListener('click', addContent);
+        clearAllContentBtn.addEventListener('click', clearAllContent);
+        saveContentBtn.addEventListener('click', saveChanges);
+        adminLogoutBtn.addEventListener('click', adminLogout);
+        accessBtn.addEventListener('click', checkAccessCode);
+        continuousPlayToggle.addEventListener('change', toggleContinuousPlay);
+        
+        // مراقبة حدث انتهاء الفيديو بطريقة محسّنة
+        window.addEventListener('message', function(event) {
+            try {
+                // تأكد من أن الرسالة تأتي من iframe
+                if (event.source === videoPlayer.contentWindow) {
+                    // إذا كانت الرسالة تشير إلى انتهاء الفيديو
+                    if (event.data === 'videoEnded' || 
+                        (typeof event.data === 'object' && event.data.type === 'videoEnded')) {
+                        videoEnded = true;
+                        if (continuousPlay) {
+                            changeContent(1);
                         }
                     }
-                    
-                    // حاول أيضًا إخفاء نافذة توقيع الدخول بشكل أكثر فعالية
-                    const hideLoginDialogs = () => {
-                        try {
-                            const loginDialogs = iframeDocument.querySelectorAll('[role="dialog"], [aria-modal="true"]');
-                            loginDialogs.forEach(dialog => {
-                                dialog.style.display = 'none';
-                                dialog.style.visibility = 'hidden';
-                            });
-                        } catch (e) {
-                            // تجاهل الأخطاء
-                        }
-                    };
-                    
-                    // تشغيل بشكل متكرر لضمان إخفاء الحوارات المضافة لاحقًا
-                    const intervalId = setInterval(hideLoginDialogs, 500);
-                    
-                    // إيقاف المراقبة بعد 30 ثانية
-                    setTimeout(() => clearInterval(intervalId), 30000);
-                } catch (e) {
-                    console.log('تعذر حقن CSS في iframe');
                 }
+            } catch (e) {
+                console.error("خطأ في معالجة رسالة النافذة:", e);
+            }
+        });
+        
+        // التحقق من كود الوصول
+        function checkAccessCode() {
+            if (accessCodeInput.value === ACCESS_CODE) {
+                isAdmin = true;
+                adminPanel.style.display = 'block';
+                accessCodeInput.value = '';
+                showNotification('تم الوصول إلى لوحة التحكم بنجاح');
+                
+                // تحديث قائمة المحتوى
+                updateContentList();
+            } else {
+                showNotification('كود الوصول غير صحيح');
+            }
+        }
+        
+        // تسجيل خروج المدير
+        function adminLogout() {
+            isAdmin = false;
+            adminPanel.style.display = 'none';
+            showNotification('تم الخروج من لوحة التحكم بنجاح');
+        }
+        
+        // تبديل وضع التشغيل المستمر
+        function toggleContinuousPlay() {
+            continuousPlay = continuousPlayToggle.checked;
+            if (continuousPlay) {
+                showNotification('تم تفعيل وضع التشغيل المستمر');
+            } else {
+                showNotification('تم إلغاء وضع التشغيل المستمر');
+            }
+            saveData(); // حفظ الإعداد
+        }
+        
+        // تحميل الفيديو
+        function loadVideo() {
+            if (currentIndex < 0 || currentIndex >= playlist.length || !playlist[currentIndex]) {
+                episodeTitleElement.textContent = 'لا يوجد محتوى متاح';
+                videoPlayer.src = '';
+                return;
             }
             
-            // إنشاء رابط تضمين آمن
-            function createSecureEmbedUrl(fileId) {
-                // إضافة معلمات لمنع فتح واجهة Google Drive الكاملة مع السماح بالتحكم في الفيديو
-                return `https://drive.google.com/file/d/${fileId}/preview?rm=minimal&disablekb=0&showinfo=0&rel=0&modestbranding=1&controls=1&autohide=1`;
-            }
+            const currentItem = playlist[currentIndex];
+            
+            // عرض مؤشر التحميل
+            loadingIndicator.style.display = 'flex';
             
             // استخراج معرف الملف من رابط Google Drive
-            function extractGoogleDriveFileId(url) {
-                // محاولة استخراج المعرف من روابط مختلفة لـ Google Drive
-                const patterns = [
-                    /\/file\/d\/([^\/\?]+)/,  // المعرف من /file/d/FILE_ID/view
-                    /id=([^&]+)/,          // المعرف من ?id=FILE_ID
-                    /https:\/\/drive\.google\.com\/open\?id=([^&]+)/, // المعرف من رابط open
-                    /\/([a-zA-Z0-9_-]{25,})/       // المعرف المباشر في الرابط (25+ حرفًا)
-                ];
-                
-                for (let pattern of patterns) {
-                    const match = url.match(pattern);
-                    if (match && match[1]) {
-                        return match[1];
-                    }
-                }
-                
-                return null;
+            const fileId = extractGoogleDriveFileId(currentItem.url);
+            if (!fileId) {
+                showNotification('رابط غير صالح للمحتوى الحالي');
+                loadingIndicator.style.display = 'none';
+                return;
             }
             
-            // الحصول على رقم الحلقة الحالية (بدون الفواصل)
-            function getCurrentEpisodeNumber() {
-                let episodeCount = 0;
-                let currentEpisodeNumber = 0;
-                
-                for (let i = 0; i < playlist.length; i++) {
-                    if (playlist[i].type === 'episode') {
-                        episodeCount++;
-                        if (i === currentIndex) {
-                            currentEpisodeNumber = episodeCount;
-                        }
+            // إنشاء رابط التضمين المخصص مع معلمات إضافية لمنع التفاعل مع Google Drive
+            const embedUrl = createSecureEmbedUrl(fileId);
+            
+            // تحديث عنوان الحلقة والعداد
+            episodeTitleElement.textContent = currentItem.title || (currentItem.type === 'episode' ? `الحلقة ${currentItem.number}` : `فاصل ${currentItem.number}`);
+            currentEpisodeSpan.textContent = getCurrentEpisodeNumber();
+            
+            // تحديث أزرار الحلقات
+            updateEpisodeButtons();
+            
+            // تحميل الفيديو
+            videoPlayer.src = embedUrl;
+            
+            // إخفاء مؤشر التحميل عند اكتمال التحميل
+            videoPlayer.onload = function() {
+                loadingIndicator.style.display = 'none';
+                injectVideoEndedDetection();
+            };
+            
+            // إعادة تعيين متغير حالة نهاية الفيديو
+            videoEnded = false;
+        }
+        
+        // إنشاء رابط تضمين آمن
+        function createSecureEmbedUrl(fileId) {
+            // معلمات إضافية لتحسين الأمان ومنع النوافذ المنبثقة
+            return `https://drive.google.com/file/d/${fileId}/preview?usp=sharing&rm=minimal&disablekb=0&showinfo=0&rel=0&modestbranding=1&controls=1&autohide=1&widget=false&chrome=false`;
+        }
+        
+        // حقن كود للكشف عن انتهاء الفيديو وتعطيل واجهة Google Drive
+        function injectVideoEndedDetection() {
+            try {
+                setTimeout(() => {
+                    if (!videoPlayer.contentWindow) return;
+                    
+                    try {
+                        // محاولة حقن كود لاكتشاف نهاية الفيديو وتعطيل واجهة Google Drive
+                        const script = `
+                            try {
+                                // تعطيل نوافذ Google Drive المنبثقة
+                                (function() {
+                                    // إزالة أحداث النقر من عناصر الواجهة
+                                    function disableGoogleDriveUI() {
+                                        // تعطيل جميع نوافذ التسجيل والإشعارات
+                                        const uiElements = document.querySelectorAll('.drive-viewer-popup-widgets, .docs-ml-header, .docs-ml-header-item, .drive-viewer-toolstrip, .drive-viewer-head, .goog-toolbar, .docs-branding-icon, .docs-title-save-label');
+                                        uiElements.forEach(el => {
+                                            if(el) {
+                                                el.style.display = 'none';
+                                                el.style.visibility = 'hidden';
+                                                el.style.pointerEvents = 'none';
+                                                el.style.opacity = '0';
+                                                el.remove();
+                                            }
+                                        });
+                                        
+                                        // تعطيل جميع الروابط الخارجية
+                                        const links = document.querySelectorAll('a[href*="drive.google.com"], a[href*="accounts.google.com"]');
+                                        links.forEach(link => {
+                                            link.setAttribute('href', 'javascript:void(0)');
+                                            link.style.pointerEvents = 'none';
+                                            link.style.display = 'none';
+                                            link.onclick = e => {
+                                                e.preventDefault();
+                                                e.stopPropagation();
+                                                return false;
+                                            };
+                                        });
+                                        
+                                        // إضافة طبقة للتحكم بالأحداث
+                                        if (!document.getElementById('control-overlay')) {
+                                            const overlay = document.createElement('div');
+                                            overlay.id = 'control-overlay';
+                                            overlay.style.position = 'absolute';
+                                            overlay.style.top = '0';
+                                            overlay.style.left = '0';
+                                            overlay.style.width = '100%';
+                                            overlay.style.height = '100%';
+                                            overlay.style.zIndex = '9998';
+                                            overlay.style.pointerEvents = 'none';
+                                            
+                                            // السماح بالتحكم بالفيديو فقط
+                                            const videoElement = document.querySelector('video');
+                                            if (videoElement) {
+                                                videoElement.style.zIndex = '9999';
+                                                videoElement.style.position = 'relative';
+                                                videoElement.style.pointerEvents = 'auto';
+                                                
+                                                // اكتشاف نهاية الفيديو
+                                                videoElement.addEventListener('ended', function() {
+                                                    window.parent.postMessage('videoEnded', '*');
+                                                });
+                                                
+                                                // تأكد من أن عناصر التحكم بالفيديو قابلة للنقر
+                                                const controls = document.querySelector('.html5-video-player, .ytp-chrome-bottom');
+                                                if (controls) {
+                                                    controls.style.zIndex = '10000';
+                                                    controls.style.pointerEvents = 'auto';
+                                                }
+                                            }
+                                            
+                                            document.body.appendChild(overlay);
+                                        }
+                                    }
+                                    
+                                    // تنفيذ التعطيل عند التحميل
+                                    disableGoogleDriveUI();
+                                    
+                                    // تكرار التعطيل كل 200 مللي ثانية لمعالجة العناصر الديناميكية
+                                    setInterval(disableGoogleDriveUI, 200);
+                                    
+                                    // منع فتح النوافذ المنبثقة
+                                    const originalOpen = window.open;
+                                    window.open = function() {
+                                        console.log('تم منع محاولة فتح نافذة منبثقة');
+                                        return null;
+                                    };
+                                    
+                                    // تعطيل تنبيهات تسجيل الدخول
+                                    window.alert = function() { return false; };
+                                    window.confirm = function() { return false; };
+                                    window.prompt = function() { return false; };
+                                    
+                                    // إضافة CSS لتعطيل واجهة Google Drive
+                                    const style = document.createElement('style');
+                                    style.textContent = \`
+                                        /* إخفاء واجهة Google Drive */
+                                        .drive-viewer-popup-widgets, .docs-ml-header-item, .docs-ml-header, 
+                                        .goog-toolbar, .docs-details-sidebar, .docs-butterbar-container, 
+                                        .docs-branding-icon, .docs-title-save-label, .docs-title-input, 
+                                        .docs-title-widget, .docs-title-inner, .docs-title-button-row,
+                                        .goog-inline-block.goog-toolbar-button, .goog-toolbar-menu-button,
+                                        a[href*="drive.google.com"], a[href*="accounts.google.com"],
+                                        .drive-viewer-head, .drive-viewer-toolstrip, .drive-viewer-dark-feature, 
+                                        .drive-viewer-popup-pane {
+                                            display: none !important;
+                                            visibility: hidden !important;
+                                            opacity: 0 !important;
+                                            pointer-events: none !important;
+                                            max-height: 0 !important;
+                                            max-width: 0 !important;
+                                            overflow: hidden !important;
+                                        }
+                                        
+                                        /* السماح بعناصر التحكم في الفيديو */
+                                        video, .html5-video-player, .ytp-chrome-bottom {
+                                            display: block !important;
+                                            visibility: visible !important;
+                                            pointer-events: auto !important;
+                                            z-index: 10000 !important;
+                                        }
+                                        
+                                        /* تحسين تجربة المستخدم */
+                                        body {
+                                            overflow: hidden !important;
+                                        }
+                                    \`;
+                                    document.head.appendChild(style);
+                                    
+                                })();
+                            } catch(e) {
+                                console.error("خطأ في تعطيل واجهة Google Drive:", e);
+                            }
+                        `;
+                        
+                        // حقن السكريبت داخل iframe
+                        const scriptElement = document.createElement('script');
+                        scriptElement.textContent = script;
+                        
+                        videoPlayer.contentWindow.document.body.appendChild(scriptElement);
+                    } catch (e) {
+                        // تجاهل أخطاء سياسة الأمان
+                    }
+                }, 1000); // انتظر ثانية واحدة للتأكد من تحميل الإطار
+            } catch (e) {
+                console.error("خطأ في حقن كود الكشف عن نهاية الفيديو:", e);
+            }
+        }
+        
+        // استخراج معرف الملف من رابط Google Drive
+        function extractGoogleDriveFileId(url) {
+            // محاولة استخراج المعرف من روابط مختلفة لـ Google Drive
+            const patterns = [
+                /\/file\/d\/([^\/]+)/,  // المعرف من /file/d/FILE_ID/view
+                /id=([^&]+)/,          // المعرف من ?id=FILE_ID
+                /\/([^\/]{25,})/       // المعرف المباشر في الرابط (25+ حرفًا)
+            ];
+            
+            for (let pattern of patterns) {
+                const match = url.match(pattern);
+                if (match && match[1]) {
+                    return match[1];
+                }
+            }
+            
+            return null;
+        }
+        
+        // الحصول على رقم الحلقة الحالية (بدون الفواصل)
+        function getCurrentEpisodeNumber() {
+            let episodeCount = 0;
+            let currentEpisodeNumber = 0;
+            
+            for (let i = 0; i < playlist.length; i++) {
+                if (playlist[i].type === 'episode') {
+                    episodeCount++;
+                    if (i === currentIndex) {
+                        currentEpisodeNumber = episodeCount;
                     }
                 }
-                
-                // إذا كان المحتوى الحالي فاصلًا، نعرض رقم الحلقة السابقة
-                if (playlist[currentIndex] && playlist[currentIndex].type === 'ad') {
-                    currentEpisodeNumber = 'فاصل';
-                    return currentEpisodeNumber;
-                }
-                
+            }
+            
+            // إذا كان المحتوى الحالي فاصلًا، نعرض رقم الحلقة السابقة
+            if (playlist[currentIndex] && playlist[currentIndex].type === 'ad') {
+                currentEpisodeNumber = 'فاصل';
                 return currentEpisodeNumber;
             }
             
-            // الحصول على إجمالي عدد الحلقات (بدون الفواصل)
-            function getTotalEpisodesCount() {
-                let count = 0;
-                
-                for (let item of playlist) {
-                    if (item.type === 'episode') {
-                        count++;
-                    }
+            return currentEpisodeNumber;
+        }
+        
+        // الحصول على إجمالي عدد الحلقات (بدون الفواصل)
+        function getTotalEpisodesCount() {
+            let count = 0;
+            
+            for (let item of playlist) {
+                if (item.type === 'episode') {
+                    count++;
                 }
-                
-                return count;
             }
             
-            // تغيير المحتوى الحالي
-            function changeContent(direction) {
-                const newIndex = currentIndex + direction;
-                
-                if (newIndex >= 0 && newIndex < playlist.length) {
-                    currentIndex = newIndex;
-                    loadVideo();
+            return count;
+        }
+        
+        // تغيير المحتوى الحالي
+        function changeContent(direction) {
+            const newIndex = currentIndex + direction;
+            
+            if (newIndex >= 0 && newIndex < playlist.length) {
+                currentIndex = newIndex;
+                loadVideo();
+                saveData(); // حفظ الموضع الحالي
+            } else {
+                if (newIndex < 0) {
+                    showNotification('أنت في بداية قائمة التشغيل');
                 } else {
-                    if (newIndex < 0) {
-                        showNotification('أنت في بداية قائمة التشغيل');
-                    } else {
-                        showNotification('أنت في نهاية قائمة التشغيل');
-                    }
+                    showNotification('أنت في نهاية قائمة التشغيل');
                 }
             }
+        }
+        
+        // إضافة محتوى جديد (حلقة أو فاصل)
+        function addContent() {
+            const type = contentTypeSelect.value;
+            const title = contentTitleInput.value.trim();
+            const number = parseInt(contentNumberInput.value) || 1;
+            const url = contentUrlInput.value.trim();
             
-            // إضافة محتوى جديد (حلقة أو فاصل)
-            function addContent() {
-                const type = contentTypeSelect.value;
-                const title = contentTitleInput.value.trim();
-                const number = parseInt(contentNumberInput.value) || 1;
-                const url = contentUrlInput.value.trim();
-                
-                if (!url) {
-                    showNotification('الرجاء إدخال رابط المحتوى');
-                    return;
-                }
-                
-                // التحقق من عدم تكرار نفس الرابط
-                const isDuplicate = playlist.some(item => item.url === url);
-                if (isDuplicate) {
-                    showNotification('هذا الرابط موجود بالفعل في قائمة التشغيل');
-                    return;
-                }
-                
-                // إضافة المحتوى الجديد
-                const newItem = {
-                    type,
-                    title,
-                    number,
-                    url
-                };
-                
-                playlist.push(newItem);
-                
-                // تحديث واجهة المستخدم
-                updateContentList();
-                updateTotalEpisodesCount();
-                createEpisodeButtons();
-                
-                // إعادة تعيين حقول الإدخال
-                contentTitleInput.value = '';
-                contentNumberInput.value = (number + 1).toString();
-                contentUrlInput.value = '';
-                
-                showNotification(`تمت إضافة ${type === 'episode' ? 'الحلقة' : 'الفاصل'} بنجاح`);
+            if (!url) {
+                showNotification('الرجاء إدخال رابط المحتوى');
+                return;
             }
             
-            // حذف كل المحتوى
-            function clearAllContent() {
-                if (confirm('هل أنت متأكد من رغبتك في حذف كل المحتوى؟')) {
-                    playlist = [];
-                    currentIndex = 0;
-                    
-                    // تحديث واجهة المستخدم
-                    updateContentList();
-                    updateTotalEpisodesCount();
-                    createEpisodeButtons();
-                    loadVideo();
-                    
-                    showNotification('تم حذف كل المحتوى بنجاح');
-                    saveData();
-                }
+            // التحقق من عدم تكرار نفس الرابط
+            const isDuplicate = playlist.some(item => item.url === url);
+            if (isDuplicate) {
+                showNotification('هذا الرابط موجود بالفعل في قائمة التشغيل');
+                return;
             }
             
-            // حذف محتوى محدد
-            function deleteContent(index) {
-                playlist.splice(index, 1);
-                
-                // ضبط المؤشر الحالي إذا تم حذف العنصر الحالي أو عنصر قبله
-                if (index <= currentIndex) {
-                    currentIndex = Math.max(0, currentIndex - 1);
-                }
+            // إضافة المحتوى الجديد
+            const newItem = {
+                type,
+                title,
+                number,
+                url
+            };
+            
+            playlist.push(newItem);
+            
+            // تحديث واجهة المستخدم
+            updateContentList();
+            updateTotalEpisodesCount();
+            createEpisodeButtons();
+            
+            // إعادة تعيين حقول الإدخال
+            contentTitleInput.value = '';
+            contentNumberInput.value = (number + 1).toString();
+            contentUrlInput.value = '';
+            
+            showNotification(`تمت إضافة ${type === 'episode' ? 'الحلقة' : 'الفاصل'} بنجاح`);
+            
+            // حفظ التغييرات تلقائيًا
+            saveData();
+        }
+        
+        // حذف كل المحتوى
+        function clearAllContent() {
+            if (confirm('هل أنت متأكد من رغبتك في حذف كل المحتوى؟')) {
+                playlist = [];
+                currentIndex = 0;
                 
                 // تحديث واجهة المستخدم
                 updateContentList();
@@ -1035,268 +1050,301 @@
                 createEpisodeButtons();
                 loadVideo();
                 
-                showNotification('تم حذف المحتوى بنجاح');
-            }
-            
-            // تحريك المحتوى للأعلى
-            function moveContentUp(index) {
-                if (index <= 0) return;
+                showNotification('تم حذف كل المحتوى بنجاح');
                 
-                const temp = playlist[index];
-                playlist[index] = playlist[index - 1];
-                playlist[index - 1] = temp;
-                
-                // تحديث المؤشر الحالي إذا تم تحريك العنصر الحالي أو العنصر قبله
-                if (index === currentIndex) {
-                    currentIndex--;
-                } else if (index - 1 === currentIndex) {
-                    currentIndex++;
-                }
-                
-                // تحديث واجهة المستخدم
-                updateContentList();
-                createEpisodeButtons();
-                
-                showNotification('تم تحريك المحتوى للأعلى');
-            }
-            
-            // تحريك المحتوى للأسفل
-            function moveContentDown(index) {
-                if (index >= playlist.length - 1) return;
-                
-                const temp = playlist[index];
-                playlist[index] = playlist[index + 1];
-                playlist[index + 1] = temp;
-                
-                // تحديث المؤشر الحالي إذا تم تحريك العنصر الحالي أو العنصر بعده
-                if (index === currentIndex) {
-                    currentIndex++;
-                } else if (index + 1 === currentIndex) {
-                    currentIndex--;
-                }
-                
-                // تحديث واجهة المستخدم
-                updateContentList();
-                createEpisodeButtons();
-                
-                showNotification('تم تحريك المحتوى للأسفل');
-            }
-            
-            // حفظ التغييرات
-            function saveChanges() {
+                // حفظ التغييرات تلقائيًا
                 saveData();
-                showNotification('تم حفظ التغييرات بنجاح');
+            }
+        }
+        
+        // حذف محتوى محدد
+        function deleteContent(index) {
+            playlist.splice(index, 1);
+            
+            // ضبط المؤشر الحالي إذا تم حذف العنصر الحالي أو عنصر قبله
+            if (index <= currentIndex) {
+                currentIndex = Math.max(0, currentIndex - 1);
             }
             
-            // تحديث قائمة المحتوى في لوحة التحكم
-            function updateContentList() {
-                contentListContainer.innerHTML = '';
+            // تحديث واجهة المستخدم
+            updateContentList();
+            updateTotalEpisodesCount();
+            createEpisodeButtons();
+            loadVideo();
+            
+            showNotification('تم حذف المحتوى بنجاح');
+            
+            // حفظ التغييرات تلقائيًا
+            saveData();
+        }
+        
+        // تحريك المحتوى للأعلى
+        function moveContentUp(index) {
+            if (index <= 0) return;
+            
+            const temp = playlist[index];
+            playlist[index] = playlist[index - 1];
+            playlist[index - 1] = temp;
+            
+            // تحديث المؤشر الحالي إذا تم تحريك العنصر الحالي أو العنصر قبله
+            if (index === currentIndex) {
+                currentIndex--;
+            } else if (index - 1 === currentIndex) {
+                currentIndex++;
+            }
+            
+            // تحديث واجهة المستخدم
+            updateContentList();
+            createEpisodeButtons();
+            
+            showNotification('تم تحريك المحتوى للأعلى');
+            
+            // حفظ التغييرات تلقائيًا
+            saveData();
+        }
+        
+        // تحريك المحتوى للأسفل
+        function moveContentDown(index) {
+            if (index >= playlist.length - 1) return;
+            
+            const temp = playlist[index];
+            playlist[index] = playlist[index + 1];
+            playlist[index + 1] = temp;
+            
+            // تحديث المؤشر الحالي إذا تم تحريك العنصر الحالي أو العنصر بعده
+            if (index === currentIndex) {
+                currentIndex++;
+            } else if (index + 1 === currentIndex) {
+                currentIndex--;
+            }
+            
+            // تحديث واجهة المستخدم
+            updateContentList();
+            createEpisodeButtons();
+            
+            showNotification('تم تحريك المحتوى للأسفل');
+            
+            // حفظ التغييرات تلقائيًا
+            saveData();
+        }
+        
+        // حفظ التغييرات
+        function saveChanges() {
+            saveData();
+            showNotification('تم حفظ التغييرات بنجاح');
+        }
+        
+        // تحديث قائمة المحتوى في لوحة التحكم
+        function updateContentList() {
+            contentListContainer.innerHTML = '';
+            
+            if (playlist.length === 0) {
+                const emptyMessage = document.createElement('div');
+                emptyMessage.textContent = 'لا يوجد محتوى مضاف بعد';
+                emptyMessage.style.textAlign = 'center';
+                emptyMessage.style.padding = '20px';
+                emptyMessage.style.color = 'var(--gray-text)';
+                contentListContainer.appendChild(emptyMessage);
+                return;
+            }
+            
+            playlist.forEach((item, index) => {
+                const itemElement = document.createElement('div');
+                itemElement.className = 'content-item';
                 
-                if (playlist.length === 0) {
-                    const emptyMessage = document.createElement('div');
-                    emptyMessage.textContent = 'لا يوجد محتوى مضاف بعد';
-                    emptyMessage.style.textAlign = 'center';
-                    emptyMessage.style.padding = '20px';
-                    emptyMessage.style.color = 'var(--gray-text)';
-                    contentListContainer.appendChild(emptyMessage);
-                    return;
+                const infoElement = document.createElement('div');
+                infoElement.className = 'content-item-info';
+                
+                const titleElement = document.createElement('div');
+                titleElement.className = 'content-item-title';
+                titleElement.textContent = item.title || (item.type === 'episode' ? `الحلقة ${item.number}` : `فاصل ${item.number}`);
+                
+                const typeElement = document.createElement('div');
+                typeElement.className = 'content-item-type';
+                typeElement.textContent = item.type === 'episode' ? 'حلقة' : 'فاصل';
+                
+                const urlElement = document.createElement('div');
+                urlElement.className = 'content-item-url';
+                urlElement.textContent = item.url;
+                
+                infoElement.appendChild(titleElement);
+                infoElement.appendChild(typeElement);
+                infoElement.appendChild(urlElement);
+                
+                const actionsElement = document.createElement('div');
+                actionsElement.className = 'content-item-actions';
+                
+                const upButton = document.createElement('button');
+                upButton.className = 'btn btn-sm btn-secondary';
+                upButton.textContent = '↑';
+                upButton.title = 'تحريك للأعلى';
+                upButton.addEventListener('click', () => moveContentUp(index));
+                
+                const downButton = document.createElement('button');
+                downButton.className = 'btn btn-sm btn-secondary';
+                downButton.textContent = '↓';
+                downButton.title = 'تحريك للأسفل';
+                downButton.addEventListener('click', () => moveContentDown(index));
+                
+                const deleteButton = document.createElement('button');
+                deleteButton.className = 'btn btn-sm btn-danger';
+                deleteButton.textContent = 'حذف';
+                deleteButton.addEventListener('click', () => deleteContent(index));
+                
+                actionsElement.appendChild(upButton);
+                actionsElement.appendChild(downButton);
+                actionsElement.appendChild(deleteButton);
+                
+                itemElement.appendChild(infoElement);
+                itemElement.appendChild(actionsElement);
+                
+                contentListContainer.appendChild(itemElement);
+            });
+        }
+        
+        // تحديث عدد الحلقات الإجمالي
+        function updateTotalEpisodesCount() {
+            const totalEpisodes = getTotalEpisodesCount();
+            totalEpisodesSpan.textContent = totalEpisodes;
+        }
+        
+        // إنشاء أزرار الحلقات
+        function createEpisodeButtons() {
+            episodeButtonsContainer.innerHTML = '';
+            
+            let episodeCount = 0;
+            
+            for (let i = 0; i < playlist.length; i++) {
+                const item = playlist[i];
+                
+                if (item.type === 'episode') {
+                    episodeCount++;
+                    
+                    const button = document.createElement('button');
+                    button.className = 'episode-button';
+                    button.textContent = episodeCount;
+                    button.dataset.index = i;
+                    
+                    button.addEventListener('click', () => {
+                        currentIndex = parseInt(button.dataset.index);
+                        loadVideo();
+                        saveData(); // حفظ الموضع الحالي
+                    });
+                    
+                    episodeButtonsContainer.appendChild(button);
                 }
-                
-                playlist.forEach((item, index) => {
-                    const itemElement = document.createElement('div');
-                    itemElement.className = 'content-item';
-                    
-                    const infoElement = document.createElement('div');
-                    infoElement.className = 'content-item-info';
-                    
-                    const titleElement = document.createElement('div');
-                    titleElement.className = 'content-item-title';
-                    titleElement.textContent = item.title || (item.type === 'episode' ? `الحلقة ${item.number}` : `فاصل ${item.number}`);
-                    
-                    const typeElement = document.createElement('div');
-                    typeElement.className = 'content-item-type';
-                    typeElement.textContent = item.type === 'episode' ? 'حلقة' : 'فاصل';
-                    
-                    const urlElement = document.createElement('div');
-                    urlElement.className = 'content-item-url';
-                    urlElement.textContent = item.url;
-                    
-                    infoElement.appendChild(titleElement);
-                    infoElement.appendChild(typeElement);
-                    infoElement.appendChild(urlElement);
-                    
-                    const actionsElement = document.createElement('div');
-                    actionsElement.className = 'content-item-actions';
-                    
-                    const upButton = document.createElement('button');
-                    upButton.className = 'btn btn-sm btn-secondary';
-                    upButton.textContent = '↑';
-                    upButton.title = 'تحريك للأعلى';
-                    upButton.addEventListener('click', () => moveContentUp(index));
-                    
-                    const downButton = document.createElement('button');
-                    downButton.className = 'btn btn-sm btn-secondary';
-                    downButton.textContent = '↓';
-                    downButton.title = 'تحريك للأسفل';
-                    downButton.addEventListener('click', () => moveContentDown(index));
-                    
-                    const deleteButton = document.createElement('button');
-                    deleteButton.className = 'btn btn-sm btn-danger';
-                    deleteButton.textContent = 'حذف';
-                    deleteButton.addEventListener('click', () => deleteContent(index));
-                    
-                    actionsElement.appendChild(upButton);
-                    actionsElement.appendChild(downButton);
-                    actionsElement.appendChild(deleteButton);
-                    
-                    itemElement.appendChild(infoElement);
-                    itemElement.appendChild(actionsElement);
-                    
-                    contentListContainer.appendChild(itemElement);
-                });
             }
             
-            // تحديث عدد الحلقات الإجمالي
-            function updateTotalEpisodesCount() {
-                const totalEpisodes = getTotalEpisodesCount();
-                totalEpisodesSpan.textContent = totalEpisodes;
-            }
+            updateEpisodeButtons();
+        }
+        
+        // تحديث حالة أزرار الحلقات
+        function updateEpisodeButtons() {
+            const buttons = episodeButtonsContainer.querySelectorAll('.episode-button');
             
-            // إنشاء أزرار الحلقات
-            function createEpisodeButtons() {
-                episodeButtonsContainer.innerHTML = '';
+            buttons.forEach(button => {
+                const index = parseInt(button.dataset.index);
                 
-                let episodeCount = 0;
+                // إزالة كل الفئات المتعلقة بالحالة
+                button.classList.remove('active');
                 
-                for (let i = 0; i < playlist.length; i++) {
-                    const item = playlist[i];
-                    
-                    if (item.type === 'episode') {
-                        episodeCount++;
-                        
-                        const button = document.createElement('button');
-                        button.className = 'episode-button';
-                        button.textContent = episodeCount;
-                        button.dataset.index = i;
-                        
-                        button.addEventListener('click', () => {
-                            currentIndex = parseInt(button.dataset.index);
-                            loadVideo();
-                        });
-                        
-                        episodeButtonsContainer.appendChild(button);
+                // إضافة الفئة المناسبة للزر الحالي
+                if (playlist[currentIndex]?.type === 'episode' && index === currentIndex) {
+                    button.classList.add('active');
+                } else if (playlist[currentIndex]?.type === 'ad') {
+                    // إذا كان المحتوى الحالي فاصلاً، ابحث عن آخر حلقة قبله
+                    let lastEpisodeIndex = -1;
+                    for (let i = currentIndex - 1; i >= 0; i--) {
+                        if (playlist[i].type === 'episode') {
+                            lastEpisodeIndex = i;
+                            break;
+                        }
                     }
-                }
-                
-                updateEpisodeButtons();
-            }
-            
-            // تحديث حالة أزرار الحلقات
-            function updateEpisodeButtons() {
-                const buttons = episodeButtonsContainer.querySelectorAll('.episode-button');
-                
-                buttons.forEach(button => {
-                    const index = parseInt(button.dataset.index);
                     
-                    // إزالة كل الفئات المتعلقة بالحالة
-                    button.classList.remove('active');
-                    
-                    // إضافة الفئة المناسبة للزر الحالي
-                    if (playlist[currentIndex]?.type === 'episode' && index === currentIndex) {
+                    if (index === lastEpisodeIndex) {
                         button.classList.add('active');
-                    } else if (playlist[currentIndex]?.type === 'ad') {
-                        // إذا كان المحتوى الحالي فاصلاً، ابحث عن آخر حلقة قبله
-                        let lastEpisodeIndex = -1;
-                        for (let i = currentIndex - 1; i >= 0; i--) {
-                            if (playlist[i].type === 'episode') {
-                                lastEpisodeIndex = i;
-                                break;
-                            }
-                        }
-                        
-                        if (index === lastEpisodeIndex) {
-                            button.classList.add('active');
-                        }
                     }
-                });
-            }
+                }
+            });
+        }
+        
+        // عرض إشعار
+        function showNotification(message) {
+            notification.textContent = message;
+            notification.style.opacity = '1';
             
-            // عرض إشعار
-            function showNotification(message) {
-                notification.textContent = message;
-                notification.style.opacity = '1';
-                
-                setTimeout(() => {
-                    notification.style.opacity = '0';
-                }, 3000);
+            setTimeout(() => {
+                notification.style.opacity = '0';
+            }, 3000);
+        }
+        
+        // تشفير البيانات قبل التخزين
+        function encryptData(data) {
+            try {
+                // تطبيق تشفير بسيط للبيانات باستخدام Base64
+                return btoa(encodeURIComponent(JSON.stringify(data)));
+            } catch (e) {
+                console.error('خطأ في تشفير البيانات:', e);
+                return '';
             }
+        }
+        
+        // فك تشفير البيانات المستعادة
+        function decryptData(encryptedData) {
+            try {
+                // فك التشفير البسيط
+                return JSON.parse(decodeURIComponent(atob(encryptedData)));
+            } catch (error) {
+                console.error('خطأ في فك تشفير البيانات:', error);
+                return null;
+            }
+        }
+        
+        // حفظ البيانات في التخزين المحلي
+        function saveData() {
+            const data = {
+                currentIndex,
+                playlist,
+                continuousPlay
+            };
             
             // تشفير البيانات قبل التخزين
-            function encryptData(data) {
+            const encryptedData = encryptData(data);
+            localStorage.setItem('episodesPlayerData', encryptedData);
+        }
+        
+        // استعادة البيانات المحفوظة
+        function loadSavedData() {
+            const savedData = localStorage.getItem('episodesPlayerData');
+            
+            if (savedData) {
                 try {
-                    // تطبيق تشفير بسيط للبيانات باستخدام Base64
-                    return btoa(encodeURIComponent(JSON.stringify(data)));
-                } catch (e) {
-                    console.error('خطأ في تشفير البيانات:', e);
-                    return '';
-                }
-            }
-            
-            // فك تشفير البيانات المستعادة
-            function decryptData(encryptedData) {
-                try {
-                    // فك التشفير البسيط
-                    return JSON.parse(decodeURIComponent(atob(encryptedData)));
-                } catch (error) {
-                    console.error('خطأ في فك تشفير البيانات:', error);
-                    return null;
-                }
-            }
-            
-            // حفظ البيانات في التخزين المحلي
-            function saveData() {
-                const data = {
-                    currentIndex,
-                    playlist,
-                    continuousPlay
-                };
-                
-                // تشفير البيانات قبل التخزين
-                const encryptedData = encryptData(data);
-                localStorage.setItem('episodesPlayerData', encryptedData);
-            }
-            
-            // استعادة البيانات المحفوظة
-            function loadSavedData() {
-                const savedData = localStorage.getItem('episodesPlayerData');
-                
-                if (savedData) {
-                    try {
-                        // فك تشفير البيانات المستعادة
-                        const data = decryptData(savedData);
+                    // فك تشفير البيانات المستعادة
+                    const data = decryptData(savedData);
+                    
+                    if (data) {
+                        // استعادة متغيرات الحالة
+                        currentIndex = data.currentIndex || 0;
+                        playlist = data.playlist || [];
+                        continuousPlay = data.continuousPlay || false;
                         
-                        if (data) {
-                            // استعادة متغيرات الحالة
-                            currentIndex = data.currentIndex || 0;
-                            playlist = data.playlist || [];
-                            continuousPlay = data.continuousPlay || false;
-                            
-                            // تحديث عناصر واجهة المستخدم
-                            continuousPlayToggle.checked = continuousPlay;
-                            updateTotalEpisodesCount();
-                            createEpisodeButtons();
-                            
-                            // تحميل الفيديو الحالي
-                            if (playlist.length > 0) {
-                                loadVideo();
-                            }
+                        // تحديث عناصر واجهة المستخدم
+                        continuousPlayToggle.checked = continuousPlay;
+                        updateTotalEpisodesCount();
+                        createEpisodeButtons();
+                        
+                        // تحميل الفيديو الحالي
+                        if (playlist.length > 0) {
+                            loadVideo();
                         }
-                    } catch (error) {
-                        console.error('خطأ في استعادة البيانات المحفوظة:', error);
                     }
+                } catch (error) {
+                    console.error('خطأ في استعادة البيانات المحفوظة:', error);
                 }
             }
-        });
-    </script>
+        }
+    });
+</script>
+
 </body>
 </html>
