@@ -737,8 +737,14 @@
             <h3>إضافة فيديو جديد</h3>
             <div class="input-group mb-3">
                 <input type="text" id="video-url" class="form-control" placeholder="أدخل رابط فيديو يوتيوب أو معرف الفيديو" aria-label="رابط فيديو يوتيوب">
-                <button class="btn btn-primary" type="button" id="add-video-btn">إضافة</button>
             </div>
+            <div class="input-group mb-3">
+                <input type="text" id="video-title" class="form-control" placeholder="أدخل اسم الحلقة" aria-label="اسم الحلقة">
+            </div>
+            <div class="input-group mb-3">
+                <input type="number" id="video-order" class="form-control" placeholder="أدخل ترتيب الحلقة" aria-label="ترتيب الحلقة" min="1">
+            </div>
+            <button class="btn btn-primary" type="button" id="add-video-btn">إضافة</button>
         </div>
         
         <div id="playlist-section" style="display:none;">
@@ -829,10 +835,10 @@
     <script>
         // قائمة تشغيل افتراضية
         const defaultPlaylist = [
-            { id: 'jNQXAC9IVRw', title: 'فيديو يوتيوب الأول', channel: 'يوتيوب الرسمي' },
-            { id: 'dQw4w9WgXcQ', title: 'Rick Astley - Never Gonna Give You Up', channel: 'Rick Astley' },
-            { id: 'xvFZjo5PgG0', title: 'مثال فيديو يوتيوب', channel: 'Duran Duran' },
-            { id: 'LXb3EKWsInQ', title: 'فيديو آخر للتجربة', channel: 'قناة تجريبية' }
+            { id: 'jNQXAC9IVRw', title: 'فيديو يوتيوب الأول', channel: 'يوتيوب الرسمي', order: 1 },
+            { id: 'dQw4w9WgXcQ', title: 'Rick Astley - Never Gonna Give You Up', channel: 'Rick Astley', order: 2 },
+            { id: 'xvFZjo5PgG0', title: 'مثال فيديو يوتيوب', channel: 'Duran Duran', order: 3 },
+            { id: 'LXb3EKWsInQ', title: 'فيديو آخر للتجربة', channel: 'قناة تجريبية', order: 4 }
         ];
 
         // كلمة المرور الصحيحة
@@ -1002,6 +1008,13 @@
                 return;
             }
             
+            // ترتيب القائمة بناءً على حقل الترتيب
+            playlist.sort((a, b) => {
+                const orderA = a.order || 0;
+                const orderB = b.order || 0;
+                return orderA - orderB;
+            });
+            
             playlist.forEach((video, index) => {
                 const videoElement = document.createElement('div');
                 videoElement.className = `playlist-item ${index === currentVideoIndex ? 'active' : ''}`;
@@ -1015,11 +1028,13 @@
                         </button>
                     `;
                 }
+
+                const orderDisplay = video.order ? `<span class="badge bg-primary me-2">${video.order}</span>` : '';
                 
                 videoElement.innerHTML = `
                     <img src="https://img.youtube.com/vi/${video.id}/mqdefault.jpg" alt="${video.title}" loading="lazy">
                     <div class="video-info">
-                        <div class="video-title">${video.title}</div>
+                        <div class="video-title">${orderDisplay}${video.title}</div>
                         <div class="video-channel">${video.channel}</div>
                     </div>
                     ${removeButton}
@@ -1119,7 +1134,12 @@
         function updateVideoTitle() {
             const titleElement = document.getElementById('current-video-title');
             if (playlist.length > 0 && currentVideoIndex >= 0 && currentVideoIndex < playlist.length) {
-                titleElement.textContent = playlist[currentVideoIndex].title;
+                const currentVideo = playlist[currentVideoIndex];
+                if (currentVideo.order) {
+                    titleElement.textContent = `${currentVideo.order} - ${currentVideo.title}`;
+                } else {
+                    titleElement.textContent = currentVideo.title;
+                }
             } else {
                 titleElement.textContent = '';
             }
@@ -1249,7 +1269,11 @@
         // تنفيذ إضافة الفيديو بعد التحقق من كلمة المرور
         function performAddVideo() {
             const videoUrlInput = document.getElementById('video-url');
+            const videoTitleInput = document.getElementById('video-title');
+            const videoOrderInput = document.getElementById('video-order');
             const url = videoUrlInput.value.trim();
+            const title = videoTitleInput.value.trim();
+            const orderStr = videoOrderInput.value.trim();
             
             if (!url) {
                 alert('الرجاء إدخال رابط فيديو صالح');
@@ -1270,16 +1294,23 @@
                 return;
             }
             
+            // تحديد العنوان والترتيب
+            const videoTitle = title || 'فيديو جديد';
+            const order = orderStr ? parseInt(orderStr, 10) : playlist.length + 1;
+            
             // إضافة الفيديو إلى قائمة التشغيل
             playlist.push({
                 id: videoId,
-                title: 'فيديو جديد', // عنوان مبدئي
-                channel: 'قناة غير محددة' // اسم قناة مبدئي
+                title: videoTitle,
+                channel: 'قناة غير محددة',
+                order: order
             });
             
             // تحديث عرض قائمة التشغيل
             renderPlaylist();
             videoUrlInput.value = '';
+            videoTitleInput.value = '';
+            videoOrderInput.value = '';
             
             // إذا كان هذا أول فيديو في القائمة، قم بتشغيله
             if (playlist.length === 1) {
@@ -1348,7 +1379,7 @@
             
             if (newLockState) {
                 addVideoSection.style.display = 'none';
-            } else {
+            } else if (playlistSection.style.display === 'block') {
                 addVideoSection.style.display = 'block';
             }
             
@@ -1390,6 +1421,7 @@
             const showPlaylistBtn = document.getElementById('show-playlist-btn');
             
             playlistSection.style.display = 'block';
+            document.getElementById('playlist').style.display = 'block';
             
             if (!playlistLocked) {
                 addVideoSection.style.display = 'block';
