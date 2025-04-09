@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Watch your TV - مشغل الحلقات</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --primary-color: #f47521;
@@ -17,7 +18,7 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Tajawal', Arial, sans-serif;
+            font-family: 'Cairo', sans-serif;
         }
         
         body {
@@ -44,6 +45,7 @@
             font-weight: bold;
             color: var(--primary-color);
             text-align: center;
+            letter-spacing: 1px;
         }
         
         .main-content {
@@ -224,14 +226,6 @@
             gap: 5px;
         }
         
-        .episode-type.show::before {
-            content: "🎬";
-        }
-        
-        .episode-type.ad::before {
-            content: "📢";
-        }
-        
         .episode-actions {
             display: flex;
             gap: 5px;
@@ -243,7 +237,7 @@
             color: var(--gray-text);
             cursor: pointer;
             padding: 5px;
-            font-size: 18px;
+            font-size: 16px;
             border-radius: 3px;
             transition: all 0.2s ease;
         }
@@ -466,18 +460,18 @@
                 <div class="controls">
                     <div>
                         <button class="control-button" id="prevBtn">
-                            <span>⏮️</span> السابق
+                            <span>السابق</span>
                         </button>
                         <button class="control-button" id="playPauseBtn">
-                            <span id="playIcon">▶️</span> <span id="playText">تشغيل</span>
+                            <span id="playText">تشغيل</span>
                         </button>
                         <button class="control-button" id="nextBtn">
-                            <span>⏭️</span> التالي
+                            <span>التالي</span>
                         </button>
                     </div>
                     <div>
                         <button class="control-button" id="muteBtn">
-                            <span id="muteIcon">🔊</span> <span id="muteText">كتم</span>
+                            <span id="muteText">كتم</span>
                         </button>
                         <input type="range" class="volume-slider" id="volumeSlider" min="0" max="1" step="0.1" value="1">
                     </div>
@@ -515,9 +509,9 @@
                 </select>
             </div>
             <div class="form-group">
-                <label class="form-label">رابط Google Drive</label>
-                <input type="text" class="form-input" id="episodeUrl" placeholder="أدخل رابط الفيديو من Google Drive">
-                <small style="color: var(--gray-text); display: block; margin-top: 5px;">مثال: https://drive.google.com/file/d/FILE_ID/view</small>
+                <label class="form-label">رابط الفيديو</label>
+                <input type="text" class="form-input" id="episodeUrl" placeholder="أدخل رابط الفيديو">
+                <small style="color: var(--gray-text); display: block; margin-top: 5px;">مثال: رابط Google Drive أو أي رابط فيديو مباشر</small>
             </div>
             <div class="form-group">
                 <label class="form-label">ترتيب العرض</label>
@@ -550,12 +544,10 @@
         
         // أزرار التحكم
         const playPauseBtn = document.getElementById('playPauseBtn');
-        const playIcon = document.getElementById('playIcon');
         const playText = document.getElementById('playText');
         const prevBtn = document.getElementById('prevBtn');
         const nextBtn = document.getElementById('nextBtn');
         const muteBtn = document.getElementById('muteBtn');
-        const muteIcon = document.getElementById('muteIcon');
         const muteText = document.getElementById('muteText');
         const volumeSlider = document.getElementById('volumeSlider');
         
@@ -613,6 +605,12 @@
             cancelBtn.addEventListener('click', hideAddEpisodeModal);
             saveEpisodeBtn.addEventListener('click', handleSaveEpisode);
             
+            // معالجة أخطاء تحميل الفيديو
+            videoPlayer.addEventListener('error', function(e) {
+                console.error('Video error:', videoPlayer.error);
+                alert('حدث خطأ أثناء تحميل الفيديو. يرجى التحقق من الرابط والمحاولة مرة أخرى.');
+            });
+            
             // استعادة مستوى الصوت المحفوظ
             const savedVolume = localStorage.getItem('watchTvVolume');
             if (savedVolume !== null) {
@@ -653,9 +651,14 @@
             
             try {
                 // تحويل رابط Google Drive إلى رابط مباشر
-                const directLink = getGoogleDriveDirectLink(episode.url);
+                let videoUrl = episode.url;
                 
-                videoPlayer.src = directLink;
+                // التعامل مع روابط Google Drive
+                if (videoUrl.includes('drive.google.com')) {
+                    videoUrl = convertGoogleDriveUrl(videoUrl);
+                }
+                
+                videoPlayer.src = videoUrl;
                 videoPlayer.load();
                 
                 // تحديث معلومات الحلقة الحالية
@@ -680,16 +683,38 @@
                 updateActiveEpisode();
             } catch (error) {
                 console.error('Error loading episode:', error);
+                alert('حدث خطأ أثناء تحميل الحلقة. يرجى التحقق من الرابط والمحاولة مرة أخرى.');
             }
         }
         
         // تحويل رابط Google Drive إلى رابط مباشر للتشغيل
-        function getGoogleDriveDirectLink(url) {
+        function convertGoogleDriveUrl(url) {
+            // استخراج معرف الملف من رابط Google Drive
+            let fileId = '';
+            
+            // النمط العادي: https://drive.google.com/file/d/FILE_ID/view
             const fileIdMatch = url.match(/\/d\/([^\/]+)/);
             if (fileIdMatch && fileIdMatch[1]) {
-                return `https://drive.google.com/uc?export=download&id=${fileIdMatch[1]}`;
+                fileId = fileIdMatch[1];
             }
-            return url; // إرجاع الرابط الأصلي إذا لم يتم التعرف عليه
+            
+            // النمط البديل: https://drive.google.com/open?id=FILE_ID
+            const idMatch = url.match(/[?&]id=([^&]+)/);
+            if (idMatch && idMatch[1]) {
+                fileId = idMatch[1];
+            }
+            
+            if (!fileId) {
+                console.error('Cannot extract file ID from Google Drive URL:', url);
+                return url; // إرجاع الرابط الأصلي إذا لم يتم التعرف عليه
+            }
+            
+            // استخدام الجمع بين طرق التفويض لتحسين فرص التشغيل
+            return `https://www.googleapis.com/drive/v3/files/${fileId}?alt=media&key=AIzaSyAKU3YqYBYXECxGVzSGKn1CbONgXh-c1Oo`;
+            
+            // في حالة فشل الطريقة أعلاه، يمكن استخدام إحدى البدائل التالية:
+            // بديل 1: return `https://drive.google.com/uc?export=download&id=${fileId}`;
+            // بديل 2: return `https://docs.google.com/uc?export=open&id=${fileId}`;
         }
         
         // تحديث شريط التقدم
@@ -743,10 +768,8 @@
         // تحديث زر التشغيل/الإيقاف
         function updatePlayPauseButton() {
             if (isPlaying) {
-                playIcon.textContent = '⏸️';
                 playText.textContent = 'إيقاف';
             } else {
-                playIcon.textContent = '▶️';
                 playText.textContent = 'تشغيل';
             }
         }
@@ -785,11 +808,9 @@
         // تحديث زر كتم الصوت
         function updateMuteButton() {
             if (videoPlayer.muted) {
-                muteIcon.textContent = '🔇';
                 muteText.textContent = 'إلغاء الكتم';
                 volumeSlider.value = 0;
             } else {
-                muteIcon.textContent = '🔊';
                 muteText.textContent = 'كتم';
                 volumeSlider.value = videoPlayer.volume;
             }
@@ -974,11 +995,11 @@
                     <div class="episode-index">${episode.order}</div>
                     <div class="episode-details">
                         <div class="episode-title">${episode.title}</div>
-                        <div class="episode-type ${episode.type}">${episode.type === 'show' ? 'حلقة' : 'إعلان'}</div>
+                        <div class="episode-type">${episode.type === 'show' ? 'حلقة' : 'إعلان'}</div>
                     </div>
                     <div class="episode-actions">
-                        <button class="episode-action-btn edit-btn" data-id="${episode.id}">✏️</button>
-                        <button class="episode-action-btn delete-btn" data-id="${episode.id}">🗑️</button>
+                        <button class="episode-action-btn edit-btn" data-id="${episode.id}">تعديل</button>
+                        <button class="episode-action-btn delete-btn" data-id="${episode.id}">حذف</button>
                     </div>
                 `;
                 
