@@ -403,6 +403,117 @@
             opacity: 1;
         }
         
+        /* إضافة نمط لنافذة كلمة المرور */
+        .password-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s, visibility 0.3s;
+        }
+        
+        .password-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .password-modal {
+            background-color: var(--container-bg);
+            padding: 20px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            transform: translateY(-20px);
+            transition: transform 0.3s;
+        }
+        
+        .password-overlay.show .password-modal {
+            transform: translateY(0);
+        }
+        
+        .password-modal h3 {
+            margin-top: 0;
+            color: var(--title-color);
+        }
+        
+        .password-form {
+            margin-top: 20px;
+        }
+        
+        .password-form input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            direction: ltr;
+            background-color: var(--container-bg);
+            color: var(--text-color);
+        }
+        
+        .password-actions {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .password-actions button {
+            flex: 1;
+        }
+        
+        .password-error {
+            color: #dc3545;
+            margin-top: 10px;
+            display: none;
+        }
+        
+        .password-error.show {
+            display: block;
+            animation: shake 0.5s ease-in-out;
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+        
+        /* زر قفل/فتح قائمة التشغيل */
+        .playlist-lock-btn {
+            background: none;
+            border: none;
+            color: var(--text-color);
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: color 0.3s ease, transform 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+        }
+        
+        .playlist-lock-btn:hover {
+            color: var(--primary-color);
+        }
+        
+        .admin-controls {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+        }
+        
         @media (max-width: 768px) {
             .playlist-item {
                 flex-direction: column;
@@ -476,7 +587,13 @@
             </div>
         </div>
         
-        <div class="add-video-form">
+        <div class="admin-controls">
+            <button id="lock-playlist-btn" class="playlist-lock-btn" title="قفل/فتح قائمة التشغيل">
+                <i class="fas fa-lock"></i> قفل قائمة التشغيل
+            </button>
+        </div>
+        
+        <div id="add-video-section" class="add-video-form" style="display:none;">
             <h3>إضافة فيديو جديد</h3>
             <div class="input-group mb-3">
                 <input type="text" id="video-url" class="form-control" placeholder="أدخل رابط فيديو يوتيوب أو معرف الفيديو" aria-label="رابط فيديو يوتيوب">
@@ -520,6 +637,26 @@
                     <span class="shortcut-key">↓</span>
                     <span>خفض الصوت</span>
                 </div>
+                <div class="shortcut-item">
+                    <span class="shortcut-key">L</span>
+                    <span>قفل/فتح القائمة</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- نافذة كلمة المرور -->
+    <div class="password-overlay" id="password-overlay">
+        <div class="password-modal">
+            <h3>التحقق من كلمة المرور</h3>
+            <p>يرجى إدخال كلمة المرور للوصول إلى هذه الميزة</p>
+            <div class="password-form">
+                <input type="password" id="password-input" placeholder="أدخل كلمة المرور" autocomplete="off">
+                <div class="password-error" id="password-error">كلمة المرور غير صحيحة!</div>
+                <div class="password-actions">
+                    <button class="btn btn-secondary" id="cancel-password-btn">إلغاء</button>
+                    <button class="btn btn-primary" id="submit-password-btn">تأكيد</button>
+                </div>
             </div>
         </div>
     </div>
@@ -538,17 +675,23 @@
             { id: 'LXb3EKWsInQ', title: 'فيديو آخر للتجربة', channel: 'قناة تجريبية' }
         ];
 
+        // كلمة المرور الصحيحة
+        const correctPassword = "F@20D&o0tTrR2#D0?Hh";
+        
         // التحقق من وجود قائمة محفوظة في التخزين المحلي
         const savedPlaylist = localStorage.getItem('youtube_player_playlist');
         const savedVideoIndex = localStorage.getItem('youtube_player_index');
         const savedTheme = localStorage.getItem('youtube_player_theme');
         const savedVolume = localStorage.getItem('youtube_player_volume');
+        const playlistLocked = localStorage.getItem('youtube_player_locked') === 'true';
         
         let playlist = savedPlaylist ? JSON.parse(savedPlaylist) : [...defaultPlaylist];
         let currentVideoIndex = savedVideoIndex ? parseInt(savedVideoIndex, 10) : 0;
         let player;
         let progressInterval;
         let isFullscreen = false;
+        let isAuthenticated = false;
+        let currentAction = ''; // يخزن الإجراء الحالي (إضافة فيديو أو تعديل القائمة)
         
         // تعيين الوضع الليلي إذا كان محفوظًا
         if (savedTheme === 'dark') {
@@ -589,6 +732,7 @@
             renderPlaylist();
             updateActiveVideo();
             updateVideoTitle();
+            updatePlaylistLockUI();
             
             // استعادة مستوى الصوت المحفوظ
             if (savedVolume) {
@@ -697,21 +841,33 @@
             playlist.forEach((video, index) => {
                 const videoElement = document.createElement('div');
                 videoElement.className = `playlist-item ${index === currentVideoIndex ? 'active' : ''}`;
+                
+                let removeButton = '';
+                // إظهار زر الحذف فقط إذا كانت قائمة التشغيل غير مقفلة
+                if (!playlistLocked) {
+                    removeButton = `
+                        <button class="btn btn-sm btn-danger remove-video" data-index="${index}" title="حذف">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    `;
+                }
+                
                 videoElement.innerHTML = `
                     <img src="https://img.youtube.com/vi/${video.id}/mqdefault.jpg" alt="${video.title}" loading="lazy">
                     <div class="video-info">
                         <div class="video-title">${video.title}</div>
                         <div class="video-channel">${video.channel}</div>
                     </div>
-                    <button class="btn btn-sm btn-danger remove-video" data-index="${index}" title="حذف">
-                        <i class="fas fa-trash-alt"></i>
-                    </button>
+                    ${removeButton}
                 `;
                 
-                videoElement.querySelector('.remove-video').addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    removeVideoFromPlaylist(index);
-                });
+                const removeBtn = videoElement.querySelector('.remove-video');
+                if (removeBtn) {
+                    removeBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        removeVideoFromPlaylist(index);
+                    });
+                }
                 
                 videoElement.addEventListener('click', () => {
                     if (index !== currentVideoIndex) {
@@ -741,11 +897,21 @@
         
         // حذف فيديو من قائمة التشغيل
         function removeVideoFromPlaylist(index) {
+            if (playlistLocked) {
+                showPasswordModal('remove', index);
+                return;
+            }
+            
             if (playlist.length <= 1) {
                 alert('لا يمكن حذف جميع الفيديوهات من القائمة');
                 return;
             }
             
+            performRemoveVideo(index);
+        }
+        
+        // تنفيذ حذف الفيديو بعد التحقق من كلمة المرور
+        function performRemoveVideo(index) {
             playlist.splice(index, 1);
             
             // إذا تم حذف الفيديو الحالي أو فيديو بمؤشر أقل من الحالي
@@ -908,6 +1074,16 @@
         
         // إضافة فيديو جديد إلى قائمة التشغيل
         function addVideoToPlaylist() {
+            if (playlistLocked) {
+                showPasswordModal('add');
+                return;
+            }
+            
+            performAddVideo();
+        }
+        
+        // تنفيذ إضافة الفيديو بعد التحقق من كلمة المرور
+        function performAddVideo() {
             const videoUrlInput = document.getElementById('video-url');
             const url = videoUrlInput.value.trim();
             
@@ -962,6 +1138,108 @@
             const newTime = duration * clickPosition;
             
             player.seekTo(newTime, true);
+        }
+        
+        // قفل/فتح قائمة التشغيل
+        function togglePlaylistLock() {
+            showPasswordModal('toggle');
+        }
+        
+        // تنفيذ تبديل قفل قائمة التشغيل بعد التحقق من كلمة المرور
+        function performTogglePlaylistLock() {
+            const newLockState = !playlistLocked;
+            localStorage.setItem('youtube_player_locked', newLockState);
+            
+            // تحديث حالة القفل
+            document.querySelector(':root').style.setProperty('--playlist-locked', newLockState ? 'true' : 'false');
+            
+            // إعادة تحميل قائمة التشغيل لتطبيق التغييرات
+            renderPlaylist();
+            updatePlaylistLockUI();
+        }
+        
+        // تحديث واجهة قفل قائمة التشغيل
+        function updatePlaylistLockUI() {
+            const lockBtn = document.getElementById('lock-playlist-btn');
+            const addVideoSection = document.getElementById('add-video-section');
+            
+            if (playlistLocked) {
+                lockBtn.innerHTML = '<i class="fas fa-lock"></i> فتح قائمة التشغيل';
+                addVideoSection.style.display = 'none';
+            } else {
+                lockBtn.innerHTML = '<i class="fas fa-unlock"></i> قفل قائمة التشغيل';
+                addVideoSection.style.display = 'block';
+            }
+        }
+        
+        // إظهار نافذة كلمة المرور
+        function showPasswordModal(action, data) {
+            currentAction = action;
+            const passwordOverlay = document.getElementById('password-overlay');
+            const passwordInput = document.getElementById('password-input');
+            
+            // تخزين البيانات المطلوبة للإجراء (مثل مؤشر الفيديو للحذف)
+            if (action === 'remove') {
+                passwordOverlay.dataset.videoIndex = data;
+            }
+            
+            // عرض النافذة
+            passwordOverlay.classList.add('show');
+            passwordInput.value = '';
+            passwordInput.focus();
+            
+            // إخفاء رسالة الخطأ
+            document.getElementById('password-error').classList.remove('show');
+        }
+        
+        // إخفاء نافذة كلمة المرور
+        function hidePasswordModal() {
+            const passwordOverlay = document.getElementById('password-overlay');
+            passwordOverlay.classList.remove('show');
+            
+            // إزالة البيانات المخزنة
+            delete passwordOverlay.dataset.videoIndex;
+            currentAction = '';
+        }
+        
+        // التحقق من كلمة المرور
+        function verifyPassword() {
+            const passwordInput = document.getElementById('password-input');
+            const enteredPassword = passwordInput.value;
+            
+            if (enteredPassword === correctPassword) {
+                // كلمة المرور صحيحة، تنفيذ الإجراء المطلوب
+                isAuthenticated = true;
+                hidePasswordModal();
+                
+                switch (currentAction) {
+                    case 'add':
+                        performAddVideo();
+                        break;
+                    case 'remove':
+                        const videoIndex = parseInt(document.getElementById('password-overlay').dataset.videoIndex, 10);
+                        performRemoveVideo(videoIndex);
+                        break;
+                    case 'toggle':
+                        performTogglePlaylistLock();
+                        break;
+                }
+                
+                // إعادة تعيين الوضع المصادق عليه بعد فترة
+                setTimeout(() => {
+                    isAuthenticated = false;
+                }, 300000); // 5 دقائق
+            } else {
+                // كلمة المرور غير صحيحة، إظهار رسالة خطأ
+                const passwordError = document.getElementById('password-error');
+                passwordError.classList.add('show');
+                
+                // هز حقل كلمة المرور
+                passwordInput.classList.add('shake');
+                setTimeout(() => {
+                    passwordInput.classList.remove('shake');
+                }, 500);
+            }
         }
         
         // إضافة مستمعي الأحداث عند تحميل الصفحة
@@ -1033,6 +1311,25 @@
                 }
             });
             
+            // زر قفل/فتح قائمة التشغيل
+            document.getElementById('lock-playlist-btn').addEventListener('click', togglePlaylistLock);
+            
+            // نافذة كلمة المرور
+            document.getElementById('submit-password-btn').addEventListener('click', verifyPassword);
+            document.getElementById('cancel-password-btn').addEventListener('click', hidePasswordModal);
+            document.getElementById('password-input').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    verifyPassword();
+                }
+            });
+            
+            // النقر خارج نافذة كلمة المرور لإغلاقها
+            document.getElementById('password-overlay').addEventListener('click', (e) => {
+                if (e.target.id === 'password-overlay') {
+                    hidePasswordModal();
+                }
+            });
+            
             // إضافة تأثير التلاشي للفيديو
             const videoContainer = document.querySelector('.video-container');
             videoContainer.classList.add('fade-transition');
@@ -1070,6 +1367,10 @@
                     case 'M':
                         toggleMute();
                         break;
+                    case 'l': // L لقفل/فتح قائمة التشغيل
+                    case 'L':
+                        togglePlaylistLock();
+                        break;
                     case 'ArrowUp': // السهم للأعلى لرفع الصوت
                         e.preventDefault();
                         {
@@ -1094,6 +1395,9 @@
                         break;
                 }
             });
+            
+            // تطبيق إعدادات قفل قائمة التشغيل
+            updatePlaylistLockUI();
         });
     </script>
 </body>
