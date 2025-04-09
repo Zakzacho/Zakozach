@@ -9,6 +9,23 @@
     <style>
         :root {
             /* نظام الألوان الأساسي - الوضع العادي */
+            --primary-color: #f47521; 
+            --secondary-color: #2196F3;
+            --bg-color: #23252b;
+            --container-bg: #191b1f;
+            --text-color: #ffffff;
+            --title-color: #ffffff;
+            --border-color: #444444;
+            --item-hover: #3d3d3d;
+            --item-active: #394b59;
+            --item-active-border: #f47521;
+            --form-bg: #333333;
+            --playlist-item-border: #444444;
+            --gray-text: #9fadbd;
+        }
+
+        [data-theme="light"] {
+            /* نظام الألوان - الوضع الفاتح */
             --primary-color: #f47521;
             --secondary-color: #2196F3;
             --bg-color: #f5f5f5;
@@ -18,25 +35,10 @@
             --border-color: #dddddd;
             --item-hover: #f5f5f5;
             --item-active: #e3f2fd;
-            --item-active-border: #2196F3;
+            --item-active-border: #f47521;
             --form-bg: #f9f9f9;
             --playlist-item-border: #eeeeee;
-        }
-
-        [data-theme="dark"] {
-            /* نظام الألوان - الوضع الليلي */
-            --primary-color: #ff8c39;
-            --secondary-color: #3da8ff;
-            --bg-color: #1a1a1a;
-            --container-bg: #2d2d2d;
-            --text-color: #e0e0e0;
-            --title-color: #ffffff;
-            --border-color: #444444;
-            --item-hover: #3d3d3d;
-            --item-active: #394b59;
-            --item-active-border: #3da8ff;
-            --form-bg: #333333;
-            --playlist-item-border: #444444;
+            --gray-text: #6c757d;
         }
 
         body {
@@ -52,7 +54,7 @@
             margin: 0 auto;
             background-color: var(--container-bg);
             border-radius: 10px;
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
             padding: 20px;
             transition: background-color 0.3s ease, box-shadow 0.3s ease;
         }
@@ -87,6 +89,17 @@
             width: 100%;
             height: 100%;
             border: none;
+            pointer-events: none; /* منع التفاعل المباشر مع اللاعب */
+        }
+        
+        .video-blocker {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 10;
+            cursor: pointer;
         }
         
         .controls {
@@ -108,15 +121,26 @@
             align-items: center;
             justify-content: center;
             gap: 5px;
+            background-color: var(--container-bg);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
         }
         
         .controls button:hover {
             transform: translateY(-2px);
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            background-color: var(--primary-color);
+            color: white;
         }
         
         .controls button:active {
             transform: translateY(0);
+        }
+        
+        .jump-controls {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
         }
         
         .playlist {
@@ -129,6 +153,7 @@
             transition: border-color 0.3s ease;
             scrollbar-width: thin;
             scrollbar-color: var(--primary-color) var(--bg-color);
+            display: none; /* إخفاء قائمة التشغيل حتى التحقق من كلمة المرور */
         }
         
         .playlist::-webkit-scrollbar {
@@ -192,12 +217,8 @@
         
         .playlist-item .video-channel {
             font-size: 0.9em;
-            color: #666;
+            color: var(--gray-text);
             transition: color 0.3s ease;
-        }
-        
-        [data-theme="dark"] .playlist-item .video-channel {
-            color: #aaa;
         }
         
         .add-video-form {
@@ -206,6 +227,7 @@
             padding: 15px;
             border-radius: 8px;
             transition: background-color 0.3s ease;
+            display: none; /* إخفاء نموذج الإضافة حتى التحقق من كلمة المرور */
         }
         
         .add-video-form input {
@@ -251,14 +273,18 @@
         }
         
         .fullscreen-btn {
-            background: none;
+            position: absolute;
+            bottom: 15px;
+            right: 15px;
+            background: rgba(0, 0, 0, 0.6);
             border: none;
-            color: var(--text-color);
+            color: white;
             font-size: 1.2rem;
             cursor: pointer;
             transition: color 0.3s ease, transform 0.3s ease;
-            padding: 5px;
+            padding: 8px;
             border-radius: 5px;
+            z-index: 20;
         }
         
         .fullscreen-btn:hover {
@@ -327,13 +353,14 @@
         }
         
         .progress-container {
-            height: 5px;
+            height: 10px;
             width: 100%;
-            background-color: var(--border-color);
+            background-color: var(--form-bg);
             border-radius: 5px;
             margin-bottom: 10px;
             overflow: hidden;
             cursor: pointer;
+            position: relative;
         }
         
         .progress-bar {
@@ -344,12 +371,30 @@
             transition: width 0.1s linear;
         }
         
+        .progress-handle {
+            width: 16px;
+            height: 16px;
+            background-color: var(--primary-color);
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            margin-left: -8px;
+            z-index: 2;
+            box-shadow: 0 0 5px rgba(0,0,0,0.3);
+            display: none;
+        }
+        
+        .progress-container:hover .progress-handle {
+            display: block;
+        }
+        
         .time-display {
             display: flex;
             justify-content: space-between;
             font-size: 0.8rem;
             margin-bottom: 10px;
-            color: var(--text-color);
+            color: var(--gray-text);
         }
         
         .volume-control {
@@ -361,6 +406,31 @@
         .volume-slider {
             width: 80px;
             direction: ltr;
+            -webkit-appearance: none;
+            appearance: none;
+            height: 5px;
+            background: var(--form-bg);
+            border-radius: 5px;
+            outline: none;
+        }
+        
+        .volume-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            cursor: pointer;
+        }
+        
+        .volume-slider::-moz-range-thumb {
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            cursor: pointer;
+            border: none;
         }
         
         .btn-primary {
@@ -514,6 +584,62 @@
             margin-bottom: 15px;
         }
         
+        /* زر تخطي 10 ثواني */
+        .skip-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0, 0, 0, 0.6);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.3s, background-color 0.3s;
+            z-index: 15;
+        }
+        
+        .video-container:hover .skip-btn {
+            opacity: 1;
+        }
+        
+        .skip-btn:hover {
+            background-color: var(--primary-color);
+        }
+        
+        .skip-btn.backward {
+            left: 15px;
+        }
+        
+        .skip-btn.forward {
+            right: 15px;
+        }
+        
+        /* زر عرض قائمة التشغيل */
+        .show-playlist-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 8px 15px;
+            cursor: pointer;
+            display: inline-block;
+            font-weight: bold;
+            margin-bottom: 20px;
+            transition: background-color 0.3s;
+        }
+        
+        .show-playlist-btn:hover {
+            background-color: var(--primary-color);
+            filter: brightness(1.1);
+        }
+        
         @media (max-width: 768px) {
             .playlist-item {
                 flex-direction: column;
@@ -546,6 +672,12 @@
             .volume-slider {
                 width: 60px;
             }
+            
+            .skip-btn {
+                width: 40px;
+                height: 40px;
+                font-size: 1rem;
+            }
         }
     </style>
 </head>
@@ -553,13 +685,20 @@
     <div class="container">
         <div class="header-controls">
             <h1>مشغل فيديوهات يوتيوب</h1>
-            <button id="theme-toggle" class="theme-toggle" title="تبديل الوضع الليلي">
-                <i class="fas fa-moon"></i>
+            <button id="theme-toggle" class="theme-toggle" title="تبديل الوضع الليلي/النهاري">
+                <i class="fas fa-sun"></i>
             </button>
         </div>
         
         <div class="video-container">
             <div id="player"></div>
+            <div class="video-blocker" id="video-blocker"></div>
+            <button id="backward-btn" class="skip-btn backward" title="رجوع 10 ثوان">
+                <i class="fas fa-undo-alt"></i> 10
+            </button>
+            <button id="forward-btn" class="skip-btn forward" title="تقديم 10 ثوان">
+                10 <i class="fas fa-redo-alt"></i>
+            </button>
             <button id="fullscreen-btn" class="fullscreen-btn" title="ملء الشاشة">
                 <i class="fas fa-expand"></i>
             </button>
@@ -569,6 +708,7 @@
         
         <div class="progress-container" id="progress-container">
             <div class="progress-bar" id="progress-bar"></div>
+            <div class="progress-handle" id="progress-handle"></div>
         </div>
         
         <div class="time-display">
@@ -577,19 +717,19 @@
         </div>
         
         <div class="controls">
-            <button id="prev-btn" class="btn btn-info" title="الفيديو السابق"><i class="fas fa-step-backward"></i> السابق</button>
-            <button id="play-btn" class="btn btn-success" title="تشغيل"><i class="fas fa-play"></i> تشغيل</button>
-            <button id="pause-btn" class="btn btn-warning" title="إيقاف مؤقت"><i class="fas fa-pause"></i> إيقاف</button>
-            <button id="next-btn" class="btn btn-info" title="الفيديو التالي">التالي <i class="fas fa-step-forward"></i></button>
+            <button id="prev-btn" class="btn" title="الفيديو السابق"><i class="fas fa-step-backward"></i> السابق</button>
+            <button id="play-btn" class="btn" title="تشغيل"><i class="fas fa-play"></i> تشغيل</button>
+            <button id="pause-btn" class="btn" title="إيقاف مؤقت"><i class="fas fa-pause"></i> إيقاف</button>
+            <button id="next-btn" class="btn" title="الفيديو التالي">التالي <i class="fas fa-step-forward"></i></button>
             <div class="volume-control">
-                <button id="mute-btn" class="btn btn-secondary" title="كتم الصوت"><i class="fas fa-volume-up"></i></button>
+                <button id="mute-btn" class="btn" title="كتم الصوت"><i class="fas fa-volume-up"></i></button>
                 <input type="range" id="volume-slider" class="volume-slider" min="0" max="100" value="100">
             </div>
         </div>
         
         <div class="admin-controls">
-            <button id="lock-playlist-btn" class="playlist-lock-btn" title="قفل/فتح قائمة التشغيل">
-                <i class="fas fa-lock"></i> قفل قائمة التشغيل
+            <button id="show-playlist-btn" class="show-playlist-btn">
+                <i class="fas fa-list"></i> عرض قائمة التشغيل
             </button>
         </div>
         
@@ -601,9 +741,17 @@
             </div>
         </div>
         
-        <h3>قائمة التشغيل</h3>
-        <div class="playlist" id="playlist">
-            <!-- ستتم إضافة عناصر قائمة التشغيل هنا عن طريق جافا سكريبت -->
+        <div id="playlist-section" style="display:none;">
+            <h3>قائمة التشغيل</h3>
+            <div class="playlist" id="playlist">
+                <!-- ستتم إضافة عناصر قائمة التشغيل هنا عن طريق جافا سكريبت -->
+            </div>
+            
+            <div class="admin-controls">
+                <button id="lock-playlist-btn" class="playlist-lock-btn" title="قفل/فتح قائمة التشغيل">
+                    <i class="fas fa-lock"></i> قفل قائمة التشغيل
+                </button>
+            </div>
         </div>
         
         <div class="keyboard-shortcuts">
@@ -640,6 +788,18 @@
                 <div class="shortcut-item">
                     <span class="shortcut-key">L</span>
                     <span>قفل/فتح القائمة</span>
+                </div>
+                <div class="shortcut-item">
+                    <span class="shortcut-key">P</span>
+                    <span>عرض القائمة</span>
+                </div>
+                <div class="shortcut-item">
+                    <span class="shortcut-key">J</span>
+                    <span>رجوع 10 ثوان</span>
+                </div>
+                <div class="shortcut-item">
+                    <span class="shortcut-key">K</span>
+                    <span>تقديم 10 ثوان</span>
                 </div>
             </div>
         </div>
@@ -692,10 +852,11 @@
         let isFullscreen = false;
         let isAuthenticated = false;
         let currentAction = ''; // يخزن الإجراء الحالي (إضافة فيديو أو تعديل القائمة)
+        let isDragging = false;
         
-        // تعيين الوضع الليلي إذا كان محفوظًا
-        if (savedTheme === 'dark') {
-            document.documentElement.setAttribute('data-theme', 'dark');
+        // تعيين الوضع الليلي/النهاري إذا كان محفوظًا
+        if (savedTheme === 'light') {
+            document.documentElement.setAttribute('data-theme', 'light');
             // سيتم تحديث أيقونة الوضع الليلي بعد تحميل الصفحة
         }
         
@@ -718,7 +879,9 @@
                     'rel': 0,
                     'modestbranding': 1,
                     'showinfo': 0,
-                    'controls': 0 // نستخدم أزرار التحكم المخصصة
+                    'controls': 0, // إخفاء أزرار التحكم الافتراضية
+                    'disablekb': 1, // تعطيل اختصارات لوحة المفاتيح الافتراضية
+                    'iv_load_policy': 3 // إخفاء التعليقات التوضيحية
                 },
                 events: {
                     'onReady': onPlayerReady,
@@ -799,12 +962,13 @@
             stopProgressUpdate(); // إيقاف أي تحديث سابق
             
             progressInterval = setInterval(() => {
-                if (player && player.getCurrentTime && player.getDuration) {
+                if (player && player.getCurrentTime && player.getDuration && !isDragging) {
                     const currentTime = player.getCurrentTime();
                     const duration = player.getDuration();
                     const progressPercent = (currentTime / duration) * 100;
                     
                     document.getElementById('progress-bar').style.width = `${progressPercent}%`;
+                    document.getElementById('progress-handle').style.left = `${progressPercent}%`;
                     document.getElementById('current-time').textContent = formatTime(currentTime);
                     document.getElementById('duration').textContent = formatTime(duration);
                 }
@@ -1043,19 +1207,19 @@
             isFullscreen = !isFullscreen;
         }
         
-        // تبديل الوضع الليلي
+        // تبديل الوضع الليلي/النهاري
         function toggleTheme() {
             const root = document.documentElement;
             const themeToggle = document.getElementById('theme-toggle');
             
-            if (root.getAttribute('data-theme') === 'dark') {
+            if (root.getAttribute('data-theme') === 'light') {
                 root.removeAttribute('data-theme');
-                themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
-                localStorage.setItem('youtube_player_theme', 'light');
-            } else {
-                root.setAttribute('data-theme', 'dark');
                 themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
                 localStorage.setItem('youtube_player_theme', 'dark');
+            } else {
+                root.setAttribute('data-theme', 'light');
+                themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+                localStorage.setItem('youtube_player_theme', 'light');
             }
         }
         
@@ -1132,10 +1296,38 @@
             if (!player || !player.getDuration) return;
             
             const progressContainer = document.getElementById('progress-container');
-            const clickPosition = (event.clientX - progressContainer.getBoundingClientRect().left) / progressContainer.offsetWidth;
+            const rect = progressContainer.getBoundingClientRect();
+            // حساب النسبة المئوية للنقر مع مراعاة اتجاه RTL
+            const clickPosition = (event.clientX - rect.left) / rect.width;
             
             const duration = player.getDuration();
             const newTime = duration * clickPosition;
+            
+            player.seekTo(newTime, true);
+            
+            // تحديث شريط التقدم مباشرة
+            document.getElementById('progress-bar').style.width = `${clickPosition * 100}%`;
+            document.getElementById('progress-handle').style.left = `${clickPosition * 100}%`;
+            document.getElementById('current-time').textContent = formatTime(newTime);
+        }
+        
+        // تخطي 10 ثوان للأمام
+        function skipForward() {
+            if (!player || !player.getCurrentTime || !player.getDuration) return;
+            
+            const currentTime = player.getCurrentTime();
+            const duration = player.getDuration();
+            const newTime = Math.min(currentTime + 10, duration);
+            
+            player.seekTo(newTime, true);
+        }
+        
+        // تخطي 10 ثوان للخلف
+        function skipBackward() {
+            if (!player || !player.getCurrentTime) return;
+            
+            const currentTime = player.getCurrentTime();
+            const newTime = Math.max(currentTime - 10, 0);
             
             player.seekTo(newTime, true);
         }
@@ -1150,8 +1342,15 @@
             const newLockState = !playlistLocked;
             localStorage.setItem('youtube_player_locked', newLockState);
             
-            // تحديث حالة القفل
-            document.querySelector(':root').style.setProperty('--playlist-locked', newLockState ? 'true' : 'false');
+            // تحديث حالة القفل العامة
+            const playlistSection = document.getElementById('playlist-section');
+            const addVideoSection = document.getElementById('add-video-section');
+            
+            if (newLockState) {
+                addVideoSection.style.display = 'none';
+            } else {
+                addVideoSection.style.display = 'block';
+            }
             
             // إعادة تحميل قائمة التشغيل لتطبيق التغييرات
             renderPlaylist();
@@ -1161,15 +1360,42 @@
         // تحديث واجهة قفل قائمة التشغيل
         function updatePlaylistLockUI() {
             const lockBtn = document.getElementById('lock-playlist-btn');
-            const addVideoSection = document.getElementById('add-video-section');
             
             if (playlistLocked) {
                 lockBtn.innerHTML = '<i class="fas fa-lock"></i> فتح قائمة التشغيل';
-                addVideoSection.style.display = 'none';
             } else {
                 lockBtn.innerHTML = '<i class="fas fa-unlock"></i> قفل قائمة التشغيل';
+            }
+        }
+        
+        // إظهار/إخفاء قائمة التشغيل
+        function togglePlaylistDisplay() {
+            const playlistSection = document.getElementById('playlist-section');
+            const addVideoSection = document.getElementById('add-video-section');
+            const showPlaylistBtn = document.getElementById('show-playlist-btn');
+            
+            if (playlistSection.style.display === 'none' || playlistSection.style.display === '') {
+                showPasswordModal('showPlaylist');
+            } else {
+                playlistSection.style.display = 'none';
+                addVideoSection.style.display = 'none';
+                showPlaylistBtn.innerHTML = '<i class="fas fa-list"></i> عرض قائمة التشغيل';
+            }
+        }
+        
+        // عرض قائمة التشغيل بعد التحقق من كلمة المرور
+        function performShowPlaylist() {
+            const playlistSection = document.getElementById('playlist-section');
+            const addVideoSection = document.getElementById('add-video-section');
+            const showPlaylistBtn = document.getElementById('show-playlist-btn');
+            
+            playlistSection.style.display = 'block';
+            
+            if (!playlistLocked) {
                 addVideoSection.style.display = 'block';
             }
+            
+            showPlaylistBtn.innerHTML = '<i class="fas fa-times"></i> إخفاء قائمة التشغيل';
         }
         
         // إظهار نافذة كلمة المرور
@@ -1223,6 +1449,9 @@
                     case 'toggle':
                         performTogglePlaylistLock();
                         break;
+                    case 'showPlaylist':
+                        performShowPlaylist();
+                        break;
                 }
                 
                 // إعادة تعيين الوضع المصادق عليه بعد فترة
@@ -1242,15 +1471,136 @@
             }
         }
         
+        // إعداد سحب شريط التقدم
+        function setupProgressDrag() {
+            const progressContainer = document.getElementById('progress-container');
+            const progressHandle = document.getElementById('progress-handle');
+            
+            // بدء السحب
+            progressContainer.addEventListener('mousedown', (e) => {
+                isDragging = true;
+                updateDragPosition(e);
+                document.addEventListener('mousemove', dragMove);
+                document.addEventListener('mouseup', dragEnd);
+            });
+            
+            // تحريك السحب
+            function dragMove(e) {
+                if (isDragging) {
+                    updateDragPosition(e);
+                }
+            }
+            
+            // إنهاء السحب
+            function dragEnd() {
+                if (isDragging) {
+                    isDragging = false;
+                    const progressBar = document.getElementById('progress-bar');
+                    const width = parseFloat(progressBar.style.width);
+                    const duration = player.getDuration();
+                    const newTime = duration * (width / 100);
+                    player.seekTo(newTime, true);
+                    
+                    document.removeEventListener('mousemove', dragMove);
+                    document.removeEventListener('mouseup', dragEnd);
+                }
+            }
+            
+            // تحديث موضع المؤشر أثناء السحب
+            function updateDragPosition(e) {
+                const rect = progressContainer.getBoundingClientRect();
+                let position = (e.clientX - rect.left) / rect.width;
+                position = Math.max(0, Math.min(1, position));
+                
+                const percent = position * 100;
+                progressHandle.style.left = `${percent}%`;
+                document.getElementById('progress-bar').style.width = `${percent}%`;
+                
+                // تحديث الوقت الحالي المعروض
+                if (player && player.getDuration) {
+                    const duration = player.getDuration();
+                    const currentTime = duration * position;
+                    document.getElementById('current-time').textContent = formatTime(currentTime);
+                }
+            }
+            
+            // إضافة دعم للأجهزة اللمسية
+            progressContainer.addEventListener('touchstart', (e) => {
+                isDragging = true;
+                updateTouchPosition(e);
+                document.addEventListener('touchmove', touchMove);
+                document.addEventListener('touchend', touchEnd);
+                e.preventDefault();
+            });
+            
+            function touchMove(e) {
+                if (isDragging) {
+                    updateTouchPosition(e);
+                    e.preventDefault();
+                }
+            }
+            
+            function touchEnd() {
+                if (isDragging) {
+                    isDragging = false;
+                    const progressBar = document.getElementById('progress-bar');
+                    const width = parseFloat(progressBar.style.width);
+                    const duration = player.getDuration();
+                    const newTime = duration * (width / 100);
+                    player.seekTo(newTime, true);
+                    
+                    document.removeEventListener('touchmove', touchMove);
+                    document.removeEventListener('touchend', touchEnd);
+                }
+            }
+            
+            function updateTouchPosition(e) {
+                const rect = progressContainer.getBoundingClientRect();
+                const touch = e.touches[0];
+                let position = (touch.clientX - rect.left) / rect.width;
+                position = Math.max(0, Math.min(1, position));
+                
+                const percent = position * 100;
+                progressHandle.style.left = `${percent}%`;
+                document.getElementById('progress-bar').style.width = `${percent}%`;
+                
+                // تحديث الوقت الحالي المعروض
+                if (player && player.getDuration) {
+                    const duration = player.getDuration();
+                    const currentTime = duration * position;
+                    document.getElementById('current-time').textContent = formatTime(currentTime);
+                }
+            }
+        }
+        
+        // إضافة التعامل مع النقر على مشغل الفيديو للتشغيل/الإيقاف
+        function setupVideoBlocker() {
+            const videoBlocker = document.getElementById('video-blocker');
+            
+            videoBlocker.addEventListener('click', () => {
+                if (player.getPlayerState() === YT.PlayerState.PLAYING) {
+                    player.pauseVideo();
+                } else {
+                    player.playVideo();
+                }
+            });
+        }
+        
         // إضافة مستمعي الأحداث عند تحميل الصفحة
         document.addEventListener('DOMContentLoaded', () => {
-            // إعداد الوضع الليلي
+            // إعداد الوضع الليلي/النهاري
             const themeToggle = document.getElementById('theme-toggle');
-            if (document.documentElement.getAttribute('data-theme') === 'dark') {
-                themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
-            } else {
+            if (document.documentElement.getAttribute('data-theme') === 'light') {
                 themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+            } else {
+                themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
             }
+            
+            // إعداد سحب شريط التقدم
+            setupProgressDrag();
+            
+            // إعداد حاجب الفيديو للتشغيل/الإيقاف بالنقر
+            setupVideoBlocker();
             
             // أزرار التحكم
             document.getElementById('play-btn').addEventListener('click', () => {
@@ -1273,6 +1623,15 @@
                 toggleMute();
             });
             
+            // أزرار تخطي 10 ثوان
+            document.getElementById('forward-btn').addEventListener('click', () => {
+                skipForward();
+            });
+            
+            document.getElementById('backward-btn').addEventListener('click', () => {
+                skipBackward();
+            });
+            
             // التحكم في الصوت باستخدام شريط التمرير
             document.getElementById('volume-slider').addEventListener('input', (e) => {
                 const volume = e.target.value;
@@ -1290,7 +1649,9 @@
             
             // شريط التقدم
             document.getElementById('progress-container').addEventListener('click', (e) => {
-                updateVideoPosition(e);
+                if (!isDragging) {
+                    updateVideoPosition(e);
+                }
             });
             
             // زر ملء الشاشة
@@ -1298,7 +1659,7 @@
                 toggleFullscreen();
             });
             
-            // زر تبديل الوضع الليلي
+            // زر تبديل الوضع الليلي/النهاري
             themeToggle.addEventListener('click', () => {
                 toggleTheme();
             });
@@ -1313,6 +1674,9 @@
             
             // زر قفل/فتح قائمة التشغيل
             document.getElementById('lock-playlist-btn').addEventListener('click', togglePlaylistLock);
+            
+            // زر عرض/إخفاء قائمة التشغيل
+            document.getElementById('show-playlist-btn').addEventListener('click', togglePlaylistDisplay);
             
             // نافذة كلمة المرور
             document.getElementById('submit-password-btn').addEventListener('click', verifyPassword);
@@ -1370,6 +1734,18 @@
                     case 'l': // L لقفل/فتح قائمة التشغيل
                     case 'L':
                         togglePlaylistLock();
+                        break;
+                    case 'p': // P لعرض/إخفاء قائمة التشغيل
+                    case 'P':
+                        togglePlaylistDisplay();
+                        break;
+                    case 'j': // J لتخطي 10 ثوان للخلف
+                    case 'J':
+                        skipBackward();
+                        break;
+                    case 'k': // K لتخطي 10 ثوان للأمام
+                    case 'K':
+                        skipForward();
                         break;
                     case 'ArrowUp': // السهم للأعلى لرفع الصوت
                         e.preventDefault();
