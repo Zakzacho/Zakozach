@@ -3,29 +3,65 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مشغل فيديوهات يوتيوب</title>
+    <title>مشغل فيديوهات يوتيوب المطور</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://www.youtube.com">
     <style>
+        :root {
+            /* نظام الألوان الأساسي - الوضع العادي */
+            --primary-color: #f47521;
+            --secondary-color: #2196F3;
+            --bg-color: #f5f5f5;
+            --container-bg: #ffffff;
+            --text-color: #333333;
+            --title-color: #2c3e50;
+            --border-color: #dddddd;
+            --item-hover: #f5f5f5;
+            --item-active: #e3f2fd;
+            --item-active-border: #2196F3;
+            --form-bg: #f9f9f9;
+            --playlist-item-border: #eeeeee;
+        }
+
+        [data-theme="dark"] {
+            /* نظام الألوان - الوضع الليلي */
+            --primary-color: #ff8c39;
+            --secondary-color: #3da8ff;
+            --bg-color: #1a1a1a;
+            --container-bg: #2d2d2d;
+            --text-color: #e0e0e0;
+            --title-color: #ffffff;
+            --border-color: #444444;
+            --item-hover: #3d3d3d;
+            --item-active: #394b59;
+            --item-active-border: #3da8ff;
+            --form-bg: #333333;
+            --playlist-item-border: #444444;
+        }
+
         body {
             font-family: 'Tajawal', sans-serif;
-            background-color: #f5f5f5;
-            color: #333;
+            background-color: var(--bg-color);
+            color: var(--text-color);
             padding: 20px;
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
         
         .container {
             max-width: 1200px;
             margin: 0 auto;
-            background-color: white;
+            background-color: var(--container-bg);
             border-radius: 10px;
             box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
             padding: 20px;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
         }
         
-        h1 {
+        h1, h2, h3 {
             margin-bottom: 20px;
-            color: #2c3e50;
+            color: var(--title-color);
             text-align: center;
+            transition: color 0.3s ease;
         }
         
         .video-container {
@@ -36,6 +72,12 @@
             margin-bottom: 20px;
             border-radius: 8px;
             background-color: #000;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .video-container:hover {
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
         }
         
         .video-container iframe {
@@ -62,33 +104,65 @@
             border-radius: 5px;
             font-weight: bold;
             transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+        
+        .controls button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .controls button:active {
+            transform: translateY(0);
         }
         
         .playlist {
             margin-top: 20px;
             max-height: 300px;
             overflow-y: auto;
-            border: 1px solid #ddd;
+            border: 1px solid var(--border-color);
             border-radius: 8px;
             padding: 10px;
+            transition: border-color 0.3s ease;
+            scrollbar-width: thin;
+            scrollbar-color: var(--primary-color) var(--bg-color);
+        }
+        
+        .playlist::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .playlist::-webkit-scrollbar-track {
+            background: var(--bg-color);
+            border-radius: 10px;
+        }
+        
+        .playlist::-webkit-scrollbar-thumb {
+            background-color: var(--primary-color);
+            border-radius: 10px;
         }
         
         .playlist-item {
             display: flex;
             align-items: center;
             padding: 10px;
-            border-bottom: 1px solid #eee;
+            border-bottom: 1px solid var(--playlist-item-border);
             cursor: pointer;
-            transition: background-color 0.2s;
+            transition: background-color 0.2s ease, transform 0.2s ease;
+            border-right: 0 solid transparent;
         }
         
         .playlist-item:hover {
-            background-color: #f5f5f5;
+            background-color: var(--item-hover);
+            transform: translateX(-5px);
         }
         
         .playlist-item.active {
-            background-color: #e3f2fd;
-            border-right: 4px solid #2196F3;
+            background-color: var(--item-active);
+            border-right: 4px solid var(--item-active-border);
         }
         
         .playlist-item img {
@@ -97,6 +171,13 @@
             margin-left: 15px;
             border-radius: 4px;
             object-fit: cover;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .playlist-item:hover img {
+            transform: scale(1.05);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
         
         .playlist-item .video-info {
@@ -106,23 +187,220 @@
         .playlist-item .video-title {
             font-weight: bold;
             margin-bottom: 5px;
+            transition: color 0.3s ease;
         }
         
         .playlist-item .video-channel {
             font-size: 0.9em;
             color: #666;
+            transition: color 0.3s ease;
+        }
+        
+        [data-theme="dark"] .playlist-item .video-channel {
+            color: #aaa;
         }
         
         .add-video-form {
             margin-top: 20px;
-            background-color: #f9f9f9;
+            background-color: var(--form-bg);
             padding: 15px;
             border-radius: 8px;
+            transition: background-color 0.3s ease;
         }
         
         .add-video-form input {
             direction: ltr;
             text-align: left;
+            background-color: var(--container-bg);
+            color: var(--text-color);
+            border-color: var(--border-color);
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+        }
+        
+        .add-video-form input:focus {
+            box-shadow: 0 0 0 0.25rem rgba(244, 117, 33, 0.25);
+            border-color: var(--primary-color);
+        }
+        
+        .header-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .theme-toggle {
+            background: none;
+            border: none;
+            color: var(--text-color);
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: color 0.3s ease, transform 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            outline: none;
+        }
+        
+        .theme-toggle:hover {
+            color: var(--primary-color);
+            transform: rotate(30deg);
+        }
+        
+        .fullscreen-btn {
+            background: none;
+            border: none;
+            color: var(--text-color);
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: color 0.3s ease, transform 0.3s ease;
+            padding: 5px;
+            border-radius: 5px;
+        }
+        
+        .fullscreen-btn:hover {
+            color: var(--primary-color);
+        }
+        
+        .video-title-display {
+            text-align: center;
+            margin: 10px 0;
+            font-weight: bold;
+            min-height: 24px;
+            transition: color 0.3s ease;
+            color: var(--title-color);
+        }
+        
+        .video-container.fullscreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            width: 100vw;
+            height: 100vh;
+            padding-bottom: 0;
+            z-index: 9999;
+            border-radius: 0;
+        }
+        
+        .keyboard-shortcuts {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: var(--form-bg);
+            border-radius: 8px;
+            font-size: 0.9rem;
+            transition: background-color 0.3s ease;
+        }
+        
+        .keyboard-shortcuts h4 {
+            margin-bottom: 10px;
+            color: var(--title-color);
+            text-align: center;
+        }
+        
+        .shortcuts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 5px;
+        }
+        
+        .shortcut-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+        
+        .shortcut-key {
+            background-color: var(--container-bg);
+            color: var(--text-color);
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-left: 5px;
+            font-weight: bold;
+            min-width: 24px;
+            text-align: center;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .progress-container {
+            height: 5px;
+            width: 100%;
+            background-color: var(--border-color);
+            border-radius: 5px;
+            margin-bottom: 10px;
+            overflow: hidden;
+            cursor: pointer;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background-color: var(--primary-color);
+            width: 0;
+            border-radius: 5px;
+            transition: width 0.1s linear;
+        }
+        
+        .time-display {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            margin-bottom: 10px;
+            color: var(--text-color);
+        }
+        
+        .volume-control {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .volume-slider {
+            width: 80px;
+            direction: ltr;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        
+        .btn-primary:hover, .btn-primary:focus {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            filter: brightness(1.1);
+        }
+        
+        .btn-info {
+            background-color: var(--secondary-color);
+            border-color: var(--secondary-color);
+            color: white;
+        }
+        
+        .btn-info:hover, .btn-info:focus {
+            background-color: var(--secondary-color);
+            border-color: var(--secondary-color);
+            filter: brightness(1.1);
+            color: white;
+        }
+        
+        .playlist-empty {
+            text-align: center;
+            padding: 20px;
+            color: var(--text-color);
+            font-style: italic;
+        }
+        
+        .fade-transition {
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+        
+        .fade-transition.show {
+            opacity: 1;
         }
         
         @media (max-width: 768px) {
@@ -134,32 +412,68 @@
             .playlist-item img {
                 margin-left: 0;
                 margin-bottom: 10px;
+                width: 160px;
+                height: 90px;
             }
             
             .controls {
                 flex-direction: row;
+                flex-wrap: wrap;
+                justify-content: center;
             }
             
             .controls button {
                 margin-bottom: 10px;
+                font-size: 0.9rem;
+                padding: 6px 10px;
+            }
+            
+            .shortcuts-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .volume-slider {
+                width: 60px;
             }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>مشغل فيديوهات يوتيوب</h1>
+        <div class="header-controls">
+            <h1>مشغل فيديوهات يوتيوب</h1>
+            <button id="theme-toggle" class="theme-toggle" title="تبديل الوضع الليلي">
+                <i class="fas fa-moon"></i>
+            </button>
+        </div>
         
         <div class="video-container">
             <div id="player"></div>
+            <button id="fullscreen-btn" class="fullscreen-btn" title="ملء الشاشة">
+                <i class="fas fa-expand"></i>
+            </button>
+        </div>
+        
+        <div class="video-title-display" id="current-video-title"></div>
+        
+        <div class="progress-container" id="progress-container">
+            <div class="progress-bar" id="progress-bar"></div>
+        </div>
+        
+        <div class="time-display">
+            <span id="current-time">0:00</span>
+            <span id="duration">0:00</span>
         </div>
         
         <div class="controls">
-            <button id="prev-btn" class="btn btn-info"><i class="fas fa-step-backward"></i> السابق</button>
-            <button id="play-btn" class="btn btn-success"><i class="fas fa-play"></i> تشغيل</button>
-            <button id="pause-btn" class="btn btn-warning"><i class="fas fa-pause"></i> إيقاف مؤقت</button>
-            <button id="next-btn" class="btn btn-info">التالي <i class="fas fa-step-forward"></i></button>
-            <button id="mute-btn" class="btn btn-secondary"><i class="fas fa-volume-mute"></i> كتم الصوت</button>
+            <button id="prev-btn" class="btn btn-info" title="الفيديو السابق"><i class="fas fa-step-backward"></i> السابق</button>
+            <button id="play-btn" class="btn btn-success" title="تشغيل"><i class="fas fa-play"></i> تشغيل</button>
+            <button id="pause-btn" class="btn btn-warning" title="إيقاف مؤقت"><i class="fas fa-pause"></i> إيقاف</button>
+            <button id="next-btn" class="btn btn-info" title="الفيديو التالي">التالي <i class="fas fa-step-forward"></i></button>
+            <div class="volume-control">
+                <button id="mute-btn" class="btn btn-secondary" title="كتم الصوت"><i class="fas fa-volume-up"></i></button>
+                <input type="range" id="volume-slider" class="volume-slider" min="0" max="100" value="100">
+            </div>
         </div>
         
         <div class="add-video-form">
@@ -173,6 +487,40 @@
         <h3>قائمة التشغيل</h3>
         <div class="playlist" id="playlist">
             <!-- ستتم إضافة عناصر قائمة التشغيل هنا عن طريق جافا سكريبت -->
+        </div>
+        
+        <div class="keyboard-shortcuts">
+            <h4>اختصارات لوحة المفاتيح</h4>
+            <div class="shortcuts-grid">
+                <div class="shortcut-item">
+                    <span class="shortcut-key">مسافة</span>
+                    <span>تشغيل/إيقاف</span>
+                </div>
+                <div class="shortcut-item">
+                    <span class="shortcut-key">←</span>
+                    <span>الفيديو السابق</span>
+                </div>
+                <div class="shortcut-item">
+                    <span class="shortcut-key">→</span>
+                    <span>الفيديو التالي</span>
+                </div>
+                <div class="shortcut-item">
+                    <span class="shortcut-key">F</span>
+                    <span>ملء الشاشة</span>
+                </div>
+                <div class="shortcut-item">
+                    <span class="shortcut-key">M</span>
+                    <span>كتم الصوت</span>
+                </div>
+                <div class="shortcut-item">
+                    <span class="shortcut-key">↑</span>
+                    <span>رفع الصوت</span>
+                </div>
+                <div class="shortcut-item">
+                    <span class="shortcut-key">↓</span>
+                    <span>خفض الصوت</span>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -190,9 +538,23 @@
             { id: 'LXb3EKWsInQ', title: 'فيديو آخر للتجربة', channel: 'قناة تجريبية' }
         ];
 
-        let playlist = [...defaultPlaylist];
-        let currentVideoIndex = 0;
+        // التحقق من وجود قائمة محفوظة في التخزين المحلي
+        const savedPlaylist = localStorage.getItem('youtube_player_playlist');
+        const savedVideoIndex = localStorage.getItem('youtube_player_index');
+        const savedTheme = localStorage.getItem('youtube_player_theme');
+        const savedVolume = localStorage.getItem('youtube_player_volume');
+        
+        let playlist = savedPlaylist ? JSON.parse(savedPlaylist) : [...defaultPlaylist];
+        let currentVideoIndex = savedVideoIndex ? parseInt(savedVideoIndex, 10) : 0;
         let player;
+        let progressInterval;
+        let isFullscreen = false;
+        
+        // تعيين الوضع الليلي إذا كان محفوظًا
+        if (savedTheme === 'dark') {
+            document.documentElement.setAttribute('data-theme', 'dark');
+            // سيتم تحديث أيقونة الوضع الليلي بعد تحميل الصفحة
+        }
         
         // تحميل YouTube API
         const tag = document.createElement('script');
@@ -205,12 +567,15 @@
             player = new YT.Player('player', {
                 height: '390',
                 width: '640',
-                videoId: playlist[currentVideoIndex].id,
+                videoId: playlist.length > 0 ? playlist[currentVideoIndex].id : '',
                 playerVars: {
                     'playsinline': 1,
                     'enablejsapi': 1,
                     'origin': window.location.origin,
-                    'rel': 0
+                    'rel': 0,
+                    'modestbranding': 1,
+                    'showinfo': 0,
+                    'controls': 0 // نستخدم أزرار التحكم المخصصة
                 },
                 events: {
                     'onReady': onPlayerReady,
@@ -223,6 +588,34 @@
         function onPlayerReady(event) {
             renderPlaylist();
             updateActiveVideo();
+            updateVideoTitle();
+            
+            // استعادة مستوى الصوت المحفوظ
+            if (savedVolume) {
+                const volume = parseInt(savedVolume, 10);
+                player.setVolume(volume);
+                document.getElementById('volume-slider').value = volume;
+                updateVolumeIcon(volume);
+            }
+            
+            // بدء تحديث شريط التقدم
+            startProgressUpdate();
+        }
+        
+        // تحديث أيقونة الصوت
+        function updateVolumeIcon(volume) {
+            const muteBtn = document.getElementById('mute-btn');
+            let icon;
+            
+            if (volume === 0 || player.isMuted()) {
+                icon = '<i class="fas fa-volume-mute"></i>';
+            } else if (volume < 50) {
+                icon = '<i class="fas fa-volume-down"></i>';
+            } else {
+                icon = '<i class="fas fa-volume-up"></i>';
+            }
+            
+            muteBtn.innerHTML = icon;
         }
         
         // عندما يتغير حالة المشغل (تشغيل، إيقاف، إنتهاء...)
@@ -231,6 +624,64 @@
             if (event.data === YT.PlayerState.ENDED) {
                 playNextVideo();
             }
+            
+            // تحديث أزرار التشغيل/الإيقاف بناءً على حالة المشغل
+            updatePlayPauseButtons(event.data);
+            
+            // تحديث شريط التقدم
+            if (event.data === YT.PlayerState.PLAYING) {
+                startProgressUpdate();
+            } else {
+                stopProgressUpdate();
+            }
+        }
+        
+        // تحديث أزرار التشغيل والإيقاف بناءً على حالة المشغل
+        function updatePlayPauseButtons(playerState) {
+            const playBtn = document.getElementById('play-btn');
+            const pauseBtn = document.getElementById('pause-btn');
+            
+            if (playerState === YT.PlayerState.PLAYING) {
+                playBtn.style.display = 'none';
+                pauseBtn.style.display = 'inline-flex';
+            } else {
+                playBtn.style.display = 'inline-flex';
+                pauseBtn.style.display = 'none';
+            }
+        }
+        
+        // بدء تحديث شريط التقدم
+        function startProgressUpdate() {
+            stopProgressUpdate(); // إيقاف أي تحديث سابق
+            
+            progressInterval = setInterval(() => {
+                if (player && player.getCurrentTime && player.getDuration) {
+                    const currentTime = player.getCurrentTime();
+                    const duration = player.getDuration();
+                    const progressPercent = (currentTime / duration) * 100;
+                    
+                    document.getElementById('progress-bar').style.width = `${progressPercent}%`;
+                    document.getElementById('current-time').textContent = formatTime(currentTime);
+                    document.getElementById('duration').textContent = formatTime(duration);
+                }
+            }, 500);
+        }
+        
+        // إيقاف تحديث شريط التقدم
+        function stopProgressUpdate() {
+            if (progressInterval) {
+                clearInterval(progressInterval);
+                progressInterval = null;
+            }
+        }
+        
+        // تنسيق الوقت بصيغة (دقائق:ثوانِ)
+        function formatTime(timeInSeconds) {
+            if (isNaN(timeInSeconds)) return '0:00';
+            
+            const minutes = Math.floor(timeInSeconds / 60);
+            const seconds = Math.floor(timeInSeconds % 60);
+            return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
         }
         
         // تحميل وعرض قائمة التشغيل
@@ -238,25 +689,82 @@
             const playlistElement = document.getElementById('playlist');
             playlistElement.innerHTML = '';
             
+            if (playlist.length === 0) {
+                playlistElement.innerHTML = '<div class="playlist-empty">لا توجد فيديوهات في قائمة التشغيل</div>';
+                return;
+            }
+            
             playlist.forEach((video, index) => {
                 const videoElement = document.createElement('div');
                 videoElement.className = `playlist-item ${index === currentVideoIndex ? 'active' : ''}`;
                 videoElement.innerHTML = `
-                    <img src="https://img.youtube.com/vi/${video.id}/mqdefault.jpg" alt="${video.title}">
+                    <img src="https://img.youtube.com/vi/${video.id}/mqdefault.jpg" alt="${video.title}" loading="lazy">
                     <div class="video-info">
                         <div class="video-title">${video.title}</div>
                         <div class="video-channel">${video.channel}</div>
                     </div>
+                    <button class="btn btn-sm btn-danger remove-video" data-index="${index}" title="حذف">
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
                 `;
                 
+                videoElement.querySelector('.remove-video').addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    removeVideoFromPlaylist(index);
+                });
+                
                 videoElement.addEventListener('click', () => {
-                    currentVideoIndex = index;
-                    playVideo(video.id);
-                    updateActiveVideo();
+                    if (index !== currentVideoIndex) {
+                        // إضافة تأثير التلاشي عند تغيير الفيديو
+                        const videoContainer = document.querySelector('.video-container');
+                        videoContainer.classList.add('fade-transition');
+                        
+                        setTimeout(() => {
+                            currentVideoIndex = index;
+                            playVideo(video.id);
+                            updateActiveVideo();
+                            
+                            // حفظ الفيديو الحالي في التخزين المحلي
+                            localStorage.setItem('youtube_player_index', currentVideoIndex);
+                            
+                            videoContainer.classList.add('show');
+                        }, 300);
+                    }
                 });
                 
                 playlistElement.appendChild(videoElement);
             });
+            
+            // حفظ قائمة التشغيل في التخزين المحلي
+            localStorage.setItem('youtube_player_playlist', JSON.stringify(playlist));
+        }
+        
+        // حذف فيديو من قائمة التشغيل
+        function removeVideoFromPlaylist(index) {
+            if (playlist.length <= 1) {
+                alert('لا يمكن حذف جميع الفيديوهات من القائمة');
+                return;
+            }
+            
+            playlist.splice(index, 1);
+            
+            // إذا تم حذف الفيديو الحالي أو فيديو بمؤشر أقل من الحالي
+            if (index === currentVideoIndex) {
+                // إذا تم حذف آخر فيديو في القائمة
+                if (currentVideoIndex >= playlist.length) {
+                    currentVideoIndex = playlist.length - 1;
+                }
+                playVideo(playlist[currentVideoIndex].id);
+            } else if (index < currentVideoIndex) {
+                currentVideoIndex--;
+            }
+            
+            renderPlaylist();
+            updateActiveVideo();
+            
+            // حفظ التغييرات في التخزين المحلي
+            localStorage.setItem('youtube_player_playlist', JSON.stringify(playlist));
+            localStorage.setItem('youtube_player_index', currentVideoIndex);
         }
         
         // تحديث الفيديو النشط في قائمة التشغيل
@@ -265,21 +773,46 @@
             playlistItems.forEach((item, index) => {
                 if (index === currentVideoIndex) {
                     item.classList.add('active');
-                    // تمرير إلى الفيديو النشط
-                    item.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                    // تمرير إلى الفيديو النشط بسلاسة
+                    setTimeout(() => {
+                        item.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                    }, 100);
                 } else {
                     item.classList.remove('active');
                 }
             });
+            
+            updateVideoTitle();
+        }
+        
+        // تحديث عنوان الفيديو الحالي
+        function updateVideoTitle() {
+            const titleElement = document.getElementById('current-video-title');
+            if (playlist.length > 0 && currentVideoIndex >= 0 && currentVideoIndex < playlist.length) {
+                titleElement.textContent = playlist[currentVideoIndex].title;
+            } else {
+                titleElement.textContent = '';
+            }
         }
         
         // تشغيل فيديو معين
         function playVideo(videoId) {
+            const videoContainer = document.querySelector('.video-container');
+            videoContainer.classList.remove('show');
+            
             player.loadVideoById(videoId);
+            
+            setTimeout(() => {
+                videoContainer.classList.add('show');
+            }, 100);
+            
+            updateVideoTitle();
         }
         
         // الانتقال إلى الفيديو التالي
         function playNextVideo() {
+            if (playlist.length <= 1) return;
+            
             if (currentVideoIndex < playlist.length - 1) {
                 currentVideoIndex++;
             } else {
@@ -288,10 +821,15 @@
             
             playVideo(playlist[currentVideoIndex].id);
             updateActiveVideo();
+            
+            // حفظ الفيديو الحالي في التخزين المحلي
+            localStorage.setItem('youtube_player_index', currentVideoIndex);
         }
         
         // الانتقال إلى الفيديو السابق
         function playPrevVideo() {
+            if (playlist.length <= 1) return;
+            
             if (currentVideoIndex > 0) {
                 currentVideoIndex--;
             } else {
@@ -300,12 +838,65 @@
             
             playVideo(playlist[currentVideoIndex].id);
             updateActiveVideo();
+            
+            // حفظ الفيديو الحالي في التخزين المحلي
+            localStorage.setItem('youtube_player_index', currentVideoIndex);
+        }
+        
+        // كتم/إلغاء كتم الصوت
+        function toggleMute() {
+            if (player.isMuted()) {
+                player.unMute();
+                const volume = player.getVolume();
+                document.getElementById('volume-slider').value = volume;
+                updateVolumeIcon(volume);
+            } else {
+                player.mute();
+                updateVolumeIcon(0);
+            }
+        }
+        
+        // تبديل وضع ملء الشاشة
+        function toggleFullscreen() {
+            const videoContainer = document.querySelector('.video-container');
+            
+            if (!isFullscreen) {
+                videoContainer.classList.add('fullscreen');
+                document.body.style.overflow = 'hidden';
+                
+                // تغيير أيقونة زر ملء الشاشة
+                document.getElementById('fullscreen-btn').innerHTML = '<i class="fas fa-compress"></i>';
+            } else {
+                videoContainer.classList.remove('fullscreen');
+                document.body.style.overflow = '';
+                
+                // إعادة أيقونة زر ملء الشاشة
+                document.getElementById('fullscreen-btn').innerHTML = '<i class="fas fa-expand"></i>';
+            }
+            
+            isFullscreen = !isFullscreen;
+        }
+        
+        // تبديل الوضع الليلي
+        function toggleTheme() {
+            const root = document.documentElement;
+            const themeToggle = document.getElementById('theme-toggle');
+            
+            if (root.getAttribute('data-theme') === 'dark') {
+                root.removeAttribute('data-theme');
+                themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+                localStorage.setItem('youtube_player_theme', 'light');
+            } else {
+                root.setAttribute('data-theme', 'dark');
+                themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+                localStorage.setItem('youtube_player_theme', 'dark');
+            }
         }
         
         // استخراج معرف الفيديو من رابط يوتيوب
         function extractVideoId(url) {
             // التحقق أولاً إذا كان المدخل هو معرف فيديو فقط
-            if (url.length === 11) {
+            if (url.length === 11 && /^[a-zA-Z0-9_-]{11}$/.test(url)) {
                 return url;
             }
             
@@ -355,10 +946,34 @@
                 currentVideoIndex = 0;
                 playVideo(videoId);
             }
+            
+            // حفظ القائمة المحدثة في التخزين المحلي
+            localStorage.setItem('youtube_player_playlist', JSON.stringify(playlist));
+        }
+        
+        // تحديث موضع الفيديو عند النقر على شريط التقدم
+        function updateVideoPosition(event) {
+            if (!player || !player.getDuration) return;
+            
+            const progressContainer = document.getElementById('progress-container');
+            const clickPosition = (event.clientX - progressContainer.getBoundingClientRect().left) / progressContainer.offsetWidth;
+            
+            const duration = player.getDuration();
+            const newTime = duration * clickPosition;
+            
+            player.seekTo(newTime, true);
         }
         
         // إضافة مستمعي الأحداث عند تحميل الصفحة
         document.addEventListener('DOMContentLoaded', () => {
+            // إعداد الوضع الليلي
+            const themeToggle = document.getElementById('theme-toggle');
+            if (document.documentElement.getAttribute('data-theme') === 'dark') {
+                themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+            } else {
+                themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+            }
+            
             // أزرار التحكم
             document.getElementById('play-btn').addEventListener('click', () => {
                 player.playVideo();
@@ -377,13 +992,37 @@
             });
             
             document.getElementById('mute-btn').addEventListener('click', () => {
-                if (player.isMuted()) {
+                toggleMute();
+            });
+            
+            // التحكم في الصوت باستخدام شريط التمرير
+            document.getElementById('volume-slider').addEventListener('input', (e) => {
+                const volume = e.target.value;
+                player.setVolume(volume);
+                
+                if (player.isMuted() && volume > 0) {
                     player.unMute();
-                    document.getElementById('mute-btn').innerHTML = '<i class="fas fa-volume-mute"></i> كتم الصوت';
-                } else {
-                    player.mute();
-                    document.getElementById('mute-btn').innerHTML = '<i class="fas fa-volume-up"></i> تشغيل الصوت';
                 }
+                
+                updateVolumeIcon(volume);
+                
+                // حفظ مستوى الصوت في التخزين المحلي
+                localStorage.setItem('youtube_player_volume', volume);
+            });
+            
+            // شريط التقدم
+            document.getElementById('progress-container').addEventListener('click', (e) => {
+                updateVideoPosition(e);
+            });
+            
+            // زر ملء الشاشة
+            document.getElementById('fullscreen-btn').addEventListener('click', () => {
+                toggleFullscreen();
+            });
+            
+            // زر تبديل الوضع الليلي
+            themeToggle.addEventListener('click', () => {
+                toggleTheme();
             });
             
             // إضافة فيديو جديد
@@ -391,6 +1030,68 @@
             document.getElementById('video-url').addEventListener('keypress', (e) => {
                 if (e.key === 'Enter') {
                     addVideoToPlaylist();
+                }
+            });
+            
+            // إضافة تأثير التلاشي للفيديو
+            const videoContainer = document.querySelector('.video-container');
+            videoContainer.classList.add('fade-transition');
+            setTimeout(() => {
+                videoContainer.classList.add('show');
+            }, 100);
+            
+            // اختصارات لوحة المفاتيح
+            document.addEventListener('keydown', (e) => {
+                // تجاهل الاختصارات إذا كان المستخدم يكتب في حقل نصي
+                if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+                    return;
+                }
+                
+                switch (e.key) {
+                    case ' ': // مسافة للتشغيل/الإيقاف
+                        e.preventDefault();
+                        if (player.getPlayerState() === YT.PlayerState.PLAYING) {
+                            player.pauseVideo();
+                        } else {
+                            player.playVideo();
+                        }
+                        break;
+                    case 'ArrowRight': // السهم الأيمن للفيديو التالي
+                        playNextVideo();
+                        break;
+                    case 'ArrowLeft': // السهم الأيسر للفيديو السابق
+                        playPrevVideo();
+                        break;
+                    case 'f': // F لملء الشاشة
+                    case 'F':
+                        toggleFullscreen();
+                        break;
+                    case 'm': // M لكتم الصوت
+                    case 'M':
+                        toggleMute();
+                        break;
+                    case 'ArrowUp': // السهم للأعلى لرفع الصوت
+                        e.preventDefault();
+                        {
+                            let volume = parseInt(document.getElementById('volume-slider').value, 10);
+                            volume = Math.min(100, volume + 5);
+                            player.setVolume(volume);
+                            document.getElementById('volume-slider').value = volume;
+                            updateVolumeIcon(volume);
+                            localStorage.setItem('youtube_player_volume', volume);
+                        }
+                        break;
+                    case 'ArrowDown': // السهم للأسفل لخفض الصوت
+                        e.preventDefault();
+                        {
+                            let volume = parseInt(document.getElementById('volume-slider').value, 10);
+                            volume = Math.max(0, volume - 5);
+                            player.setVolume(volume);
+                            document.getElementById('volume-slider').value = volume;
+                            updateVolumeIcon(volume);
+                            localStorage.setItem('youtube_player_volume', volume);
+                        }
+                        break;
                 }
             });
         });
