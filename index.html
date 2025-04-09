@@ -1421,8 +1421,10 @@
             const showPlaylistBtn = document.getElementById('show-playlist-btn');
             
             playlistSection.style.display = 'block';
+            // تأكد من عرض قائمة التشغيل نفسها
             document.getElementById('playlist').style.display = 'block';
             
+            // إظهار نموذج إضافة الفيديو فقط إذا كانت القائمة غير مقفلة
             if (!playlistLocked) {
                 addVideoSection.style.display = 'block';
             }
