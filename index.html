@@ -3,1123 +3,397 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Watch your TV - مشغل الحلقات</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <title>مشغل فيديوهات يوتيوب</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        :root {
-            --primary-color: #f47521;
-            --dark-bg: #23252b;
-            --darker-bg: #191b1f;
-            --light-text: #ffffff;
-            --gray-text: #9fadbd;
-        }
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Cairo', sans-serif;
-        }
-        
         body {
-            background-color: var(--darker-bg);
-            color: var(--light-text);
-            min-height: 100vh;
+            font-family: 'Tajawal', sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+            padding: 20px;
         }
         
         .container {
             max-width: 1200px;
             margin: 0 auto;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
             padding: 20px;
         }
         
-        header {
-            background-color: var(--dark-bg);
-            padding: 15px 0;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-            margin-bottom: 30px;
-        }
-        
-        .logo {
-            font-size: 28px;
-            font-weight: bold;
-            color: var(--primary-color);
+        h1 {
+            margin-bottom: 20px;
+            color: #2c3e50;
             text-align: center;
-            letter-spacing: 1px;
-        }
-        
-        .main-content {
-            display: flex;
-            flex-direction: column;
-            gap: 30px;
-        }
-        
-        .player-section {
-            background-color: var(--dark-bg);
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
         }
         
         .video-container {
             position: relative;
-            padding-top: 56.25%; /* 16:9 Aspect Ratio */
+            padding-bottom: 56.25%;
+            height: 0;
+            overflow: hidden;
+            margin-bottom: 20px;
+            border-radius: 8px;
             background-color: #000;
         }
         
-        #videoPlayer {
+        .video-container iframe {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-        }
-        
-        .now-playing {
-            padding: 15px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        
-        .now-playing h2 {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 18px;
-            margin-bottom: 10px;
-        }
-        
-        .now-playing h2::before {
-            content: "";
-            display: inline-block;
-            width: 10px;
-            height: 10px;
-            background-color: var(--primary-color);
-            border-radius: 50%;
-            animation: pulse 1.5s infinite;
-        }
-        
-        .episode-info {
-            font-size: 24px;
-            font-weight: 600;
-            margin-bottom: 5px;
-            color: var(--light-text);
-        }
-        
-        .episode-number {
-            font-size: 14px;
-            color: var(--gray-text);
+            border: none;
         }
         
         .controls {
-            padding: 15px;
             display: flex;
-            justify-content: space-between;
-            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
             flex-wrap: wrap;
             gap: 10px;
         }
         
-        .control-button {
-            background-color: rgba(255, 255, 255, 0.1);
-            border: none;
-            color: var(--light-text);
-            padding: 10px 15px;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .control-button:hover {
-            background-color: var(--primary-color);
-        }
-        
-        .playlist-section {
-            background-color: var(--dark-bg);
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-        }
-        
-        .playlist-header {
-            padding: 15px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .playlist-title {
-            font-size: 20px;
-            font-weight: 600;
-        }
-        
-        .add-episode-btn {
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
+        .controls button {
+            min-width: 80px;
+            margin: 0 5px;
             padding: 8px 15px;
             border-radius: 5px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-        
-        .add-episode-btn:hover {
-            background-color: #d35f0c;
+            font-weight: bold;
+            transition: all 0.3s;
         }
         
         .playlist {
-            max-height: 400px;
+            margin-top: 20px;
+            max-height: 300px;
             overflow-y: auto;
-            overscroll-behavior: contain;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 10px;
         }
         
-        .episode-item {
-            padding: 15px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        .playlist-item {
             display: flex;
             align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #eee;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: background-color 0.2s;
         }
         
-        .episode-item:hover {
-            background-color: rgba(255, 255, 255, 0.05);
+        .playlist-item:hover {
+            background-color: #f5f5f5;
         }
         
-        .episode-item.active {
-            background-color: rgba(244, 117, 33, 0.2);
-            border-right: 4px solid var(--primary-color);
+        .playlist-item.active {
+            background-color: #e3f2fd;
+            border-right: 4px solid #2196F3;
         }
         
-        .episode-index {
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background-color: rgba(255, 255, 255, 0.1);
-            border-radius: 50%;
+        .playlist-item img {
+            width: 120px;
+            height: 68px;
             margin-left: 15px;
-            font-weight: 600;
-            flex-shrink: 0;
+            border-radius: 4px;
+            object-fit: cover;
         }
         
-        .episode-details {
+        .playlist-item .video-info {
             flex-grow: 1;
         }
         
-        .episode-title {
-            font-size: 16px;
-            font-weight: 600;
+        .playlist-item .video-title {
+            font-weight: bold;
             margin-bottom: 5px;
         }
         
-        .episode-type {
-            font-size: 12px;
-            color: var(--gray-text);
-            display: flex;
-            align-items: center;
-            gap: 5px;
+        .playlist-item .video-channel {
+            font-size: 0.9em;
+            color: #666;
         }
         
-        .episode-actions {
-            display: flex;
-            gap: 5px;
-        }
-        
-        .episode-action-btn {
-            background-color: transparent;
-            border: none;
-            color: var(--gray-text);
-            cursor: pointer;
-            padding: 5px;
-            font-size: 16px;
-            border-radius: 3px;
-            transition: all 0.2s ease;
-        }
-        
-        .episode-action-btn:hover {
-            color: var(--light-text);
-            background-color: rgba(255, 255, 255, 0.1);
-        }
-        
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.7);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-        }
-        
-        .modal-content {
-            background-color: var(--dark-bg);
-            border-radius: 8px;
-            width: 90%;
-            max-width: 500px;
-            padding: 20px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
-        }
-        
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        
-        .modal-title {
-            font-size: 20px;
-            font-weight: 600;
-        }
-        
-        .close-modal {
-            background: transparent;
-            border: none;
-            color: var(--gray-text);
-            font-size: 24px;
-            cursor: pointer;
-        }
-        
-        .form-group {
-            margin-bottom: 15px;
-        }
-        
-        .form-label {
-            display: block;
-            margin-bottom: 5px;
-            color: var(--gray-text);
-        }
-        
-        .form-input {
-            width: 100%;
-            padding: 10px;
-            background-color: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 5px;
-            color: var(--light-text);
-        }
-        
-        .form-select {
-            width: 100%;
-            padding: 10px;
-            background-color: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 5px;
-            color: var(--light-text);
-        }
-        
-        .modal-actions {
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
+        .add-video-form {
             margin-top: 20px;
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 8px;
         }
         
-        .cancel-btn {
-            background-color: rgba(255, 255, 255, 0.1);
-            color: var(--light-text);
-            border: none;
-            padding: 10px 15px;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        
-        .save-btn {
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            padding: 10px 15px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: 600;
-        }
-        
-        .save-btn:hover {
-            background-color: #d35f0c;
-        }
-        
-        .progress-container {
-            height: 5px;
-            width: 100%;
-            background-color: rgba(255, 255, 255, 0.1);
-            cursor: pointer;
-        }
-        
-        .progress-bar {
-            height: 100%;
-            width: 0%;
-            background-color: var(--primary-color);
-            transition: width 0.1s linear;
-        }
-
-        .playback-info {
-            display: flex;
-            justify-content: space-between;
-            padding: 5px 15px;
-            font-size: 12px;
-            color: var(--gray-text);
-        }
-        
-        .volume-slider {
-            width: 80px;
-            height: 5px;
-            -webkit-appearance: none;
-            appearance: none;
-            background: rgba(255, 255, 255, 0.1);
-            outline: none;
-            border-radius: 3px;
-        }
-        
-        .volume-slider::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background: var(--primary-color);
-            cursor: pointer;
-        }
-        
-        @keyframes pulse {
-            0% {
-                opacity: 0.4;
-            }
-            50% {
-                opacity: 1;
-            }
-            100% {
-                opacity: 0.4;
-            }
+        .add-video-form input {
+            direction: ltr;
+            text-align: left;
         }
         
         @media (max-width: 768px) {
-            .controls {
+            .playlist-item {
                 flex-direction: column;
-                align-items: stretch;
+                text-align: center;
             }
             
-            .controls > div {
-                display: flex;
-                justify-content: space-between;
-                gap: 5px;
-            }
-            
-            .episode-item {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-            
-            .episode-index {
-                margin-bottom: 10px;
+            .playlist-item img {
                 margin-left: 0;
+                margin-bottom: 10px;
             }
             
-            .episode-actions {
-                margin-top: 10px;
-                align-self: flex-end;
+            .controls {
+                flex-direction: row;
+            }
+            
+            .controls button {
+                margin-bottom: 10px;
             }
         }
     </style>
 </head>
 <body>
-    <header>
-        <div class="container">
-            <div class="logo">Watch your TV</div>
-        </div>
-    </header>
-    
     <div class="container">
-        <div class="main-content">
-            <div class="player-section">
-                <div class="video-container">
-                    <video id="videoPlayer" controls></video>
-                </div>
-                <div class="progress-container" id="progressContainer">
-                    <div class="progress-bar" id="progressBar"></div>
-                </div>
-                <div class="playback-info">
-                    <span id="currentTime">00:00</span>
-                    <span id="duration">00:00</span>
-                </div>
-                <div class="now-playing">
-                    <h2>يعرض الآن</h2>
-                    <div class="episode-info" id="currentEpisodeTitle">لم يتم تحديد الحلقة</div>
-                    <div class="episode-number" id="currentEpisodeNumber"></div>
-                </div>
-                <div class="controls">
-                    <div>
-                        <button class="control-button" id="prevBtn">
-                            <span>السابق</span>
-                        </button>
-                        <button class="control-button" id="playPauseBtn">
-                            <span id="playText">تشغيل</span>
-                        </button>
-                        <button class="control-button" id="nextBtn">
-                            <span>التالي</span>
-                        </button>
-                    </div>
-                    <div>
-                        <button class="control-button" id="muteBtn">
-                            <span id="muteText">كتم</span>
-                        </button>
-                        <input type="range" class="volume-slider" id="volumeSlider" min="0" max="1" step="0.1" value="1">
-                    </div>
-                </div>
-            </div>
-            
-            <div class="playlist-section">
-                <div class="playlist-header">
-                    <h2 class="playlist-title">قائمة الحلقات</h2>
-                    <button class="add-episode-btn" id="addEpisodeBtn">إضافة حلقة جديدة</button>
-                </div>
-                <div class="playlist" id="playlistContainer">
-                    <!-- القائمة سيتم إنشاؤها ديناميكيًا -->
-                </div>
+        <h1>مشغل فيديوهات يوتيوب</h1>
+        
+        <div class="video-container">
+            <div id="player"></div>
+        </div>
+        
+        <div class="controls">
+            <button id="prev-btn" class="btn btn-info"><i class="fas fa-step-backward"></i> السابق</button>
+            <button id="play-btn" class="btn btn-success"><i class="fas fa-play"></i> تشغيل</button>
+            <button id="pause-btn" class="btn btn-warning"><i class="fas fa-pause"></i> إيقاف مؤقت</button>
+            <button id="next-btn" class="btn btn-info">التالي <i class="fas fa-step-forward"></i></button>
+            <button id="mute-btn" class="btn btn-secondary"><i class="fas fa-volume-mute"></i> كتم الصوت</button>
+        </div>
+        
+        <div class="add-video-form">
+            <h3>إضافة فيديو جديد</h3>
+            <div class="input-group mb-3">
+                <input type="text" id="video-url" class="form-control" placeholder="أدخل رابط فيديو يوتيوب أو معرف الفيديو" aria-label="رابط فيديو يوتيوب">
+                <button class="btn btn-primary" type="button" id="add-video-btn">إضافة</button>
             </div>
         </div>
-    </div>
-    
-    <!-- نافذة إضافة حلقة جديدة -->
-    <div class="modal" id="addEpisodeModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title">إضافة حلقة جديدة</h3>
-                <button class="close-modal" id="closeModalBtn">&times;</button>
-            </div>
-            <div class="form-group">
-                <label class="form-label">عنوان الحلقة</label>
-                <input type="text" class="form-input" id="episodeTitle" placeholder="أدخل عنوان الحلقة">
-            </div>
-            <div class="form-group">
-                <label class="form-label">نوع المحتوى</label>
-                <select class="form-select" id="episodeType">
-                    <option value="show">حلقة</option>
-                    <option value="ad">إعلان</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label class="form-label">رابط الفيديو</label>
-                <input type="text" class="form-input" id="episodeUrl" placeholder="أدخل رابط الفيديو">
-                <small style="color: var(--gray-text); display: block; margin-top: 5px;">مثال: رابط Google Drive أو أي رابط فيديو مباشر</small>
-            </div>
-            <div class="form-group">
-                <label class="form-label">ترتيب العرض</label>
-                <input type="number" class="form-input" id="episodeOrder" placeholder="أدخل رقم ترتيب الحلقة">
-            </div>
-            <div class="modal-actions">
-                <button class="cancel-btn" id="cancelBtn">إلغاء</button>
-                <button class="save-btn" id="saveEpisodeBtn">حفظ</button>
-            </div>
+        
+        <h3>قائمة التشغيل</h3>
+        <div class="playlist" id="playlist">
+            <!-- ستتم إضافة عناصر قائمة التشغيل هنا عن طريق جافا سكريبت -->
         </div>
     </div>
+
+    <!-- تضمين Font Awesome للأيقونات -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+    <!-- تضمين خط Tajawal -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap">
     
     <script>
-        // تخزين الحلقات
-        let playlist = [];
-        let currentEpisodeIndex = 0;
-        let isPlaying = false;
-        let isEditing = false;
-        let editingEpisodeId = null;
+        // قائمة تشغيل افتراضية
+        const defaultPlaylist = [
+            { id: 'jNQXAC9IVRw', title: 'فيديو يوتيوب الأول', channel: 'يوتيوب الرسمي' },
+            { id: 'dQw4w9WgXcQ', title: 'Rick Astley - Never Gonna Give You Up', channel: 'Rick Astley' },
+            { id: 'xvFZjo5PgG0', title: 'مثال فيديو يوتيوب', channel: 'Duran Duran' },
+            { id: 'LXb3EKWsInQ', title: 'فيديو آخر للتجربة', channel: 'قناة تجريبية' }
+        ];
+
+        let playlist = [...defaultPlaylist];
+        let currentVideoIndex = 0;
+        let player;
         
-        // العناصر الرئيسية
-        const videoPlayer = document.getElementById('videoPlayer');
-        const playlistContainer = document.getElementById('playlistContainer');
-        const currentEpisodeTitle = document.getElementById('currentEpisodeTitle');
-        const currentEpisodeNumber = document.getElementById('currentEpisodeNumber');
-        const progressBar = document.getElementById('progressBar');
-        const progressContainer = document.getElementById('progressContainer');
-        const currentTimeDisplay = document.getElementById('currentTime');
-        const durationDisplay = document.getElementById('duration');
+        // تحميل YouTube API
+        const tag = document.createElement('script');
+        tag.src = 'https://www.youtube.com/iframe_api';
+        const firstScriptTag = document.getElementsByTagName('script')[0];
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
         
-        // أزرار التحكم
-        const playPauseBtn = document.getElementById('playPauseBtn');
-        const playText = document.getElementById('playText');
-        const prevBtn = document.getElementById('prevBtn');
-        const nextBtn = document.getElementById('nextBtn');
-        const muteBtn = document.getElementById('muteBtn');
-        const muteText = document.getElementById('muteText');
-        const volumeSlider = document.getElementById('volumeSlider');
-        
-        // عناصر النافذة المنبثقة
-        const addEpisodeBtn = document.getElementById('addEpisodeBtn');
-        const addEpisodeModal = document.getElementById('addEpisodeModal');
-        const closeModalBtn = document.getElementById('closeModalBtn');
-        const cancelBtn = document.getElementById('cancelBtn');
-        const saveEpisodeBtn = document.getElementById('saveEpisodeBtn');
-        const modalTitle = document.querySelector('.modal-title');
-        
-        // الحقول
-        const episodeTitleInput = document.getElementById('episodeTitle');
-        const episodeTypeSelect = document.getElementById('episodeType');
-        const episodeUrlInput = document.getElementById('episodeUrl');
-        const episodeOrderInput = document.getElementById('episodeOrder');
-        
-        // تهيئة المشغل
-        function initPlayer() {
-            // تحميل قائمة التشغيل من التخزين المحلي
-            loadPlaylist();
-            
-            // عرض قائمة التشغيل
-            renderPlaylist();
-            
-            // تحميل الحلقة الأولى إذا كانت القائمة غير فارغة
-            if (playlist.length > 0) {
-                loadEpisode(0);
-            }
-            
-            // مراقبة تقدم الفيديو
-            videoPlayer.addEventListener('timeupdate', updateProgressBar);
-            
-            // تحديث المدة عند تحميل البيانات
-            videoPlayer.addEventListener('loadedmetadata', function() {
-                durationDisplay.textContent = formatTime(videoPlayer.duration);
+        // إنشاء مشغل يوتيوب عند جاهزية API
+        function onYouTubeIframeAPIReady() {
+            player = new YT.Player('player', {
+                height: '390',
+                width: '640',
+                videoId: playlist[currentVideoIndex].id,
+                playerVars: {
+                    'playsinline': 1,
+                    'enablejsapi': 1,
+                    'origin': window.location.origin,
+                    'rel': 0
+                },
+                events: {
+                    'onReady': onPlayerReady,
+                    'onStateChange': onPlayerStateChange
+                }
             });
-            
-            // تشغيل الحلقة التالية عند انتهاء الحالية
-            videoPlayer.addEventListener('ended', playNextEpisode);
-            
-            // إضافة مستمعي الأحداث لأزرار التحكم
-            playPauseBtn.addEventListener('click', togglePlayPause);
-            prevBtn.addEventListener('click', playPreviousEpisode);
-            nextBtn.addEventListener('click', playNextEpisode);
-            muteBtn.addEventListener('click', toggleMute);
-            volumeSlider.addEventListener('input', changeVolume);
-            
-            // التحكم في شريط التقدم
-            progressContainer.addEventListener('click', setProgress);
-            
-            // مستمعي أحداث النافذة المنبثقة
-            addEpisodeBtn.addEventListener('click', showAddEpisodeModal);
-            closeModalBtn.addEventListener('click', hideAddEpisodeModal);
-            cancelBtn.addEventListener('click', hideAddEpisodeModal);
-            saveEpisodeBtn.addEventListener('click', handleSaveEpisode);
-            
-            // معالجة أخطاء تحميل الفيديو
-            videoPlayer.addEventListener('error', function(e) {
-                console.error('Video error:', videoPlayer.error);
-                alert('حدث خطأ أثناء تحميل الفيديو. يرجى التحقق من الرابط والمحاولة مرة أخرى.');
-            });
-            
-            // استعادة مستوى الصوت المحفوظ
-            const savedVolume = localStorage.getItem('watchTvVolume');
-            if (savedVolume !== null) {
-                videoPlayer.volume = parseFloat(savedVolume);
-                volumeSlider.value = videoPlayer.volume;
-            }
-            
-            // استعادة حالة كتم الصوت
-            const savedMuted = localStorage.getItem('watchTvMuted') === 'true';
-            videoPlayer.muted = savedMuted;
-            updateMuteButton();
         }
         
-        // تحميل قائمة التشغيل من التخزين المحلي
-        function loadPlaylist() {
-            try {
-                const storedPlaylist = localStorage.getItem('watchTvPlaylist');
-                if (storedPlaylist) {
-                    playlist = JSON.parse(storedPlaylist);
-                    // فرز القائمة حسب الترتيب
-                    playlist.sort((a, b) => a.order - b.order);
-                }
-            } catch (error) {
-                console.error('Error loading playlist:', error);
-                // إذا حدث خطأ، ابدأ بقائمة فارغة
-                playlist = [];
-            }
-        }
-        
-        // تحميل حلقة محددة
-        function loadEpisode(index) {
-            if (playlist.length === 0 || index < 0 || index >= playlist.length) {
-                return;
-            }
-            
-            currentEpisodeIndex = index;
-            const episode = playlist[index];
-            
-            try {
-                // تحويل رابط Google Drive إلى رابط مباشر
-                let videoUrl = episode.url;
-                
-                // التعامل مع روابط Google Drive
-                if (videoUrl.includes('drive.google.com')) {
-                    videoUrl = convertGoogleDriveUrl(videoUrl);
-                }
-                
-                videoPlayer.src = videoUrl;
-                videoPlayer.load();
-                
-                // تحديث معلومات الحلقة الحالية
-                currentEpisodeTitle.textContent = episode.title;
-                currentEpisodeNumber.textContent = `${episode.type === 'show' ? 'حلقة' : 'إعلان'} #${episode.order}`;
-                
-                // تشغيل الفيديو تلقائيًا
-                const playPromise = videoPlayer.play();
-                
-                if (playPromise !== undefined) {
-                    playPromise.then(() => {
-                        isPlaying = true;
-                        updatePlayPauseButton();
-                    }).catch(error => {
-                        console.error('Error playing video:', error);
-                        isPlaying = false;
-                        updatePlayPauseButton();
-                    });
-                }
-                
-                // تحديث الحالة النشطة في قائمة التشغيل
-                updateActiveEpisode();
-            } catch (error) {
-                console.error('Error loading episode:', error);
-                alert('حدث خطأ أثناء تحميل الحلقة. يرجى التحقق من الرابط والمحاولة مرة أخرى.');
-            }
-        }
-        
-        // تحويل رابط Google Drive إلى رابط مباشر للتشغيل
-        function convertGoogleDriveUrl(url) {
-            // استخراج معرف الملف من رابط Google Drive
-            let fileId = '';
-            
-            // النمط العادي: https://drive.google.com/file/d/FILE_ID/view
-            const fileIdMatch = url.match(/\/d\/([^\/]+)/);
-            if (fileIdMatch && fileIdMatch[1]) {
-                fileId = fileIdMatch[1];
-            }
-            
-            // النمط البديل: https://drive.google.com/open?id=FILE_ID
-            const idMatch = url.match(/[?&]id=([^&]+)/);
-            if (idMatch && idMatch[1]) {
-                fileId = idMatch[1];
-            }
-            
-            if (!fileId) {
-                console.error('Cannot extract file ID from Google Drive URL:', url);
-                return url; // إرجاع الرابط الأصلي إذا لم يتم التعرف عليه
-            }
-            
-            // استخدام الجمع بين طرق التفويض لتحسين فرص التشغيل
-            return `https://www.googleapis.com/drive/v3/files/${fileId}?alt=media&key=AIzaSyAKU3YqYBYXECxGVzSGKn1CbONgXh-c1Oo`;
-            
-            // في حالة فشل الطريقة أعلاه، يمكن استخدام إحدى البدائل التالية:
-            // بديل 1: return `https://drive.google.com/uc?export=download&id=${fileId}`;
-            // بديل 2: return `https://docs.google.com/uc?export=open&id=${fileId}`;
-        }
-        
-        // تحديث شريط التقدم
-        function updateProgressBar() {
-            if (videoPlayer.duration) {
-                const percentage = (videoPlayer.currentTime / videoPlayer.duration) * 100;
-                progressBar.style.width = `${percentage}%`;
-                currentTimeDisplay.textContent = formatTime(videoPlayer.currentTime);
-            }
-        }
-        
-        // تنسيق الوقت بصيغة MM:SS
-        function formatTime(timeInSeconds) {
-            if (isNaN(timeInSeconds)) return "00:00";
-            
-            const minutes = Math.floor(timeInSeconds / 60);
-            const seconds = Math.floor(timeInSeconds % 60);
-            
-            return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-        }
-        
-        // تعيين موضع التشغيل عند النقر على شريط التقدم
-        function setProgress(e) {
-            const width = this.clientWidth;
-            const clickX = e.offsetX;
-            const duration = videoPlayer.duration;
-            if (duration) {
-                videoPlayer.currentTime = (clickX / width) * duration;
-            }
-        }
-        
-        // تبديل حالة التشغيل/الإيقاف
-        function togglePlayPause() {
-            if (videoPlayer.paused) {
-                const playPromise = videoPlayer.play();
-                if (playPromise !== undefined) {
-                    playPromise.then(() => {
-                        isPlaying = true;
-                        updatePlayPauseButton();
-                    }).catch(error => {
-                        console.error('Error playing video:', error);
-                    });
-                }
-            } else {
-                videoPlayer.pause();
-                isPlaying = false;
-                updatePlayPauseButton();
-            }
-        }
-        
-        // تحديث زر التشغيل/الإيقاف
-        function updatePlayPauseButton() {
-            if (isPlaying) {
-                playText.textContent = 'إيقاف';
-            } else {
-                playText.textContent = 'تشغيل';
-            }
-        }
-        
-        // تشغيل الحلقة السابقة
-        function playPreviousEpisode() {
-            if (playlist.length === 0) return;
-            
-            let newIndex = currentEpisodeIndex - 1;
-            if (newIndex < 0) {
-                newIndex = playlist.length - 1; // العودة إلى آخر حلقة إذا كنا في البداية
-            }
-            loadEpisode(newIndex);
-        }
-        
-        // تشغيل الحلقة التالية
-        function playNextEpisode() {
-            if (playlist.length === 0) return;
-            
-            let newIndex = currentEpisodeIndex + 1;
-            if (newIndex >= playlist.length) {
-                newIndex = 0; // العودة إلى أول حلقة إذا كنا في النهاية
-            }
-            loadEpisode(newIndex);
-        }
-        
-        // تبديل حالة كتم الصوت
-        function toggleMute() {
-            videoPlayer.muted = !videoPlayer.muted;
-            updateMuteButton();
-            
-            // حفظ حالة كتم الصوت
-            localStorage.setItem('watchTvMuted', videoPlayer.muted);
-        }
-        
-        // تحديث زر كتم الصوت
-        function updateMuteButton() {
-            if (videoPlayer.muted) {
-                muteText.textContent = 'إلغاء الكتم';
-                volumeSlider.value = 0;
-            } else {
-                muteText.textContent = 'كتم';
-                volumeSlider.value = videoPlayer.volume;
-            }
-        }
-        
-        // تغيير مستوى الصوت
-        function changeVolume() {
-            videoPlayer.volume = volumeSlider.value;
-            
-            // إذا كان الصوت 0، قم بكتم الصوت
-            if (videoPlayer.volume === 0) {
-                videoPlayer.muted = true;
-            } else {
-                videoPlayer.muted = false;
-            }
-            
-            updateMuteButton();
-            
-            // حفظ مستوى الصوت
-            localStorage.setItem('watchTvVolume', videoPlayer.volume);
-            localStorage.setItem('watchTvMuted', videoPlayer.muted);
-        }
-        
-        // عرض نافذة إضافة حلقة جديدة
-        function showAddEpisodeModal() {
-            // إعادة تعيين الحقول
-            resetModalFields();
-            
-            // تعيين عنوان النافذة
-            modalTitle.textContent = 'إضافة حلقة جديدة';
-            
-            // تعيين قيمة ترتيب العرض الافتراضية
-            if (playlist.length > 0) {
-                // البحث عن أعلى ترتيب واقتراح الترتيب التالي
-                const highestOrder = Math.max(...playlist.map(item => parseInt(item.order) || 0));
-                episodeOrderInput.value = highestOrder + 1;
-            } else {
-                episodeOrderInput.value = 1;
-            }
-            
-            // إعادة تعيين وضع التحرير
-            isEditing = false;
-            editingEpisodeId = null;
-            
-            // عرض النافذة
-            addEpisodeModal.style.display = 'flex';
-        }
-        
-        // إخفاء نافذة إضافة حلقة جديدة
-        function hideAddEpisodeModal() {
-            addEpisodeModal.style.display = 'none';
-        }
-        
-        // إعادة تعيين حقول النافذة المنبثقة
-        function resetModalFields() {
-            episodeTitleInput.value = '';
-            episodeTypeSelect.value = 'show';
-            episodeUrlInput.value = '';
-            episodeOrderInput.value = '';
-        }
-        
-        // معالجة حفظ الحلقة (إضافة جديدة أو تعديل)
-        function handleSaveEpisode() {
-            const title = episodeTitleInput.value.trim();
-            const type = episodeTypeSelect.value;
-            const url = episodeUrlInput.value.trim();
-            const orderStr = episodeOrderInput.value.trim();
-            const order = parseInt(orderStr, 10);
-            
-            // التحقق من صحة البيانات
-            if (!title || !url || isNaN(order)) {
-                alert('يرجى ملء جميع الحقول بشكل صحيح');
-                return;
-            }
-            
-            if (isEditing && editingEpisodeId) {
-                // تحديث الحلقة الموجودة
-                updateEpisode(editingEpisodeId, {
-                    title,
-                    type,
-                    url,
-                    order
-                });
-            } else {
-                // إضافة حلقة جديدة
-                addNewEpisode({
-                    title,
-                    type,
-                    url,
-                    order
-                });
-            }
-            
-            // إخفاء النافذة
-            hideAddEpisodeModal();
-        }
-        
-        // إضافة حلقة جديدة
-        function addNewEpisode(episodeData) {
-            const newEpisode = {
-                id: Date.now().toString(), // معرف فريد باستخدام الطابع الزمني
-                title: episodeData.title,
-                type: episodeData.type,
-                url: episodeData.url,
-                order: episodeData.order
-            };
-            
-            // إضافة الحلقة إلى القائمة
-            playlist.push(newEpisode);
-            
-            // فرز القائمة وحفظها
-            sortAndSavePlaylist();
-            
-            // تحديث قائمة التشغيل المعروضة
+        // عند جاهزية المشغل
+        function onPlayerReady(event) {
             renderPlaylist();
-            
-            // تحميل الحلقة الجديدة إذا كانت القائمة كانت فارغة
-            if (playlist.length === 1) {
-                loadEpisode(0);
+            updateActiveVideo();
+        }
+        
+        // عندما يتغير حالة المشغل (تشغيل، إيقاف، إنتهاء...)
+        function onPlayerStateChange(event) {
+            // عند انتهاء الفيديو (حالة = 0)، انتقل إلى الفيديو التالي
+            if (event.data === YT.PlayerState.ENDED) {
+                playNextVideo();
             }
         }
         
-        // تحديث حلقة موجودة
-        function updateEpisode(id, episodeData) {
-            const index = playlist.findIndex(ep => ep.id === id);
-            if (index === -1) return;
-            
-            // تحديث بيانات الحلقة
-            playlist[index].title = episodeData.title;
-            playlist[index].type = episodeData.type;
-            playlist[index].url = episodeData.url;
-            playlist[index].order = episodeData.order;
-            
-            // فرز القائمة وحفظها
-            sortAndSavePlaylist();
-            
-            // تحديث قائمة التشغيل المعروضة
-            renderPlaylist();
-            
-            // تحديث معلومات الحلقة الحالية إذا كانت هي نفسها
-            if (currentEpisodeIndex === index) {
-                currentEpisodeTitle.textContent = episodeData.title;
-                currentEpisodeNumber.textContent = `${episodeData.type === 'show' ? 'حلقة' : 'إعلان'} #${episodeData.order}`;
-            }
-        }
-        
-        // فرز القائمة وحفظها
-        function sortAndSavePlaylist() {
-            // فرز القائمة حسب الترتيب
-            playlist.sort((a, b) => a.order - b.order);
-            
-            // حفظ القائمة في التخزين المحلي
-            savePlaylist();
-        }
-        
-        // حفظ قائمة التشغيل في التخزين المحلي
-        function savePlaylist() {
-            try {
-                localStorage.setItem('watchTvPlaylist', JSON.stringify(playlist));
-            } catch (error) {
-                console.error('Error saving playlist:', error);
-            }
-        }
-        
-        // عرض قائمة التشغيل
+        // تحميل وعرض قائمة التشغيل
         function renderPlaylist() {
-            playlistContainer.innerHTML = '';
+            const playlistElement = document.getElementById('playlist');
+            playlistElement.innerHTML = '';
             
-            if (playlist.length === 0) {
-                playlistContainer.innerHTML = '<div style="padding: 20px; text-align: center; color: var(--gray-text);">لا توجد حلقات. قم بإضافة حلقات لبدء العرض.</div>';
-                return;
-            }
-            
-            const fragment = document.createDocumentFragment();
-            
-            playlist.forEach((episode, index) => {
-                const episodeItem = document.createElement('div');
-                episodeItem.className = `episode-item ${index === currentEpisodeIndex ? 'active' : ''}`;
-                episodeItem.dataset.index = index;
-                
-                episodeItem.innerHTML = `
-                    <div class="episode-index">${episode.order}</div>
-                    <div class="episode-details">
-                        <div class="episode-title">${episode.title}</div>
-                        <div class="episode-type">${episode.type === 'show' ? 'حلقة' : 'إعلان'}</div>
-                    </div>
-                    <div class="episode-actions">
-                        <button class="episode-action-btn edit-btn" data-id="${episode.id}">تعديل</button>
-                        <button class="episode-action-btn delete-btn" data-id="${episode.id}">حذف</button>
+            playlist.forEach((video, index) => {
+                const videoElement = document.createElement('div');
+                videoElement.className = `playlist-item ${index === currentVideoIndex ? 'active' : ''}`;
+                videoElement.innerHTML = `
+                    <img src="https://img.youtube.com/vi/${video.id}/mqdefault.jpg" alt="${video.title}">
+                    <div class="video-info">
+                        <div class="video-title">${video.title}</div>
+                        <div class="video-channel">${video.channel}</div>
                     </div>
                 `;
                 
-                fragment.appendChild(episodeItem);
-            });
-            
-            playlistContainer.appendChild(fragment);
-            
-            // إضافة مستمعي الأحداث
-            addPlaylistEventListeners();
-        }
-        
-        // إضافة مستمعي الأحداث لقائمة التشغيل
-        function addPlaylistEventListeners() {
-            // مستمع الحدث للنقر على عناصر القائمة
-            document.querySelectorAll('.episode-item').forEach(item => {
-                item.addEventListener('click', function(e) {
-                    // تجاهل النقر على أزرار التعديل والحذف
-                    if (!e.target.closest('.episode-action-btn')) {
-                        loadEpisode(parseInt(this.dataset.index));
-                    }
+                videoElement.addEventListener('click', () => {
+                    currentVideoIndex = index;
+                    playVideo(video.id);
+                    updateActiveVideo();
                 });
-            });
-            
-            // مستمعي الأحداث لأزرار التعديل
-            document.querySelectorAll('.edit-btn').forEach(btn => {
-                btn.addEventListener('click', e => {
-                    e.stopPropagation();
-                    editEpisode(btn.dataset.id);
-                });
-            });
-            
-            // مستمعي الأحداث لأزرار الحذف
-            document.querySelectorAll('.delete-btn').forEach(btn => {
-                btn.addEventListener('click', e => {
-                    e.stopPropagation();
-                    deleteEpisode(btn.dataset.id);
-                });
+                
+                playlistElement.appendChild(videoElement);
             });
         }
         
-        // تحديث الحلقة النشطة في قائمة التشغيل
-        function updateActiveEpisode() {
-            document.querySelectorAll('.episode-item').forEach((item, index) => {
-                if (index === currentEpisodeIndex) {
+        // تحديث الفيديو النشط في قائمة التشغيل
+        function updateActiveVideo() {
+            const playlistItems = document.querySelectorAll('.playlist-item');
+            playlistItems.forEach((item, index) => {
+                if (index === currentVideoIndex) {
                     item.classList.add('active');
+                    // تمرير إلى الفيديو النشط
+                    item.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
                 } else {
                     item.classList.remove('active');
                 }
             });
         }
         
-        // تعديل حلقة
-        function editEpisode(id) {
-            const episode = playlist.find(ep => ep.id === id);
-            if (!episode) return;
-            
-            // تعيين وضع التحرير
-            isEditing = true;
-            editingEpisodeId = id;
-            
-            // تعبئة النموذج بالبيانات الحالية
-            episodeTitleInput.value = episode.title;
-            episodeTypeSelect.value = episode.type;
-            episodeUrlInput.value = episode.url;
-            episodeOrderInput.value = episode.order;
-            
-            // تغيير عنوان النافذة
-            modalTitle.textContent = 'تعديل الحلقة';
-            
-            // عرض النافذة
-            addEpisodeModal.style.display = 'flex';
+        // تشغيل فيديو معين
+        function playVideo(videoId) {
+            player.loadVideoById(videoId);
         }
         
-        // حذف حلقة
-        function deleteEpisode(id) {
-            if (!confirm('هل أنت متأكد من حذف هذه الحلقة؟')) return;
+        // الانتقال إلى الفيديو التالي
+        function playNextVideo() {
+            if (currentVideoIndex < playlist.length - 1) {
+                currentVideoIndex++;
+            } else {
+                currentVideoIndex = 0; // العودة إلى بداية القائمة عند الوصول للنهاية
+            }
             
-            const index = playlist.findIndex(ep => ep.id === id);
-            if (index === -1) return;
+            playVideo(playlist[currentVideoIndex].id);
+            updateActiveVideo();
+        }
+        
+        // الانتقال إلى الفيديو السابق
+        function playPrevVideo() {
+            if (currentVideoIndex > 0) {
+                currentVideoIndex--;
+            } else {
+                currentVideoIndex = playlist.length - 1; // الانتقال إلى نهاية القائمة عند الضغط على السابق من البداية
+            }
             
-            // حفظ موقع الحلقة الحالية
-            const wasCurrentEpisode = index === currentEpisodeIndex;
-            const wasBeforeCurrentEpisode = index < currentEpisodeIndex;
+            playVideo(playlist[currentVideoIndex].id);
+            updateActiveVideo();
+        }
+        
+        // استخراج معرف الفيديو من رابط يوتيوب
+        function extractVideoId(url) {
+            // التحقق أولاً إذا كان المدخل هو معرف فيديو فقط
+            if (url.length === 11) {
+                return url;
+            }
             
-            // حذف الحلقة من القائمة
-            playlist.splice(index, 1);
+            // محاولة استخراج المعرف من الرابط
+            const regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/;
+            const match = url.match(regExp);
+            return (match && match[7].length === 11) ? match[7] : null;
+        }
+        
+        // إضافة فيديو جديد إلى قائمة التشغيل
+        function addVideoToPlaylist() {
+            const videoUrlInput = document.getElementById('video-url');
+            const url = videoUrlInput.value.trim();
             
-            // حفظ التغييرات
-            savePlaylist();
-            
-            // تحديث قائمة التشغيل
-            renderPlaylist();
-            
-            // إذا كانت القائمة فارغة
-            if (playlist.length === 0) {
-                videoPlayer.src = '';
-                currentEpisodeTitle.textContent = 'لم يتم تحديد الحلقة';
-                currentEpisodeNumber.textContent = '';
+            if (!url) {
+                alert('الرجاء إدخال رابط فيديو صالح');
                 return;
             }
             
-            // إذا تم حذف الحلقة الحالية
-            if (wasCurrentEpisode) {
-                // إذا كانت الحلقة المحذوفة هي الأخيرة
-                if (index >= playlist.length) {
-                    loadEpisode(playlist.length - 1);
-                } else {
-                    // حافظ على نفس الفهرس (سيتم تحميل الحلقة التالية)
-                    loadEpisode(index);
-                }
-            } else if (wasBeforeCurrentEpisode) {
-                // إذا تم حذف حلقة قبل الحلقة الحالية، قم بتحديث الفهرس
-                currentEpisodeIndex--;
-                updateActiveEpisode();
+            const videoId = extractVideoId(url);
+            
+            if (!videoId) {
+                alert('لم نتمكن من استخراج معرف الفيديو من الرابط الذي أدخلته، الرجاء التأكد من صحة الرابط');
+                return;
+            }
+            
+            // التحقق من عدم وجود الفيديو مسبقاً في القائمة
+            if (playlist.some(video => video.id === videoId)) {
+                alert('هذا الفيديو موجود بالفعل في قائمة التشغيل');
+                videoUrlInput.value = '';
+                return;
+            }
+            
+            // إضافة الفيديو إلى قائمة التشغيل
+            playlist.push({
+                id: videoId,
+                title: 'فيديو جديد', // عنوان مبدئي
+                channel: 'قناة غير محددة' // اسم قناة مبدئي
+            });
+            
+            // تحديث عرض قائمة التشغيل
+            renderPlaylist();
+            videoUrlInput.value = '';
+            
+            // إذا كان هذا أول فيديو في القائمة، قم بتشغيله
+            if (playlist.length === 1) {
+                currentVideoIndex = 0;
+                playVideo(videoId);
             }
         }
         
-        // تنفيذ البرنامج عند تحميل الصفحة
-        document.addEventListener('DOMContentLoaded', initPlayer);
+        // إضافة مستمعي الأحداث عند تحميل الصفحة
+        document.addEventListener('DOMContentLoaded', () => {
+            // أزرار التحكم
+            document.getElementById('play-btn').addEventListener('click', () => {
+                player.playVideo();
+            });
+            
+            document.getElementById('pause-btn').addEventListener('click', () => {
+                player.pauseVideo();
+            });
+            
+            document.getElementById('next-btn').addEventListener('click', () => {
+                playNextVideo();
+            });
+            
+            document.getElementById('prev-btn').addEventListener('click', () => {
+                playPrevVideo();
+            });
+            
+            document.getElementById('mute-btn').addEventListener('click', () => {
+                if (player.isMuted()) {
+                    player.unMute();
+                    document.getElementById('mute-btn').innerHTML = '<i class="fas fa-volume-mute"></i> كتم الصوت';
+                } else {
+                    player.mute();
+                    document.getElementById('mute-btn').innerHTML = '<i class="fas fa-volume-up"></i> تشغيل الصوت';
+                }
+            });
+            
+            // إضافة فيديو جديد
+            document.getElementById('add-video-btn').addEventListener('click', addVideoToPlaylist);
+            document.getElementById('video-url').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    addVideoToPlaylist();
+                }
+            });
+        });
     </script>
 </body>
 </html>
