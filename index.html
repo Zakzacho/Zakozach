@@ -6,7 +6,9 @@
     <title>Watch your TV show</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
             --primary-color: #f47521;
@@ -14,6 +16,14 @@
             --darker-bg: #191b1f;
             --light-text: #ffffff;
             --gray-text: #9fadbd;
+        }
+
+        .light-mode {
+            --primary-color: #f47521;
+            --dark-bg: #f5f5f7;
+            --darker-bg: #e8e8ed;
+            --light-text: #333333;
+            --gray-text: #5d5d5d;
         }
 
         * {
@@ -28,26 +38,19 @@
             color: var(--light-text);
             direction: rtl;
             overflow-x: hidden;
-        }
-
-        body.light-mode {
-            --primary-color: #ff8a3d;
-            --dark-bg: #f0f2f5;
-            --darker-bg: #ffffff;
-            --light-text: #333333;
-            --gray-text: #666666;
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
 
         .container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 20px;
+            padding: 10px;
         }
 
         .player-container {
             position: relative;
             width: 100%;
-            margin: 20px 0;
+            margin: 10px 0;
             border-radius: 12px;
             overflow: hidden;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
@@ -171,8 +174,8 @@
             font-size: 20px;
             cursor: pointer;
             transition: all 0.2s;
-            width: 44px;
-            height: 44px;
+            width: 46px;
+            height: 46px;
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -237,10 +240,11 @@
             background-color: var(--dark-bg);
             border-radius: 12px;
             padding: 20px;
-            margin-top: 30px;
+            margin-top: 20px;
             display: none;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
             animation: slideIn 0.3s ease-out;
+            transition: background-color 0.3s ease;
         }
 
         @keyframes slideIn {
@@ -272,7 +276,7 @@
             background-color: var(--darker-bg);
             border: 1px solid rgba(255, 255, 255, 0.1);
             color: var(--light-text);
-            padding: 12px 18px;
+            padding: 10px 15px;
             border-radius: 8px;
             font-size: 14px;
             transition: all 0.2s;
@@ -286,7 +290,7 @@
 
         button {
             background-color: var(--primary-color);
-            color: #fff;
+            color: var(--darker-bg);
             border: none;
             font-weight: bold;
             cursor: pointer;
@@ -392,13 +396,9 @@
             }
             
             .control-button {
-                width: 36px;
-                height: 36px;
+                width: 40px;
+                height: 40px;
                 font-size: 16px;
-            }
-            
-            .volume-container {
-                display: none;
             }
             
             .time-display {
@@ -410,11 +410,6 @@
         [dir="ltr"] .playlist-item {
             border-right: none;
             border-left: 3px solid var(--primary-color);
-        }
-
-        [dir="ltr"] .playlist-number {
-            margin-left: 0;
-            margin-right: 15px;
         }
 
         html[dir="ltr"] {
@@ -435,6 +430,7 @@
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
             animation: slideDown 0.3s, fadeOut 0.3s 2.7s;
             opacity: 0;
+            font-weight: 600;
         }
 
         @keyframes slideDown {
@@ -480,6 +476,7 @@
             transition: opacity 0.3s;
             white-space: nowrap;
             font-size: 12px;
+            font-weight: 500;
         }
 
         .tooltip:hover .tooltiptext {
@@ -507,13 +504,40 @@
         /* Header controls */
         .header-controls {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
+            justify-content: flex-end;
+            gap: 10px;
+            padding: 10px 0;
         }
         
-        /* Landscape mode optimizations */
-        @media (orientation: landscape) and (max-height: 500px) {
+        .header-button {
+            background-color: var(--dark-bg);
+            color: var(--light-text);
+            border: none;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header-button:hover {
+            transform: translateY(-2px);
+            background-color: var(--primary-color);
+            box-shadow: 0 5px 10px rgba(244, 117, 33, 0.3);
+        }
+        
+        /* Fix for landscape mode on mobile devices */
+        @media screen and (orientation: landscape) and (max-height: 500px) {
+            .video-container {
+                padding-bottom: 0;
+                height: 80vh;
+            }
+            
             .player-container {
                 margin: 0;
             }
@@ -522,83 +546,108 @@
                 padding: 0;
             }
             
-            .header-title {
+            .header-controls, h1 {
                 display: none;
-            }
-            
-            .fullscreen-mode .video-container {
-                padding-bottom: 0;
-                height: 100vh;
             }
         }
         
-        /* TV code display */
-        .tv-code-container {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background-color: rgba(0, 0, 0, 0.7);
-            padding: 10px 15px;
-            border-radius: 8px;
-            z-index: 30;
+        /* Casting functionality */
+        .cast-dialog {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: var(--dark-bg);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+            width: 90%;
+            max-width: 400px;
             display: none;
         }
         
-        .tv-code {
-            font-size: 24px;
-            font-weight: bold;
-            letter-spacing: 3px;
-            color: #fff;
+        .cast-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
         }
         
-        /* Theme toggle button */
-        .theme-toggle {
-            background-color: transparent;
-            border: 2px solid var(--primary-color);
-            color: var(--primary-color);
-            padding: 8px 15px;
-            border-radius: 20px;
+        .cast-devices {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .cast-device {
             display: flex;
             align-items: center;
-            gap: 8px;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            background-color: var(--darker-bg);
+            transition: all 0.2s;
         }
         
-        .theme-toggle:hover {
-            background-color: var(--primary-color);
-            color: #fff;
+        .cast-device:hover {
+            background-color: rgba(244, 117, 33, 0.1);
+            transform: translateX(-5px);
         }
         
-        .header-buttons {
-            display: flex;
-            gap: 10px;
+        .cast-device-icon {
+            font-size: 24px;
+            margin-left: 15px;
+            color: var(--primary-color);
+        }
+        
+        .cast-device-info {
+            flex-grow: 1;
+        }
+        
+        .cast-device-name {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .cast-device-status {
+            font-size: 12px;
+            color: var(--gray-text);
+        }
+        
+        .cast-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            display: none;
         }
     </style>
 </head>
 <body>
     <div class="container">
+        <h1 class="text-3xl font-bold mb-4 text-center">Watch your TV show</h1>
+        
         <div class="header-controls">
-            <h1 class="text-3xl font-bold header-title">Watch your TV show</h1>
-            <div class="header-buttons">
-                <button id="tv-link" class="theme-toggle tooltip">
-                    <i class="fas fa-tv"></i> ربط مع التلفاز
-                    <span class="tooltiptext">عرض على التلفاز</span>
-                </button>
-                <button id="theme-toggle" class="theme-toggle tooltip">
-                    <i class="fas fa-moon"></i> وضع ليلي
-                    <span class="tooltiptext">تغيير المظهر</span>
-                </button>
-                <button id="admin-access" class="theme-toggle tooltip">
-                    <i class="fas fa-cog"></i> الإعدادات
-                    <span class="tooltiptext">لوحة المسؤول</span>
-                </button>
-            </div>
+            <button id="theme-toggle" class="header-button tooltip">
+                <i class="fas fa-moon"></i>
+                <span class="tooltiptext">تبديل المظهر</span>
+            </button>
+            <button id="admin-access" class="header-button tooltip">
+                <i class="fas fa-cog"></i>
+                <span class="tooltiptext">إعدادات المسؤول</span>
+            </button>
+            <button id="cast-button" class="header-button tooltip">
+                <i class="fas fa-tv"></i>
+                <span class="tooltiptext">عرض على التلفاز</span>
+            </button>
         </div>
         
         <div class="player-container" id="player-container">
             <div class="loader" id="loader"></div>
-            <div class="tv-code-container" id="tv-code-container">
-                <div class="tv-code" id="tv-code"></div>
-            </div>
             <div class="video-container">
                 <div id="youtube-player"></div>
                 <div class="overlay" id="player-overlay"></div>
@@ -709,6 +758,20 @@
                 </div>
             </div>
         </div>
+        
+        <!-- Casting Dialog -->
+        <div class="cast-overlay" id="cast-overlay"></div>
+        <div class="cast-dialog" id="cast-dialog">
+            <div class="cast-header">
+                <h2 class="text-xl font-bold">اختر جهاز العرض</h2>
+                <button id="close-cast" class="control-button">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="cast-devices" id="cast-devices">
+                <!-- Cast devices will be populated here -->
+            </div>
+        </div>
     </div>
 
     <script src="https://www.youtube.com/iframe_api"></script>
@@ -731,9 +794,11 @@
         let currentPlaybackRateIndex = 3; // Default 1.0
         let lastActiveTime = Date.now();
         let sortOrder = 'asc';
+        let currentSearch = '';
         let selectedEpisodeIndex = -1;
         let isLightMode = false;
-        let tvLinkActive = false;
+        let isCasting = false;
+        let castSession = null;
 
         // DOM elements
         const playerContainer = document.getElementById('player-container');
@@ -767,9 +832,11 @@
         const loader = document.getElementById('loader');
         const playbackSpeedButton = document.getElementById('playback-speed');
         const themeToggleButton = document.getElementById('theme-toggle');
-        const tvLinkButton = document.getElementById('tv-link');
-        const tvCodeContainer = document.getElementById('tv-code-container');
-        const tvCode = document.getElementById('tv-code');
+        const castButton = document.getElementById('cast-button');
+        const castDialog = document.getElementById('cast-dialog');
+        const castOverlay = document.getElementById('cast-overlay');
+        const closeCastButton = document.getElementById('close-cast');
+        const castDevices = document.getElementById('cast-devices');
 
         // Initialize YouTube API
         function onYouTubeIframeAPIReady() {
@@ -787,10 +854,8 @@
             // Auto-hide controls after inactivity
             setupAutoHideControls();
             
-            // Check if light mode was previously set
-            if (localStorage.getItem('lightMode') === 'true') {
-                toggleTheme();
-            }
+            // Load theme preference
+            loadThemePreference();
         }
 
         function setupAutoHideControls() {
@@ -888,11 +953,21 @@
         function playNextVideo() {
             if (playlist.length === 0) return;
             
-            if (currentVideo < playlist.length - 1) {
-                loadVideo(currentVideo + 1);
-            } else {
-                // Loop back to the first video
-                loadVideo(0);
+            // Filter playlist based on current search
+            const filteredPlaylist = filterPlaylist();
+            const currentIndex = filteredPlaylist.findIndex(item => 
+                item.videoId === playlist[currentVideo].videoId
+            );
+            
+            if (currentIndex < filteredPlaylist.length - 1) {
+                // Find the real index in the main playlist
+                const nextItemId = filteredPlaylist[currentIndex + 1].videoId;
+                const mainIndex = playlist.findIndex(item => item.videoId === nextItemId);
+                loadVideo(mainIndex);
+            } else if (filteredPlaylist.length > 0) {
+                // Loop back to the first item if at the end
+                const mainIndex = playlist.findIndex(item => item.videoId === filteredPlaylist[0].videoId);
+                loadVideo(mainIndex);
             }
         }
 
@@ -906,11 +981,23 @@
                 return;
             }
             
-            if (currentVideo > 0) {
-                loadVideo(currentVideo - 1);
-            } else {
-                // Loop to the last video
-                loadVideo(playlist.length - 1);
+            // Filter playlist based on current search
+            const filteredPlaylist = filterPlaylist();
+            const currentIndex = filteredPlaylist.findIndex(item => 
+                item.videoId === playlist[currentVideo].videoId
+            );
+            
+            if (currentIndex > 0) {
+                // Find the real index in the main playlist
+                const prevItemId = filteredPlaylist[currentIndex - 1].videoId;
+                const mainIndex = playlist.findIndex(item => item.videoId === prevItemId);
+                loadVideo(mainIndex);
+            } else if (filteredPlaylist.length > 0) {
+                // Loop to the last item if at the beginning
+                const mainIndex = playlist.findIndex(item => 
+                    item.videoId === filteredPlaylist[filteredPlaylist.length - 1].videoId
+                );
+                loadVideo(mainIndex);
             }
         }
 
@@ -926,7 +1013,6 @@
             setTimeout(() => {
                 player.loadVideoById(playlist[index].videoId);
                 player.setPlaybackRate(currentPlaybackRate);
-                selectedEpisodeIndex = index;
                 
                 // Remove fade effect
                 setTimeout(() => {
@@ -1058,7 +1144,74 @@
             showNotification(`سرعة التشغيل: ${currentPlaybackRate}x`);
         }
 
-        // Add video to playlist
+        // Filter playlist based on search text
+        function filterPlaylist() {
+            if (!currentSearch) return [...playlist];
+            
+            return playlist.filter(item => 
+                item.name.toLowerCase().includes(currentSearch.toLowerCase())
+            );
+        }
+
+        // Admin functions
+        function toggleAdminPanel() {
+            adminPanel.style.display = adminPanel.style.display === 'none' ? 'block' : 'none';
+            
+            // Reset form if closing
+            if (adminPanel.style.display === 'none') {
+                document.getElementById('video-url').value = '';
+                document.getElementById('episode-name').value = '';
+                document.getElementById('episode-order').value = '';
+                addEpisodeButton.textContent = 'إضافة الحلقة';
+                addEpisodeButton.onclick = addEpisode;
+            }
+        }
+
+        function checkAdminPassword() {
+            const password = document.getElementById('admin-password').value;
+            
+            if (password === adminPassword) {
+                isAdminLoggedIn = true;
+                passwordContainer.style.display = 'none';
+                addEpisodeForm.style.display = 'block';
+                showNotification('تم تسجيل الدخول بنجاح');
+                
+                // Clear password field
+                document.getElementById('admin-password').value = '';
+            } else {
+                showNotification('كلمة المرور غير صحيحة');
+                
+                // Add shake effect to password field
+                const passwordField = document.getElementById('admin-password');
+                passwordField.classList.add('shake');
+                setTimeout(() => {
+                    passwordField.classList.remove('shake');
+                }, 500);
+            }
+        }
+
+        function addEpisode() {
+            const videoUrl = document.getElementById('video-url').value;
+            const episodeName = document.getElementById('episode-name').value;
+            const episodeOrder = document.getElementById('episode-order').value;
+            
+            if (!videoUrl) {
+                showNotification('الرجاء إدخال رابط الفيديو');
+                return;
+            }
+            
+            const success = addVideoToPlaylist(videoUrl, episodeName, episodeOrder);
+            
+            if (success) {
+                // Clear form
+                document.getElementById('video-url').value = '';
+                document.getElementById('episode-name').value = '';
+                document.getElementById('episode-order').value = '';
+                
+                showNotification('تمت إضافة الحلقة بنجاح');
+            }
+        }
+
         function addVideoToPlaylist(videoUrl, name, order) {
             // Extract video ID from various YouTube URL formats
             let videoId = extractYoutubeId(videoUrl);
@@ -1085,7 +1238,6 @@
             
             // Save playlist to localStorage
             savePlaylistToStorage();
-            
             return true;
         }
 
@@ -1098,20 +1250,6 @@
             }
             
             return null;
-        }
-
-        function clearPlaylist() {
-            if (confirm('هل أنت متأكد من رغبتك في مسح قائمة التشغيل بالكامل؟')) {
-                playlist = [];
-                savePlaylistToStorage();
-                if (playerReady) {
-                    player.stopVideo();
-                    isPlaying = false;
-                    playPauseButton.innerHTML = '<i class="fas fa-play"></i><span class="tooltiptext">تشغيل (Space)</span>';
-                }
-                selectedEpisodeIndex = -1;
-                showNotification('تم مسح قائمة التشغيل');
-            }
         }
 
         function editEpisode() {
@@ -1219,11 +1357,29 @@
                     }
                 }
                 
+                selectedEpisodeIndex = -1;
+                
                 // Save playlist to localStorage
                 savePlaylistToStorage();
                 
-                selectedEpisodeIndex = -1;
                 showNotification('تم حذف الحلقة بنجاح');
+            }
+        }
+
+        function clearPlaylist() {
+            if (confirm('هل أنت متأكد من رغبتك في مسح قائمة التشغيل بالكامل؟')) {
+                playlist = [];
+                if (playerReady) {
+                    player.stopVideo();
+                    isPlaying = false;
+                    playPauseButton.innerHTML = '<i class="fas fa-play"></i><span class="tooltiptext">تشغيل (Space)</span>';
+                }
+                selectedEpisodeIndex = -1;
+                
+                // Save playlist to localStorage
+                savePlaylistToStorage();
+                
+                showNotification('تم مسح قائمة التشغيل');
             }
         }
 
@@ -1308,114 +1464,111 @@
             }
         }
 
-        // Admin functions
-        function toggleAdminPanel() {
-            adminPanel.style.display = adminPanel.style.display === 'none' ? 'block' : 'none';
-            
-            // Reset form if closing
-            if (adminPanel.style.display === 'none') {
-                document.getElementById('video-url').value = '';
-                document.getElementById('episode-name').value = '';
-                document.getElementById('episode-order').value = '';
-                addEpisodeButton.textContent = 'إضافة الحلقة';
-                addEpisodeButton.onclick = addEpisode;
-            }
-        }
-
-        function checkAdminPassword() {
-            const password = document.getElementById('admin-password').value;
-            
-            if (password === adminPassword) {
-                isAdminLoggedIn = true;
-                passwordContainer.style.display = 'none';
-                addEpisodeForm.style.display = 'block';
-                showNotification('تم تسجيل الدخول بنجاح');
-                
-                // Clear password field
-                document.getElementById('admin-password').value = '';
-            } else {
-                showNotification('كلمة المرور غير صحيحة');
-                
-                // Add shake effect to password field
-                const passwordField = document.getElementById('admin-password');
-                passwordField.classList.add('shake');
-                setTimeout(() => {
-                    passwordField.classList.remove('shake');
-                }, 500);
-            }
-        }
-
-        function addEpisode() {
-            const videoUrl = document.getElementById('video-url').value;
-            const episodeName = document.getElementById('episode-name').value;
-            const episodeOrder = document.getElementById('episode-order').value;
-            
-            if (!videoUrl) {
-                showNotification('الرجاء إدخال رابط الفيديو');
-                return;
-            }
-            
-            const success = addVideoToPlaylist(videoUrl, episodeName, episodeOrder);
-            
-            if (success) {
-                // Clear form
-                document.getElementById('video-url').value = '';
-                document.getElementById('episode-name').value = '';
-                document.getElementById('episode-order').value = '';
-                
-                showNotification('تمت إضافة الحلقة بنجاح');
-            }
-        }
-
-        // Theme toggling
+        // Theme toggle function
         function toggleTheme() {
-            const body = document.body;
             isLightMode = !isLightMode;
             
             if (isLightMode) {
-                body.classList.add('light-mode');
-                themeToggleButton.innerHTML = '<i class="fas fa-sun"></i> وضع نهاري <span class="tooltiptext">تغيير المظهر</span>';
-                localStorage.setItem('lightMode', 'true');
+                document.body.classList.add('light-mode');
+                themeToggleButton.innerHTML = '<i class="fas fa-sun"></i><span class="tooltiptext">المظهر الداكن</span>';
             } else {
-                body.classList.remove('light-mode');
-                themeToggleButton.innerHTML = '<i class="fas fa-moon"></i> وضع ليلي <span class="tooltiptext">تغيير المظهر</span>';
-                localStorage.setItem('lightMode', 'false');
+                document.body.classList.remove('light-mode');
+                themeToggleButton.innerHTML = '<i class="fas fa-moon"></i><span class="tooltiptext">المظهر الفاتح</span>';
+            }
+            
+            // Save theme preference
+            localStorage.setItem('isLightMode', isLightMode);
+        }
+        
+        function loadThemePreference() {
+            const savedTheme = localStorage.getItem('isLightMode');
+            
+            if (savedTheme === 'true') {
+                isLightMode = true;
+                document.body.classList.add('light-mode');
+                themeToggleButton.innerHTML = '<i class="fas fa-sun"></i><span class="tooltiptext">المظهر الداكن</span>';
             }
         }
-
-        // TV linking functions
-        function toggleTVLink() {
-            if (tvLinkActive) {
-                // Deactivate TV link
-                tvCodeContainer.style.display = 'none';
-                tvLinkActive = false;
-                tvLinkButton.innerHTML = '<i class="fas fa-tv"></i> ربط مع التلفاز <span class="tooltiptext">عرض على التلفاز</span>';
+        
+        // Casting functionality
+        function toggleCastDialog() {
+            if (castDialog.style.display === 'block') {
+                castDialog.style.display = 'none';
+                castOverlay.style.display = 'none';
             } else {
-                // Activate TV link
-                generateTVCode();
-                tvCodeContainer.style.display = 'block';
-                tvLinkActive = true;
-                tvLinkButton.innerHTML = '<i class="fas fa-tv"></i> إلغاء الربط <span class="tooltiptext">إلغاء الربط مع التلفاز</span>';
+                castDialog.style.display = 'block';
+                castOverlay.style.display = 'block';
+                populateCastDevices();
+            }
+        }
+        
+        function populateCastDevices() {
+            // For demo purposes, we'll show some mock devices
+            castDevices.innerHTML = '';
+            
+            const mockDevices = [
+                { id: 'tv1', name: 'غرفة المعيشة TV', type: 'Chromecast' },
+                { id: 'tv2', name: 'غرفة النوم TV', type: 'Smart TV' },
+                { id: 'tv3', name: 'TV المطبخ', type: 'Roku' }
+            ];
+            
+            if (mockDevices.length === 0) {
+                castDevices.innerHTML = '<div class="text-center py-4 text-gray-400">لم يتم العثور على أجهزة. تأكد من أن أجهزتك متصلة بنفس الشبكة.</div>';
+                return;
+            }
+            
+            mockDevices.forEach(device => {
+                const deviceEl = document.createElement('div');
+                deviceEl.className = 'cast-device';
+                deviceEl.innerHTML = `
+                    <div class="cast-device-icon">
+                        <i class="fas fa-tv"></i>
+                    </div>
+                    <div class="cast-device-info">
+                        <div class="cast-device-name">${device.name}</div>
+                        <div class="cast-device-status">${device.type}</div>
+                    </div>
+                `;
                 
-                // Disappear after 60 seconds
-                setTimeout(() => {
-                    if (tvLinkActive) {
-                        tvCodeContainer.style.display = 'none';
-                        tvLinkActive = false;
-                        tvLinkButton.innerHTML = '<i class="fas fa-tv"></i> ربط مع التلفاز <span class="tooltiptext">عرض على التلفاز</span>';
-                    }
-                }, 60000);
-            }
+                deviceEl.addEventListener('click', () => {
+                    startCasting(device);
+                });
+                
+                castDevices.appendChild(deviceEl);
+            });
         }
-
-        function generateTVCode() {
-            const characters = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-            let code = '';
-            for (let i = 0; i < 6; i++) {
-                code += characters.charAt(Math.floor(Math.random() * characters.length));
-                if (i === 2) code += '-';
-            }
-            tvCode.textContent = code;
+        
+        function startCasting(device) {
+            // Simulate casting process
+            showNotification(`جاري الاتصال بـ ${device.name}...`);
+            
+            setTimeout(() => {
+                isCasting = true;
+                castSession = device;
+                
+                // Update cast button
+                castButton.innerHTML = '<i class="fas fa-cast"></i><span class="tooltiptext">متصل بـ ' + device.name + '</span>';
+                castButton.classList.add('active');
+                
+                // Close dialog
+                castDialog.style.display = 'none';
+                castOverlay.style.display = 'none';
+                
+                showNotification(`تم الاتصال بـ ${device.name}`);
+            }, 1500);
+        }
+        
+        function stopCasting() {
+            if (!isCasting) return;
+            
+            showNotification(`تم قطع الاتصال مع ${castSession.name}`);
+            
+            isCasting = false;
+            castSession = null;
+            
+            // Update cast button
+            castButton.innerHTML = '<i class="fas fa-tv"></i><span class="tooltiptext">عرض على التلفاز</span>';
+            castButton.classList.remove('active');
         }
 
         // Storage functions
@@ -1568,24 +1721,15 @@
             // Theme toggle
             themeToggleButton.addEventListener('click', toggleTheme);
             
-            // TV link
-            tvLinkButton.addEventListener('click', toggleTVLink);
+            // Cast functionality
+            castButton.addEventListener('click', toggleCastDialog);
+            closeCastButton.addEventListener('click', toggleCastDialog);
+            castOverlay.addEventListener('click', toggleCastDialog);
             
             // Enter key in password field
             document.getElementById('admin-password').addEventListener('keyup', (e) => {
                 if (e.key === 'Enter') {
                     checkAdminPassword();
-                }
-            });
-            
-            // Orientation change handler for landscape mode
-            window.addEventListener('orientationchange', () => {
-                if (window.orientation === 90 || window.orientation === -90) {
-                    // Landscape mode
-                    enterFullscreen();
-                } else {
-                    // Portrait mode
-                    exitFullscreen();
                 }
             });
             
@@ -1723,11 +1867,6 @@
                 }
             }
             
-            // Check if already in landscape mode on mobile
-            if (window.innerWidth > window.innerHeight && window.innerHeight < 500) {
-                enterFullscreen();
-            }
-
             // Add shake keyframes for password animation
             const style = document.createElement('style');
             style.textContent = `
@@ -1741,6 +1880,26 @@
                 }
             `;
             document.head.appendChild(style);
+            
+            // Screen orientation change handling
+            window.addEventListener('orientationchange', () => {
+                if (isFullscreen) return; // Don't adjust if already in fullscreen
+                
+                setTimeout(() => {
+                    if (window.orientation === 90 || window.orientation === -90) {
+                        // Landscape mode - auto enter fullscreen-like mode
+                        enterFullscreen();
+                    } else {
+                        // Portrait mode - exit fullscreen
+                        exitFullscreen();
+                    }
+                }, 100);
+            });
+            
+            // Check initial orientation
+            if (window.orientation === 90 || window.orientation === -90) {
+                enterFullscreen();
+            }
         });
     </script>
 </body>
