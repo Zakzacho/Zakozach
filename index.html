@@ -3,9 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مشغل الحلقات المتسلسلة</title>
+    <title>Watch your TV show</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --primary-color: #f47521;
@@ -15,11 +18,19 @@
             --gray-text: #9fadbd;
         }
 
+        /* Light theme variables */
+        .light-theme {
+            --dark-bg: #f0f2f5;
+            --darker-bg: #e4e6e9;
+            --light-text: #333333;
+            --gray-text: #666666;
+        }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Tajawal', sans-serif;
+            font-family: 'Cairo', sans-serif;
         }
 
         body {
@@ -27,6 +38,7 @@
             color: var(--light-text);
             direction: rtl;
             overflow-x: hidden;
+            transition: background-color 0.3s, color 0.3s;
         }
 
         .container {
@@ -272,7 +284,7 @@
         }
 
         .playlist-item:hover {
-            background-color: rgba(255, 255, 255, 0.05);
+            background-color: rgba(244, 117, 33, 0.1);
             transform: translateX(-5px);
         }
 
@@ -638,11 +650,26 @@
             margin-bottom: 15px;
             opacity: 0.5;
         }
+        
+        /* Theme toggle styles */
+        .theme-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .theme-icon {
+            transition: transform 0.5s ease;
+        }
+        
+        .light-theme .theme-icon {
+            transform: rotate(180deg);
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1 class="text-3xl font-bold mb-6 text-center">مشغل الحلقات المتسلسلة</h1>
+        <h1 class="text-3xl font-bold mb-6 text-center">Watch your TV show</h1>
         
         <div class="player-container" id="player-container">
             <div class="loader" id="loader"></div>
@@ -712,9 +739,9 @@
                         <i class="fas fa-lock"></i> إعدادات المسؤول
                         <span class="tooltiptext">لوحة إدارة المحتوى</span>
                     </button>
-                    <button id="toggle-direction" class="px-4 py-2 bg-gray-700 rounded tooltip">
-                        <i class="fas fa-language"></i> تغيير الاتجاه
-                        <span class="tooltiptext">تبديل بين العربية والإنجليزية</span>
+                    <button id="toggle-theme" class="px-4 py-2 bg-gray-700 rounded tooltip theme-toggle">
+                        <i class="fas fa-moon theme-icon"></i> تغيير المظهر
+                        <span class="tooltiptext">تبديل بين المظهر الليلي والشمسي</span>
                     </button>
                 </div>
             </div>
@@ -817,6 +844,7 @@
         let sortOrder = 'asc';
         let currentSearch = '';
         let selectedEpisodeIndex = -1;
+        let isLightTheme = false;
 
         // DOM elements
         const playerContainer = document.getElementById('player-container');
@@ -848,7 +876,7 @@
         const clearPlaylistButton = document.getElementById('clear-playlist');
         const exportPlaylistButton = document.getElementById('export-playlist');
         const importPlaylistButton = document.getElementById('import-button');
-        const toggleDirectionButton = document.getElementById('toggle-direction');
+        const toggleThemeButton = document.getElementById('toggle-theme');
         const loader = document.getElementById('loader');
         const playbackSpeedButton = document.getElementById('playback-speed');
         const playlistSearch = document.getElementById('playlist-search');
@@ -871,6 +899,9 @@
             
             // Auto-hide controls after inactivity
             setupAutoHideControls();
+            
+            // Load theme preference
+            loadThemePreference();
         }
 
         function setupAutoHideControls() {
@@ -886,6 +917,37 @@
                     customControls.style.opacity = '0';
                 }
             }, 1000);
+        }
+
+        function toggleTheme() {
+            const body = document.body;
+            isLightTheme = !isLightTheme;
+            
+            if (isLightTheme) {
+                body.classList.add('light-theme');
+                toggleThemeButton.querySelector('i').className = 'fas fa-sun theme-icon';
+                toggleThemeButton.querySelector('.tooltiptext').textContent = 'تبديل إلى المظهر الليلي';
+                showNotification('تم التبديل إلى المظهر الشمسي');
+            } else {
+                body.classList.remove('light-theme');
+                toggleThemeButton.querySelector('i').className = 'fas fa-moon theme-icon';
+                toggleThemeButton.querySelector('.tooltiptext').textContent = 'تبديل إلى المظهر الشمسي';
+                showNotification('تم التبديل إلى المظهر الليلي');
+            }
+            
+            // Save theme preference
+            localStorage.setItem('isLightTheme', isLightTheme);
+        }
+        
+        function loadThemePreference() {
+            const savedTheme = localStorage.getItem('isLightTheme');
+            
+            if (savedTheme === 'true') {
+                isLightTheme = true;
+                document.body.classList.add('light-theme');
+                toggleThemeButton.querySelector('i').className = 'fas fa-sun theme-icon';
+                toggleThemeButton.querySelector('.tooltiptext').textContent = 'تبديل إلى المظهر الليلي';
+            }
         }
 
         function initializePlayer(videoId) {
@@ -1569,59 +1631,6 @@
             }
         }
 
-        function toggleDirection() {
-            const html = document.documentElement;
-            const currentDir = html.getAttribute('dir');
-            const newDir = currentDir === 'rtl' ? 'ltr' : 'rtl';
-            
-            html.setAttribute('dir', newDir);
-            
-            // Update text based on direction
-            if (newDir === 'ltr') {
-                document.title = 'Series Episodes Player';
-                document.querySelector('h1').textContent = 'Series Episodes Player';
-                document.querySelector('.playlist-title').textContent = 'Playlist';
-                toggleDirectionButton.innerHTML = '<i class="fas fa-language"></i> Change Direction <span class="tooltiptext">Switch to Arabic</span>';
-                playlistSearch.placeholder = "Search playlist...";
-                updateTooltipsForLanguage('en');
-            } else {
-                document.title = 'مشغل الحلقات المتسلسلة';
-                document.querySelector('h1').textContent = 'مشغل الحلقات المتسلسلة';
-                document.querySelector('.playlist-title').textContent = 'قائمة التشغيل';
-                toggleDirectionButton.innerHTML = '<i class="fas fa-language"></i> تغيير الاتجاه <span class="tooltiptext">تبديل إلى الإنجليزية</span>';
-                playlistSearch.placeholder = "البحث في قائمة التشغيل...";
-                updateTooltipsForLanguage('ar');
-            }
-        }
-
-        function updateTooltipsForLanguage(lang) {
-            if (lang === 'en') {
-                playPauseButton.querySelector('.tooltiptext').textContent = 'Play/Pause (Space)';
-                prevVideoButton.querySelector('.tooltiptext').textContent = 'Previous Episode (P)';
-                nextVideoButton.querySelector('.tooltiptext').textContent = 'Next Episode (N)';
-                rewindButton.querySelector('.tooltiptext').textContent = 'Rewind 10s (←)';
-                forwardButton.querySelector('.tooltiptext').textContent = 'Forward 10s (→)';
-                muteButton.querySelector('.tooltiptext').textContent = isMuted ? 'Unmute (M)' : 'Mute (M)';
-                fullscreenButton.querySelector('.tooltiptext').textContent = isFullscreen ? 'Exit Fullscreen (F)' : 'Fullscreen (F)';
-                playbackSpeedButton.querySelector('.tooltiptext').textContent = `Playback Speed: ${currentPlaybackRate}x (S)`;
-                adminAccessButton.querySelector('.tooltiptext').textContent = 'Admin Panel';
-                sortAscButton.querySelector('.tooltiptext').textContent = 'Sort Ascending';
-                sortDescButton.querySelector('.tooltiptext').textContent = 'Sort Descending';
-            } else {
-                playPauseButton.querySelector('.tooltiptext').textContent = 'تشغيل/إيقاف (Space)';
-                prevVideoButton.querySelector('.tooltiptext').textContent = 'الحلقة السابقة (P)';
-                nextVideoButton.querySelector('.tooltiptext').textContent = 'الحلقة التالية (N)';
-                rewindButton.querySelector('.tooltiptext').textContent = 'رجوع 10 ثواني (←)';
-                forwardButton.querySelector('.tooltiptext').textContent = 'تقديم 10 ثواني (→)';
-                muteButton.querySelector('.tooltiptext').textContent = isMuted ? 'إلغاء كتم الصوت (M)' : 'كتم الصوت (M)';
-                fullscreenButton.querySelector('.tooltiptext').textContent = isFullscreen ? 'إلغاء ملء الشاشة (F)' : 'ملء الشاشة (F)';
-                playbackSpeedButton.querySelector('.tooltiptext').textContent = `سرعة التشغيل: ${currentPlaybackRate}x (S)`;
-                adminAccessButton.querySelector('.tooltiptext').textContent = 'لوحة إدارة المحتوى';
-                sortAscButton.querySelector('.tooltiptext').textContent = 'ترتيب تصاعدي';
-                sortDescButton.querySelector('.tooltiptext').textContent = 'ترتيب تنازلي';
-            }
-        }
-
         // Storage functions
         function savePlaylistToStorage() {
             localStorage.setItem('youtubePlaylist', JSON.stringify(playlist));
@@ -1769,8 +1778,8 @@
             exportPlaylistButton.addEventListener('click', exportPlaylist);
             importPlaylistButton.addEventListener('click', importPlaylist);
             
-            // Direction toggle
-            toggleDirectionButton.addEventListener('click', toggleDirection);
+            // Theme toggle
+            toggleThemeButton.addEventListener('click', toggleTheme);
             
             // Search functionality
             playlistSearch.addEventListener('input', (e) => {
@@ -1849,6 +1858,10 @@
                         break;
                     case 'KeyS':
                         changePlaybackRate();
+                        e.preventDefault();
+                        break;
+                    case 'KeyT':
+                        toggleTheme();
                         e.preventDefault();
                         break;
                     case 'Digit0':
@@ -1944,7 +1957,7 @@
             // Show keyboard shortcuts info at first visit
             if (!localStorage.getItem('keyboardShortcutsShown')) {
                 setTimeout(() => {
-                    showNotification('اضغط Space للتشغيل/الإيقاف، الأسهم للتنقل، F لملء الشاشة');
+                    showNotification('اضغط Space للتشغيل/الإيقاف، الأسهم للتنقل، F لملء الشاشة، T لتغيير المظهر');
                     localStorage.setItem('keyboardShortcutsShown', 'true');
                 }, 2000);
             }
