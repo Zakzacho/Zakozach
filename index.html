@@ -5,12 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
-    <title>Watch your TV Show</title>
+    <title>Watch your TV show</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Noto+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --primary-color: #f47521;
@@ -20,27 +18,11 @@
             --gray-text: #9fadbd;
         }
 
-        .dark-theme {
-            --primary-color: #f47521;
-            --dark-bg: #23252b;
-            --darker-bg: #191b1f;
-            --light-text: #ffffff;
-            --gray-text: #9fadbd;
-        }
-
-        .light-theme {
-            --primary-color: #f47521;
-            --dark-bg: #f8f9fa;
-            --darker-bg: #e9ecef;
-            --light-text: #343a40;
-            --gray-text: #6c757d;
-        }
-
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Noto Sans Arabic', 'Poppins', sans-serif;
+            font-family: 'Cairo', sans-serif;
         }
 
         body {
@@ -48,10 +30,6 @@
             color: var(--light-text);
             direction: rtl;
             overflow-x: hidden;
-            height: 100%;
-            width: 100%;
-            position: fixed;
-            transition: background-color 0.3s ease;
         }
 
         .container {
@@ -184,11 +162,11 @@
             background: none;
             border: none;
             color: var(--light-text);
-            font-size: 18px;
+            font-size: 20px;
             cursor: pointer;
             transition: all 0.2s;
-            width: 42px;
-            height: 42px;
+            width: 44px;
+            height: 44px;
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -257,7 +235,6 @@
             display: none;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
             animation: slideIn 0.3s ease-out;
-            transition: background-color 0.3s ease;
         }
 
         @keyframes slideIn {
@@ -335,18 +312,15 @@
             display: none;
         }
 
-        /* Fullscreen mode styles with better fullscreen support */
+        /* Adjustments for fullscreen mode */
         .fullscreen-mode {
             position: fixed;
             top: 0;
             left: 0;
-            width: 100vw;
-            height: 100vh;
+            width: 100%;
+            height: 100%;
             z-index: 9999;
             background-color: #000;
-            margin: 0;
-            padding: 0;
-            border-radius: 0;
         }
 
         .fullscreen-mode .video-container {
@@ -408,7 +382,7 @@
         /* Responsive design */
         @media (max-width: 768px) {
             .control-buttons {
-                gap: 8px;
+                gap: 5px;
             }
             
             .control-button {
@@ -509,158 +483,128 @@
             }
         }
 
-        /* Theme switch button */
-        .theme-switch {
-            position: relative;
-            width: 60px;
-            height: 30px;
-            background-color: var(--darker-bg);
-            border-radius: 15px;
-            cursor: pointer;
+        /* TV button */
+        .tv-button {
+            background-color: #3366cc;
+            color: white;
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            z-index: 30;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
             display: flex;
+            justify-content: center;
             align-items: center;
-            padding: 0 5px;
-            overflow: hidden;
-            transition: background-color 0.3s;
+            opacity: 0.7;
+            transition: opacity 0.3s, transform 0.3s;
         }
-
-        .theme-switch-handle {
-            position: absolute;
-            width: 22px;
-            height: 22px;
-            border-radius: 50%;
-            background-color: var(--primary-color);
-            transition: transform 0.3s;
-        }
-
-        .theme-switch.dark .theme-switch-handle {
-            transform: translateX(0);
-        }
-
-        .theme-switch.light .theme-switch-handle {
-            transform: translateX(30px);
-        }
-
-        .theme-switch i {
-            position: absolute;
-            font-size: 14px;
-            transition: opacity 0.3s;
-        }
-
-        .theme-switch .fa-moon {
-            left: 10px;
+        
+        .tv-button:hover {
             opacity: 1;
+            transform: scale(1.1);
+            background-color: #2255bb;
         }
 
-        .theme-switch .fa-sun {
-            right: 10px;
-            opacity: 0;
+        /* Light/Dark mode */
+        body.light-theme {
+            --primary-color: #f47521;
+            --dark-bg: #ffffff;
+            --darker-bg: #f5f5f5;
+            --light-text: #333333;
+            --gray-text: #666666;
         }
-
-        .theme-switch.light .fa-moon {
-            opacity: 0;
+        
+        body.light-theme .progress-container {
+            background-color: rgba(0, 0, 0, 0.1);
         }
-
-        .theme-switch.light .fa-sun {
-            opacity: 1;
+        
+        body.light-theme .notification {
+            color: var(--darker-bg);
         }
-
-        /* Castable TV button */
-        .cast-button {
-            margin-left: 10px;
-            position: relative;
+        
+        /* Force fullscreen styles */
+        .force-fullscreen {
+            width: 100vw !important;
+            height: 100vh !important;
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            z-index: 2147483647 !important;
+            background: #000 !important;
         }
-
-        .cast-button .cast-icon {
-            font-size: 18px;
-            color: var(--light-text);
-            transition: color 0.3s;
+        
+        .force-fullscreen .video-container {
+            padding-bottom: 0 !important;
+            height: 100% !important;
         }
-
-        .cast-button:hover .cast-icon {
-            color: var(--primary-color);
+        
+        /* No UI in fullscreen after a delay */
+        .hide-ui .controls {
+            opacity: 0 !important;
         }
-
-        .cast-status {
-            position: absolute;
-            bottom: -5px;
-            right: -5px;
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background-color: #28a745;
-            display: none;
+        
+        .hide-ui .tv-button {
+            opacity: 0 !important;
         }
-
-        .cast-connected .cast-status {
-            display: block;
-        }
-
-        /* Main controls section with fixed height */
-        .main-controls {
-            background-color: var(--dark-bg);
-            border-radius: 8px;
-            padding: 20px;
-            margin-top: 20px;
+        
+        /* Header bar */
+        .header-bar {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-            transition: background-color 0.3s ease;
+            padding: 15px 0;
+            margin-bottom: 20px;
         }
-
-        .main-title {
-            font-size: 22px;
-            font-weight: 700;
-            color: var(--primary-color);
-        }
-
-        .control-actions {
+        
+        .theme-toggle {
+            background: transparent;
+            border: none;
+            color: var(--light-text);
+            font-size: 20px;
+            cursor: pointer;
+            padding: 10px;
+            border-radius: 50%;
             display: flex;
-            gap: 10px;
             align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
         }
-
-        /* Fix for top-level overlay in fullscreen */
-        .fullscreen-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: transparent;
-            z-index: 9999;
-            display: none;
+        
+        .theme-toggle:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            transform: rotate(30deg);
         }
-
-        /* Extra fix for iOS fullscreen */
-        @supports (-webkit-touch-callout: none) {
-            .fullscreen-mode {
-                position: fixed;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                width: 100% !important;
-                height: 100% !important;
-                z-index: 9999;
-            }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
         }
-
-        /* Fix for notched phones */
-        @supports (padding-top: env(safe-area-inset-top)) {
-            .fullscreen-mode {
-                padding-top: env(safe-area-inset-top);
-                padding-bottom: env(safe-area-inset-bottom);
-                padding-left: env(safe-area-inset-left);
-                padding-right: env(safe-area-inset-right);
-            }
+        
+        .shake {
+            animation: shake 0.5s;
         }
     </style>
 </head>
-<body class="dark-theme">
+<body>
     <div class="container">
-        <h1 class="text-3xl font-bold mb-6 text-center">Watch your TV Show</h1>
+        <div class="header-bar">
+            <h1 class="text-3xl font-bold">Watch your TV show</h1>
+            <div class="flex gap-4">
+                <button id="theme-toggle" class="theme-toggle tooltip">
+                    <i class="fas fa-moon"></i>
+                    <span class="tooltiptext">تبديل المظهر</span>
+                </button>
+                <button id="admin-access" class="px-4 py-2 bg-gray-700 rounded tooltip">
+                    <i class="fas fa-lock"></i> إعدادات المسؤول
+                    <span class="tooltiptext">لوحة إدارة المحتوى</span>
+                </button>
+            </div>
+        </div>
         
         <div class="player-container" id="player-container">
             <div class="loader" id="loader"></div>
@@ -668,6 +612,10 @@
                 <div id="youtube-player"></div>
                 <div class="overlay" id="player-overlay"></div>
             </div>
+            <button class="tv-button tooltip" id="tv-button">
+                <i class="fas fa-tv"></i>
+                <span class="tooltiptext">عرض على التلفاز</span>
+            </button>
             <div class="controls" id="custom-controls">
                 <div class="progress-container" id="progress-container">
                     <div class="progress-bar" id="progress-bar">
@@ -713,11 +661,6 @@
                             <i class="fas fa-tachometer-alt"></i>
                             <span class="tooltiptext">سرعة التشغيل (S)</span>
                         </button>
-                        <button class="control-button cast-button tooltip" id="cast-button">
-                            <i class="fas fa-tv cast-icon"></i>
-                            <span class="cast-status"></span>
-                            <span class="tooltiptext">الاقتران مع التلفاز</span>
-                        </button>
                         <button class="control-button tooltip" id="fullscreen">
                             <i class="fas fa-expand"></i>
                             <span class="tooltiptext">ملء الشاشة (F)</span>
@@ -727,25 +670,9 @@
             </div>
         </div>
 
-        <div class="main-controls">
-            <h2 class="main-title">خيارات التحكم</h2>
-            <div class="control-actions">
-                <div class="theme-switch dark tooltip" id="theme-switch">
-                    <div class="theme-switch-handle"></div>
-                    <i class="fas fa-moon"></i>
-                    <i class="fas fa-sun"></i>
-                    <span class="tooltiptext">تبديل المظهر</span>
-                </div>
-                <button id="admin-access" class="px-4 py-2 bg-gray-700 rounded tooltip">
-                    <i class="fas fa-lock"></i> إعدادات المسؤول
-                    <span class="tooltiptext">لوحة إدارة المحتوى</span>
-                </button>
-            </div>
-        </div>
-
         <div class="admin-panel" id="admin-panel">
             <div class="admin-header">
-                <h2 class="main-title">لوحة المسؤول</h2>
+                <h2 class="text-xl font-bold text-primary-color">لوحة المسؤول</h2>
                 <button id="close-admin" class="px-4 py-2 bg-gray-700 rounded">إغلاق</button>
             </div>
             
@@ -797,9 +724,6 @@
         </div>
     </div>
 
-    <!-- Fullscreen overlay for iOS -->
-    <div class="fullscreen-overlay" id="fullscreen-overlay"></div>
-
     <script src="https://www.youtube.com/iframe_api"></script>
     <script>
         // Global variables
@@ -813,17 +737,17 @@
         let isFullscreen = false;
         let updateInterval;
         let isUserSeeking = false;
-        let adminPassword = "Se@20£sS0OpA@701"; // Updated password
+        let adminPassword = "Se@20£sS0OpA@701"; // Password
         let isAdminLoggedIn = false;
         let currentPlaybackRate = 1.0;
         let playbackRates = [0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0];
         let currentPlaybackRateIndex = 3; // Default 1.0
         let lastActiveTime = Date.now();
         let sortOrder = 'asc';
-        let currentSearch = '';
         let selectedEpisodeIndex = -1;
-        let isDarkTheme = true;
-        let isCastConnected = false;
+        let isLightTheme = false;
+        let hideControlsTimeout;
+        let fullscreenApi;
 
         // DOM elements
         const playerContainer = document.getElementById('player-container');
@@ -856,25 +780,112 @@
         const importPlaylistButton = document.getElementById('import-button');
         const loader = document.getElementById('loader');
         const playbackSpeedButton = document.getElementById('playback-speed');
-        const themeSwitch = document.getElementById('theme-switch');
-        const castButton = document.getElementById('cast-button');
-        const fullscreenOverlay = document.getElementById('fullscreen-overlay');
+        const themeToggleButton = document.getElementById('theme-toggle');
+        const tvButton = document.getElementById('tv-button');
+
+        // Check for fullscreen API support
+        function setupFullscreenAPI() {
+            if (document.documentElement.requestFullscreen) {
+                fullscreenApi = {
+                    requestFullscreen: 'requestFullscreen',
+                    exitFullscreen: 'exitFullscreen',
+                    fullscreenElement: 'fullscreenElement',
+                    fullscreenEnabled: 'fullscreenEnabled',
+                    fullscreenchange: 'fullscreenchange'
+                };
+            } else if (document.documentElement.webkitRequestFullscreen) {
+                fullscreenApi = {
+                    requestFullscreen: 'webkitRequestFullscreen',
+                    exitFullscreen: 'webkitExitFullscreen',
+                    fullscreenElement: 'webkitFullscreenElement',
+                    fullscreenEnabled: 'webkitFullscreenEnabled',
+                    fullscreenchange: 'webkitfullscreenchange'
+                };
+            } else if (document.documentElement.mozRequestFullScreen) {
+                fullscreenApi = {
+                    requestFullscreen: 'mozRequestFullScreen',
+                    exitFullscreen: 'mozCancelFullScreen',
+                    fullscreenElement: 'mozFullScreenElement',
+                    fullscreenEnabled: 'mozFullScreenEnabled',
+                    fullscreenchange: 'mozfullscreenchange'
+                };
+            } else if (document.documentElement.msRequestFullscreen) {
+                fullscreenApi = {
+                    requestFullscreen: 'msRequestFullscreen',
+                    exitFullscreen: 'msExitFullscreen',
+                    fullscreenElement: 'msFullscreenElement',
+                    fullscreenEnabled: 'msFullscreenEnabled',
+                    fullscreenchange: 'MSFullscreenChange'
+                };
+            } else {
+                // Fallback if no fullscreen API is available
+                fullscreenApi = null;
+            }
+
+            if (fullscreenApi) {
+                document.addEventListener(fullscreenApi.fullscreenchange, onFullscreenChange);
+            }
+        }
+
+        function onFullscreenChange() {
+            isFullscreen = !!document[fullscreenApi.fullscreenElement];
+            updateFullscreenButton();
+            
+            if (isFullscreen) {
+                playerContainer.classList.add('fullscreen-mode');
+                if (window.screen && screen.orientation && screen.orientation.lock) {
+                    screen.orientation.lock('landscape').catch(e => console.error("Couldn't lock orientation", e));
+                }
+                scheduleHideControls();
+            } else {
+                playerContainer.classList.remove('fullscreen-mode');
+                playerContainer.classList.remove('force-fullscreen');
+                document.body.classList.remove('hide-ui');
+                clearTimeout(hideControlsTimeout);
+                if (window.screen && screen.orientation && screen.orientation.unlock) {
+                    screen.orientation.unlock();
+                }
+            }
+        }
+
+        function updateFullscreenButton() {
+            if (isFullscreen) {
+                fullscreenButton.innerHTML = '<i class="fas fa-compress"></i><span class="tooltiptext">إلغاء ملء الشاشة (F)</span>';
+            } else {
+                fullscreenButton.innerHTML = '<i class="fas fa-expand"></i><span class="tooltiptext">ملء الشاشة (F)</span>';
+            }
+        }
+
+        function scheduleHideControls() {
+            clearTimeout(hideControlsTimeout);
+            if (isFullscreen && isPlaying) {
+                hideControlsTimeout = setTimeout(() => {
+                    document.body.classList.add('hide-ui');
+                }, 3000);
+            }
+        }
 
         // Initialize YouTube API
         function onYouTubeIframeAPIReady() {
             // Load playlist from localStorage if available
             loadPlaylistFromStorage();
             
+            // Set up fullscreen API
+            setupFullscreenAPI();
+            
             if (playlist.length > 0) {
                 initializePlayer(playlist[0].videoId);
             } else {
                 // If no playlist, hide loader and show notification
                 loader.style.display = 'none';
-                showNotification('لا توجد فيديوهات في قائمة التشغيل. الرجاء إضافة بعض الفيديوهات من خلال إعدادات المسؤول.');
+                showNotification('لا توجد فيديوهات في قائمة التشغيل. الرجاء إضافة بعض الفيديوهات.');
             }
             
             // Auto-hide controls after inactivity
             setupAutoHideControls();
+            
+            // Load theme preference
+            loadThemePreference();
         }
 
         function setupAutoHideControls() {
@@ -882,6 +893,10 @@
                 lastActiveTime = Date.now();
                 if (customControls.style.opacity === '0') {
                     customControls.style.opacity = '1';
+                }
+                if (isFullscreen) {
+                    document.body.classList.remove('hide-ui');
+                    scheduleHideControls();
                 }
             });
             
@@ -940,9 +955,14 @@
                 isPlaying = true;
                 playPauseButton.innerHTML = '<i class="fas fa-pause"></i><span class="tooltiptext">إيقاف (Space)</span>';
                 loader.style.display = 'none';
+                if (isFullscreen) {
+                    scheduleHideControls();
+                }
             } else if (event.data === 2) { // YT.PlayerState.PAUSED = 2
                 isPlaying = false;
                 playPauseButton.innerHTML = '<i class="fas fa-play"></i><span class="tooltiptext">تشغيل (Space)</span>';
+                clearTimeout(hideControlsTimeout);
+                document.body.classList.remove('hide-ui');
             } else if (event.data === 3) { // YT.PlayerState.BUFFERING = 3
                 loader.style.display = 'block';
             }
@@ -972,22 +992,8 @@
         function playNextVideo() {
             if (playlist.length === 0) return;
             
-            // Filter playlist based on current search
-            const filteredPlaylist = filterPlaylist();
-            const currentIndex = filteredPlaylist.findIndex(item => 
-                item.videoId === playlist[currentVideo].videoId
-            );
-            
-            if (currentIndex < filteredPlaylist.length - 1) {
-                // Find the real index in the main playlist
-                const nextItemId = filteredPlaylist[currentIndex + 1].videoId;
-                const mainIndex = playlist.findIndex(item => item.videoId === nextItemId);
-                loadVideo(mainIndex);
-            } else if (filteredPlaylist.length > 0) {
-                // Loop back to the first item if at the end
-                const mainIndex = playlist.findIndex(item => item.videoId === filteredPlaylist[0].videoId);
-                loadVideo(mainIndex);
-            }
+            let nextIndex = (currentVideo + 1) % playlist.length;
+            loadVideo(nextIndex);
         }
 
         function playPrevVideo() {
@@ -1000,24 +1006,8 @@
                 return;
             }
             
-            // Filter playlist based on current search
-            const filteredPlaylist = filterPlaylist();
-            const currentIndex = filteredPlaylist.findIndex(item => 
-                item.videoId === playlist[currentVideo].videoId
-            );
-            
-            if (currentIndex > 0) {
-                // Find the real index in the main playlist
-                const prevItemId = filteredPlaylist[currentIndex - 1].videoId;
-                const mainIndex = playlist.findIndex(item => item.videoId === prevItemId);
-                loadVideo(mainIndex);
-            } else if (filteredPlaylist.length > 0) {
-                // Loop to the last item if at the beginning
-                const mainIndex = playlist.findIndex(item => 
-                    item.videoId === filteredPlaylist[filteredPlaylist.length - 1].videoId
-                );
-                loadVideo(mainIndex);
-            }
+            let prevIndex = (currentVideo - 1 + playlist.length) % playlist.length;
+            loadVideo(prevIndex);
         }
 
         function loadVideo(index) {
@@ -1032,6 +1022,9 @@
             setTimeout(() => {
                 player.loadVideoById(playlist[index].videoId);
                 player.setPlaybackRate(currentPlaybackRate);
+                
+                // Update selected episode
+                selectedEpisodeIndex = index;
                 
                 // Remove fade effect
                 setTimeout(() => {
@@ -1058,9 +1051,10 @@
             
             const currentTime = player.getCurrentTime();
             const duration = player.getDuration();
-            const percent = (currentTime / duration) * 100;
-            
-            progressBar.style.width = `${percent}%`;
+            if (duration) {
+                const percent = (currentTime / duration) * 100;
+                progressBar.style.width = `${percent}%`;
+            }
         }
 
         function updateTimeDisplay() {
@@ -1129,75 +1123,37 @@
         }
 
         function enterFullscreen() {
-            // First try the Fullscreen API
-            if (playerContainer.requestFullscreen) {
-                playerContainer.requestFullscreen();
-            } else if (playerContainer.webkitRequestFullscreen) { /* Safari */
-                playerContainer.webkitRequestFullscreen();
-            } else if (playerContainer.msRequestFullscreen) { /* IE11 */
-                playerContainer.msRequestFullscreen();
+            if (fullscreenApi && document[fullscreenApi.fullscreenEnabled]) {
+                // Use native fullscreen API if available
+                playerContainer[fullscreenApi.requestFullscreen]();
             } else {
-                // Fallback for browsers that don't support Fullscreen API
-                playerContainer.classList.add('fullscreen-mode');
-                fullscreenOverlay.style.display = 'block';
+                // Fallback to CSS fullscreen solution
+                playerContainer.classList.add('force-fullscreen');
+                document.body.style.overflow = 'hidden';
+                isFullscreen = true;
+                updateFullscreenButton();
+                scheduleHideControls();
+                
+                // Add ESC key listener for fallback fullscreen
+                document.addEventListener('keydown', exitFullscreenOnEsc);
             }
-            
-            fullscreenButton.innerHTML = '<i class="fas fa-compress"></i><span class="tooltiptext">إلغاء ملء الشاشة (F)</span>';
-            isFullscreen = true;
-            
-            // Lock screen to landscape on mobile
-            if (screen.orientation && screen.orientation.lock) {
-                screen.orientation.lock('landscape').catch((error) => {
-                    console.log('Orientation lock failed: ' + error);
-                });
-            }
-            
-            // Handle ESC key
-            document.addEventListener('keydown', exitFullscreenOnEsc);
-            
-            // Handle fullscreen change event
-            document.addEventListener('fullscreenchange', handleFullscreenChange);
-            document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
-            document.addEventListener('mozfullscreenchange', handleFullscreenChange);
-            document.addEventListener('MSFullscreenChange', handleFullscreenChange);
         }
 
         function exitFullscreen() {
-            // First try the Fullscreen API
-            if (document.exitFullscreen) {
-                document.exitFullscreen();
-            } else if (document.webkitExitFullscreen) { /* Safari */
-                document.webkitExitFullscreen();
-            } else if (document.msExitFullscreen) { /* IE11 */
-                document.msExitFullscreen();
+            if (fullscreenApi && document[fullscreenApi.fullscreenElement]) {
+                // Use native fullscreen API if currently fullscreen
+                document[fullscreenApi.exitFullscreen]();
             } else {
-                // Fallback for browsers that don't support Fullscreen API
-                playerContainer.classList.remove('fullscreen-mode');
-                fullscreenOverlay.style.display = 'none';
-            }
-            
-            fullscreenButton.innerHTML = '<i class="fas fa-expand"></i><span class="tooltiptext">ملء الشاشة (F)</span>';
-            isFullscreen = false;
-            
-            // Remove ESC key handler
-            document.removeEventListener('keydown', exitFullscreenOnEsc);
-            
-            // Remove fullscreen change handlers
-            document.removeEventListener('fullscreenchange', handleFullscreenChange);
-            document.removeEventListener('webkitfullscreenchange', handleFullscreenChange);
-            document.removeEventListener('mozfullscreenchange', handleFullscreenChange);
-            document.removeEventListener('MSFullscreenChange', handleFullscreenChange);
-        }
-
-        function handleFullscreenChange() {
-            // Check if we're still in fullscreen mode
-            if (!(document.fullscreenElement || 
-                  document.webkitFullscreenElement ||
-                  document.mozFullScreenElement ||
-                  document.msFullscreenElement)) {
-                // If not, update our UI to reflect this
-                fullscreenButton.innerHTML = '<i class="fas fa-expand"></i><span class="tooltiptext">ملء الشاشة (F)</span>';
+                // Fallback CSS solution
+                playerContainer.classList.remove('force-fullscreen');
+                document.body.style.overflow = '';
                 isFullscreen = false;
+                updateFullscreenButton();
+                document.body.classList.remove('hide-ui');
+                clearTimeout(hideControlsTimeout);
+                
+                // Remove ESC key handler
+                document.removeEventListener('keydown', exitFullscreenOnEsc);
             }
         }
 
@@ -1218,16 +1174,50 @@
             showNotification(`سرعة التشغيل: ${currentPlaybackRate}x`);
         }
 
-        // Filter playlist based on search text
-        function filterPlaylist() {
-            if (!currentSearch) return [...playlist];
+        // TV casting functionality
+        function castToTV() {
+            if (!playerReady) return;
             
-            return playlist.filter(item => 
-                item.name.toLowerCase().includes(currentSearch.toLowerCase())
-            );
+            const videoId = playlist[currentVideo].videoId;
+            
+            if (navigator.userAgent.indexOf('Android') !== -1 || navigator.userAgent.indexOf('iPhone') !== -1) {
+                // Mobile devices - open YouTube app with video ID
+                const currentTime = Math.floor(player.getCurrentTime());
+                window.open(`https://www.youtube.com/watch?v=${videoId}&t=${currentTime}s`, '_blank');
+                showNotification('تم فتح التطبيق للعرض على التلفاز');
+            } else {
+                // Desktop - open YouTube TV pair page
+                window.open('https://www.youtube.com/tv/pair', '_blank');
+                showNotification('يرجى إدخال الرمز المعروض على شاشة التلفاز');
+            }
         }
 
-        // Add video to playlist
+        // Toggle theme function
+        function toggleTheme() {
+            isLightTheme = !isLightTheme;
+            
+            if (isLightTheme) {
+                document.body.classList.add('light-theme');
+                themeToggleButton.innerHTML = '<i class="fas fa-sun"></i><span class="tooltiptext">المظهر الداكن</span>';
+            } else {
+                document.body.classList.remove('light-theme');
+                themeToggleButton.innerHTML = '<i class="fas fa-moon"></i><span class="tooltiptext">المظهر الفاتح</span>';
+            }
+            
+            // Save preference
+            localStorage.setItem('theme', isLightTheme ? 'light' : 'dark');
+        }
+
+        function loadThemePreference() {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'light') {
+                isLightTheme = true;
+                document.body.classList.add('light-theme');
+                themeToggleButton.innerHTML = '<i class="fas fa-sun"></i><span class="tooltiptext">المظهر الداكن</span>';
+            }
+        }
+
+        // Playlist functions
         function addVideoToPlaylist(videoUrl, name, order) {
             // Extract video ID from various YouTube URL formats
             let videoId = extractYoutubeId(videoUrl);
@@ -1254,7 +1244,6 @@
             
             // Save playlist to localStorage
             savePlaylistToStorage();
-            
             return true;
         }
 
@@ -1273,13 +1262,11 @@
             if (confirm('هل أنت متأكد من رغبتك في مسح قائمة التشغيل بالكامل؟')) {
                 playlist = [];
                 savePlaylistToStorage();
-                
                 if (playerReady) {
                     player.stopVideo();
                     isPlaying = false;
                     playPauseButton.innerHTML = '<i class="fas fa-play"></i><span class="tooltiptext">تشغيل (Space)</span>';
                 }
-                
                 selectedEpisodeIndex = -1;
                 showNotification('تم مسح قائمة التشغيل');
             }
@@ -1332,6 +1319,9 @@
             // Sort playlist by order
             playlist.sort((a, b) => a.order - b.order);
             
+            // Save updates
+            savePlaylistToStorage();
+            
             // Find the new index of the episode
             const newIndex = playlist.findIndex(item => item.videoId === videoId);
             selectedEpisodeIndex = newIndex;
@@ -1341,9 +1331,6 @@
                 currentVideo = newIndex;
                 loadVideo(currentVideo);
             }
-            
-            // Save playlist to localStorage
-            savePlaylistToStorage();
             
             // Reset the form
             document.getElementById('video-url').value = '';
@@ -1369,7 +1356,7 @@
                 // Remove the episode
                 playlist.splice(selectedEpisodeIndex, 1);
                 
-                // Save playlist to localStorage
+                // Save updates
                 savePlaylistToStorage();
                 
                 // If removed the current playing video
@@ -1468,7 +1455,7 @@
                     loadVideo(0);
                 }
                 
-                // Save playlist to localStorage
+                // Save to storage
                 savePlaylistToStorage();
                 
                 document.getElementById('import-playlist').value = '';
@@ -1538,47 +1525,6 @@
             }
         }
 
-        // Toggle theme function
-        function toggleTheme() {
-            const body = document.body;
-            
-            if (isDarkTheme) {
-                // Switch to light theme
-                body.classList.remove('dark-theme');
-                body.classList.add('light-theme');
-                themeSwitch.classList.remove('dark');
-                themeSwitch.classList.add('light');
-                isDarkTheme = false;
-            } else {
-                // Switch to dark theme
-                body.classList.remove('light-theme');
-                body.classList.add('dark-theme');
-                themeSwitch.classList.remove('light');
-                themeSwitch.classList.add('dark');
-                isDarkTheme = true;
-            }
-        }
-
-        // Cast to TV function
-        function toggleCast() {
-            if (isCastConnected) {
-                // Disconnect from TV
-                showNotification('تم فصل الاتصال بالتلفاز');
-                castButton.classList.remove('cast-connected');
-                isCastConnected = false;
-            } else {
-                // Try to connect to TV
-                // This is a mock implementation since the actual implementation would depend on the Chromecast API
-                showNotification('جاري البحث عن أجهزة...');
-                
-                setTimeout(() => {
-                    showNotification('تم الاتصال بالتلفاز');
-                    castButton.classList.add('cast-connected');
-                    isCastConnected = true;
-                }, 2000);
-            }
-        }
-
         // Storage functions
         function savePlaylistToStorage() {
             localStorage.setItem('youtubePlaylist', JSON.stringify(playlist));
@@ -1643,7 +1589,6 @@
             muteButton.addEventListener('click', toggleMute);
             fullscreenButton.addEventListener('click', toggleFullscreen);
             playbackSpeedButton.addEventListener('click', changePlaybackRate);
-            castButton.addEventListener('click', toggleCast);
             
             // Progress bar event listeners
             progressContainer.addEventListener('mousedown', (e) => {
@@ -1727,8 +1672,11 @@
             exportPlaylistButton.addEventListener('click', exportPlaylist);
             importPlaylistButton.addEventListener('click', importPlaylist);
             
-            // Theme switch listener
-            themeSwitch.addEventListener('click', toggleTheme);
+            // Theme toggle
+            themeToggleButton.addEventListener('click', toggleTheme);
+            
+            // TV button
+            tvButton.addEventListener('click', castToTV);
             
             // Enter key in password field
             document.getElementById('admin-password').addEventListener('keyup', (e) => {
@@ -1871,6 +1819,13 @@
                 }
             }
             
+            // Enter key for login
+            document.getElementById('admin-password').addEventListener('keyup', (e) => {
+                if (e.key === 'Enter') {
+                    checkAdminPassword();
+                }
+            });
+            
             // Show keyboard shortcuts info at first visit
             if (!localStorage.getItem('keyboardShortcutsShown')) {
                 setTimeout(() => {
@@ -1878,20 +1833,6 @@
                     localStorage.setItem('keyboardShortcutsShown', 'true');
                 }, 2000);
             }
-
-            // Add shake keyframes for password animation
-            const style = document.createElement('style');
-            style.textContent = `
-                @keyframes shake {
-                    0%, 100% { transform: translateX(0); }
-                    10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
-                    20%, 40%, 60%, 80% { transform: translateX(5px); }
-                }
-                .shake {
-                    animation: shake 0.5s;
-                }
-            `;
-            document.head.appendChild(style);
         });
     </script>
 </body>
