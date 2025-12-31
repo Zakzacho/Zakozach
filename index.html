@@ -51,7 +51,7 @@
 
         .video-container {
             position: relative;
-            padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+            padding-bottom: 56.25%;
             height: 0;
             overflow: hidden;
         }
@@ -62,7 +62,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            opacity: 0.99; /* Prevents direct clicks */
+            opacity: 0.99;
         }
 
         .overlay {
@@ -227,12 +227,11 @@
             align-items: center;
         }
 
-        .admin-panel {
+        .playlist-panel {
             background-color: var(--dark-bg);
             border-radius: 8px;
             padding: 20px;
             margin-top: 30px;
-            display: none;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
             animation: slideIn 0.3s ease-out;
         }
@@ -248,21 +247,26 @@
             }
         }
 
-        .admin-header {
+        .panel-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
         }
 
-        .password-container {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 20px;
+        .form-group {
+            margin-bottom: 15px;
         }
 
-        input, button {
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: var(--gray-text);
+        }
+
+        input, button, textarea {
             background-color: var(--darker-bg);
             border: 1px solid rgba(255, 255, 255, 0.1);
             color: var(--light-text);
@@ -272,7 +276,7 @@
             transition: all 0.2s;
         }
 
-        input:focus {
+        input:focus, textarea:focus {
             outline: none;
             border-color: var(--primary-color);
             box-shadow: 0 0 0 2px rgba(244, 117, 33, 0.2);
@@ -298,21 +302,6 @@
             box-shadow: 0 1px 5px rgba(244, 117, 33, 0.3);
         }
 
-        .form-group {
-            margin-bottom: 15px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 5px;
-            color: var(--gray-text);
-        }
-
-        .add-episode-form {
-            display: none;
-        }
-
-        /* Adjustments for fullscreen mode */
         .fullscreen-mode {
             position: fixed;
             top: 0;
@@ -328,7 +317,6 @@
             height: 100%;
         }
 
-        /* Custom scrollbar */
         ::-webkit-scrollbar {
             width: 6px;
         }
@@ -342,7 +330,6 @@
             border-radius: 3px;
         }
 
-        /* Loader animation */
         .loader {
             width: 48px;
             height: 48px;
@@ -368,7 +355,6 @@
             }
         }
 
-        /* Transition effect between videos */
         .fade-out {
             opacity: 0;
             transition: opacity 0.5s;
@@ -379,7 +365,6 @@
             transition: opacity 0.5s;
         }
 
-        /* Responsive design */
         @media (max-width: 768px) {
             .control-buttons {
                 gap: 5px;
@@ -400,7 +385,6 @@
             }
         }
 
-        /* Notifications */
         .notification {
             position: fixed;
             top: 20px;
@@ -410,7 +394,7 @@
             color: white;
             padding: 10px 20px;
             border-radius: 4px;
-            z-index: 1000;
+            z-index: 10000;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
             animation: slideDown 0.3s, fadeOut 0.3s 2.7s;
             opacity: 0;
@@ -436,7 +420,6 @@
             }
         }
 
-        /* Tooltip styles */
         .tooltip {
             position: relative;
             display: inline-block;
@@ -466,24 +449,6 @@
             opacity: 1;
         }
 
-        /* Pulse animation for new features */
-        .pulse {
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0% {
-                box-shadow: 0 0 0 0 rgba(244, 117, 33, 0.4);
-            }
-            70% {
-                box-shadow: 0 0 0 10px rgba(244, 117, 33, 0);
-            }
-            100% {
-                box-shadow: 0 0 0 0 rgba(244, 117, 33, 0);
-            }
-        }
-
-        /* TV button */
         .tv-button {
             background-color: #3366cc;
             color: white;
@@ -507,7 +472,6 @@
             background-color: #2255bb;
         }
 
-        /* Light/Dark mode */
         body.light-theme {
             --primary-color: #f47521;
             --dark-bg: #ffffff;
@@ -524,7 +488,6 @@
             color: var(--darker-bg);
         }
         
-        /* Force fullscreen styles */
         .force-fullscreen {
             width: 100vw !important;
             height: 100vh !important;
@@ -542,7 +505,6 @@
             height: 100% !important;
         }
         
-        /* No UI in fullscreen after a delay */
         .hide-ui .controls {
             opacity: 0 !important;
         }
@@ -551,7 +513,6 @@
             opacity: 0 !important;
         }
         
-        /* Header bar */
         .header-bar {
             display: flex;
             justify-content: space-between;
@@ -578,15 +539,171 @@
             background-color: rgba(255, 255, 255, 0.1);
             transform: rotate(30deg);
         }
-        
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
-            20%, 40%, 60%, 80% { transform: translateX(5px); }
+
+        .comments-section {
+            background-color: var(--dark-bg);
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
         }
-        
-        .shake {
-            animation: shake 0.5s;
+
+        .comment-item {
+            background-color: var(--darker-bg);
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            border-right: 3px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .comment-item:hover {
+            border-right-color: var(--primary-color);
+        }
+
+        .comment-item.pinned {
+            border-right-color: var(--primary-color);
+            background-color: rgba(244, 117, 33, 0.1);
+        }
+
+        .comment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .comment-author {
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .comment-date {
+            font-size: 12px;
+            color: var(--gray-text);
+        }
+
+        .comment-text {
+            line-height: 1.6;
+            color: var(--light-text);
+        }
+
+        .comment-actions {
+            margin-top: 10px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .comment-btn {
+            background: none;
+            border: none;
+            color: var(--gray-text);
+            font-size: 12px;
+            cursor: pointer;
+            padding: 5px 10px;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+
+        .comment-btn:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: var(--primary-color);
+        }
+
+        .comment-btn.pinned-btn {
+            color: var(--primary-color);
+        }
+
+        .no-comments {
+            text-align: center;
+            color: var(--gray-text);
+            padding: 30px;
+            font-style: italic;
+        }
+
+        .episodes-list {
+            margin-top: 20px;
+        }
+
+        .episode-item {
+            background-color: var(--darker-bg);
+            padding: 12px 15px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-right: 3px solid transparent;
+        }
+
+        .episode-item:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+            border-right-color: var(--primary-color);
+        }
+
+        .episode-item.active {
+            border-right-color: var(--primary-color);
+            background-color: rgba(244, 117, 33, 0.1);
+        }
+
+        .episode-info {
+            flex: 1;
+        }
+
+        .episode-name {
+            font-weight: 600;
+            color: var(--light-text);
+        }
+
+        .episode-order {
+            font-size: 12px;
+            color: var(--gray-text);
+            margin-top: 2px;
+        }
+
+        .episode-actions {
+            display: flex;
+            gap: 5px;
+        }
+
+        .episode-btn {
+            background: none;
+            border: none;
+            color: var(--gray-text);
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 4px;
+            transition: all 0.2s;
+            font-size: 14px;
+        }
+
+        .episode-btn:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: var(--primary-color);
+        }
+
+        .no-episodes {
+            text-align: center;
+            color: var(--gray-text);
+            padding: 30px;
+            font-style: italic;
+        }
+
+        .toggle-panel-btn {
+            background: transparent;
+            border: 1px solid var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .toggle-panel-btn:hover {
+            background-color: var(--primary-color);
+            color: var(--darker-bg);
+        }
+
+        .panel-collapsed {
+            display: none;
         }
     </style>
 </head>
@@ -598,10 +715,6 @@
                 <button id="theme-toggle" class="theme-toggle tooltip">
                     <i class="fas fa-moon"></i>
                     <span class="tooltiptext">تبديل المظهر</span>
-                </button>
-                <button id="admin-access" class="px-4 py-2 bg-gray-700 rounded tooltip">
-                    <i class="fas fa-lock"></i> إعدادات المسؤول
-                    <span class="tooltiptext">لوحة إدارة المحتوى</span>
                 </button>
             </div>
         </div>
@@ -670,18 +783,15 @@
             </div>
         </div>
 
-        <div class="admin-panel" id="admin-panel">
-            <div class="admin-header">
-                <h2 class="text-xl font-bold text-primary-color">لوحة المسؤول</h2>
-                <button id="close-admin" class="px-4 py-2 bg-gray-700 rounded">إغلاق</button>
+        <div class="playlist-panel">
+            <div class="panel-header">
+                <h2 class="text-xl font-bold text-primary-color">إدارة قائمة الحلقات</h2>
+                <button id="toggle-playlist-form" class="toggle-panel-btn px-4 py-2 rounded">
+                    <i class="fas fa-chevron-down"></i> عرض/إخفاء النموذج
+                </button>
             </div>
             
-            <div class="password-container" id="password-container">
-                <input type="password" id="admin-password" placeholder="أدخل كلمة المرور">
-                <button id="login-button">تسجيل الدخول</button>
-            </div>
-            
-            <div class="add-episode-form" id="add-episode-form">
+            <div id="playlist-form-container">
                 <div class="form-group">
                     <label for="video-url">رابط الفيديو من يوتيوب</label>
                     <input type="text" id="video-url" placeholder="https://www.youtube.com/watch?v=..." class="w-full">
@@ -699,36 +809,57 @@
                 
                 <button id="add-episode" class="w-full">إضافة الحلقة</button>
                 
-                <div class="mt-4">
-                    <button id="edit-episode" class="w-full bg-blue-600 hover:bg-blue-700 mt-2">تعديل الحلقة المحددة</button>
-                </div>
-                
-                <div class="mt-4">
-                    <button id="remove-episode" class="w-full bg-yellow-600 hover:bg-yellow-700 mt-2">حذف الحلقة المحددة</button>
-                </div>
-                
-                <div class="mt-8">
-                    <button id="clear-playlist" class="w-full bg-red-600 hover:bg-red-700">مسح قائمة التشغيل</button>
-                </div>
-                
-                <div class="mt-4">
-                    <button id="export-playlist" class="w-full bg-green-600 hover:bg-green-700 mt-2">تصدير قائمة التشغيل</button>
+                <div class="mt-4 grid grid-cols-2 gap-2">
+                    <button id="export-playlist" class="w-full bg-green-600 hover:bg-green-700">
+                        <i class="fas fa-download"></i> تصدير القائمة
+                    </button>
+                    <button id="clear-playlist" class="w-full bg-red-600 hover:bg-red-700">
+                        <i class="fas fa-trash"></i> مسح القائمة
+                    </button>
                 </div>
                 
                 <div class="form-group mt-4">
                     <label for="import-playlist">استيراد قائمة التشغيل</label>
                     <textarea id="import-playlist" placeholder="الصق البيانات المصدرة هنا..." class="w-full h-24"></textarea>
-                    <button id="import-button" class="w-full mt-2 bg-indigo-600 hover:bg-indigo-700">استيراد</button>
+                    <button id="import-button" class="w-full mt-2 bg-indigo-600 hover:bg-indigo-700">
+                        <i class="fas fa-upload"></i> استيراد
+                    </button>
                 </div>
             </div>
+
+            <div class="episodes-list" id="episodes-list">
+                <h3 class="text-lg font-bold mb-3 mt-5">قائمة الحلقات</h3>
+                <div id="episodes-container"></div>
+            </div>
+        </div>
+
+        <div class="comments-section">
+            <div class="panel-header">
+                <h2 class="text-xl font-bold text-primary-color">
+                    <i class="fas fa-comments"></i> أرشيف التعليقات والطلبات
+                </h2>
+            </div>
+
+            <div class="form-group">
+                <label for="comment-name">الاسم (اختياري)</label>
+                <input type="text" id="comment-name" placeholder="اسمك..." class="w-full">
+            </div>
+
+            <div class="form-group">
+                <label for="comment-text">التعليق</label>
+                <textarea id="comment-text" placeholder="اكتب تعليقك أو طلبك هنا... (يجب أن يكون التعليق جديًا ومفيدًا)" class="w-full h-24"></textarea>
+            </div>
+
+            <button id="submit-comment" class="w-full">
+                <i class="fas fa-paper-plane"></i> إرسال التعليق
+            </button>
+
+            <div id="comments-list" class="mt-6"></div>
         </div>
     </div>
 
-
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2725913266779962"
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2725913266779962"
      crossorigin="anonymous"></script>
-
-
     
     <script src="https://www.youtube.com/iframe_api"></script>
     <script>
@@ -741,19 +872,15 @@
         let currentVolume = 100;
         let isMuted = false;
         let isFullscreen = false;
-        let updateInterval;
         let isUserSeeking = false;
-        let adminPassword = "Se@20£sS0OpA@701"; // Password
-        let isAdminLoggedIn = false;
         let currentPlaybackRate = 1.0;
         let playbackRates = [0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0];
-        let currentPlaybackRateIndex = 3; // Default 1.0
+        let currentPlaybackRateIndex = 3;
         let lastActiveTime = Date.now();
-        let sortOrder = 'asc';
-        let selectedEpisodeIndex = -1;
         let isLightTheme = false;
         let hideControlsTimeout;
         let fullscreenApi;
+        let comments = [];
 
         // DOM elements
         const playerContainer = document.getElementById('player-container');
@@ -772,18 +899,6 @@
         const progressContainer = document.getElementById('progress-container');
         const progressBar = document.getElementById('progress-bar');
         const progressHoverTime = document.getElementById('progress-hover-time');
-        const adminAccessButton = document.getElementById('admin-access');
-        const adminPanel = document.getElementById('admin-panel');
-        const closeAdminButton = document.getElementById('close-admin');
-        const loginButton = document.getElementById('login-button');
-        const passwordContainer = document.getElementById('password-container');
-        const addEpisodeForm = document.getElementById('add-episode-form');
-        const addEpisodeButton = document.getElementById('add-episode');
-        const editEpisodeButton = document.getElementById('edit-episode');
-        const removeEpisodeButton = document.getElementById('remove-episode');
-        const clearPlaylistButton = document.getElementById('clear-playlist');
-        const exportPlaylistButton = document.getElementById('export-playlist');
-        const importPlaylistButton = document.getElementById('import-button');
         const loader = document.getElementById('loader');
         const playbackSpeedButton = document.getElementById('playback-speed');
         const themeToggleButton = document.getElementById('theme-toggle');
@@ -824,7 +939,6 @@
                     fullscreenchange: 'MSFullscreenChange'
                 };
             } else {
-                // Fallback if no fullscreen API is available
                 fullscreenApi = null;
             }
 
@@ -873,25 +987,21 @@
 
         // Initialize YouTube API
         function onYouTubeIframeAPIReady() {
-            // Load playlist from localStorage if available
             loadPlaylistFromStorage();
-            
-            // Set up fullscreen API
+            loadCommentsFromStorage();
             setupFullscreenAPI();
             
             if (playlist.length > 0) {
                 initializePlayer(playlist[0].videoId);
             } else {
-                // If no playlist, hide loader and show notification
                 loader.style.display = 'none';
                 showNotification('لا توجد فيديوهات في قائمة التشغيل. الرجاء إضافة بعض الفيديوهات.');
             }
             
-            // Auto-hide controls after inactivity
             setupAutoHideControls();
-            
-            // Load theme preference
             loadThemePreference();
+            renderEpisodesList();
+            renderCommentsList();
         }
 
         function setupAutoHideControls() {
@@ -924,8 +1034,8 @@
                     'modestbranding': 1,
                     'rel': 0,
                     'showinfo': 0,
-                    'fs': 0, // Disable fullscreen button
-                    'playsinline': 1 // Better mobile experience
+                    'fs': 0,
+                    'playsinline': 1
                 },
                 events: {
                     'onReady': onPlayerReady,
@@ -938,11 +1048,8 @@
         function onPlayerReady(event) {
             playerReady = true;
             loader.style.display = 'none';
-            
-            // Set initial volume
             player.setVolume(currentVolume);
             
-            // Set up update interval using requestAnimationFrame
             function updatePlayerInfo() {
                 if (playerReady && !isUserSeeking) {
                     updateProgressBar();
@@ -954,22 +1061,21 @@
         }
 
         function onPlayerStateChange(event) {
-            // YT.PlayerState.ENDED = 0
-            if (event.data === 0) {
+            if (event.data === 0) { // YT.PlayerState.ENDED
                 playNextVideo();
-            } else if (event.data === 1) { // YT.PlayerState.PLAYING = 1
+            } else if (event.data === 1) { // YT.PlayerState.PLAYING
                 isPlaying = true;
                 playPauseButton.innerHTML = '<i class="fas fa-pause"></i><span class="tooltiptext">إيقاف (Space)</span>';
                 loader.style.display = 'none';
                 if (isFullscreen) {
                     scheduleHideControls();
                 }
-            } else if (event.data === 2) { // YT.PlayerState.PAUSED = 2
+            } else if (event.data === 2) { // YT.PlayerState.PAUSED
                 isPlaying = false;
                 playPauseButton.innerHTML = '<i class="fas fa-play"></i><span class="tooltiptext">تشغيل (Space)</span>';
                 clearTimeout(hideControlsTimeout);
                 document.body.classList.remove('hide-ui');
-            } else if (event.data === 3) { // YT.PlayerState.BUFFERING = 3
+            } else if (event.data === 3) { // YT.PlayerState.BUFFERING
                 loader.style.display = 'block';
             }
         }
@@ -977,8 +1083,6 @@
         function onPlayerError(event) {
             showNotification('حدث خطأ أثناء تشغيل الفيديو. الرجاء التحقق من الرابط.');
             loader.style.display = 'none';
-            
-            // Try to play next video
             setTimeout(() => {
                 playNextVideo();
             }, 2000);
@@ -1005,9 +1109,7 @@
         function playPrevVideo() {
             if (playlist.length === 0) return;
             
-            // Check if more than 3 seconds have passed in the current video
-            if (player.getCurrentTime() > 3) {
-                // Just restart current video
+            if (playerReady && player.getCurrentTime() > 3) {
                 player.seekTo(0, true);
                 return;
             }
@@ -1022,17 +1124,14 @@
             loader.style.display = 'block';
             currentVideo = index;
             
-            // Add fade effect
             playerContainer.classList.add('fade-out');
             
             setTimeout(() => {
                 player.loadVideoById(playlist[index].videoId);
                 player.setPlaybackRate(currentPlaybackRate);
                 
-                // Update selected episode
-                selectedEpisodeIndex = index;
+                renderEpisodesList();
                 
-                // Remove fade effect
                 setTimeout(() => {
                     playerContainer.classList.remove('fade-out');
                     playerContainer.classList.add('fade-in');
@@ -1048,8 +1147,10 @@
             if (!playerReady) return;
             
             const duration = player.getDuration();
-            const seekToTime = duration * (percent / 100);
-            player.seekTo(seekToTime, true);
+            if (duration && !isNaN(duration) && duration !== Infinity) {
+                const seekToTime = duration * (percent / 100);
+                player.seekTo(seekToTime, true);
+            }
         }
 
         function updateProgressBar() {
@@ -1057,9 +1158,9 @@
             
             const currentTime = player.getCurrentTime();
             const duration = player.getDuration();
-            if (duration) {
+            if (duration && !isNaN(duration) && duration !== Infinity && currentTime !== undefined) {
                 const percent = (currentTime / duration) * 100;
-                progressBar.style.width = `${percent}%`;
+                progressBar.style.width = `${Math.min(100, Math.max(0, percent))}%`;
             }
         }
 
@@ -1073,7 +1174,7 @@
         }
 
         function formatTime(seconds) {
-            if (isNaN(seconds) || seconds === Infinity) return "0:00";
+            if (isNaN(seconds) || seconds === Infinity || seconds === undefined) return "0:00";
             
             const hours = Math.floor(seconds / 3600);
             const minutes = Math.floor((seconds % 3600) / 60);
@@ -1106,11 +1207,11 @@
         function setVolume(percent) {
             if (!playerReady) return;
             
-            currentVolume = percent;
-            player.setVolume(percent);
-            volumeLevel.style.width = `${percent}%`;
+            currentVolume = Math.max(0, Math.min(100, percent));
+            player.setVolume(currentVolume);
+            volumeLevel.style.width = `${currentVolume}%`;
             
-            if (percent === 0) {
+            if (currentVolume === 0) {
                 muteButton.innerHTML = '<i class="fas fa-volume-mute"></i><span class="tooltiptext">إلغاء كتم الصوت (M)</span>';
                 isMuted = true;
             } else {
@@ -1130,27 +1231,22 @@
 
         function enterFullscreen() {
             if (fullscreenApi && document[fullscreenApi.fullscreenEnabled]) {
-                // Use native fullscreen API if available
                 playerContainer[fullscreenApi.requestFullscreen]();
             } else {
-                // Fallback to CSS fullscreen solution
                 playerContainer.classList.add('force-fullscreen');
                 document.body.style.overflow = 'hidden';
                 isFullscreen = true;
                 updateFullscreenButton();
                 scheduleHideControls();
                 
-                // Add ESC key listener for fallback fullscreen
                 document.addEventListener('keydown', exitFullscreenOnEsc);
             }
         }
 
         function exitFullscreen() {
             if (fullscreenApi && document[fullscreenApi.fullscreenElement]) {
-                // Use native fullscreen API if currently fullscreen
                 document[fullscreenApi.exitFullscreen]();
             } else {
-                // Fallback CSS solution
                 playerContainer.classList.remove('force-fullscreen');
                 document.body.style.overflow = '';
                 isFullscreen = false;
@@ -1158,7 +1254,6 @@
                 document.body.classList.remove('hide-ui');
                 clearTimeout(hideControlsTimeout);
                 
-                // Remove ESC key handler
                 document.removeEventListener('keydown', exitFullscreenOnEsc);
             }
         }
@@ -1180,25 +1275,21 @@
             showNotification(`سرعة التشغيل: ${currentPlaybackRate}x`);
         }
 
-        // TV casting functionality
         function castToTV() {
-            if (!playerReady) return;
+            if (!playerReady || playlist.length === 0) return;
             
             const videoId = playlist[currentVideo].videoId;
             
             if (navigator.userAgent.indexOf('Android') !== -1 || navigator.userAgent.indexOf('iPhone') !== -1) {
-                // Mobile devices - open YouTube app with video ID
                 const currentTime = Math.floor(player.getCurrentTime());
                 window.open(`https://www.youtube.com/watch?v=${videoId}&t=${currentTime}s`, '_blank');
                 showNotification('تم فتح التطبيق للعرض على التلفاز');
             } else {
-                // Desktop - open YouTube TV pair page
                 window.open('https://www.youtube.com/tv/pair', '_blank');
                 showNotification('يرجى إدخال الرمز المعروض على شاشة التلفاز');
             }
         }
 
-        // Toggle theme function
         function toggleTheme() {
             isLightTheme = !isLightTheme;
             
@@ -1210,7 +1301,6 @@
                 themeToggleButton.innerHTML = '<i class="fas fa-moon"></i><span class="tooltiptext">المظهر الفاتح</span>';
             }
             
-            // Save preference
             localStorage.setItem('theme', isLightTheme ? 'light' : 'dark');
         }
 
@@ -1225,7 +1315,6 @@
 
         // Playlist functions
         function addVideoToPlaylist(videoUrl, name, order) {
-            // Extract video ID from various YouTube URL formats
             let videoId = extractYoutubeId(videoUrl);
             
             if (!videoId) {
@@ -1233,23 +1322,20 @@
                 return false;
             }
             
-            // Add video to playlist
             playlist.push({
                 videoId: videoId,
                 name: name || `فيديو ${playlist.length + 1}`,
                 order: parseInt(order) || playlist.length + 1
             });
             
-            // Sort playlist by order
             playlist.sort((a, b) => a.order - b.order);
             
-            // If this is the first video, initialize player
             if (playlist.length === 1 && !playerReady) {
                 initializePlayer(videoId);
             }
             
-            // Save playlist to localStorage
             savePlaylistToStorage();
+            renderEpisodesList();
             return true;
         }
 
@@ -1273,106 +1359,23 @@
                     isPlaying = false;
                     playPauseButton.innerHTML = '<i class="fas fa-play"></i><span class="tooltiptext">تشغيل (Space)</span>';
                 }
-                selectedEpisodeIndex = -1;
+                renderEpisodesList();
                 showNotification('تم مسح قائمة التشغيل');
             }
         }
 
-        function editEpisode() {
-            if (selectedEpisodeIndex === -1) {
-                showNotification('الرجاء تحديد حلقة للتعديل');
-                return;
-            }
-            
-            const episode = playlist[selectedEpisodeIndex];
-            
-            document.getElementById('video-url').value = `https://www.youtube.com/watch?v=${episode.videoId}`;
-            document.getElementById('episode-name').value = episode.name;
-            document.getElementById('episode-order').value = episode.order;
-            
-            // Change add button to update
-            addEpisodeButton.textContent = 'تحديث الحلقة';
-            addEpisodeButton.onclick = updateSelectedEpisode;
-            
-            showNotification('يمكنك الآن تعديل الحلقة المحددة');
-        }
-
-        function updateSelectedEpisode() {
-            if (selectedEpisodeIndex === -1) return;
-            
-            const videoUrl = document.getElementById('video-url').value;
-            const episodeName = document.getElementById('episode-name').value;
-            const episodeOrder = document.getElementById('episode-order').value;
-            
-            if (!videoUrl) {
-                showNotification('الرجاء إدخال رابط الفيديو');
-                return;
-            }
-            
-            const videoId = extractYoutubeId(videoUrl);
-            if (!videoId) {
-                showNotification('رابط الفيديو غير صالح');
-                return;
-            }
-            
-            // Update episode
-            playlist[selectedEpisodeIndex] = {
-                videoId: videoId,
-                name: episodeName || `فيديو ${selectedEpisodeIndex + 1}`,
-                order: parseInt(episodeOrder) || selectedEpisodeIndex + 1
-            };
-            
-            // Sort playlist by order
-            playlist.sort((a, b) => a.order - b.order);
-            
-            // Save updates
-            savePlaylistToStorage();
-            
-            // Find the new index of the episode
-            const newIndex = playlist.findIndex(item => item.videoId === videoId);
-            selectedEpisodeIndex = newIndex;
-            
-            // If editing the current video, reload it
-            if (currentVideo === selectedEpisodeIndex) {
-                currentVideo = newIndex;
-                loadVideo(currentVideo);
-            }
-            
-            // Reset the form
-            document.getElementById('video-url').value = '';
-            document.getElementById('episode-name').value = '';
-            document.getElementById('episode-order').value = '';
-            
-            // Restore add button
-            addEpisodeButton.textContent = 'إضافة الحلقة';
-            addEpisodeButton.onclick = addEpisode;
-            
-            showNotification('تم تحديث الحلقة بنجاح');
-        }
-
-        function removeEpisode() {
-            if (selectedEpisodeIndex === -1) {
-                showNotification('الرجاء تحديد حلقة للحذف');
-                return;
-            }
-            
+        function removeEpisode(index) {
             if (confirm('هل أنت متأكد من رغبتك في حذف هذه الحلقة؟')) {
-                const isCurrentVideo = selectedEpisodeIndex === currentVideo;
+                const isCurrentVideo = index === currentVideo;
                 
-                // Remove the episode
-                playlist.splice(selectedEpisodeIndex, 1);
-                
-                // Save updates
+                playlist.splice(index, 1);
                 savePlaylistToStorage();
                 
-                // If removed the current playing video
                 if (isCurrentVideo) {
                     if (playlist.length > 0) {
-                        // Play the next video or the first if it was the last
-                        currentVideo = Math.min(selectedEpisodeIndex, playlist.length - 1);
+                        currentVideo = Math.min(index, playlist.length - 1);
                         loadVideo(currentVideo);
                     } else {
-                        // No videos left
                         if (playerReady) {
                             player.stopVideo();
                             isPlaying = false;
@@ -1380,13 +1383,12 @@
                         }
                     }
                 } else {
-                    // If removed video was before current, adjust current index
-                    if (selectedEpisodeIndex < currentVideo) {
+                    if (index < currentVideo) {
                         currentVideo--;
                     }
                 }
                 
-                selectedEpisodeIndex = -1;
+                renderEpisodesList();
                 showNotification('تم حذف الحلقة بنجاح');
             }
         }
@@ -1396,7 +1398,6 @@
                 const dataStr = JSON.stringify(playlist);
                 const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
                 
-                // Create export element
                 const exportElem = document.createElement('a');
                 exportElem.setAttribute('href', dataUri);
                 exportElem.setAttribute('download', 'playlist_export.json');
@@ -1404,15 +1405,12 @@
                 exportElem.click();
                 document.body.removeChild(exportElem);
                 
-                // Also copy to clipboard
                 navigator.clipboard.writeText(dataStr).then(() => {
                     showNotification('تم تصدير قائمة التشغيل ونسخها إلى الحافظة');
-                }).catch(err => {
-                    console.error('Could not copy text: ', err);
+                }).catch(() => {
                     showNotification('تم تصدير قائمة التشغيل');
                 });
                 
-                // Also show in textarea
                 document.getElementById('import-playlist').value = dataStr;
             } catch (e) {
                 console.error('Export error:', e);
@@ -1435,7 +1433,6 @@
                     return;
                 }
                 
-                // Validate each entry
                 const validPlaylist = importedPlaylist.filter(item => {
                     return item.videoId && typeof item.videoId === 'string';
                 });
@@ -1445,24 +1442,19 @@
                     return;
                 }
                 
-                // Replace current playlist
                 playlist = validPlaylist;
-                
-                // Sort playlist by order
                 playlist.sort((a, b) => a.order - b.order);
                 
-                // Reset current video index
                 currentVideo = 0;
                 
-                // If player not initialized yet
                 if (!playerReady && playlist.length > 0) {
                     initializePlayer(playlist[0].videoId);
                 } else if (playerReady && playlist.length > 0) {
                     loadVideo(0);
                 }
                 
-                // Save to storage
                 savePlaylistToStorage();
+                renderEpisodesList();
                 
                 document.getElementById('import-playlist').value = '';
                 showNotification(`تم استيراد ${validPlaylist.length} فيديو بنجاح`);
@@ -1472,63 +1464,27 @@
             }
         }
 
-        // Admin functions
-        function toggleAdminPanel() {
-            adminPanel.style.display = adminPanel.style.display === 'none' ? 'block' : 'none';
+        function renderEpisodesList() {
+            const container = document.getElementById('episodes-container');
             
-            // Reset form if closing
-            if (adminPanel.style.display === 'none') {
-                document.getElementById('video-url').value = '';
-                document.getElementById('episode-name').value = '';
-                document.getElementById('episode-order').value = '';
-                addEpisodeButton.textContent = 'إضافة الحلقة';
-                addEpisodeButton.onclick = addEpisode;
-            }
-        }
-
-        function checkAdminPassword() {
-            const password = document.getElementById('admin-password').value;
-            
-            if (password === adminPassword) {
-                isAdminLoggedIn = true;
-                passwordContainer.style.display = 'none';
-                addEpisodeForm.style.display = 'block';
-                showNotification('تم تسجيل الدخول بنجاح');
-                
-                // Clear password field
-                document.getElementById('admin-password').value = '';
-            } else {
-                showNotification('كلمة المرور غير صحيحة');
-                
-                // Add shake effect to password field
-                const passwordField = document.getElementById('admin-password');
-                passwordField.classList.add('shake');
-                setTimeout(() => {
-                    passwordField.classList.remove('shake');
-                }, 500);
-            }
-        }
-
-        function addEpisode() {
-            const videoUrl = document.getElementById('video-url').value;
-            const episodeName = document.getElementById('episode-name').value;
-            const episodeOrder = document.getElementById('episode-order').value;
-            
-            if (!videoUrl) {
-                showNotification('الرجاء إدخال رابط الفيديو');
+            if (playlist.length === 0) {
+                container.innerHTML = '<div class="no-episodes">لا توجد حلقات في القائمة</div>';
                 return;
             }
             
-            const success = addVideoToPlaylist(videoUrl, episodeName, episodeOrder);
-            
-            if (success) {
-                // Clear form
-                document.getElementById('video-url').value = '';
-                document.getElementById('episode-name').value = '';
-                document.getElementById('episode-order').value = '';
-                
-                showNotification('تمت إضافة الحلقة بنجاح');
-            }
+            container.innerHTML = playlist.map((episode, index) => `
+                <div class="episode-item ${index === currentVideo ? 'active' : ''}" onclick="loadVideo(${index})">
+                    <div class="episode-info">
+                        <div class="episode-name">${episode.name}</div>
+                        <div class="episode-order">الحلقة رقم ${episode.order}</div>
+                    </div>
+                    <div class="episode-actions">
+                        <button class="episode-btn" onclick="event.stopPropagation(); removeEpisode(${index})" title="حذف">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
         }
 
         // Storage functions
@@ -1542,11 +1498,7 @@
             if (storedPlaylist) {
                 try {
                     playlist = JSON.parse(storedPlaylist);
-                    
-                    // Validate playlist data
                     playlist = playlist.filter(item => item && item.videoId);
-                    
-                    // Sort playlist by order
                     playlist.sort((a, b) => a.order - b.order);
                 } catch (e) {
                     console.error('Error loading playlist:', e);
@@ -1555,26 +1507,201 @@
             }
         }
 
+        // Comments functions
+        function validateComment(text) {
+            // Remove extra spaces
+            text = text.trim();
+            
+            // Check minimum length
+            if (text.length < 20) {
+                return { valid: false, message: 'التعليق قصير جدًا. يجب أن يحتوي على 20 حرفًا على الأقل' };
+            }
+            
+            // Remove allowed punctuation for analysis
+            const cleanText = text.replace(/[.,!؟:؛\s]/g, '');
+            
+            // Check if mostly symbols or numbers
+            const symbolsNumbers = cleanText.replace(/[a-zA-Zא-ת\u0600-\u06FF]/g, '');
+            if (symbolsNumbers.length / cleanText.length > 0.3) {
+                return { valid: false, message: 'التعليق يحتوي على رموز أو أرقام كثيرة. الرجاء كتابة تعليق جدي' };
+            }
+            
+            // Check for Arabic letters percentage
+            const arabicLetters = text.match(/[\u0600-\u06FF]/g) || [];
+            const totalLetters = text.match(/[a-zA-Zא-ת\u0600-\u06FF]/g) || [];
+            if (totalLetters.length > 0 && arabicLetters.length / totalLetters.length < 0.5) {
+                return { valid: false, message: 'الرجاء كتابة التعليق بالعربية بشكل أساسي' };
+            }
+            
+            // Check for excessive character repetition
+            const repetitionPattern = /(.)\1{4,}/g;
+            if (repetitionPattern.test(text)) {
+                return { valid: false, message: 'التعليق يحتوي على تكرار مبالغ فيه للأحرف' };
+            }
+            
+            // Check for excessive word repetition
+            const words = text.split(/\s+/);
+            const wordCount = {};
+            for (let word of words) {
+                if (word.length > 2) {
+                    wordCount[word] = (wordCount[word] || 0) + 1;
+                    if (wordCount[word] > 3) {
+                        return { valid: false, message: 'التعليق يحتوي على تكرار مبالغ فيه لنفس الكلمة' };
+                    }
+                }
+            }
+            
+            // Check for weird symbols (allow only normal punctuation)
+            const allowedChars = /^[a-zA-Zא-ת\u0600-\u06FF0-9\s.,!؟:؛\-()]+$/;
+            if (!allowedChars.test(text)) {
+                return { valid: false, message: 'التعليق يحتوي على رموز غير مسموحة' };
+            }
+            
+            return { valid: true, message: '' };
+        }
+
+        function submitComment() {
+            const nameInput = document.getElementById('comment-name');
+            const textInput = document.getElementById('comment-text');
+            
+            const name = nameInput.value.trim() || 'مستخدم';
+            const text = textInput.value.trim();
+            
+            if (!text) {
+                showNotification('الرجاء إدخال التعليق');
+                return;
+            }
+            
+            const validation = validateComment(text);
+            if (!validation.valid) {
+                showNotification(validation.message);
+                return;
+            }
+            
+            const comment = {
+                id: Date.now(),
+                name: name,
+                text: text,
+                date: new Date().toISOString(),
+                pinned: false
+            };
+            
+            comments.unshift(comment);
+            saveCommentsToStorage();
+            renderCommentsList();
+            
+            nameInput.value = '';
+            textInput.value = '';
+            
+            showNotification('تم إضافة التعليق بنجاح');
+        }
+
+        function togglePinComment(id) {
+            const comment = comments.find(c => c.id === id);
+            if (comment) {
+                comment.pinned = !comment.pinned;
+                saveCommentsToStorage();
+                renderCommentsList();
+                showNotification(comment.pinned ? 'تم تثبيت التعليق' : 'تم إلغاء تثبيت التعليق');
+            }
+        }
+
+        function deleteComment(id) {
+            if (confirm('هل تريد حذف هذا التعليق؟')) {
+                comments = comments.filter(c => c.id !== id);
+                saveCommentsToStorage();
+                renderCommentsList();
+                showNotification('تم حذف التعليق');
+            }
+        }
+
+        function renderCommentsList() {
+            const container = document.getElementById('comments-list');
+            
+            if (comments.length === 0) {
+                container.innerHTML = '<div class="no-comments">لا توجد تعليقات بعد. كن أول من يعلق!</div>';
+                return;
+            }
+            
+            // Sort: pinned first, then by date
+            const sortedComments = [...comments].sort((a, b) => {
+                if (a.pinned && !b.pinned) return -1;
+                if (!a.pinned && b.pinned) return 1;
+                return new Date(b.date) - new Date(a.date);
+            });
+            
+            container.innerHTML = sortedComments.map(comment => `
+                <div class="comment-item ${comment.pinned ? 'pinned' : ''}">
+                    <div class="comment-header">
+                        <span class="comment-author">${comment.name}</span>
+                        <span class="comment-date">${formatCommentDate(comment.date)}</span>
+                    </div>
+                    <div class="comment-text">${comment.text}</div>
+                    <div class="comment-actions">
+                        <button class="comment-btn ${comment.pinned ? 'pinned-btn' : ''}" onclick="togglePinComment(${comment.id})">
+                            <i class="fas fa-thumbtack"></i> ${comment.pinned ? 'إلغاء التثبيت' : 'تثبيت'}
+                        </button>
+                        <button class="comment-btn" onclick="deleteComment(${comment.id})">
+                            <i class="fas fa-trash"></i> حذف
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function formatCommentDate(dateString) {
+            const date = new Date(dateString);
+            const now = new Date();
+            const diffMs = now - date;
+            const diffMins = Math.floor(diffMs / 60000);
+            const diffHours = Math.floor(diffMs / 3600000);
+            const diffDays = Math.floor(diffMs / 86400000);
+            
+            if (diffMins < 1) return 'الآن';
+            if (diffMins < 60) return `منذ ${diffMins} دقيقة`;
+            if (diffHours < 24) return `منذ ${diffHours} ساعة`;
+            if (diffDays < 7) return `منذ ${diffDays} يوم`;
+            
+            return date.toLocaleDateString('ar-EG', { 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            });
+        }
+
+        function saveCommentsToStorage() {
+            localStorage.setItem('siteComments', JSON.stringify(comments));
+        }
+
+        function loadCommentsFromStorage() {
+            const storedComments = localStorage.getItem('siteComments');
+            
+            if (storedComments) {
+                try {
+                    comments = JSON.parse(storedComments);
+                } catch (e) {
+                    console.error('Error loading comments:', e);
+                    comments = [];
+                }
+            }
+        }
+
         // Utility functions
         function showNotification(message) {
-            // Remove any existing notification
             const existingNotification = document.querySelector('.notification');
             if (existingNotification) {
                 existingNotification.remove();
             }
             
-            // Create and append new notification
             const notification = document.createElement('div');
             notification.className = 'notification';
             notification.textContent = message;
             document.body.appendChild(notification);
             
-            // Set opacity to 1 to trigger animation
             setTimeout(() => {
                 notification.style.opacity = 1;
             }, 10);
             
-            // Remove notification after 3 seconds
             setTimeout(() => {
                 notification.remove();
             }, 3000);
@@ -1582,44 +1709,50 @@
 
         // Event listeners
         document.addEventListener('DOMContentLoaded', () => {
-            // Player control event listeners
+            // Player controls
             playPauseButton.addEventListener('click', togglePlayPause);
             prevVideoButton.addEventListener('click', playPrevVideo);
             nextVideoButton.addEventListener('click', playNextVideo);
             rewindButton.addEventListener('click', () => {
-                if (playerReady) player.seekTo(player.getCurrentTime() - 10, true);
+                if (playerReady) player.seekTo(Math.max(0, player.getCurrentTime() - 10), true);
             });
             forwardButton.addEventListener('click', () => {
-                if (playerReady) player.seekTo(player.getCurrentTime() + 10, true);
+                if (playerReady) {
+                    const duration = player.getDuration();
+                    if (duration && !isNaN(duration)) {
+                        player.seekTo(Math.min(duration, player.getCurrentTime() + 10), true);
+                    }
+                }
             });
             muteButton.addEventListener('click', toggleMute);
             fullscreenButton.addEventListener('click', toggleFullscreen);
             playbackSpeedButton.addEventListener('click', changePlaybackRate);
             
-            // Progress bar event listeners
+            // Progress bar
             progressContainer.addEventListener('mousedown', (e) => {
                 isUserSeeking = true;
                 const rect = progressContainer.getBoundingClientRect();
-                const percent = ((e.clientX - rect.left) / rect.width) * 100;
+                const percent = Math.max(0, Math.min(100, ((e.clientX - rect.left) / rect.width) * 100));
                 progressBar.style.width = `${percent}%`;
                 seekVideo(percent);
             });
             
             progressContainer.addEventListener('mousemove', (e) => {
                 const rect = progressContainer.getBoundingClientRect();
-                const percent = ((e.clientX - rect.left) / rect.width) * 100;
+                const percent = Math.max(0, Math.min(100, ((e.clientX - rect.left) / rect.width) * 100));
                 
                 if (isUserSeeking) {
                     progressBar.style.width = `${percent}%`;
                 }
                 
-                // Show hover time
                 if (playerReady) {
                     const duration = player.getDuration();
-                    const hoverTime = (duration * percent) / 100;
-                    progressHoverTime.textContent = formatTime(hoverTime);
-                    progressHoverTime.style.display = 'block';
-                    progressHoverTime.style.left = `${e.clientX - rect.left}px`;
+                    if (duration && !isNaN(duration) && duration !== Infinity) {
+                        const hoverTime = (duration * percent) / 100;
+                        progressHoverTime.textContent = formatTime(hoverTime);
+                        progressHoverTime.style.display = 'block';
+                        progressHoverTime.style.left = `${e.clientX - rect.left}px`;
+                    }
                 }
             });
             
@@ -1633,12 +1766,12 @@
                 }
             });
             
-            // Touch support for seek
+            // Touch support
             progressContainer.addEventListener('touchstart', (e) => {
                 isUserSeeking = true;
                 const rect = progressContainer.getBoundingClientRect();
                 const touch = e.touches[0];
-                const percent = ((touch.clientX - rect.left) / rect.width) * 100;
+                const percent = Math.max(0, Math.min(100, ((touch.clientX - rect.left) / rect.width) * 100));
                 progressBar.style.width = `${percent}%`;
                 seekVideo(percent);
                 e.preventDefault();
@@ -1648,7 +1781,7 @@
                 if (isUserSeeking) {
                     const rect = progressContainer.getBoundingClientRect();
                     const touch = e.touches[0];
-                    const percent = ((touch.clientX - rect.left) / rect.width) * 100;
+                    const percent = Math.max(0, Math.min(100, ((touch.clientX - rect.left) / rect.width) * 100));
                     progressBar.style.width = `${percent}%`;
                     e.preventDefault();
                 }
@@ -1660,23 +1793,47 @@
                 }
             });
             
-            // Volume slider event listener
+            // Volume slider
             volumeSlider.addEventListener('click', (e) => {
                 const rect = volumeSlider.getBoundingClientRect();
                 const percent = Math.max(0, Math.min(100, ((e.clientX - rect.left) / rect.width) * 100));
                 setVolume(percent);
             });
             
-            // Admin panel event listeners
-            adminAccessButton.addEventListener('click', toggleAdminPanel);
-            closeAdminButton.addEventListener('click', toggleAdminPanel);
-            loginButton.addEventListener('click', checkAdminPassword);
-            addEpisodeButton.addEventListener('click', addEpisode);
-            editEpisodeButton.addEventListener('click', editEpisode);
-            removeEpisodeButton.addEventListener('click', removeEpisode);
-            clearPlaylistButton.addEventListener('click', clearPlaylist);
-            exportPlaylistButton.addEventListener('click', exportPlaylist);
-            importPlaylistButton.addEventListener('click', importPlaylist);
+            // Playlist management
+            document.getElementById('add-episode').addEventListener('click', () => {
+                const videoUrl = document.getElementById('video-url').value;
+                const episodeName = document.getElementById('episode-name').value;
+                const episodeOrder = document.getElementById('episode-order').value;
+                
+                if (!videoUrl) {
+                    showNotification('الرجاء إدخال رابط الفيديو');
+                    return;
+                }
+                
+                const success = addVideoToPlaylist(videoUrl, episodeName, episodeOrder);
+                
+                if (success) {
+                    document.getElementById('video-url').value = '';
+                    document.getElementById('episode-name').value = '';
+                    document.getElementById('episode-order').value = '';
+                    
+                    showNotification('تمت إضافة الحلقة بنجاح');
+                }
+            });
+            
+            document.getElementById('clear-playlist').addEventListener('click', clearPlaylist);
+            document.getElementById('export-playlist').addEventListener('click', exportPlaylist);
+            document.getElementById('import-button').addEventListener('click', importPlaylist);
+            
+            // Toggle playlist form
+            document.getElementById('toggle-playlist-form').addEventListener('click', () => {
+                const formContainer = document.getElementById('playlist-form-container');
+                formContainer.classList.toggle('panel-collapsed');
+                const icon = document.querySelector('#toggle-playlist-form i');
+                icon.classList.toggle('fa-chevron-down');
+                icon.classList.toggle('fa-chevron-up');
+            });
             
             // Theme toggle
             themeToggleButton.addEventListener('click', toggleTheme);
@@ -1684,12 +1841,8 @@
             // TV button
             tvButton.addEventListener('click', castToTV);
             
-            // Enter key in password field
-            document.getElementById('admin-password').addEventListener('keyup', (e) => {
-                if (e.key === 'Enter') {
-                    checkAdminPassword();
-                }
-            });
+            // Comments
+            document.getElementById('submit-comment').addEventListener('click', submitComment);
             
             // Keyboard shortcuts
             document.addEventListener('keydown', (e) => {
@@ -1701,24 +1854,27 @@
                         e.preventDefault();
                         break;
                     case 'ArrowLeft':
-                        if (playerReady) player.seekTo(player.getCurrentTime() - 10, true);
+                        if (playerReady) player.seekTo(Math.max(0, player.getCurrentTime() - 10), true);
                         e.preventDefault();
                         break;
                     case 'ArrowRight':
-                        if (playerReady) player.seekTo(player.getCurrentTime() + 10, true);
+                        if (playerReady) {
+                            const duration = player.getDuration();
+                            if (duration && !isNaN(duration)) {
+                                player.seekTo(Math.min(duration, player.getCurrentTime() + 10), true);
+                            }
+                        }
                         e.preventDefault();
                         break;
                     case 'ArrowUp':
                         if (playerReady) {
-                            const newVolume = Math.min(100, currentVolume + 5);
-                            setVolume(newVolume);
+                            setVolume(Math.min(100, currentVolume + 5));
                         }
                         e.preventDefault();
                         break;
                     case 'ArrowDown':
                         if (playerReady) {
-                            const newVolume = Math.max(0, currentVolume - 5);
-                            setVolume(newVolume);
+                            setVolume(Math.max(0, currentVolume - 5));
                         }
                         e.preventDefault();
                         break;
@@ -1749,47 +1905,74 @@
                         break;
                     case 'Digit1':
                     case 'Numpad1':
-                        if (playerReady) player.seekTo(player.getDuration() * 0.1, true);
+                        if (playerReady) {
+                            const duration = player.getDuration();
+                            if (duration && !isNaN(duration)) player.seekTo(duration * 0.1, true);
+                        }
                         e.preventDefault();
                         break;
                     case 'Digit2':
                     case 'Numpad2':
-                        if (playerReady) player.seekTo(player.getDuration() * 0.2, true);
+                        if (playerReady) {
+                            const duration = player.getDuration();
+                            if (duration && !isNaN(duration)) player.seekTo(duration * 0.2, true);
+                        }
                         e.preventDefault();
                         break;
                     case 'Digit3':
                     case 'Numpad3':
-                        if (playerReady) player.seekTo(player.getDuration() * 0.3, true);
+                        if (playerReady) {
+                            const duration = player.getDuration();
+                            if (duration && !isNaN(duration)) player.seekTo(duration * 0.3, true);
+                        }
                         e.preventDefault();
                         break;
                     case 'Digit4':
                     case 'Numpad4':
-                        if (playerReady) player.seekTo(player.getDuration() * 0.4, true);
+                        if (playerReady) {
+                            const duration = player.getDuration();
+                            if (duration && !isNaN(duration)) player.seekTo(duration * 0.4, true);
+                        }
                         e.preventDefault();
                         break;
                     case 'Digit5':
                     case 'Numpad5':
-                        if (playerReady) player.seekTo(player.getDuration() * 0.5, true);
+                        if (playerReady) {
+                            const duration = player.getDuration();
+                            if (duration && !isNaN(duration)) player.seekTo(duration * 0.5, true);
+                        }
                         e.preventDefault();
                         break;
                     case 'Digit6':
                     case 'Numpad6':
-                        if (playerReady) player.seekTo(player.getDuration() * 0.6, true);
+                        if (playerReady) {
+                            const duration = player.getDuration();
+                            if (duration && !isNaN(duration)) player.seekTo(duration * 0.6, true);
+                        }
                         e.preventDefault();
                         break;
                     case 'Digit7':
                     case 'Numpad7':
-                        if (playerReady) player.seekTo(player.getDuration() * 0.7, true);
+                        if (playerReady) {
+                            const duration = player.getDuration();
+                            if (duration && !isNaN(duration)) player.seekTo(duration * 0.7, true);
+                        }
                         e.preventDefault();
                         break;
                     case 'Digit8':
                     case 'Numpad8':
-                        if (playerReady) player.seekTo(player.getDuration() * 0.8, true);
+                        if (playerReady) {
+                            const duration = player.getDuration();
+                            if (duration && !isNaN(duration)) player.seekTo(duration * 0.8, true);
+                        }
                         e.preventDefault();
                         break;
                     case 'Digit9':
                     case 'Numpad9':
-                        if (playerReady) player.seekTo(player.getDuration() * 0.9, true);
+                        if (playerReady) {
+                            const duration = player.getDuration();
+                            if (duration && !isNaN(duration)) player.seekTo(duration * 0.9, true);
+                        }
                         e.preventDefault();
                         break;
                 }
@@ -1801,7 +1984,7 @@
             // Single click for play/pause
             playerOverlay.addEventListener('click', togglePlayPause);
             
-            // Swipe left/right for next/prev video
+            // Swipe gestures
             let touchStartX = 0;
             let touchEndX = 0;
             
@@ -1817,20 +2000,11 @@
             function handleSwipe() {
                 const swipeThreshold = 100;
                 if (touchEndX - touchStartX > swipeThreshold) {
-                    // Swipe right - play previous
                     playPrevVideo();
                 } else if (touchStartX - touchEndX > swipeThreshold) {
-                    // Swipe left - play next
                     playNextVideo();
                 }
             }
-            
-            // Enter key for login
-            document.getElementById('admin-password').addEventListener('keyup', (e) => {
-                if (e.key === 'Enter') {
-                    checkAdminPassword();
-                }
-            });
             
             // Show keyboard shortcuts info at first visit
             if (!localStorage.getItem('keyboardShortcutsShown')) {
