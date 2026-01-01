@@ -880,9 +880,9 @@
      crossorigin="anonymous"></script>
     
     <script src="https://www.youtube.com/iframe_api"></script>
-    <script>
+   <script>
         // API URL - تأكد من تعديل هذا الرابط
-        const API = "https://shrill-wood-c3f7.jaafardarim.workers.dev/comments";
+        const API = "https://shrill-wood-c3f7.jaafardarim.workers.dev";
 
         // Global variables
         let player;
@@ -1527,18 +1527,21 @@
             }
         }
 
-        // Comments functions with API
+        // Comments functions with API - التعديل هنا ✅
         async function loadCommentsFromAPI() {
             try {
-                const res = await fetch(API);
+                const res = await fetch(API + "/comments");
                 const data = await res.json();
                 
-                if (data.comments && Array.isArray(data.comments)) {
-                    comments = data.comments;
-                    renderCommentsList();
+                if (Array.isArray(data)) {
+                    comments = data;
+                } else {
+                    comments = [];
                 }
-            } catch (error) {
-                console.error('Error loading comments:', error);
+                
+                renderCommentsList();
+            } catch (e) {
+                console.error("Load comments error:", e);
                 comments = [];
                 renderCommentsList();
             }
@@ -1576,7 +1579,6 @@
                     msgDiv.style.color = '#4CAF50';
                     document.getElementById('commentForm').reset();
                     
-                    // إعادة تحميل التعليقات
                     await loadCommentsFromAPI();
                 } else {
                     msgDiv.textContent = "❌ فشل الإرسال. حاول مرة أخرى";
@@ -1608,7 +1610,7 @@
                 <div class="comment-item">
                     <div class="comment-header">
                         <span class="comment-author">${comment.name}</span>
-                        <span class="comment-date">${formatCommentDate(comment.timestamp)}</span>
+                        <span class="comment-date">${formatCommentDate(comment.time)}</span>
                     </div>
                     <div class="comment-text">${comment.text}</div>
                 </div>
