@@ -1503,39 +1503,65 @@ function renderEpisodesList() {
     container.innerHTML = episodesHTML;
 }
 
+// ✅ دوال التعليقات المُصححة
 async function loadCommentsFromAPI() {
     try {
-        const response = await fetch(`${API}/comments`);
+        console.log('🔄 Loading comments from API...');
+        
+        const response = await fetch(`${API}/comments`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Cache-Control': 'no-cache, no-store, must-revalidate',
+                'Pragma': 'no-cache',
+                'Expires': '0'
+            }
+        });
+        
         if (response.ok) {
             comments = await response.json();
+            console.log('✅ Comments loaded:', comments.length);
             renderCommentsList();
         } else {
-            console.error('Failed to load comments:', response.status);
+            console.error('❌ Failed to load comments:', response.status);
+            comments = [];
+            renderCommentsList();
         }
     } catch (error) {
-        console.error('Error loading comments:', error);
+        console.error('❌ Error loading comments:', error);
+        comments = [];
+        renderCommentsList();
     }
 }
 
 async function submitComment(name, text) {
     try {
+        console.log('📤 Submitting comment:', { name, text });
+        
         const response = await fetch(`${API}/comments`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ name, text })
+            body: JSON.stringify({ name: name.trim(), text: text.trim() })
         });
 
         const result = await response.json();
+        console.log('📥 Submit result:', result);
         
         if (response.ok && result.success) {
-            return { success: true, message: 'تم إرسال تعليقك بنجاح وهو في انتظار الموافقة' };
+            // إعادة تحميل التعليقات بعد 3 ثواني
+            setTimeout(() => {
+                console.log('🔄 Auto-reloading comments after submission...');
+                loadCommentsFromAPI();
+            }, 3000);
+            
+            return { success: true, message: result.message || 'تم إرسال تعليقك بنجاح وهو في انتظار الموافقة' };
         } else {
             return { success: false, message: result.error || 'حدث خطأ أثناء الإرسال' };
         }
     } catch (error) {
-        console.error('Error submitting comment:', error);
+        console.error('❌ Error submitting comment:', error);
         return { success: false, message: 'خطأ في الاتصال بالخادم' };
     }
 }
@@ -1543,36 +1569,53 @@ async function submitComment(name, text) {
 function renderCommentsList() {
     const container = document.getElementById('comments-list');
     
+    if (!container) {
+        console.error('❌ Comments container not found');
+        return;
+    }
+    
+    console.log('🎨 Rendering comments:', comments.length);
+    
     if (comments.length === 0) {
-        container.innerHTML = '<div class="no-comments">لا توجد تعليقات بعد</div>';
+        container.innerHTML = '<div class="no-comments">لا توجد تعليقات بعد. كن أول من يعلق!</div>';
         return;
     }
     
     const commentsHTML = comments.map(comment => `
         <div class="comment-item">
             <div class="comment-header">
-                <div class="comment-author">${escapeHtml(comment.name)}</div>
-                <div class="comment-date">${formatDate(comment.time)}</div>
+                <div class="comment-author">
+                    <i class="fas fa-user-circle"></i> ${escapeHtml(comment.name)}
+                </div>
+                <div class="comment-date">
+                    <i class="fas fa-clock"></i> ${formatDate(comment.time)}
+                </div>
             </div>
             <div class="comment-text">${escapeHtml(comment.text)}</div>
         </div>
     `).join('');
     
     container.innerHTML = commentsHTML;
+    console.log('✅ Comments rendered successfully');
 }
 
 function formatDate(timestamp) {
-    const date = new Date(timestamp);
-    return date.toLocaleDateString('ar-SA', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
-    });
+    try {
+        const date = new Date(timestamp);
+        return date.toLocaleDateString('ar-SA', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+    } catch (error) {
+        return 'تاريخ غير صحيح';
+    }
 }
 
 function escapeHtml(text) {
+    if (!text) return '';
     const div = document.createElement('div');
     div.textContent = text;
     return div.innerHTML;
@@ -1592,13 +1635,15 @@ function showNotification(message, type = 'info') {
 
 function showMessage(text, type = 'info') {
     const msgDiv = document.getElementById('msg');
-    msgDiv.textContent = text;
-    msgDiv.className = type === 'success' ? 'text-green-500' : 'text-red-500';
-    msgDiv.style.display = 'block';
-    
-    setTimeout(() => {
-        msgDiv.style.display = 'none';
-    }, 5000);
+    if (msgDiv) {
+        msgDiv.textContent = text;
+        msgDiv.className = type === 'success' ? 'text-green-500' : 'text-red-500';
+        msgDiv.style.display = 'block';
+        
+        setTimeout(() => {
+            msgDiv.style.display = 'none';
+        }, 5000);
+    }
 }
 
 // Event Listeners
@@ -1728,42 +1773,63 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Comments form
+    // Comments form - مُصحح بالكامل
     const commentForm = document.getElementById('commentForm');
     if (commentForm) {
         commentForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             
-            const name = document.getElementById('name').value.trim();
-            const text = document.getElementById('text').value.trim();
+            const nameInput = document.getElementById('name');
+            const textInput = document.getElementById('text');
             const submitBtn = document.getElementById('submit-comment-btn');
+            
+            if (!nameInput || !textInput || !submitBtn) {
+                console.error('❌ Comment form elements not found');
+                return;
+            }
+            
+            const name = nameInput.value.trim();
+            const text = textInput.value.trim();
             
             if (!name || !text) {
                 showMessage('الرجاء ملء جميع الحقول', 'error');
                 return;
             }
             
+            // تعطيل الزر أثناء الإرسال
             submitBtn.disabled = true;
             submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جارٍ الإرسال...';
             
-            const result = await submitComment(name, text);
-            
-            if (result.success) {
-                showMessage(result.message, 'success');
-                commentForm.reset();
+            try {
+                const result = await submitComment(name, text);
                 
-                // Reload comments after delay
-                setTimeout(() => {
-                    loadCommentsFromAPI();
-                }, 1000);
-            } else {
-                showMessage(result.message, 'error');
+                if (result.success) {
+                    showMessage(result.message, 'success');
+                    commentForm.reset();
+                    
+                    // إعادة تحميل التعليقات بعد 2 ثانية
+                    setTimeout(() => {
+                        loadCommentsFromAPI();
+                    }, 2000);
+                } else {
+                    showMessage(result.message, 'error');
+                }
+            } catch (error) {
+                console.error('❌ Comment submission error:', error);
+                showMessage('حدث خطأ غير متوقع', 'error');
             }
             
+            // إعادة تفعيل الزر
             submitBtn.disabled = false;
             submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> إرسال التعليق';
         });
     }
+    
+    // تحميل التعليقات تلقائياً كل 30 ثانية
+    setInterval(() => {
+        console.log('🔄 Auto-refreshing comments...');
+        loadCommentsFromAPI();
+    }, 30000);
 });
 
 // Keyboard shortcuts
