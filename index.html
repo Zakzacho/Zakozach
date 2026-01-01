@@ -880,914 +880,1012 @@
      crossorigin="anonymous"></script>
     
     <script src="https://www.youtube.com/iframe_api"></script>
-  
-    <script>
-        // API URL - تم التعديل ليكون الرابط الأساسي فقط، ليتم إضافة /comments لاحقاً في الدوال
-        const API = "https://shrill-wood-c3f7.jaafardarim.workers.dev";
+  <script>
+    // API URL - تأكد من تعديل هذا الرابط
+const API = "https://shrill-wood-c3f7.jaafardarim.workers.dev";
 
-        // Global variables
-        let player;
-        let currentVideo = 0;
-        let isPlaying = false;
-        let playerReady = false;
-        let playlist = [];
-        let currentVolume = 100;
-        let isMuted = false;
-        let isFullscreen = false;
-        let isUserSeeking = false;
-        let currentPlaybackRate = 1.0;
-        let playbackRates = [0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0];
-        let currentPlaybackRateIndex = 3;
-        let lastActiveTime = Date.now();
-        let isLightTheme = false;
-        let hideControlsTimeout;
-        let fullscreenApi;
-        let comments = [];
+// باقي المتغيرات العامة كما هي...
+let player;
+let currentVideo = 0;
+let isPlaying = false;
+let playerReady = false;
+let playlist = [];
+let currentVolume = 100;
+let isMuted = false;
+let isFullscreen = false;
+let isUserSeeking = false;
+let currentPlaybackRate = 1.0;
+let playbackRates = [0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0];
+let currentPlaybackRateIndex = 3;
+let lastActiveTime = Date.now();
+let isLightTheme = false;
+let hideControlsTimeout;
+let fullscreenApi;
+let comments = [];
 
-        // DOM elements
-        const playerContainer = document.getElementById('player-container');
-        const playerOverlay = document.getElementById('player-overlay');
-        const customControls = document.getElementById('custom-controls');
-        const playPauseButton = document.getElementById('play-pause');
-        const prevVideoButton = document.getElementById('prev-video');
-        const nextVideoButton = document.getElementById('next-video');
-        const rewindButton = document.getElementById('rewind');
-        const forwardButton = document.getElementById('forward');
-        const muteButton = document.getElementById('mute');
-        const volumeSlider = document.getElementById('volume-slider');
-        const volumeLevel = document.getElementById('volume-level');
-        const timeDisplay = document.getElementById('time-display');
-        const fullscreenButton = document.getElementById('fullscreen');
-        const progressContainer = document.getElementById('progress-container');
-        const progressBar = document.getElementById('progress-bar');
-        const progressHoverTime = document.getElementById('progress-hover-time');
-        const loader = document.getElementById('loader');
-        const playbackSpeedButton = document.getElementById('playback-speed');
-        const themeToggleButton = document.getElementById('theme-toggle');
-        const tvButton = document.getElementById('tv-button');
+// DOM elements
+const playerContainer = document.getElementById('player-container');
+const playerOverlay = document.getElementById('player-overlay');
+const customControls = document.getElementById('custom-controls');
+const playPauseButton = document.getElementById('play-pause');
+const prevVideoButton = document.getElementById('prev-video');
+const nextVideoButton = document.getElementById('next-video');
+const rewindButton = document.getElementById('rewind');
+const forwardButton = document.getElementById('forward');
+const muteButton = document.getElementById('mute');
+const volumeSlider = document.getElementById('volume-slider');
+const volumeLevel = document.getElementById('volume-level');
+const timeDisplay = document.getElementById('time-display');
+const fullscreenButton = document.getElementById('fullscreen');
+const progressContainer = document.getElementById('progress-container');
+const progressBar = document.getElementById('progress-bar');
+const progressHoverTime = document.getElementById('progress-hover-time');
+const loader = document.getElementById('loader');
+const playbackSpeedButton = document.getElementById('playback-speed');
+const themeToggleButton = document.getElementById('theme-toggle');
+const tvButton = document.getElementById('tv-button');
 
-        // Check for fullscreen API support
-        function setupFullscreenAPI() {
-            if (document.documentElement.requestFullscreen) {
-                fullscreenApi = {
-                    requestFullscreen: 'requestFullscreen',
-                    exitFullscreen: 'exitFullscreen',
-                    fullscreenElement: 'fullscreenElement',
-                    fullscreenEnabled: 'fullscreenEnabled',
-                    fullscreenchange: 'fullscreenchange'
-                };
-            } else if (document.documentElement.webkitRequestFullscreen) {
-                fullscreenApi = {
-                    requestFullscreen: 'webkitRequestFullscreen',
-                    exitFullscreen: 'webkitExitFullscreen',
-                    fullscreenElement: 'webkitFullscreenElement',
-                    fullscreenEnabled: 'webkitFullscreenEnabled',
-                    fullscreenchange: 'webkitfullscreenchange'
-                };
-            } else if (document.documentElement.mozRequestFullScreen) {
-                fullscreenApi = {
-                    requestFullscreen: 'mozRequestFullScreen',
-                    exitFullscreen: 'mozCancelFullScreen',
-                    fullscreenElement: 'mozFullScreenElement',
-                    fullscreenEnabled: 'mozFullScreenEnabled',
-                    fullscreenchange: 'mozfullscreenchange'
-                };
-            } else if (document.documentElement.msRequestFullscreen) {
-                fullscreenApi = {
-                    requestFullscreen: 'msRequestFullscreen',
-                    exitFullscreen: 'msExitFullscreen',
-                    fullscreenElement: 'msFullscreenElement',
-                    fullscreenEnabled: 'msFullscreenEnabled',
-                    fullscreenchange: 'MSFullscreenChange'
-                };
-            } else {
-                fullscreenApi = null;
-            }
+// Check for fullscreen API support
+function setupFullscreenAPI() {
+    if (document.documentElement.requestFullscreen) {
+        fullscreenApi = {
+            requestFullscreen: 'requestFullscreen',
+            exitFullscreen: 'exitFullscreen',
+            fullscreenElement: 'fullscreenElement',
+            fullscreenEnabled: 'fullscreenEnabled',
+            fullscreenchange: 'fullscreenchange'
+        };
+    } else if (document.documentElement.webkitRequestFullscreen) {
+        fullscreenApi = {
+            requestFullscreen: 'webkitRequestFullscreen',
+            exitFullscreen: 'webkitExitFullscreen',
+            fullscreenElement: 'webkitFullscreenElement',
+            fullscreenEnabled: 'webkitFullscreenEnabled',
+            fullscreenchange: 'webkitfullscreenchange'
+        };
+    } else if (document.documentElement.mozRequestFullScreen) {
+        fullscreenApi = {
+            requestFullscreen: 'mozRequestFullScreen',
+            exitFullscreen: 'mozCancelFullScreen',
+            fullscreenElement: 'mozFullScreenElement',
+            fullscreenEnabled: 'mozFullScreenEnabled',
+            fullscreenchange: 'mozfullscreenchange'
+        };
+    } else if (document.documentElement.msRequestFullscreen) {
+        fullscreenApi = {
+            requestFullscreen: 'msRequestFullscreen',
+            exitFullscreen: 'msExitFullscreen',
+            fullscreenElement: 'msFullscreenElement',
+            fullscreenEnabled: 'msFullscreenEnabled',
+            fullscreenchange: 'MSFullscreenChange'
+        };
+    } else {
+        fullscreenApi = null;
+    }
 
-            if (fullscreenApi) {
-                document.addEventListener(fullscreenApi.fullscreenchange, onFullscreenChange);
-            }
+    if (fullscreenApi) {
+        document.addEventListener(fullscreenApi.fullscreenchange, onFullscreenChange);
+    }
+}
+
+function onFullscreenChange() {
+    isFullscreen = !!document[fullscreenApi.fullscreenElement];
+    updateFullscreenButton();
+    
+    if (isFullscreen) {
+        playerContainer.classList.add('fullscreen-mode');
+        if (window.screen && screen.orientation && screen.orientation.lock) {
+            screen.orientation.lock('landscape').catch(e => console.error("Couldn't lock orientation", e));
         }
+        scheduleHideControls();
+    } else {
+        playerContainer.classList.remove('fullscreen-mode');
+        playerContainer.classList.remove('force-fullscreen');
+        document.body.classList.remove('hide-ui');
+        clearTimeout(hideControlsTimeout);
+        if (window.screen && screen.orientation && screen.orientation.unlock) {
+            screen.orientation.unlock();
+        }
+    }
+}
 
-        function onFullscreenChange() {
-            isFullscreen = !!document[fullscreenApi.fullscreenElement];
-            updateFullscreenButton();
+function updateFullscreenButton() {
+    if (isFullscreen) {
+        fullscreenButton.innerHTML = '<i class="fas fa-compress"></i><span class="tooltiptext">إلغاء ملء الشاشة (F)</span>';
+    } else {
+        fullscreenButton.innerHTML = '<i class="fas fa-expand"></i><span class="tooltiptext">ملء الشاشة (F)</span>';
+    }
+}
+
+function scheduleHideControls() {
+    clearTimeout(hideControlsTimeout);
+    if (isFullscreen && isPlaying) {
+        hideControlsTimeout = setTimeout(() => {
+            document.body.classList.add('hide-ui');
+        }, 3000);
+    }
+}
+
+// Initialize YouTube API
+function onYouTubeIframeAPIReady() {
+    loadPlaylistFromStorage();
+    loadCommentsFromAPI();
+    setupFullscreenAPI();
+    
+    if (playlist.length > 0) {
+        initializePlayer(playlist[0].videoId);
+    } else {
+        loader.style.display = 'none';
+        showNotification('لا توجد فيديوهات في قائمة التشغيل. الرجاء إضافة بعض الفيديوهات.');
+    }
+    
+    setupAutoHideControls();
+    loadThemePreference();
+    renderEpisodesList();
+}
+
+function setupAutoHideControls() {
+    document.addEventListener('mousemove', () => {
+        lastActiveTime = Date.now();
+        if (customControls.style.opacity === '0') {
+            customControls.style.opacity = '1';
+        }
+        if (isFullscreen) {
+            document.body.classList.remove('hide-ui');
+            scheduleHideControls();
+        }
+    });
+    
+    setInterval(() => {
+        if (Date.now() - lastActiveTime > 3000 && !playerContainer.matches(':hover') && isPlaying) {
+            customControls.style.opacity = '0';
+        }
+    }, 1000);
+}
+
+function initializePlayer(videoId) {
+    player = new YT.Player('youtube-player', {
+        videoId: videoId,
+        playerVars: {
+            'autoplay': 0,
+            'controls': 0,
+            'disablekb': 1,
+            'enablejsapi': 1,
+            'modestbranding': 1,
+            'rel': 0,
+            'showinfo': 0,
+            'fs': 0,
+            'playsinline': 1
+        },
+        events: {
+            'onReady': onPlayerReady,
+            'onStateChange': onPlayerStateChange,
+            'onError': onPlayerError
+        }
+    });
+}
+
+function onPlayerReady(event) {
+    playerReady = true;
+    loader.style.display = 'none';
+    player.setVolume(currentVolume);
+    
+    function updatePlayerInfo() {
+        if (playerReady && !isUserSeeking) {
+            updateProgressBar();
+            updateTimeDisplay();
+        }
+        requestAnimationFrame(updatePlayerInfo);
+    }
+    requestAnimationFrame(updatePlayerInfo);
+}
+
+function onPlayerStateChange(event) {
+    if (event.data === 0) {
+        playNextVideo();
+    } else if (event.data === 1) {
+        isPlaying = true;
+        playPauseButton.innerHTML = '<i class="fas fa-pause"></i><span class="tooltiptext">إيقاف (Space)</span>';
+        loader.style.display = 'none';
+        if (isFullscreen) {
+            scheduleHideControls();
+        }
+    } else if (event.data === 2) {
+        isPlaying = false;
+        playPauseButton.innerHTML = '<i class="fas fa-play"></i><span class="tooltiptext">تشغيل (Space)</span>';
+        clearTimeout(hideControlsTimeout);
+        document.body.classList.remove('hide-ui');
+    } else if (event.data === 3) {
+        loader.style.display = 'block';
+    }
+}
+
+function onPlayerError(event) {
+    showNotification('حدث خطأ أثناء تشغيل الفيديو. الرجاء التحقق من الرابط.');
+    loader.style.display = 'none';
+    setTimeout(() => {
+        playNextVideo();
+    }, 2000);
+}
+
+// Player control functions
+function togglePlayPause() {
+    if (!playerReady) return;
+    
+    if (isPlaying) {
+        player.pauseVideo();
+    } else {
+        player.playVideo();
+    }
+}
+
+function playNextVideo() {
+    if (playlist.length === 0) return;
+    
+    let nextIndex = (currentVideo + 1) % playlist.length;
+    loadVideo(nextIndex);
+}
+
+function playPrevVideo() {
+    if (playlist.length === 0) return;
+    
+    if (playerReady && player.getCurrentTime() > 3) {
+        player.seekTo(0, true);
+        return;
+    }
+    
+    let prevIndex = (currentVideo - 1 + playlist.length) % playlist.length;
+    loadVideo(prevIndex);
+}
+
+function loadVideo(index) {
+    if (!playerReady || index < 0 || index >= playlist.length) return;
+    
+    loader.style.display = 'block';
+    currentVideo = index;
+    
+    playerContainer.classList.add('fade-out');
+    
+    setTimeout(() => {
+        player.loadVideoById(playlist[index].videoId);
+        player.setPlaybackRate(currentPlaybackRate);
+        
+        renderEpisodesList();
+        
+        setTimeout(() => {
+            playerContainer.classList.remove('fade-out');
+            playerContainer.classList.add('fade-in');
             
-            if (isFullscreen) {
-                playerContainer.classList.add('fullscreen-mode');
-                if (window.screen && screen.orientation && screen.orientation.lock) {
-                    screen.orientation.lock('landscape').catch(e => console.error("Couldn't lock orientation", e));
-                }
-                scheduleHideControls();
-            } else {
-                playerContainer.classList.remove('fullscreen-mode');
-                playerContainer.classList.remove('force-fullscreen');
-                document.body.classList.remove('hide-ui');
-                clearTimeout(hideControlsTimeout);
-                if (window.screen && screen.orientation && screen.orientation.unlock) {
-                    screen.orientation.unlock();
-                }
-            }
-        }
-
-        function updateFullscreenButton() {
-            if (isFullscreen) {
-                fullscreenButton.innerHTML = '<i class="fas fa-compress"></i><span class="tooltiptext">إلغاء ملء الشاشة (F)</span>';
-            } else {
-                fullscreenButton.innerHTML = '<i class="fas fa-expand"></i><span class="tooltiptext">ملء الشاشة (F)</span>';
-            }
-        }
-
-        function scheduleHideControls() {
-            clearTimeout(hideControlsTimeout);
-            if (isFullscreen && isPlaying) {
-                hideControlsTimeout = setTimeout(() => {
-                    document.body.classList.add('hide-ui');
-                }, 3000);
-            }
-        }
-
-        // Initialize YouTube API
-        function onYouTubeIframeAPIReady() {
-            loadPlaylistFromStorage();
-            loadCommentsFromAPI();
-            setupFullscreenAPI();
-            
-            if (playlist.length > 0) {
-                initializePlayer(playlist[0].videoId);
-            } else {
-                loader.style.display = 'none';
-                showNotification('لا توجد فيديوهات في قائمة التشغيل. الرجاء إضافة بعض الفيديوهات.');
-            }
-            
-            setupAutoHideControls();
-            loadThemePreference();
-            renderEpisodesList();
-        }
-
-        function setupAutoHideControls() {
-            document.addEventListener('mousemove', () => {
-                lastActiveTime = Date.now();
-                if (customControls.style.opacity === '0') {
-                    customControls.style.opacity = '1';
-                }
-                if (isFullscreen) {
-                    document.body.classList.remove('hide-ui');
-                    scheduleHideControls();
-                }
-            });
-            
-            setInterval(() => {
-                if (Date.now() - lastActiveTime > 3000 && !playerContainer.matches(':hover') && isPlaying) {
-                    customControls.style.opacity = '0';
-                }
-            }, 1000);
-        }
-
-        function initializePlayer(videoId) {
-            player = new YT.Player('youtube-player', {
-                videoId: videoId,
-                playerVars: {
-                    'autoplay': 0,
-                    'controls': 0,
-                    'disablekb': 1,
-                    'enablejsapi': 1,
-                    'modestbranding': 1,
-                    'rel': 0,
-                    'showinfo': 0,
-                    'fs': 0,
-                    'playsinline': 1
-                },
-                events: {
-                    'onReady': onPlayerReady,
-                    'onStateChange': onPlayerStateChange,
-                    'onError': onPlayerError
-                }
-            });
-        }
-
-        function onPlayerReady(event) {
-            playerReady = true;
-            loader.style.display = 'none';
-            player.setVolume(currentVolume);
-            
-            function updatePlayerInfo() {
-                if (playerReady && !isUserSeeking) {
-                    updateProgressBar();
-                    updateTimeDisplay();
-                }
-                requestAnimationFrame(updatePlayerInfo);
-            }
-            requestAnimationFrame(updatePlayerInfo);
-        }
-
-        function onPlayerStateChange(event) {
-            if (event.data === 0) {
-                playNextVideo();
-            } else if (event.data === 1) {
-                isPlaying = true;
-                playPauseButton.innerHTML = '<i class="fas fa-pause"></i><span class="tooltiptext">إيقاف (Space)</span>';
-                loader.style.display = 'none';
-                if (isFullscreen) {
-                    scheduleHideControls();
-                }
-            } else if (event.data === 2) {
-                isPlaying = false;
-                playPauseButton.innerHTML = '<i class="fas fa-play"></i><span class="tooltiptext">تشغيل (Space)</span>';
-                clearTimeout(hideControlsTimeout);
-                document.body.classList.remove('hide-ui');
-            } else if (event.data === 3) {
-                loader.style.display = 'block';
-            }
-        }
-
-        function onPlayerError(event) {
-            showNotification('حدث خطأ أثناء تشغيل الفيديو. الرجاء التحقق من الرابط.');
-            loader.style.display = 'none';
             setTimeout(() => {
-                playNextVideo();
-            }, 2000);
-        }
-
-        // Player control functions
-        function togglePlayPause() {
-            if (!playerReady) return;
-            
-            if (isPlaying) {
-                player.pauseVideo();
-            } else {
-                player.playVideo();
-            }
-        }
-
-        function playNextVideo() {
-            if (playlist.length === 0) return;
-            
-            let nextIndex = (currentVideo + 1) % playlist.length;
-            loadVideo(nextIndex);
-        }
-
-        function playPrevVideo() {
-            if (playlist.length === 0) return;
-            
-            if (playerReady && player.getCurrentTime() > 3) {
-                player.seekTo(0, true);
-                return;
-            }
-            
-            let prevIndex = (currentVideo - 1 + playlist.length) % playlist.length;
-            loadVideo(prevIndex);
-        }
-
-        function loadVideo(index) {
-            if (!playerReady || index < 0 || index >= playlist.length) return;
-            
-            loader.style.display = 'block';
-            currentVideo = index;
-            
-            playerContainer.classList.add('fade-out');
-            
-            setTimeout(() => {
-                player.loadVideoById(playlist[index].videoId);
-                player.setPlaybackRate(currentPlaybackRate);
-                
-                renderEpisodesList();
-                
-                setTimeout(() => {
-                    playerContainer.classList.remove('fade-out');
-                    playerContainer.classList.add('fade-in');
-                    
-                    setTimeout(() => {
-                        playerContainer.classList.remove('fade-in');
-                    }, 500);
-                }, 500);
+                playerContainer.classList.remove('fade-in');
             }, 500);
-        }
+        }, 500);
+    }, 500);
+}
 
-        function seekVideo(percent) {
-            if (!playerReady) return;
-            
-            const duration = player.getDuration();
-            if (duration && !isNaN(duration) && duration !== Infinity) {
-                const seekToTime = duration * (percent / 100);
-                player.seekTo(seekToTime, true);
-            }
-        }
+function seekVideo(percent) {
+    if (!playerReady) return;
+    
+    const duration = player.getDuration();
+    if (duration && !isNaN(duration) && duration !== Infinity) {
+        const seekToTime = duration * (percent / 100);
+        player.seekTo(seekToTime, true);
+    }
+}
 
-        function updateProgressBar() {
-            if (!playerReady) return;
-            
-            const currentTime = player.getCurrentTime();
-            const duration = player.getDuration();
-            if (duration && !isNaN(duration) && duration !== Infinity && currentTime !== undefined) {
-                const percent = (currentTime / duration) * 100;
-                progressBar.style.width = `${Math.min(100, Math.max(0, percent))}%`;
-            }
-        }
+function updateProgressBar() {
+    if (!playerReady) return;
+    
+    const currentTime = player.getCurrentTime();
+    const duration = player.getDuration();
+    if (duration && !isNaN(duration) && duration !== Infinity && currentTime !== undefined) {
+        const percent = (currentTime / duration) * 100;
+        progressBar.style.width = `${Math.min(100, Math.max(0, percent))}%`;
+    }
+}
 
-        function updateTimeDisplay() {
-            if (!playerReady) return;
-            
-            const currentTime = player.getCurrentTime();
-            const duration = player.getDuration();
-            
-            timeDisplay.textContent = `${formatTime(currentTime)} / ${formatTime(duration)}`;
-        }
+function updateTimeDisplay() {
+    if (!playerReady) return;
+    
+    const currentTime = player.getCurrentTime();
+    const duration = player.getDuration();
+    
+    timeDisplay.textContent = `${formatTime(currentTime)} / ${formatTime(duration)}`;
+}
 
-        function formatTime(seconds) {
-            if (isNaN(seconds) || seconds === Infinity || seconds === undefined) return "0:00";
-            
-            const hours = Math.floor(seconds / 3600);
-            const minutes = Math.floor((seconds % 3600) / 60);
-            const remainingSeconds = Math.floor(seconds % 60);
-            
-            if (hours > 0) {
-                return `${hours}:${minutes < 10 ? '0' : ''}${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
+function formatTime(seconds) {
+    if (isNaN(seconds) || seconds === Infinity || seconds === undefined) return "0:00";
+    
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const remainingSeconds = Math.floor(seconds % 60);
+    
+    if (hours > 0) {
+        return `${hours}:${minutes < 10 ? '0' : ''}${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
+    } else {
+        return `${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
+    }
+}
+
+function toggleMute() {
+    if (!playerReady) return;
+    
+    if (isMuted) {
+        player.unMute();
+        player.setVolume(currentVolume);
+        volumeLevel.style.width = `${currentVolume}%`;
+        muteButton.innerHTML = '<i class="fas fa-volume-up"></i><span class="tooltiptext">كتم الصوت (M)</span>';
+    } else {
+        player.mute();
+        volumeLevel.style.width = '0%';
+        muteButton.innerHTML = '<i class="fas fa-volume-mute"></i><span class="tooltiptext">إلغاء كتم الصوت (M)</span>';
+    }
+    
+    isMuted = !isMuted;
+}
+
+function setVolume(percent) {
+    if (!playerReady) return;
+    
+    currentVolume = Math.max(0, Math.min(100, percent));
+    player.setVolume(currentVolume);
+    volumeLevel.style.width = `${currentVolume}%`;
+    
+    if (currentVolume === 0) {
+        muteButton.innerHTML = '<i class="fas fa-volume-mute"></i><span class="tooltiptext">إلغاء كتم الصوت (M)</span>';
+        isMuted = true;
+    } else {
+        muteButton.innerHTML = '<i class="fas fa-volume-up"></i><span class="tooltiptext">كتم الصوت (M)</span>';
+        isMuted = false;
+        player.unMute();
+    }
+}
+
+function toggleFullscreen() {
+    if (isFullscreen) {
+        exitFullscreen();
+    } else {
+        enterFullscreen();
+    }
+}
+
+function enterFullscreen() {
+    if (fullscreenApi && document[fullscreenApi.fullscreenEnabled]) {
+        playerContainer[fullscreenApi.requestFullscreen]();
+    } else {
+        playerContainer.classList.add('force-fullscreen');
+        document.body.style.overflow = 'hidden';
+        isFullscreen = true;
+        updateFullscreenButton();
+        scheduleHideControls();
+        
+        document.addEventListener('keydown', exitFullscreenOnEsc);
+    }
+}
+
+function exitFullscreen() {
+    if (fullscreenApi && document[fullscreenApi.fullscreenElement]) {
+        document[fullscreenApi.exitFullscreen]();
+    } else {
+        playerContainer.classList.remove('force-fullscreen');
+        document.body.style.overflow = '';
+        isFullscreen = false;
+        updateFullscreenButton();
+        document.body.classList.remove('hide-ui');
+        clearTimeout(hideControlsTimeout);
+        
+        document.removeEventListener('keydown', exitFullscreenOnEsc);
+    }
+}
+
+function exitFullscreenOnEsc(e) {
+    if (e.key === 'Escape' && isFullscreen) {
+        exitFullscreen();
+    }
+}
+
+function changePlaybackRate() {
+    if (!playerReady) return;
+    
+    currentPlaybackRateIndex = (currentPlaybackRateIndex + 1) % playbackRates.length;
+    currentPlaybackRate = playbackRates[currentPlaybackRateIndex];
+    player.setPlaybackRate(currentPlaybackRate);
+    
+    playbackSpeedButton.innerHTML = `<i class="fas fa-tachometer-alt"></i><span class="tooltiptext">سرعة التشغيل: ${currentPlaybackRate}x (S)</span>`;
+    showNotification(`سرعة التشغيل: ${currentPlaybackRate}x`);
+}
+
+function castToTV() {
+    if (!playerReady || playlist.length === 0) return;
+    
+    const videoId = playlist[currentVideo].videoId;
+    
+    if (navigator.userAgent.indexOf('Android') !== -1 || navigator.userAgent.indexOf('iPhone') !== -1) {
+        const currentTime = Math.floor(player.getCurrentTime());
+        window.open(`https://www.youtube.com/watch?v=${videoId}&t=${currentTime}s`, '_blank');
+        showNotification('تم فتح التطبيق للعرض على التلفاز');
+    } else {
+        window.open('https://www.youtube.com/tv/pair', '_blank');
+        showNotification('يرجى إدخال الرمز المعروض على شاشة التلفاز');
+    }
+}
+
+function toggleTheme() {
+    isLightTheme = !isLightTheme;
+    
+    if (isLightTheme) {
+        document.body.classList.add('light-theme');
+        themeToggleButton.innerHTML = '<i class="fas fa-sun"></i><span class="tooltiptext">المظهر الداكن</span>';
+    } else {
+        document.body.classList.remove('light-theme');
+        themeToggleButton.innerHTML = '<i class="fas fa-moon"></i><span class="tooltiptext">المظهر الفاتح</span>';
+    }
+    
+    localStorage.setItem('theme', isLightTheme ? 'light' : 'dark');
+}
+
+function loadThemePreference() {
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'light') {
+        isLightTheme = true;
+        document.body.classList.add('light-theme');
+        themeToggleButton.innerHTML = '<i class="fas fa-sun"></i><span class="tooltiptext">المظهر الداكن</span>';
+    }
+}
+
+// Playlist functions
+function addVideoToPlaylist(videoUrl, name, order) {
+    let videoId = extractYoutubeId(videoUrl);
+    
+    if (!videoId) {
+        showNotification('رابط الفيديو غير صالح');
+        return false;
+    }
+    
+    playlist.push({
+        videoId: videoId,
+        name: name || `فيديو ${playlist.length + 1}`,
+        order: parseInt(order) || playlist.length + 1
+    });
+    
+    playlist.sort((a, b) => a.order - b.order);
+    
+    if (playlist.length === 1 && !playerReady) {
+        initializePlayer(videoId);
+    }
+    
+    savePlaylistToStorage();
+    renderEpisodesList();
+    return true;
+}
+
+function extractYoutubeId(url) {
+    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+    const match = url.match(regExp);
+    
+    if (match && match[2].length === 11) {
+        return match[2];
+    }
+    
+    return null;
+}
+
+function clearPlaylist() {
+    if (confirm('هل أنت متأكد من رغبتك في مسح قائمة التشغيل بالكامل؟')) {
+        playlist = [];
+        savePlaylistToStorage();
+        if (playerReady) {
+            player.stopVideo();
+            isPlaying = false;
+            playPauseButton.innerHTML = '<i class="fas fa-play"></i><span class="tooltiptext">تشغيل (Space)</span>';
+        }
+        renderEpisodesList();
+        showNotification('تم مسح قائمة التشغيل');
+    }
+}
+
+function removeEpisode(index) {
+    if (confirm('هل أنت متأكد من رغبتك في حذف هذه الحلقة؟')) {
+        const isCurrentVideo = index === currentVideo;
+        
+        playlist.splice(index, 1);
+        savePlaylistToStorage();
+        
+        if (isCurrentVideo) {
+            if (playlist.length > 0) {
+                currentVideo = Math.min(index, playlist.length - 1);
+                loadVideo(currentVideo);
             } else {
-                return `${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
-            }
-        }
-
-        function toggleMute() {
-            if (!playerReady) return;
-            
-            if (isMuted) {
-                player.unMute();
-                player.setVolume(currentVolume);
-                volumeLevel.style.width = `${currentVolume}%`;
-                muteButton.innerHTML = '<i class="fas fa-volume-up"></i><span class="tooltiptext">كتم الصوت (M)</span>';
-            } else {
-                player.mute();
-                volumeLevel.style.width = '0%';
-                muteButton.innerHTML = '<i class="fas fa-volume-mute"></i><span class="tooltiptext">إلغاء كتم الصوت (M)</span>';
-            }
-            
-            isMuted = !isMuted;
-        }
-
-        function setVolume(percent) {
-            if (!playerReady) return;
-            
-            currentVolume = Math.max(0, Math.min(100, percent));
-            player.setVolume(currentVolume);
-            volumeLevel.style.width = `${currentVolume}%`;
-            
-            if (currentVolume === 0) {
-                muteButton.innerHTML = '<i class="fas fa-volume-mute"></i><span class="tooltiptext">إلغاء كتم الصوت (M)</span>';
-                isMuted = true;
-            } else {
-                muteButton.innerHTML = '<i class="fas fa-volume-up"></i><span class="tooltiptext">كتم الصوت (M)</span>';
-                isMuted = false;
-                player.unMute();
-            }
-        }
-
-        function toggleFullscreen() {
-            if (isFullscreen) {
-                exitFullscreen();
-            } else {
-                enterFullscreen();
-            }
-        }
-
-        function enterFullscreen() {
-            if (fullscreenApi && document[fullscreenApi.fullscreenEnabled]) {
-                playerContainer[fullscreenApi.requestFullscreen]();
-            } else {
-                playerContainer.classList.add('force-fullscreen');
-                document.body.style.overflow = 'hidden';
-                isFullscreen = true;
-                updateFullscreenButton();
-                scheduleHideControls();
-                
-                document.addEventListener('keydown', exitFullscreenOnEsc);
-            }
-        }
-
-        function exitFullscreen() {
-            if (fullscreenApi && document[fullscreenApi.fullscreenElement]) {
-                document[fullscreenApi.exitFullscreen]();
-            } else {
-                playerContainer.classList.remove('force-fullscreen');
-                document.body.style.overflow = '';
-                isFullscreen = false;
-                updateFullscreenButton();
-                document.body.classList.remove('hide-ui');
-                clearTimeout(hideControlsTimeout);
-                
-                document.removeEventListener('keydown', exitFullscreenOnEsc);
-            }
-        }
-
-        function exitFullscreenOnEsc(e) {
-            if (e.key === 'Escape' && isFullscreen) {
-                exitFullscreen();
-            }
-        }
-
-        function changePlaybackRate() {
-            if (!playerReady) return;
-            
-            currentPlaybackRateIndex = (currentPlaybackRateIndex + 1) % playbackRates.length;
-            currentPlaybackRate = playbackRates[currentPlaybackRateIndex];
-            player.setPlaybackRate(currentPlaybackRate);
-            
-            playbackSpeedButton.innerHTML = `<i class="fas fa-tachometer-alt"></i><span class="tooltiptext">سرعة التشغيل: ${currentPlaybackRate}x (S)</span>`;
-            showNotification(`سرعة التشغيل: ${currentPlaybackRate}x`);
-        }
-
-        function castToTV() {
-            if (!playerReady || playlist.length === 0) return;
-            
-            const videoId = playlist[currentVideo].videoId;
-            
-            if (navigator.userAgent.indexOf('Android') !== -1 || navigator.userAgent.indexOf('iPhone') !== -1) {
-                const currentTime = Math.floor(player.getCurrentTime());
-                window.open(`https://www.youtube.com/watch?v=${videoId}&t=${currentTime}s`, '_blank');
-                showNotification('تم فتح التطبيق للعرض على التلفاز');
-            } else {
-                window.open('https://www.youtube.com/tv/pair', '_blank');
-                showNotification('يرجى إدخال الرمز المعروض على شاشة التلفاز');
-            }
-        }
-
-        function toggleTheme() {
-            isLightTheme = !isLightTheme;
-            
-            if (isLightTheme) {
-                document.body.classList.add('light-theme');
-                themeToggleButton.innerHTML = '<i class="fas fa-sun"></i><span class="tooltiptext">المظهر الداكن</span>';
-            } else {
-                document.body.classList.remove('light-theme');
-                themeToggleButton.innerHTML = '<i class="fas fa-moon"></i><span class="tooltiptext">المظهر الفاتح</span>';
-            }
-            
-            localStorage.setItem('theme', isLightTheme ? 'light' : 'dark');
-        }
-
-        function loadThemePreference() {
-            const savedTheme = localStorage.getItem('theme');
-            if (savedTheme === 'light') {
-                isLightTheme = true;
-                document.body.classList.add('light-theme');
-                themeToggleButton.innerHTML = '<i class="fas fa-sun"></i><span class="tooltiptext">المظهر الداكن</span>';
-            }
-        }
-
-        // Playlist functions
-        function addVideoToPlaylist(videoUrl, name, order) {
-            let videoId = extractYoutubeId(videoUrl);
-            
-            if (!videoId) {
-                showNotification('رابط الفيديو غير صالح');
-                return false;
-            }
-            
-            playlist.push({
-                videoId: videoId,
-                name: name || `فيديو ${playlist.length + 1}`,
-                order: parseInt(order) || playlist.length + 1
-            });
-            
-            playlist.sort((a, b) => a.order - b.order);
-            
-            if (playlist.length === 1 && !playerReady) {
-                initializePlayer(videoId);
-            }
-            
-            savePlaylistToStorage();
-            renderEpisodesList();
-            return true;
-        }
-
-        function extractYoutubeId(url) {
-            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
-            const match = url.match(regExp);
-            
-            if (match && match[2].length === 11) {
-                return match[2];
-            }
-            
-            return null;
-        }
-
-        function clearPlaylist() {
-            if (confirm('هل أنت متأكد من رغبتك في مسح قائمة التشغيل بالكامل؟')) {
-                playlist = [];
-                savePlaylistToStorage();
                 if (playerReady) {
                     player.stopVideo();
                     isPlaying = false;
                     playPauseButton.innerHTML = '<i class="fas fa-play"></i><span class="tooltiptext">تشغيل (Space)</span>';
                 }
-                renderEpisodesList();
-                showNotification('تم مسح قائمة التشغيل');
+            }
+        } else {
+            if (index < currentVideo) {
+                currentVideo--;
             }
         }
+        
+        renderEpisodesList();
+        showNotification('تم حذف الحلقة بنجاح');
+    }
+}
 
-        function removeEpisode(index) {
-            if (confirm('هل أنت متأكد من رغبتك في حذف هذه الحلقة؟')) {
-                const isCurrentVideo = index === currentVideo;
-                
-                playlist.splice(index, 1);
-                savePlaylistToStorage();
-                
-                if (isCurrentVideo) {
-                    if (playlist.length > 0) {
-                        currentVideo = Math.min(index, playlist.length - 1);
-                        loadVideo(currentVideo);
-                    } else {
-                        if (playerReady) {
-                            player.stopVideo();
-                            isPlaying = false;
-                            playPauseButton.innerHTML = '<i class="fas fa-play"></i><span class="tooltiptext">تشغيل (Space)</span>';
-                        }
-                    }
-                } else {
-                    if (index < currentVideo) {
-                        currentVideo--;
-                    }
-                }
-                
-                renderEpisodesList();
-                showNotification('تم حذف الحلقة بنجاح');
-            }
+function exportPlaylist() {
+    try {
+        const dataStr = JSON.stringify(playlist);
+        const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
+        
+        const exportElem = document.createElement('a');
+        exportElem.setAttribute('href', dataUri);
+        exportElem.setAttribute('download', 'playlist_export.json');
+        document.body.appendChild(exportElem);
+        exportElem.click();
+        document.body.removeChild(exportElem);
+        
+        navigator.clipboard.writeText(dataStr).then(() => {
+            showNotification('تم تصدير قائمة التشغيل ونسخها إلى الحافظة');
+        }).catch(() => {
+            showNotification('تم تصدير قائمة التشغيل');
+        });
+        
+        document.getElementById('import-playlist').value = dataStr;
+    } catch (e) {
+        console.error('Export error:', e);
+        showNotification('حدث خطأ أثناء التصدير');
+    }
+}
+
+function importPlaylist() {
+    try {
+        const importData = document.getElementById('import-playlist').value;
+        if (!importData) {
+            showNotification('الرجاء إدخال بيانات الاستيراد');
+            return;
         }
-
-        function exportPlaylist() {
-            try {
-                const dataStr = JSON.stringify(playlist);
-                const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
-                
-                const exportElem = document.createElement('a');
-                exportElem.setAttribute('href', dataUri);
-                exportElem.setAttribute('download', 'playlist_export.json');
-                document.body.appendChild(exportElem);
-                exportElem.click();
-                document.body.removeChild(exportElem);
-                
-                navigator.clipboard.writeText(dataStr).then(() => {
-                    showNotification('تم تصدير قائمة التشغيل ونسخها إلى الحافظة');
-                }).catch(() => {
-                    showNotification('تم تصدير قائمة التشغيل');
-                });
-                
-                document.getElementById('import-playlist').value = dataStr;
-            } catch (e) {
-                console.error('Export error:', e);
-                showNotification('حدث خطأ أثناء التصدير');
-            }
+        
+        const importedPlaylist = JSON.parse(importData);
+        
+        if (!Array.isArray(importedPlaylist)) {
+            showNotification('تنسيق البيانات غير صالح');
+            return;
         }
-
-        function importPlaylist() {
-            try {
-                const importData = document.getElementById('import-playlist').value;
-                if (!importData) {
-                    showNotification('الرجاء إدخال بيانات الاستيراد');
-                    return;
-                }
-                
-                const importedPlaylist = JSON.parse(importData);
-                
-                if (!Array.isArray(importedPlaylist)) {
-                    showNotification('تنسيق البيانات غير صالح');
-                    return;
-                }
-                
-                const validPlaylist = importedPlaylist.filter(item => {
-                    return item.videoId && typeof item.videoId === 'string';
-                });
-                
-                if (validPlaylist.length === 0) {
-                    showNotification('لم يتم العثور على فيديوهات صالحة');
-                    return;
-                }
-                
-                playlist = validPlaylist;
-                playlist.sort((a, b) => a.order - b.order);
-                
-                currentVideo = 0;
-                
-                if (!playerReady && playlist.length > 0) {
-                    initializePlayer(playlist[0].videoId);
-                } else if (playerReady && playlist.length > 0) {
-                    loadVideo(0);
-                }
-                
-                savePlaylistToStorage();
-                renderEpisodesList();
-                
-                document.getElementById('import-playlist').value = '';
-                showNotification(`تم استيراد ${validPlaylist.length} فيديو بنجاح`);
-            } catch (e) {
-                console.error('Import error:', e);
-                showNotification('حدث خطأ أثناء الاستيراد');
-            }
+        
+        const validPlaylist = importedPlaylist.filter(item => {
+            return item.videoId && typeof item.videoId === 'string';
+        });
+        
+        if (validPlaylist.length === 0) {
+            showNotification('لم يتم العثور على فيديوهات صالحة');
+            return;
         }
+        
+        playlist = validPlaylist;
+        playlist.sort((a, b) => a.order - b.order);
+        
+        currentVideo = 0;
+        
+        if (!playerReady && playlist.length > 0) {
+            initializePlayer(playlist[0].videoId);
+        } else if (playerReady && playlist.length > 0) {
+            loadVideo(0);
+        }
+        
+        savePlaylistToStorage();
+        renderEpisodesList();
+        
+        document.getElementById('import-playlist').value = '';
+        showNotification(`تم استيراد ${validPlaylist.length} فيديو بنجاح`);
+    } catch (e) {
+        console.error('Import error:', e);
+        showNotification('حدث خطأ أثناء الاستيراد');
+    }
+}
 
-        function renderEpisodesList() {
-            const container = document.getElementById('episodes-container');
+function renderEpisodesList() {
+    const container = document.getElementById('episodes-container');
+    
+    if (playlist.length === 0) {
+        container.innerHTML = '<div class="no-episodes">لا توجد حلقات في القائمة</div>';
+        return;
+    }
+    
+    container.innerHTML = playlist.map((episode, index) => `
+        <div class="episode-item ${index === currentVideo ? 'active' : ''}" onclick="loadVideo(${index})">
+            <div class="episode-info">
+                <div class="episode-name">${episode.name}</div>
+                <div class="episode-order">الحلقة رقم ${episode.order}</div>
+            </div>
+            <div class="episode-actions">
+                <button class="episode-btn" onclick="event.stopPropagation(); removeEpisode(${index})" title="حذف">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+        </div>
+    `).join('');
+}
+
+// Storage functions
+function savePlaylistToStorage() {
+    localStorage.setItem('youtubePlaylist', JSON.stringify(playlist));
+}
+
+function loadPlaylistFromStorage() {
+    const storedPlaylist = localStorage.getItem('youtubePlaylist');
+    
+    if (storedPlaylist) {
+        try {
+            playlist = JSON.parse(storedPlaylist);
+            playlist = playlist.filter(item => item && item.videoId);
+            playlist.sort((a, b) => a.order - b.order);
+        } catch (e) {
+            console.error('Error loading playlist:', e);
+            playlist = [];
+        }
+    }
+}
+
+// ✅ إصلاح دالة تحميل التعليقات - استخدام GET /comments بدلاً من الجذر
+async function loadCommentsFromAPI() {
+    try {
+        const res = await fetch(API + "/comments");
+        const data = await res.json();
+        
+        // ✅ التحقق من أن البيانات عبارة عن Array مباشر
+        if (Array.isArray(data)) {
+            comments = data;
+        } else {
+            comments = [];
+        }
+        
+        renderCommentsList();
+    } catch (e) {
+        console.error("Load comments error:", e);
+        comments = [];
+        renderCommentsList();
+    }
+}
+
+// ✅ إصلاح دالة إرسال التعليق - إرسال إلى /comments بشكل صريح
+async function submitComment(e) {
+    e.preventDefault();
+
+    const submitBtn = document.getElementById('submit-comment-btn');
+    const msgDiv = document.getElementById('msg');
+    const name = document.getElementById('name').value.trim();
+    const text = document.getElementById('text').value.trim();
+
+    if (!name || !text) {
+        msgDiv.textContent = '❌ الرجاء ملء جميع الحقول';
+        msgDiv.style.color = '#ff4444';
+        return;
+    }
+
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الإرسال...';
+    msgDiv.textContent = '';
+
+    try {
+        // ✅ إرسال إلى /comments بشكل صريح
+        const res = await fetch(API + "/comments", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ name, text })
+        });
+
+        const data = await res.json();
+
+        // ✅ التحقق من نجاح العملية
+        if (res.ok && data.success) {
+            msgDiv.textContent = "✅ تم إرسال التعليق بنجاح وسيتم عرضه بعد الموافقة";
+            msgDiv.style.color = '#4CAF50';
+            document.getElementById('commentForm').reset();
             
-            if (playlist.length === 0) {
-                container.innerHTML = '<div class="no-episodes">لا توجد حلقات في القائمة</div>';
-                return;
-            }
-            
-            container.innerHTML = playlist.map((episode, index) => `
-                <div class="episode-item ${index === currentVideo ? 'active' : ''}" onclick="loadVideo(${index})">
-                    <div class="episode-info">
-                        <div class="episode-name">${episode.name}</div>
-                        <div class="episode-order">الحلقة رقم ${episode.order}</div>
-                    </div>
-                    <div class="episode-actions">
-                        <button class="episode-btn" onclick="event.stopPropagation(); removeEpisode(${index})" title="حذف">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </div>
-                </div>
-            `).join('');
+            // ✅ إعادة تحميل التعليقات المعتمدة
+            await loadCommentsFromAPI();
+        } else {
+            msgDiv.textContent = "❌ " + (data.error || "فشل الإرسال. حاول مرة أخرى");
+            msgDiv.style.color = '#ff4444';
         }
-
-        // Storage functions
-        function savePlaylistToStorage() {
-            localStorage.setItem('youtubePlaylist', JSON.stringify(playlist));
-        }
-
-        function loadPlaylistFromStorage() {
-            const storedPlaylist = localStorage.getItem('youtubePlaylist');
-            
-            if (storedPlaylist) {
-                try {
-                    playlist = JSON.parse(storedPlaylist);
-                    playlist = playlist.filter(item => item && item.videoId);
-                    playlist.sort((a, b) => a.order - b.order);
-                } catch (e) {
-                    console.error('Error loading playlist:', e);
-                    playlist = [];
-                }
-            }
-        }
-
-        // ✅ Comments functions with API (UPDATED)
-        async function loadCommentsFromAPI() {
-            try {
-                const res = await fetch(API + "/comments");
-                const data = await res.json();
-
-                if (Array.isArray(data)) {
-                    comments = data;
-                } else {
-                    comments = [];
-                }
-
-                renderCommentsList();
-            } catch (e) {
-                console.error("Load comments error:", e);
-                comments = [];
-                renderCommentsList();
-            }
-        }
-
-        async function submitComment(e) {
-            e.preventDefault();
-
-            const submitBtn = document.getElementById('submit-comment-btn');
-            const msgDiv = document.getElementById('msg');
-            const name = document.getElementById('name').value.trim();
-            const text = document.getElementById('text').value.trim();
-
-            if (!name || !text) {
-                msgDiv.textContent = '❌ الرجاء ملء جميع الحقول';
-                msgDiv.style.color = '#ff4444';
-                return;
-            }
-
-            submitBtn.disabled = true;
-            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الإرسال...';
+    } catch (error) {
+        console.error('Error submitting comment:', error);
+        msgDiv.textContent = "❌ حدث خطأ في الاتصال. تحقق من الاتصال بالإنترنت";
+        msgDiv.style.color = '#ff4444';
+    } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> إرسال التعليق';
+        
+        setTimeout(() => {
             msgDiv.textContent = '';
+        }, 5000);
+    }
+}
 
-            try {
-                // ✅ Updated API call to match the new structure
-                const res = await fetch(API + "/comments", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ name, text })
-                });
+function renderCommentsList() {
+    const container = document.getElementById('comments-list');
+    
+    if (comments.length === 0) {
+        container.innerHTML = '<div class="no-comments">لا توجد تعليقات بعد. كن أول من يعلق!</div>';
+        return;
+    }
+    
+    container.innerHTML = comments.map(comment => `
+        <div class="comment-item">
+            <div class="comment-header">
+                <span class="comment-author">${comment.name}</span>
+                <span class="comment-date">${formatCommentDate(comment.time)}</span>
+            </div>
+            <div class="comment-text">${comment.text}</div>
+        </div>
+    `).join('');
+}
 
-                const data = await res.json();
+// ✅ إصلاح دالة عرض التاريخ - استخدام comment.time بدلاً من comment.timestamp
+function formatCommentDate(timestamp) {
+    const date = new Date(timestamp);
+    const now = new Date();
+    const diffMs = now - date;
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMs / 3600000);
+    const diffDays = Math.floor(diffMs / 86400000);
+    
+    if (diffMins < 1) return 'الآن';
+    if (diffMins < 60) return `منذ ${diffMins} دقيقة`;
+    if (diffHours < 24) return `منذ ${diffHours} ساعة`;
+    if (diffDays < 7) return `منذ ${diffDays} يوم`;
+    
+    return date.toLocaleDateString('ar-EG', { 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric' 
+    });
+}
 
-                if (data.success) {
-                    msgDiv.textContent = "✅ تم إرسال التعليق بنجاح";
-                    msgDiv.style.color = '#4CAF50';
-                    document.getElementById('commentForm').reset();
-                    
-                    // إعادة تحميل التعليقات
-                    await loadCommentsFromAPI();
-                } else {
-                    msgDiv.textContent = "❌ فشل الإرسال. حاول مرة أخرى";
-                    msgDiv.style.color = '#ff4444';
-                }
-            } catch (error) {
-                console.error('Error submitting comment:', error);
-                msgDiv.textContent = "❌ حدث خطأ في الاتصال";
-                msgDiv.style.color = '#ff4444';
-            } finally {
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> إرسال التعليق';
-                
-                setTimeout(() => {
-                    msgDiv.textContent = '';
-                }, 5000);
+// Utility functions
+function showNotification(message) {
+    const existingNotification = document.querySelector('.notification');
+    if (existingNotification) {
+        existingNotification.remove();
+    }
+    
+    const notification = document.createElement('div');
+    notification.className = 'notification';
+    notification.textContent = message;
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        notification.style.opacity = 1;
+    }, 10);
+    
+    setTimeout(() => {
+        notification.remove();
+    }, 3000);
+}
+
+// Event listeners
+document.addEventListener('DOMContentLoaded', () => {
+    // Player controls
+    playPauseButton.addEventListener('click', togglePlayPause);
+    prevVideoButton.addEventListener('click', playPrevVideo);
+    nextVideoButton.addEventListener('click', playNextVideo);
+    rewindButton.addEventListener('click', () => {
+        if (playerReady) player.seekTo(Math.max(0, player.getCurrentTime() - 10), true);
+    });
+    forwardButton.addEventListener('click', () => {
+        if (playerReady) {
+            const duration = player.getDuration();
+            if (duration && !isNaN(duration)) {
+                player.seekTo(Math.min(duration, player.getCurrentTime() + 10), true);
             }
         }
-
-        function renderCommentsList() {
-            const container = document.getElementById('comments-list');
-            
-            if (comments.length === 0) {
-                container.innerHTML = '<div class="no-comments">لا توجد تعليقات بعد. كن أول من يعلق!</div>';
-                return;
+    });
+    muteButton.addEventListener('click', toggleMute);
+    fullscreenButton.addEventListener('click', toggleFullscreen);
+    playbackSpeedButton.addEventListener('click', changePlaybackRate);
+    
+    // Progress bar
+    progressContainer.addEventListener('mousedown', (e) => {
+        isUserSeeking = true;
+        const rect = progressContainer.getBoundingClientRect();
+        const percent = Math.max(0, Math.min(100, ((e.clientX - rect.left) / rect.width) * 100));
+        progressBar.style.width = `${percent}%`;
+        seekVideo(percent);
+    });
+    
+    progressContainer.addEventListener('mousemove', (e) => {
+        const rect = progressContainer.getBoundingClientRect();
+        const percent = Math.max(0, Math.min(100, ((e.clientX - rect.left) / rect.width) * 100));
+        
+        if (isUserSeeking) {
+            progressBar.style.width = `${percent}%`;
+        }
+        
+        if (playerReady) {
+            const duration = player.getDuration();
+            if (duration && !isNaN(duration) && duration !== Infinity) {
+                const hoverTime = (duration * percent) / 100;
+                progressHoverTime.textContent = formatTime(hoverTime);
+                progressHoverTime.style.display = 'block';
+                progressHoverTime.style.left = `${e.clientX - rect.left}px`;
             }
-            
-            container.innerHTML = comments.map(comment => `
-                <div class="comment-item">
-                    <div class="comment-header">
-                        <span class="comment-author">${comment.name}</span>
-                        <!-- ✅ Updated date format property -->
-                        <span class="comment-date">${formatCommentDate(comment.time)}</span>
-                    </div>
-                    <div class="comment-text">${comment.text}</div>
-                </div>
-            `).join('');
         }
-
-        function formatCommentDate(timestamp) {
-            const date = new Date(timestamp);
-            const now = new Date();
-            const diffMs = now - date;
-            const diffMins = Math.floor(diffMs / 60000);
-            const diffHours = Math.floor(diffMs / 3600000);
-            const diffDays = Math.floor(diffMs / 86400000);
-            
-            if (diffMins < 1) return 'الآن';
-            if (diffMins < 60) return `منذ ${diffMins} دقيقة`;
-            if (diffHours < 24) return `منذ ${diffHours} ساعة`;
-            if (diffDays < 7) return `منذ ${diffDays} يوم`;
-            
-            return date.toLocaleDateString('ar-EG', { 
-                year: 'numeric', 
-                month: 'long', 
-                day: 'numeric' 
-            });
+    });
+    
+    progressContainer.addEventListener('mouseout', () => {
+        progressHoverTime.style.display = 'none';
+    });
+    
+    document.addEventListener('mouseup', () => {
+        if (isUserSeeking) {
+            isUserSeeking = false;
         }
-
-        // Utility functions
-        function showNotification(message) {
-            const existingNotification = document.querySelector('.notification');
-            if (existingNotification) {
-                existingNotification.remove();
-            }
-            
-            const notification = document.createElement('div');
-            notification.className = 'notification';
-            notification.textContent = message;
-            document.body.appendChild(notification);
-            
-            setTimeout(() => {
-                notification.style.opacity = 1;
-            }, 10);
-            
-            setTimeout(() => {
-                notification.remove();
-            }, 3000);
+    });
+    
+    // Touch support
+    progressContainer.addEventListener('touchstart', (e) => {
+        isUserSeeking = true;
+        const rect = progressContainer.getBoundingClientRect();
+        const touch = e.touches[0];
+        const percent = Math.max(0, Math.min(100, ((touch.clientX - rect.left) / rect.width) * 100));
+        progressBar.style.width = `${percent}%`;
+        seekVideo(percent);
+        e.preventDefault();
+    });
+    
+    progressContainer.addEventListener('touchmove', (e) => {
+        if (isUserSeeking) {
+            const rect = progressContainer.getBoundingClientRect();
+            const touch = e.touches[0];
+            const percent = Math.max(0, Math.min(100, ((touch.clientX - rect.left) / rect.width) * 100));
+            progressBar.style.width = `${percent}%`;
+            e.preventDefault();
         }
-
-        // Event listeners
-        document.addEventListener('DOMContentLoaded', () => {
-            // Player controls
-            playPauseButton.addEventListener('click', togglePlayPause);
-            prevVideoButton.addEventListener('click', playPrevVideo);
-            nextVideoButton.addEventListener('click', playNextVideo);
-            rewindButton.addEventListener('click', () => {
+    });
+    
+    document.addEventListener('touchend', () => {
+        if (isUserSeeking) {
+            isUserSeeking = false;
+        }
+    });
+    
+    // Volume slider
+    volumeSlider.addEventListener('click', (e) => {
+        const rect = volumeSlider.getBoundingClientRect();
+        const percent = Math.max(0, Math.min(100, ((e.clientX - rect.left) / rect.width) * 100));
+        setVolume(percent);
+    });
+    
+    // Playlist management
+    document.getElementById('add-episode').addEventListener('click', () => {
+        const videoUrl = document.getElementById('video-url').value;
+        const episodeName = document.getElementById('episode-name').value;
+        const episodeOrder = document.getElementById('episode-order').value;
+        
+        if (!videoUrl) {
+            showNotification('الرجاء إدخال رابط الفيديو');
+            return;
+        }
+        
+        const success = addVideoToPlaylist(videoUrl, episodeName, episodeOrder);
+        
+        if (success) {
+            document.getElementById('video-url').value = '';
+            document.getElementById('episode-name').value = '';
+            document.getElementById('episode-order').value = '';
+            
+            showNotification('تمت إضافة الحلقة بنجاح');
+        }
+    });
+    
+    document.getElementById('clear-playlist').addEventListener('click', clearPlaylist);
+    document.getElementById('export-playlist').addEventListener('click', exportPlaylist);
+    document.getElementById('import-button').addEventListener('click', importPlaylist);
+    
+    // Toggle playlist form
+    document.getElementById('toggle-playlist-form').addEventListener('click', () => {
+        const formContainer = document.getElementById('playlist-form-container');
+        formContainer.classList.toggle('panel-collapsed');
+        const icon = document.querySelector('#toggle-playlist-form i');
+        icon.classList.toggle('fa-chevron-down');
+        icon.classList.toggle('fa-chevron-up');
+    });
+    
+    // Theme toggle
+    themeToggleButton.addEventListener('click', toggleTheme);
+    
+    // TV button
+    tvButton.addEventListener('click', castToTV);
+    
+    // Comments form
+    document.getElementById('commentForm').addEventListener('submit', submitComment);
+    
+    // Keyboard shortcuts
+    document.addEventListener('keydown', (e) => {
+        if (e.target.tagName.toLowerCase() === 'input' || e.target.tagName.toLowerCase() === 'textarea') return;
+        
+        switch (e.code) {
+            case 'Space':
+                togglePlayPause();
+                e.preventDefault();
+                break;
+            case 'ArrowLeft':
                 if (playerReady) player.seekTo(Math.max(0, player.getCurrentTime() - 10), true);
-            });
-            forwardButton.addEventListener('click', () => {
+                e.preventDefault();
+                break;
+            case 'ArrowRight':
                 if (playerReady) {
                     const duration = player.getDuration();
                     if (duration && !isNaN(duration)) {
                         player.seekTo(Math.min(duration, player.getCurrentTime() + 10), true);
                     }
                 }
-            });
-            muteButton.addEventListener('click', toggleMute);
-            fullscreenButton.addEventListener('click', toggleFullscreen);
-            playbackSpeedButton.addEventListener('click', changePlaybackRate);
-            
-            // Progress bar
-            progressContainer.addEventListener('mousedown', (e) => {
-                isUserSeeking = true;
-                const rect = progressContainer.getBoundingClientRect();
-                const percent = Math.max(0, Math.min(100, ((e.clientX - rect.left) / rect.width) * 100));
-                progressBar.style.width = `${percent}%`;
-                seekVideo(percent);
-            });
-            
-            progressContainer.addEventListener('mousemove', (e) => {
-                const rect = progressContainer.getBoundingClientRect();
-                const percent = Math.max(0, Math.min(100, ((e.clientX - rect.left) / rect.width) * 100));
-                
-                if (isUserSeeking) {
-                    progressBar.style.width = `${percent}%`;
-                }
-                
-                if (playerReady) {
-                    const duration = player.getDuration();
-                    if (duration && !isNaN(duration) && duration !== Infinity) {
-                        const hoverTime = (duration * percent) / 100;
-                        progressHoverTime.textContent = formatTime(hoverTime);
-                        progressHoverTime.style.display = 'block';
-                        progressHoverTime.style.left = `${e.clientX - rect.left}px`;
-                    }
-                }
-            });
-            
-            progressContainer.addEventListener('mouseout', () => {
-                progressHoverTime.style.display = 'none';
-            });
-            
-            document.addEventListener('mouseup', () => {
-                if (isUserSeeking) {
-                    isUserSeeking = false;
-                }
-            });
-            
-            // Touch support
-            progressContainer.addEventListener('touchstart', (e) => {
-                isUserSeeking = true;
-                const rect = progressContainer.getBoundingClientRect();
-                const touch = e.touches[0];
-                const percent = Math.max(0, Math.min(100, ((touch.clientX - rect.left) / rect.width) * 100));
-                progressBar.style.width = `${percent}%`;
-                seekVideo(percent);
                 e.preventDefault();
-            });
-            
-            progressContainer.addEventListener('touchmove', (e) => {
-                if (isUserSeeking) {
-                    const rect = progressContainer.getBoundingClientRect();
-                    const touch = e.touches[0];
-                    const percent = Math.max(0, Math.min(100, ((touch.clientX - rect.left) / rect.width) * 100));
-                    progressBar.style.width = `${percent}%`;
-                    e.preventDefault();
+                break;
+            case 'ArrowUp':
+                if (playerReady) {
+                    setVolume(Math.min(100, currentVolume + 5));
                 }
-            });
-            
-            document.addEventListener('touchend', () => {
-                if (isUserSeeking) {
-                    isUserSeeking = false;
+                e.preventDefault();
+                break;
+            case 'ArrowDown':
+                if (playerReady) {
+                    setVolume(Math.max(0, currentVolume - 5));
                 }
-            });
-            
-            // Volume slider
-            volumeSlider.addEventListener('click', (e) => {
-                const rect = volumeSlider.getBoundingClientRect();
-                const percent = Math.max(0, Math.min(100, ((e.clientX - rect.left) / rect.width) * 100));
-                setVolume(percent);
-            });
-            
-            // Playlist management
-            document.getElementById('add-episode').addEventListener('click', () => {
-                const videoUrl = document.getElementById('video-url').value;
-                const episodeName = document.getElementById('episode-name').value;
-                const episodeOrder = document.getElementById('episode-order').value;
-                
-                if (!videoUrl) {
-                    showNotification('الرجاء إدخال رابط الفيديو');
-                    return;
-                }
-                
-                const success = addVideoToPlaylist(videoUrl, episodeName, episodeOrder);
-                
-                if (success) {
-                    document.getElementById('video-url').value = '';
-                    document.getElementById('episode-name').value = '';
-                    document.getElementById('episode-order').value = '';
-                    
-                    showNotification('تمت إضافة الحلقة بنجاح');
-                }
-            });
-            
-            document.getElementById('clear-playlist').addEventListener('click', clearPlaylist);
-            document.getElementById('export-playlist').addEventListener('click', exportPlaylist);
-            document.getElementById('import-button').addEventListener('click', importPlaylist);
-            
-            // Toggle playlist form
-            document.getElementById('toggle-playlist-form').addEventListener('click', () => {
-                const formContainer = document.getElementById('playlist-form-container');
-                formContainer.classList.toggle('panel-collapsed');
-                const icon = document.querySelector('#toggle-playlist-form i');
-                icon.classList.toggle('fa-chevron-down');
-                icon.classList.toggle
+                e.preventDefault();
+                break;
+            case 'KeyF':
+                toggleFullscreen();
+                e.preventDefault();
+                break;
+            case 'KeyM':
+                toggleMute();
+                e.preventDefault();
+                break;
+            case 'KeyN':
+                playNextVideo();
+                e.preventDefault();
+                break;
+            case 'KeyP':
+                playPrevVideo();
+                e.preventDefault();
+                break;
+            case 'KeyS':
+                changePlaybackRate();
+                e.preventDefault();
+                break;
+        }
+    });
+    
+    // Double click for fullscreen
+    playerOverlay.addEventListener('dblclick', toggleFullscreen);
+    
+    // Single click for play/pause
+    playerOverlay.addEventListener('click', togglePlayPause);
+    
+    // Swipe gestures
+    let touchStartX = 0;
+    let touchEndX = 0;
+    
+    playerOverlay.addEventListener('touchstart', (e) => {
+        touchStartX = e.changedTouches[0].screenX;
+    });
+    
+    playerOverlay.addEventListener('touchend', (e) => {
+        touchEndX = e.changedTouches[0].screenX;
+        handleSwipe();
+    });
+    
+    function handleSwipe() {
+        const swipeThreshold = 100;
+        if (touchEndX - touchStartX > swipeThreshold) {
+            playPrevVideo();
+        } else if (touchStartX - touchEndX > swipeThreshold) {
+            playNextVideo();
+        }
+    }
+});
 </script>
 </body>
 </html>
