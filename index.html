@@ -880,11 +880,10 @@
      crossorigin="anonymous"></script>
     
     <script src="https://www.youtube.com/iframe_api"></script>
-  <script>
-    // API URL - تأكد من تعديل هذا الرابط
-const API = "https://shrill-wood-c3f7.jaafardarim.workers.dev";
+  
+    <script>
+        const API = "https://your-worker.workers.dev";
 
-// باقي المتغيرات العامة كما هي...
 let player;
 let currentVideo = 0;
 let isPlaying = false;
@@ -903,7 +902,6 @@ let hideControlsTimeout;
 let fullscreenApi;
 let comments = [];
 
-// DOM elements
 const playerContainer = document.getElementById('player-container');
 const playerOverlay = document.getElementById('player-overlay');
 const customControls = document.getElementById('custom-controls');
@@ -925,7 +923,6 @@ const playbackSpeedButton = document.getElementById('playback-speed');
 const themeToggleButton = document.getElementById('theme-toggle');
 const tvButton = document.getElementById('tv-button');
 
-// Check for fullscreen API support
 function setupFullscreenAPI() {
     if (document.documentElement.requestFullscreen) {
         fullscreenApi = {
@@ -1006,7 +1003,6 @@ function scheduleHideControls() {
     }
 }
 
-// Initialize YouTube API
 function onYouTubeIframeAPIReady() {
     loadPlaylistFromStorage();
     loadCommentsFromAPI();
@@ -1108,7 +1104,6 @@ function onPlayerError(event) {
     }, 2000);
 }
 
-// Player control functions
 function togglePlayPause() {
     if (!playerReady) return;
     
@@ -1333,7 +1328,6 @@ function loadThemePreference() {
     }
 }
 
-// Playlist functions
 function addVideoToPlaylist(videoUrl, name, order) {
     let videoId = extractYoutubeId(videoUrl);
     
@@ -1507,7 +1501,6 @@ function renderEpisodesList() {
     `).join('');
 }
 
-// Storage functions
 function savePlaylistToStorage() {
     localStorage.setItem('youtubePlaylist', JSON.stringify(playlist));
 }
@@ -1527,76 +1520,149 @@ function loadPlaylistFromStorage() {
     }
 }
 
-// ✅ إصلاح دالة تحميل التعليقات - استخدام GET /comments بدلاً من الجذر
+// ============================================================
+// تم إصلاح دوال التعليقات لتتوافق مع الـ Worker الجديد
+// ============================================================
+
 async function loadCommentsFromAPI() {
     try {
-        const res = await fetch(API + "/comments");
-        const data = await res.json();
+        // إرسال الطلب إلى /comments مع GET
+        const response = await fetch(API + "/comments", {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+            },
+        });
         
-        // ✅ التحقق من أن البيانات عبارة عن Array مباشر
+        // التحقق من نجاح الاستجابة
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        // تحويل الاستجابة إلى JSON
+        const data = await response.json();
+        
+        // الـ Worker يُرجع Array مباشر وليس {comments: []}
         if (Array.isArray(data)) {
             comments = data;
         } else {
+            console.error("Invalid data format received:", data);
             comments = [];
         }
         
+        console.log("Comments loaded successfully:", comments.length);
         renderCommentsList();
-    } catch (e) {
-        console.error("Load comments error:", e);
+        
+    } catch (error) {
+        console.error("Error loading comments:", error);
         comments = [];
         renderCommentsList();
     }
 }
 
-// ✅ إصلاح دالة إرسال التعليق - إرسال إلى /comments بشكل صريح
 async function submitComment(e) {
     e.preventDefault();
 
     const submitBtn = document.getElementById('submit-comment-btn');
     const msgDiv = document.getElementById('msg');
-    const name = document.getElementById('name').value.trim();
-    const text = document.getElementById('text').value.trim();
+    const nameInput = document.getElementById('name');
+    const textInput = document.getElementById('text');
+    
+    const name = nameInput.value.trim();
+    const text = textInput.value.trim();
 
+    // التحقق من صحة البيانات
     if (!name || !text) {
         msgDiv.textContent = '❌ الرجاء ملء جميع الحقول';
         msgDiv.style.color = '#ff4444';
         return;
     }
 
+    if (name.length < 2) {
+        msgDiv.textContent = '❌ الاسم يجب أن يكون حرفين على الأقل';
+        msgDiv.style.color = '#ff4444';
+        return;
+    }
+
+    if (text.length < 3) {
+        msgDiv.textContent = '❌ التعليق يجب أن يكون 3 أحرف على الأقل';
+        msgDiv.style.color = '#ff4444';
+        return;
+    }
+
+    if (name.length > 100) {
+        msgDiv.textContent = '❌ الاسم طويل جدًا (الحد الأقصى 100 حرف)';
+        msgDiv.style.color = '#ff4444';
+        return;
+    }
+
+    if (text.length > 1000) {
+        msgDiv.textContent = '❌ التعليق طويل جدًا (الحد الأقصى 1000 حرف)';
+        msgDiv.style.color = '#ff4444';
+        return;
+    }
+
+    // تعطيل الزر وإظهار رسالة التحميل
     submitBtn.disabled = true;
     submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الإرسال...';
     msgDiv.textContent = '';
 
     try {
-        // ✅ إرسال إلى /comments بشكل صريح
-        const res = await fetch(API + "/comments", {
+        // إرسال التعليق إلى /comments مع POST
+        const response = await fetch(API + "/comments", {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ name, text })
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                name: name,
+                text: text
+            }),
         });
 
-        const data = await res.json();
-
-        // ✅ التحقق من نجاح العملية
-        if (res.ok && data.success) {
-            msgDiv.textContent = "✅ تم إرسال التعليق بنجاح وسيتم عرضه بعد الموافقة";
-            msgDiv.style.color = '#4CAF50';
-            document.getElementById('commentForm').reset();
-            
-            // ✅ إعادة تحميل التعليقات المعتمدة
-            await loadCommentsFromAPI();
-        } else {
-            msgDiv.textContent = "❌ " + (data.error || "فشل الإرسال. حاول مرة أخرى");
-            msgDiv.style.color = '#ff4444';
+        // التحقق من نجاح الاستجابة
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`Server error: ${response.status} - ${errorText}`);
         }
+
+        // تحويل الاستجابة إلى JSON
+        let data;
+        try {
+            data = await response.json();
+        } catch (jsonError) {
+            throw new Error("Invalid JSON response from server");
+        }
+
+        // التحقق من نجاح العملية
+        if (data.success) {
+            msgDiv.textContent = "✅ تم إرسال التعليق بنجاح وسيظهر بعد الموافقة";
+            msgDiv.style.color = '#4CAF50';
+            
+            // مسح النموذج
+            document.getElementById('commentForm').reset();
+            nameInput.value = '';
+            textInput.value = '';
+            
+            // إعادة تحميل التعليقات بعد ثانية واحدة
+            setTimeout(() => {
+                loadCommentsFromAPI();
+            }, 1000);
+            
+        } else {
+            throw new Error(data.error || "Unknown error occurred");
+        }
+
     } catch (error) {
-        console.error('Error submitting comment:', error);
-        msgDiv.textContent = "❌ حدث خطأ في الاتصال. تحقق من الاتصال بالإنترنت";
+        console.error('Submit comment error:', error);
+        msgDiv.textContent = "❌ " + (error.message || "حدث خطأ في الاتصال. حاول مرة أخرى");
         msgDiv.style.color = '#ff4444';
     } finally {
+        // إعادة تفعيل الزر
         submitBtn.disabled = false;
         submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> إرسال التعليق';
         
+        // مسح رسالة الحالة بعد 5 ثوان
         setTimeout(() => {
             msgDiv.textContent = '';
         }, 5000);
@@ -1606,44 +1672,94 @@ async function submitComment(e) {
 function renderCommentsList() {
     const container = document.getElementById('comments-list');
     
-    if (comments.length === 0) {
+    if (!container) {
+        console.error("Comments container not found");
+        return;
+    }
+    
+    if (!Array.isArray(comments) || comments.length === 0) {
         container.innerHTML = '<div class="no-comments">لا توجد تعليقات بعد. كن أول من يعلق!</div>';
         return;
     }
     
-    container.innerHTML = comments.map(comment => `
-        <div class="comment-item">
-            <div class="comment-header">
-                <span class="comment-author">${comment.name}</span>
-                <span class="comment-date">${formatCommentDate(comment.time)}</span>
-            </div>
-            <div class="comment-text">${comment.text}</div>
-        </div>
-    `).join('');
-}
-
-// ✅ إصلاح دالة عرض التاريخ - استخدام comment.time بدلاً من comment.timestamp
-function formatCommentDate(timestamp) {
-    const date = new Date(timestamp);
-    const now = new Date();
-    const diffMs = now - date;
-    const diffMins = Math.floor(diffMs / 60000);
-    const diffHours = Math.floor(diffMs / 3600000);
-    const diffDays = Math.floor(diffMs / 86400000);
-    
-    if (diffMins < 1) return 'الآن';
-    if (diffMins < 60) return `منذ ${diffMins} دقيقة`;
-    if (diffHours < 24) return `منذ ${diffHours} ساعة`;
-    if (diffDays < 7) return `منذ ${diffDays} يوم`;
-    
-    return date.toLocaleDateString('ar-EG', { 
-        year: 'numeric', 
-        month: 'long', 
-        day: 'numeric' 
+    // ترتيب التعليقات حسب الوقت (الأحدث أولاً)
+    const sortedComments = [...comments].sort((a, b) => {
+        const timeA = a.time || 0;
+        const timeB = b.time || 0;
+        return timeB - timeA; // الأحدث أولاً
     });
+    
+    container.innerHTML = sortedComments.map(comment => {
+        const name = comment.name || 'مجهول';
+        const text = comment.text || '';
+        const time = comment.time || Date.now();
+        
+        return `
+            <div class="comment-item">
+                <div class="comment-header">
+                    <span class="comment-author">${escapeHtml(name)}</span>
+                    <span class="comment-date">${formatCommentDate(time)}</span>
+                </div>
+                <div class="comment-text">${escapeHtml(text)}</div>
+            </div>
+        `;
+    }).join('');
 }
 
-// Utility functions
+function formatCommentDate(timeValue) {
+    try {
+        let date;
+        
+        // التحقق من نوع القيمة المرسلة
+        if (typeof timeValue === 'number') {
+            // إذا كان رقمًا، فهو timestamp
+            date = new Date(timeValue);
+        } else if (typeof timeValue === 'string') {
+            // إذا كان نصًا، فقد يكون ISO string
+            date = new Date(timeValue);
+        } else {
+            // إذا لم يكن أي منهما، استخدم الوقت الحالي
+            date = new Date();
+        }
+        
+        // التحقق من صحة التاريخ
+        if (isNaN(date.getTime())) {
+            return 'الآن';
+        }
+        
+        const now = new Date();
+        const diffMs = now - date;
+        const diffMins = Math.floor(diffMs / 60000);
+        const diffHours = Math.floor(diffMs / 3600000);
+        const diffDays = Math.floor(diffMs / 86400000);
+        
+        if (diffMins < 1) return 'الآن';
+        if (diffMins < 60) return `منذ ${diffMins} دقيقة`;
+        if (diffHours < 24) return `منذ ${diffHours} ساعة`;
+        if (diffDays < 7) return `منذ ${diffDays} يوم`;
+        
+        return date.toLocaleDateString('ar-EG', { 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric' 
+        });
+    } catch (error) {
+        console.error("Error formatting date:", error);
+        return 'الآن';
+    }
+}
+
+function escapeHtml(text) {
+    const map = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#039;'
+    };
+    return String(text).replace(/[&<>"']/g, m => map[m]);
+}
+
 function showNotification(message) {
     const existingNotification = document.querySelector('.notification');
     if (existingNotification) {
@@ -1664,9 +1780,11 @@ function showNotification(message) {
     }, 3000);
 }
 
-// Event listeners
+// ============================================================
+// Event Listeners
+// ============================================================
+
 document.addEventListener('DOMContentLoaded', () => {
-    // Player controls
     playPauseButton.addEventListener('click', togglePlayPause);
     prevVideoButton.addEventListener('click', playPrevVideo);
     nextVideoButton.addEventListener('click', playNextVideo);
@@ -1684,8 +1802,9 @@ document.addEventListener('DOMContentLoaded', () => {
     muteButton.addEventListener('click', toggleMute);
     fullscreenButton.addEventListener('click', toggleFullscreen);
     playbackSpeedButton.addEventListener('click', changePlaybackRate);
+    themeToggleButton.addEventListener('click', toggleTheme);
+    tvButton.addEventListener('click', castToTV);
     
-    // Progress bar
     progressContainer.addEventListener('mousedown', (e) => {
         isUserSeeking = true;
         const rect = progressContainer.getBoundingClientRect();
@@ -1723,7 +1842,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
     
-    // Touch support
     progressContainer.addEventListener('touchstart', (e) => {
         isUserSeeking = true;
         const rect = progressContainer.getBoundingClientRect();
@@ -1731,7 +1849,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const percent = Math.max(0, Math.min(100, ((touch.clientX - rect.left) / rect.width) * 100));
         progressBar.style.width = `${percent}%`;
         seekVideo(percent);
-        e.preventDefault();
     });
     
     progressContainer.addEventListener('touchmove', (e) => {
@@ -1740,7 +1857,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const touch = e.touches[0];
             const percent = Math.max(0, Math.min(100, ((touch.clientX - rect.left) / rect.width) * 100));
             progressBar.style.width = `${percent}%`;
-            e.preventDefault();
+            seekVideo(percent);
         }
     });
     
@@ -1750,142 +1867,121 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
     
-    // Volume slider
-    volumeSlider.addEventListener('click', (e) => {
-        const rect = volumeSlider.getBoundingClientRect();
-        const percent = Math.max(0, Math.min(100, ((e.clientX - rect.left) / rect.width) * 100));
-        setVolume(percent);
+    volumeSlider.addEventListener('input', (e) => {
+        setVolume(e.target.value);
     });
     
-    // Playlist management
-    document.getElementById('add-episode').addEventListener('click', () => {
-        const videoUrl = document.getElementById('video-url').value;
-        const episodeName = document.getElementById('episode-name').value;
-        const episodeOrder = document.getElementById('episode-order').value;
-        
-        if (!videoUrl) {
-            showNotification('الرجاء إدخال رابط الفيديو');
+    volumeSlider.addEventListener('mousedown', () => {
+        volumeSlider.classList.add('dragging');
+    });
+    
+    volumeSlider.addEventListener('mouseup', () => {
+        volumeSlider.classList.remove('dragging');
+    });
+    
+    // ربط نموذج التعليقات
+    const commentForm = document.getElementById('commentForm');
+    if (commentForm) {
+        commentForm.addEventListener('submit', submitComment);
+    }
+    
+    // ربط أزرار إضافة الفيديوهات
+    const addVideoBtn = document.getElementById('add-video-btn');
+    if (addVideoBtn) {
+        addVideoBtn.addEventListener('click', () => {
+            const videoUrl = document.getElementById('video-url').value;
+            const videoName = document.getElementById('video-name').value;
+            const videoOrder = document.getElementById('video-order').value;
+            
+            if (addVideoToPlaylist(videoUrl, videoName, videoOrder)) {
+                document.getElementById('video-url').value = '';
+                document.getElementById('video-name').value = '';
+                document.getElementById('video-order').value = '';
+                showNotification('تم إضافة الفيديو بنجاح');
+            }
+        });
+    }
+    
+    const clearPlaylistBtn = document.getElementById('clear-playlist-btn');
+    if (clearPlaylistBtn) {
+        clearPlaylistBtn.addEventListener('click', clearPlaylist);
+    }
+    
+    const exportPlaylistBtn = document.getElementById('export-playlist-btn');
+    if (exportPlaylistBtn) {
+        exportPlaylistBtn.addEventListener('click', exportPlaylist);
+    }
+    
+    const importPlaylistBtn = document.getElementById('import-playlist-btn');
+    if (importPlaylistBtn) {
+        importPlaylistBtn.addEventListener('click', importPlaylist);
+    }
+    
+    // keyboard shortcuts
+    document.addEventListener('keydown', (e) => {
+        if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
             return;
         }
         
-        const success = addVideoToPlaylist(videoUrl, episodeName, episodeOrder);
-        
-        if (success) {
-            document.getElementById('video-url').value = '';
-            document.getElementById('episode-name').value = '';
-            document.getElementById('episode-order').value = '';
-            
-            showNotification('تمت إضافة الحلقة بنجاح');
-        }
-    });
-    
-    document.getElementById('clear-playlist').addEventListener('click', clearPlaylist);
-    document.getElementById('export-playlist').addEventListener('click', exportPlaylist);
-    document.getElementById('import-button').addEventListener('click', importPlaylist);
-    
-    // Toggle playlist form
-    document.getElementById('toggle-playlist-form').addEventListener('click', () => {
-        const formContainer = document.getElementById('playlist-form-container');
-        formContainer.classList.toggle('panel-collapsed');
-        const icon = document.querySelector('#toggle-playlist-form i');
-        icon.classList.toggle('fa-chevron-down');
-        icon.classList.toggle('fa-chevron-up');
-    });
-    
-    // Theme toggle
-    themeToggleButton.addEventListener('click', toggleTheme);
-    
-    // TV button
-    tvButton.addEventListener('click', castToTV);
-    
-    // Comments form
-    document.getElementById('commentForm').addEventListener('submit', submitComment);
-    
-    // Keyboard shortcuts
-    document.addEventListener('keydown', (e) => {
-        if (e.target.tagName.toLowerCase() === 'input' || e.target.tagName.toLowerCase() === 'textarea') return;
-        
-        switch (e.code) {
-            case 'Space':
-                togglePlayPause();
+        switch(e.key) {
+            case ' ':
                 e.preventDefault();
+                togglePlayPause();
                 break;
             case 'ArrowLeft':
-                if (playerReady) player.seekTo(Math.max(0, player.getCurrentTime() - 10), true);
                 e.preventDefault();
+                if (playerReady) player.seekTo(Math.max(0, player.getCurrentTime() - 10), true);
                 break;
             case 'ArrowRight':
+                e.preventDefault();
                 if (playerReady) {
                     const duration = player.getDuration();
                     if (duration && !isNaN(duration)) {
                         player.seekTo(Math.min(duration, player.getCurrentTime() + 10), true);
                     }
                 }
-                e.preventDefault();
                 break;
             case 'ArrowUp':
-                if (playerReady) {
-                    setVolume(Math.min(100, currentVolume + 5));
-                }
                 e.preventDefault();
+                setVolume(Math.min(100, currentVolume + 5));
                 break;
             case 'ArrowDown':
-                if (playerReady) {
-                    setVolume(Math.max(0, currentVolume - 5));
-                }
                 e.preventDefault();
+                setVolume(Math.max(0, currentVolume - 5));
                 break;
-            case 'KeyF':
-                toggleFullscreen();
-                e.preventDefault();
-                break;
-            case 'KeyM':
+            case 'm':
+            case 'M':
                 toggleMute();
-                e.preventDefault();
                 break;
-            case 'KeyN':
-                playNextVideo();
-                e.preventDefault();
+            case 'f':
+            case 'F':
+                toggleFullscreen();
                 break;
-            case 'KeyP':
-                playPrevVideo();
-                e.preventDefault();
-                break;
-            case 'KeyS':
+            case 's':
+            case 'S':
                 changePlaybackRate();
-                e.preventDefault();
+                break;
+            case 'n':
+            case 'N':
+                playNextVideo();
+                break;
+            case 'p':
+            case 'P':
+                playPrevVideo();
+                break;
+            case 't':
+            case 'T':
+                toggleTheme();
+                break;
+            case 'Escape':
+                if (isFullscreen) {
+                    exitFullscreen();
+                }
                 break;
         }
     });
-    
-    // Double click for fullscreen
-    playerOverlay.addEventListener('dblclick', toggleFullscreen);
-    
-    // Single click for play/pause
-    playerOverlay.addEventListener('click', togglePlayPause);
-    
-    // Swipe gestures
-    let touchStartX = 0;
-    let touchEndX = 0;
-    
-    playerOverlay.addEventListener('touchstart', (e) => {
-        touchStartX = e.changedTouches[0].screenX;
-    });
-    
-    playerOverlay.addEventListener('touchend', (e) => {
-        touchEndX = e.changedTouches[0].screenX;
-        handleSwipe();
-    });
-    
-    function handleSwipe() {
-        const swipeThreshold = 100;
-        if (touchEndX - touchStartX > swipeThreshold) {
-            playPrevVideo();
-        } else if (touchStartX - touchEndX > swipeThreshold) {
-            playNextVideo();
-        }
-    }
 });
-</script>
+
+    </script>
 </body>
 </html>
