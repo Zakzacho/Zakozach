@@ -302,6 +302,12 @@
             box-shadow: 0 1px 5px rgba(244, 117, 33, 0.3);
         }
 
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
         .fullscreen-mode {
             position: fixed;
             top: 0;
@@ -705,6 +711,14 @@
         .panel-collapsed {
             display: none;
         }
+
+        #msg {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 4px;
+            text-align: center;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
@@ -840,19 +854,23 @@
                 </h2>
             </div>
 
-            <div class="form-group">
-                <label for="comment-name">الاسم (اختياري)</label>
-                <input type="text" id="comment-name" placeholder="اسمك..." class="w-full">
-            </div>
+            <form id="commentForm">
+                <div class="form-group">
+                    <label for="name">الاسم</label>
+                    <input type="text" id="name" placeholder="اسمك" required class="w-full">
+                </div>
 
-            <div class="form-group">
-                <label for="comment-text">التعليق</label>
-                <textarea id="comment-text" placeholder="اكتب تعليقك أو طلبك هنا... (يجب أن يكون التعليق جديًا ومفيدًا)" class="w-full h-24"></textarea>
-            </div>
+                <div class="form-group">
+                    <label for="text">التعليق</label>
+                    <textarea id="text" placeholder="تعليقك" required class="w-full h-24"></textarea>
+                </div>
 
-            <button id="submit-comment" class="w-full">
-                <i class="fas fa-paper-plane"></i> إرسال التعليق
-            </button>
+                <button type="submit" id="submit-comment-btn" class="w-full">
+                    <i class="fas fa-paper-plane"></i> إرسال التعليق
+                </button>
+            </form>
+
+            <div id="msg"></div>
 
             <div id="comments-list" class="mt-6"></div>
         </div>
@@ -863,6 +881,9 @@
     
     <script src="https://www.youtube.com/iframe_api"></script>
     <script>
+        // API URL - تأكد من تعديل هذا الرابط
+        const API = "https://shrill-wood-c3f7.jaafardarim.workers.dev";
+
         // Global variables
         let player;
         let currentVideo = 0;
@@ -988,7 +1009,7 @@
         // Initialize YouTube API
         function onYouTubeIframeAPIReady() {
             loadPlaylistFromStorage();
-            loadCommentsFromStorage();
+            loadCommentsFromAPI();
             setupFullscreenAPI();
             
             if (playlist.length > 0) {
@@ -1001,7 +1022,6 @@
             setupAutoHideControls();
             loadThemePreference();
             renderEpisodesList();
-            renderCommentsList();
         }
 
         function setupAutoHideControls() {
@@ -1061,21 +1081,21 @@
         }
 
         function onPlayerStateChange(event) {
-            if (event.data === 0) { // YT.PlayerState.ENDED
+            if (event.data === 0) {
                 playNextVideo();
-            } else if (event.data === 1) { // YT.PlayerState.PLAYING
+            } else if (event.data === 1) {
                 isPlaying = true;
                 playPauseButton.innerHTML = '<i class="fas fa-pause"></i><span class="tooltiptext">إيقاف (Space)</span>';
                 loader.style.display = 'none';
                 if (isFullscreen) {
                     scheduleHideControls();
                 }
-            } else if (event.data === 2) { // YT.PlayerState.PAUSED
+            } else if (event.data === 2) {
                 isPlaying = false;
                 playPauseButton.innerHTML = '<i class="fas fa-play"></i><span class="tooltiptext">تشغيل (Space)</span>';
                 clearTimeout(hideControlsTimeout);
                 document.body.classList.remove('hide-ui');
-            } else if (event.data === 3) { // YT.PlayerState.BUFFERING
+            } else if (event.data === 3) {
                 loader.style.display = 'block';
             }
         }
@@ -1507,111 +1527,72 @@
             }
         }
 
-        // Comments functions
-        function validateComment(text) {
-            // Remove extra spaces
-            text = text.trim();
-            
-            // Check minimum length
-            if (text.length < 20) {
-                return { valid: false, message: 'التعليق قصير جدًا. يجب أن يحتوي على 20 حرفًا على الأقل' };
-            }
-            
-            // Remove allowed punctuation for analysis
-            const cleanText = text.replace(/[.,!؟:؛\s]/g, '');
-            
-            // Check if mostly symbols or numbers
-            const symbolsNumbers = cleanText.replace(/[a-zA-Zא-ת\u0600-\u06FF]/g, '');
-            if (symbolsNumbers.length / cleanText.length > 0.3) {
-                return { valid: false, message: 'التعليق يحتوي على رموز أو أرقام كثيرة. الرجاء كتابة تعليق جدي' };
-            }
-            
-            // Check for Arabic letters percentage
-            const arabicLetters = text.match(/[\u0600-\u06FF]/g) || [];
-            const totalLetters = text.match(/[a-zA-Zא-ת\u0600-\u06FF]/g) || [];
-            if (totalLetters.length > 0 && arabicLetters.length / totalLetters.length < 0.5) {
-                return { valid: false, message: 'الرجاء كتابة التعليق بالعربية بشكل أساسي' };
-            }
-            
-            // Check for excessive character repetition
-            const repetitionPattern = /(.)\1{4,}/g;
-            if (repetitionPattern.test(text)) {
-                return { valid: false, message: 'التعليق يحتوي على تكرار مبالغ فيه للأحرف' };
-            }
-            
-            // Check for excessive word repetition
-            const words = text.split(/\s+/);
-            const wordCount = {};
-            for (let word of words) {
-                if (word.length > 2) {
-                    wordCount[word] = (wordCount[word] || 0) + 1;
-                    if (wordCount[word] > 3) {
-                        return { valid: false, message: 'التعليق يحتوي على تكرار مبالغ فيه لنفس الكلمة' };
-                    }
+        // Comments functions with API
+        async function loadCommentsFromAPI() {
+            try {
+                const res = await fetch(API);
+                const data = await res.json();
+                
+                if (data.comments && Array.isArray(data.comments)) {
+                    comments = data.comments;
+                    renderCommentsList();
                 }
+            } catch (error) {
+                console.error('Error loading comments:', error);
+                comments = [];
+                renderCommentsList();
             }
-            
-            // Check for weird symbols (allow only normal punctuation)
-            const allowedChars = /^[a-zA-Zא-ת\u0600-\u06FF0-9\s.,!؟:؛\-()]+$/;
-            if (!allowedChars.test(text)) {
-                return { valid: false, message: 'التعليق يحتوي على رموز غير مسموحة' };
-            }
-            
-            return { valid: true, message: '' };
         }
 
-        function submitComment() {
-            const nameInput = document.getElementById('comment-name');
-            const textInput = document.getElementById('comment-text');
-            
-            const name = nameInput.value.trim() || 'مستخدم';
-            const text = textInput.value.trim();
-            
-            if (!text) {
-                showNotification('الرجاء إدخال التعليق');
+        async function submitComment(e) {
+            e.preventDefault();
+
+            const submitBtn = document.getElementById('submit-comment-btn');
+            const msgDiv = document.getElementById('msg');
+            const name = document.getElementById('name').value.trim();
+            const text = document.getElementById('text').value.trim();
+
+            if (!name || !text) {
+                msgDiv.textContent = '❌ الرجاء ملء جميع الحقول';
+                msgDiv.style.color = '#ff4444';
                 return;
             }
-            
-            const validation = validateComment(text);
-            if (!validation.valid) {
-                showNotification(validation.message);
-                return;
-            }
-            
-            const comment = {
-                id: Date.now(),
-                name: name,
-                text: text,
-                date: new Date().toISOString(),
-                pinned: false
-            };
-            
-            comments.unshift(comment);
-            saveCommentsToStorage();
-            renderCommentsList();
-            
-            nameInput.value = '';
-            textInput.value = '';
-            
-            showNotification('تم إضافة التعليق بنجاح');
-        }
 
-        function togglePinComment(id) {
-            const comment = comments.find(c => c.id === id);
-            if (comment) {
-                comment.pinned = !comment.pinned;
-                saveCommentsToStorage();
-                renderCommentsList();
-                showNotification(comment.pinned ? 'تم تثبيت التعليق' : 'تم إلغاء تثبيت التعليق');
-            }
-        }
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الإرسال...';
+            msgDiv.textContent = '';
 
-        function deleteComment(id) {
-            if (confirm('هل تريد حذف هذا التعليق؟')) {
-                comments = comments.filter(c => c.id !== id);
-                saveCommentsToStorage();
-                renderCommentsList();
-                showNotification('تم حذف التعليق');
+            try {
+                const res = await fetch(API, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ name, text })
+                });
+
+                const data = await res.json();
+
+                if (data.success) {
+                    msgDiv.textContent = "✅ تم إرسال التعليق بنجاح";
+                    msgDiv.style.color = '#4CAF50';
+                    document.getElementById('commentForm').reset();
+                    
+                    // إعادة تحميل التعليقات
+                    await loadCommentsFromAPI();
+                } else {
+                    msgDiv.textContent = "❌ فشل الإرسال. حاول مرة أخرى";
+                    msgDiv.style.color = '#ff4444';
+                }
+            } catch (error) {
+                console.error('Error submitting comment:', error);
+                msgDiv.textContent = "❌ حدث خطأ في الاتصال";
+                msgDiv.style.color = '#ff4444';
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> إرسال التعليق';
+                
+                setTimeout(() => {
+                    msgDiv.textContent = '';
+                }, 5000);
             }
         }
 
@@ -1623,34 +1604,19 @@
                 return;
             }
             
-            // Sort: pinned first, then by date
-            const sortedComments = [...comments].sort((a, b) => {
-                if (a.pinned && !b.pinned) return -1;
-                if (!a.pinned && b.pinned) return 1;
-                return new Date(b.date) - new Date(a.date);
-            });
-            
-            container.innerHTML = sortedComments.map(comment => `
-                <div class="comment-item ${comment.pinned ? 'pinned' : ''}">
+            container.innerHTML = comments.map(comment => `
+                <div class="comment-item">
                     <div class="comment-header">
                         <span class="comment-author">${comment.name}</span>
-                        <span class="comment-date">${formatCommentDate(comment.date)}</span>
+                        <span class="comment-date">${formatCommentDate(comment.timestamp)}</span>
                     </div>
                     <div class="comment-text">${comment.text}</div>
-                    <div class="comment-actions">
-                        <button class="comment-btn ${comment.pinned ? 'pinned-btn' : ''}" onclick="togglePinComment(${comment.id})">
-                            <i class="fas fa-thumbtack"></i> ${comment.pinned ? 'إلغاء التثبيت' : 'تثبيت'}
-                        </button>
-                        <button class="comment-btn" onclick="deleteComment(${comment.id})">
-                            <i class="fas fa-trash"></i> حذف
-                        </button>
-                    </div>
                 </div>
             `).join('');
         }
 
-        function formatCommentDate(dateString) {
-            const date = new Date(dateString);
+        function formatCommentDate(timestamp) {
+            const date = new Date(timestamp);
             const now = new Date();
             const diffMs = now - date;
             const diffMins = Math.floor(diffMs / 60000);
@@ -1667,23 +1633,6 @@
                 month: 'long', 
                 day: 'numeric' 
             });
-        }
-
-        function saveCommentsToStorage() {
-            localStorage.setItem('siteComments', JSON.stringify(comments));
-        }
-
-        function loadCommentsFromStorage() {
-            const storedComments = localStorage.getItem('siteComments');
-            
-            if (storedComments) {
-                try {
-                    comments = JSON.parse(storedComments);
-                } catch (e) {
-                    console.error('Error loading comments:', e);
-                    comments = [];
-                }
-            }
         }
 
         // Utility functions
@@ -1841,8 +1790,8 @@
             // TV button
             tvButton.addEventListener('click', castToTV);
             
-            // Comments
-            document.getElementById('submit-comment').addEventListener('click', submitComment);
+            // Comments form
+            document.getElementById('commentForm').addEventListener('submit', submitComment);
             
             // Keyboard shortcuts
             document.addEventListener('keydown', (e) => {
@@ -1898,83 +1847,6 @@
                         changePlaybackRate();
                         e.preventDefault();
                         break;
-                    case 'Digit0':
-                    case 'Numpad0':
-                        if (playerReady) player.seekTo(0, true);
-                        e.preventDefault();
-                        break;
-                    case 'Digit1':
-                    case 'Numpad1':
-                        if (playerReady) {
-                            const duration = player.getDuration();
-                            if (duration && !isNaN(duration)) player.seekTo(duration * 0.1, true);
-                        }
-                        e.preventDefault();
-                        break;
-                    case 'Digit2':
-                    case 'Numpad2':
-                        if (playerReady) {
-                            const duration = player.getDuration();
-                            if (duration && !isNaN(duration)) player.seekTo(duration * 0.2, true);
-                        }
-                        e.preventDefault();
-                        break;
-                    case 'Digit3':
-                    case 'Numpad3':
-                        if (playerReady) {
-                            const duration = player.getDuration();
-                            if (duration && !isNaN(duration)) player.seekTo(duration * 0.3, true);
-                        }
-                        e.preventDefault();
-                        break;
-                    case 'Digit4':
-                    case 'Numpad4':
-                        if (playerReady) {
-                            const duration = player.getDuration();
-                            if (duration && !isNaN(duration)) player.seekTo(duration * 0.4, true);
-                        }
-                        e.preventDefault();
-                        break;
-                    case 'Digit5':
-                    case 'Numpad5':
-                        if (playerReady) {
-                            const duration = player.getDuration();
-                            if (duration && !isNaN(duration)) player.seekTo(duration * 0.5, true);
-                        }
-                        e.preventDefault();
-                        break;
-                    case 'Digit6':
-                    case 'Numpad6':
-                        if (playerReady) {
-                            const duration = player.getDuration();
-                            if (duration && !isNaN(duration)) player.seekTo(duration * 0.6, true);
-                        }
-                        e.preventDefault();
-                        break;
-                    case 'Digit7':
-                    case 'Numpad7':
-                        if (playerReady) {
-                            const duration = player.getDuration();
-                            if (duration && !isNaN(duration)) player.seekTo(duration * 0.7, true);
-                        }
-                        e.preventDefault();
-                        break;
-                    case 'Digit8':
-                    case 'Numpad8':
-                        if (playerReady) {
-                            const duration = player.getDuration();
-                            if (duration && !isNaN(duration)) player.seekTo(duration * 0.8, true);
-                        }
-                        e.preventDefault();
-                        break;
-                    case 'Digit9':
-                    case 'Numpad9':
-                        if (playerReady) {
-                            const duration = player.getDuration();
-                            if (duration && !isNaN(duration)) player.seekTo(duration * 0.9, true);
-                        }
-                        e.preventDefault();
-                        break;
                 }
             });
             
@@ -2004,14 +1876,6 @@
                 } else if (touchStartX - touchEndX > swipeThreshold) {
                     playNextVideo();
                 }
-            }
-            
-            // Show keyboard shortcuts info at first visit
-            if (!localStorage.getItem('keyboardShortcutsShown')) {
-                setTimeout(() => {
-                    showNotification('اضغط Space للتشغيل/الإيقاف، الأسهم للتنقل، F لملء الشاشة');
-                    localStorage.setItem('keyboardShortcutsShown', 'true');
-                }, 2000);
             }
         });
     </script>
