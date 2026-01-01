@@ -880,8 +880,9 @@
      crossorigin="anonymous"></script>
     
     <script src="https://www.youtube.com/iframe_api"></script>
-   <script>
-        // API URL - تأكد من تعديل هذا الرابط
+  
+    <script>
+        // API URL - تم التعديل ليكون الرابط الأساسي فقط، ليتم إضافة /comments لاحقاً في الدوال
         const API = "https://shrill-wood-c3f7.jaafardarim.workers.dev";
 
         // Global variables
@@ -1527,18 +1528,18 @@
             }
         }
 
-        // Comments functions with API - التعديل هنا ✅
+        // ✅ Comments functions with API (UPDATED)
         async function loadCommentsFromAPI() {
             try {
                 const res = await fetch(API + "/comments");
                 const data = await res.json();
-                
+
                 if (Array.isArray(data)) {
                     comments = data;
                 } else {
                     comments = [];
                 }
-                
+
                 renderCommentsList();
             } catch (e) {
                 console.error("Load comments error:", e);
@@ -1566,7 +1567,8 @@
             msgDiv.textContent = '';
 
             try {
-                const res = await fetch(API, {
+                // ✅ Updated API call to match the new structure
+                const res = await fetch(API + "/comments", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ name, text })
@@ -1579,6 +1581,7 @@
                     msgDiv.style.color = '#4CAF50';
                     document.getElementById('commentForm').reset();
                     
+                    // إعادة تحميل التعليقات
                     await loadCommentsFromAPI();
                 } else {
                     msgDiv.textContent = "❌ فشل الإرسال. حاول مرة أخرى";
@@ -1610,6 +1613,7 @@
                 <div class="comment-item">
                     <div class="comment-header">
                         <span class="comment-author">${comment.name}</span>
+                        <!-- ✅ Updated date format property -->
                         <span class="comment-date">${formatCommentDate(comment.time)}</span>
                     </div>
                     <div class="comment-text">${comment.text}</div>
@@ -1783,103 +1787,7 @@
                 formContainer.classList.toggle('panel-collapsed');
                 const icon = document.querySelector('#toggle-playlist-form i');
                 icon.classList.toggle('fa-chevron-down');
-                icon.classList.toggle('fa-chevron-up');
-            });
-            
-            // Theme toggle
-            themeToggleButton.addEventListener('click', toggleTheme);
-            
-            // TV button
-            tvButton.addEventListener('click', castToTV);
-            
-            // Comments form
-            document.getElementById('commentForm').addEventListener('submit', submitComment);
-            
-            // Keyboard shortcuts
-            document.addEventListener('keydown', (e) => {
-                if (e.target.tagName.toLowerCase() === 'input' || e.target.tagName.toLowerCase() === 'textarea') return;
-                
-                switch (e.code) {
-                    case 'Space':
-                        togglePlayPause();
-                        e.preventDefault();
-                        break;
-                    case 'ArrowLeft':
-                        if (playerReady) player.seekTo(Math.max(0, player.getCurrentTime() - 10), true);
-                        e.preventDefault();
-                        break;
-                    case 'ArrowRight':
-                        if (playerReady) {
-                            const duration = player.getDuration();
-                            if (duration && !isNaN(duration)) {
-                                player.seekTo(Math.min(duration, player.getCurrentTime() + 10), true);
-                            }
-                        }
-                        e.preventDefault();
-                        break;
-                    case 'ArrowUp':
-                        if (playerReady) {
-                            setVolume(Math.min(100, currentVolume + 5));
-                        }
-                        e.preventDefault();
-                        break;
-                    case 'ArrowDown':
-                        if (playerReady) {
-                            setVolume(Math.max(0, currentVolume - 5));
-                        }
-                        e.preventDefault();
-                        break;
-                    case 'KeyF':
-                        toggleFullscreen();
-                        e.preventDefault();
-                        break;
-                    case 'KeyM':
-                        toggleMute();
-                        e.preventDefault();
-                        break;
-                    case 'KeyN':
-                        playNextVideo();
-                        e.preventDefault();
-                        break;
-                    case 'KeyP':
-                        playPrevVideo();
-                        e.preventDefault();
-                        break;
-                    case 'KeyS':
-                        changePlaybackRate();
-                        e.preventDefault();
-                        break;
-                }
-            });
-            
-            // Double click for fullscreen
-            playerOverlay.addEventListener('dblclick', toggleFullscreen);
-            
-            // Single click for play/pause
-            playerOverlay.addEventListener('click', togglePlayPause);
-            
-            // Swipe gestures
-            let touchStartX = 0;
-            let touchEndX = 0;
-            
-            playerOverlay.addEventListener('touchstart', (e) => {
-                touchStartX = e.changedTouches[0].screenX;
-            });
-            
-            playerOverlay.addEventListener('touchend', (e) => {
-                touchEndX = e.changedTouches[0].screenX;
-                handleSwipe();
-            });
-            
-            function handleSwipe() {
-                const swipeThreshold = 100;
-                if (touchEndX - touchStartX > swipeThreshold) {
-                    playPrevVideo();
-                } else if (touchStartX - touchEndX > swipeThreshold) {
-                    playNextVideo();
-                }
-            }
-        });
-    </script>
+                icon.classList.toggle
+</script>
 </body>
 </html>
