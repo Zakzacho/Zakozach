@@ -1,150 +1,138 @@
-// قائمة الفيديوهات - أضف روابط اليوتيوب هنا
+const API_URL = "https://watch-vip.onrender.com";
+
+/* =========================
+   قائمة الفيديوهات
+========================= */
 const videos = [
-    {
-        id: 1,
-        title: "مقدمة في البرمجة",
-        youtubeId: "dQw4w9WgXcQ", // غيّر هذا بمعرف الفيديو الحقيقي
-        thumbnail: "https://img.youtube.com/vi/dQw4w9WgXcQ/mqdefault.jpg"
-    },
-    {
-        id: 2,
-        title: "تعلم JavaScript",
-        youtubeId: "W6NZfCO5SIk",
-        thumbnail: "https://img.youtube.com/vi/W6NZfCO5SIk/mqdefault.jpg"
-    },
-    {
-        id: 3,
-        title: "أساسيات HTML و CSS",
-        youtubeId: "UB1O30fR-EE",
-        thumbnail: "https://img.youtube.com/vi/UB1O30fR-EE/mqdefault.jpg"
-    }
-    // أضف المزيد من الفيديوهات هنا
+  {
+    id: 1,
+    title: "مقدمة في البرمجة",
+    youtubeId: "dQw4w9WgXcQ",
+    thumbnail: "https://img.youtube.com/vi/dQw4w9WgXcQ/mqdefault.jpg"
+  },
+  {
+    id: 2,
+    title: "تعلم JavaScript",
+    youtubeId: "W6NZfCO5SIk",
+    thumbnail: "https://img.youtube.com/vi/W6NZfCO5SIk/mqdefault.jpg"
+  },
+  {
+    id: 3,
+    title: "أساسيات HTML و CSS",
+    youtubeId: "UB1O30fR-EE",
+    thumbnail: "https://img.youtube.com/vi/UB1O30fR-EE/mqdefault.jpg"
+  }
 ];
 
-// تحميل الفيديوهات عند فتح الصفحة
-document.addEventListener('DOMContentLoaded', function() {
-    loadVideos();
-    loadComments();
+document.addEventListener("DOMContentLoaded", () => {
+  loadVideos();
+  loadApprovedComments();
 });
 
-// عرض قائمة الفيديوهات
+/* =========================
+   عرض الفيديوهات
+========================= */
 function loadVideos() {
-    const videoList = document.getElementById('videoList');
-    const videoCount = document.getElementById('videoCount');
-    
-    videoCount.textContent = videos.length;
-    videoList.innerHTML = '';
+  const videoList = document.getElementById("videoList");
+  const videoCount = document.getElementById("videoCount");
 
-    videos.forEach(video => {
-        const videoCard = document.createElement('div');
-        videoCard.className = 'video-card';
-        videoCard.onclick = () => playVideo(video);
-        
-        videoCard.innerHTML = `
-            <img src="${video.thumbnail}" alt="${video.title}">
-            <div class="video-info">
-                <h3>${video.title}</h3>
-                <button class="play-btn">▶ تشغيل</button>
-            </div>
-        `;
-        
-        videoList.appendChild(videoCard);
+  videoCount.textContent = videos.length;
+  videoList.innerHTML = "";
+
+  videos.forEach(video => {
+    const card = document.createElement("div");
+    card.className = "video-card";
+    card.onclick = () => playVideo(video);
+
+    card.innerHTML = `
+      <img src="${video.thumbnail}" alt="${video.title}">
+      <div class="video-info">
+        <h3>${video.title}</h3>
+        <button class="play-btn">▶ تشغيل</button>
+      </div>
+    `;
+
+    videoList.appendChild(card);
+  });
+}
+
+function playVideo(video) {
+  const playerSection = document.getElementById("playerSection");
+  const youtubePlayer = document.getElementById("youtubePlayer");
+  const currentVideoTitle = document.getElementById("currentVideoTitle");
+
+  currentVideoTitle.textContent = video.title;
+  youtubePlayer.src = `https://www.youtube.com/embed/${video.youtubeId}?autoplay=1`;
+
+  playerSection.style.display = "block";
+  playerSection.scrollIntoView({ behavior: "smooth" });
+}
+
+function closePlayer() {
+  document.getElementById("youtubePlayer").src = "";
+  document.getElementById("playerSection").style.display = "none";
+}
+
+/* =========================
+   نظام التعليقات (مرتبط بالبوت)
+========================= */
+function submitComment() {
+  const nameInput = document.getElementById("userName");
+  const commentInput = document.getElementById("commentText");
+
+  const name = nameInput.value.trim() || "مستخدم";
+  const comment = commentInput.value.trim();
+
+  if (!comment) {
+    alert("الرجاء كتابة تعليق أولاً");
+    return;
+  }
+
+  fetch(API_URL + "/submit-comment", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      name: name,
+      comment: comment
+    })
+  });
+
+  nameInput.value = "";
+  commentInput.value = "";
+
+  alert("تم إرسال تعليقك، في انتظار المراجعة");
+}
+
+/* =========================
+   جلب التعليقات الموافق عليها
+========================= */
+function loadApprovedComments() {
+  fetch(API_URL + "/comments")
+    .then(res => res.json())
+    .then(data => renderComments(data))
+    .catch(() => {
+      document.getElementById("commentsList").innerHTML =
+        '<p class="no-comments">لا توجد تعليقات بعد.</p>';
     });
 }
 
-// تشغيل الفيديو
-function playVideo(video) {
-    const playerSection = document.getElementById('playerSection');
-    const youtubePlayer = document.getElementById('youtubePlayer');
-    const currentVideoTitle = document.getElementById('currentVideoTitle');
-    
-    currentVideoTitle.textContent = video.title;
-    youtubePlayer.src = `https://www.youtube.com/embed/${video.youtubeId}?autoplay=1`;
-    
-    playerSection.style.display = 'block';
-    playerSection.scrollIntoView({ behavior: 'smooth' });
-}
+function renderComments(comments) {
+  const commentsList = document.getElementById("commentsList");
 
-// إغلاق المشغل
-function closePlayer() {
-    const playerSection = document.getElementById('playerSection');
-    const youtubePlayer = document.getElementById('youtubePlayer');
-    
-    youtubePlayer.src = '';
-    playerSection.style.display = 'none';
-}
+  if (!comments.length) {
+    commentsList.innerHTML =
+      '<p class="no-comments">لا توجد تعليقات بعد. كن أول من يعلق!</p>';
+    return;
+  }
 
-// نظام التعليقات
-let comments = [];
-
-// تحميل التعليقات من localStorage
-function loadComments() {
-    const savedComments = localStorage.getItem('darnafullComments');
-    if (savedComments) {
-        comments = JSON.parse(savedComments);
-        displayComments();
-    }
-}
-
-// حفظ التعليقات
-function saveComments() {
-    localStorage.setItem('darnafullComments', JSON.stringify(comments));
-}
-
-// إضافة تعليق جديد
-function addComment() {
-    const userName = document.getElementById('userName').value.trim() || 'مستخدم';
-    const commentText = document.getElementById('commentText').value.trim();
-    
-    if (!commentText) {
-        alert('الرجاء كتابة تعليق أولاً');
-        return;
-    }
-    
-    const newComment = {
-        id: Date.now(),
-        userName: userName,
-        text: commentText,
-        date: new Date().toLocaleString('ar-SA')
-    };
-    
-    comments.unshift(newComment);
-    saveComments();
-    displayComments();
-    
-    // مسح النموذج
-    document.getElementById('userName').value = '';
-    document.getElementById('commentText').value = '';
-    
-    alert('تم إضافة تعليقك بنجاح!');
-}
-
-// عرض التعليقات
-function displayComments() {
-    const commentsList = document.getElementById('commentsList');
-    
-    if (comments.length === 0) {
-        commentsList.innerHTML = '<p class="no-comments">لا توجد تعليقات بعد. كن أول من يعلق!</p>';
-        return;
-    }
-    
-    commentsList.innerHTML = comments.map(comment => `
-        <div class="comment-card">
-            <div class="comment-header">
-                <span class="comment-user">👤 ${comment.userName}</span>
-                <span class="comment-date">${comment.date}</span>
-            </div>
-            <p class="comment-text">${comment.text}</p>
-            <button onclick="deleteComment(${comment.id})" class="delete-btn">🗑️ حذف</button>
-        </div>
-    `).join('');
-}
-
-// حذف تعليق
-function deleteComment(id) {
-    if (confirm('هل أنت متأكد من حذف هذا التعليق؟')) {
-        comments = comments.filter(comment => comment.id !== id);
-        saveComments();
-        displayComments();
-    }
+  commentsList.innerHTML = comments.map(c => `
+    <div class="comment-card">
+      <div class="comment-header">
+        <span class="comment-user">👤 ${c.name}</span>
+      </div>
+      <p class="comment-text">${c.comment}</p>
+    </div>
+  `).join("");
 }
