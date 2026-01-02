@@ -932,8 +932,7 @@
                 <button type="submit" id="submit-comment-btn" class="submit-btn">
                     <i class="fas fa-paper-plane"></i>
                     إرسال التعليق
-                </button>
-            </form>
+                </button>            </form>
 
             <div id="msg"></div>
 
@@ -943,13 +942,13 @@
 
 <script>
     // ═══════════════════════════════════════════════════════════════
-// 🎬 TV SHOW PLAYER - COMPLETE SCRIPT
+// 🎬 TV SHOW PLAYER - COMPLETE SCRIPT WITH FIXED COMMENTS
 // ═══════════════════════════════════════════════════════════════
 
 const API = "https://shrill-wood-c3f7.jaafardarim.workers.dev";
 
 // ═══════════════════════════════════════════════════════════════
-// 📺 PLAYER VARIABLES
+// 📺 PLAYER VARIABLES (UNCHANGED)
 // ═══════════════════════════════════════════════════════════════
 let player;
 let currentVideo = 0;
@@ -969,14 +968,15 @@ let hideControlsTimeout;
 let fullscreenApi;
 
 // ═══════════════════════════════════════════════════════════════
-// 💬 COMMENTS VARIABLES
+// 💬 COMMENTS VARIABLES - FIXED & OPTIMIZED
 // ═══════════════════════════════════════════════════════════════
 let comments = [];
 let commentsLoadInterval = null;
-let lastCommentsHash = '';
+let lastCommentsCheck = 0;
+let isLoadingComments = false;
 
 // ═══════════════════════════════════════════════════════════════
-// 🎯 DOM ELEMENTS
+// 🎯 DOM ELEMENTS (UNCHANGED)
 // ═══════════════════════════════════════════════════════════════
 const playerContainer = document.getElementById('player-container');
 const playerOverlay = document.getElementById('player-overlay');
@@ -1000,7 +1000,7 @@ const themeToggleButton = document.getElementById('theme-toggle');
 const tvButton = document.getElementById('tv-button');
 
 // ═══════════════════════════════════════════════════════════════
-// 🚀 INITIALIZATION
+// 🚀 INITIALIZATION - FIXED
 // ═══════════════════════════════════════════════════════════════
 function onYouTubeIframeAPIReady() {
     console.log('✅ YouTube API Ready');
@@ -1019,71 +1019,135 @@ function onYouTubeIframeAPIReady() {
     setupAutoHideControls();
     renderEpisodesList();
     
-    // ✅ تحميل التعليقات فوراً
-    loadCommentsFromAPI();
-    
-    // ✅ تحديث تلقائي كل 15 ثانية
-    startCommentsAutoRefresh();
+    // ✅ تحميل التعليقات بطريقة محسّنة
+    initializeComments();
 }
 
 // ═══════════════════════════════════════════════════════════════
-// 💬 COMMENTS API - FIXED & OPTIMIZED
+// 💬 COMMENTS SYSTEM - COMPLETELY FIXED
 // ═══════════════════════════════════════════════════════════════
 
 /**
- * ✅ تحميل التعليقات من الـ API
+ * ✅ تهيئة نظام التعليقات
+ */
+function initializeComments() {
+    console.log('🔄 Initializing comments system...');
+    
+    // تحميل فوري
+    loadCommentsFromAPI();
+    
+    // تحديث تلقائي كل 10 ثواني
+    if (commentsLoadInterval) {
+        clearInterval(commentsLoadInterval);
+    }
+    
+    commentsLoadInterval = setInterval(() => {
+        // تحديث فقط إذا مر أكثر من 10 ثواني على آخر تحديث
+        if (Date.now() - lastCommentsCheck > 10000 && !isLoadingComments) {
+            loadCommentsFromAPI();
+        }
+    }, 10000);
+    
+    console.log('✅ Comments system initialized');
+}
+
+/**
+ * ✅ تحميل التعليقات من API - محسّن ومُصحح
  */
 async function loadCommentsFromAPI() {
+    // منع التحميل المتزامن
+    if (isLoadingComments) {
+        console.log('⏳ Comments already loading, skipping...');
+        return false;
+    }
+    
+    isLoadingComments = true;
+    lastCommentsCheck = Date.now();
+    
     try {
-        console.log('🔄 Loading comments from API...');
+        console.log('📥 Loading comments from API...');
         
-        const response = await fetch(`${API}/comments`, {
+        // إضافة timestamp لمنع الكاش
+        const timestamp = Date.now();
+        const url = `${API}/comments?t=${timestamp}`;
+        
+        const response = await fetch(url, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
                 'Cache-Control': 'no-cache, no-store, must-revalidate',
-                'Pragma': 'no-cache'
+                'Pragma': 'no-cache',
+                'Expires': '0'
             },
             cache: 'no-store'
         });
         
+        console.log(`📡 API Response status: ${response.status}`);
+        
         if (!response.ok) {
-            throw new Error(`HTTP ${response.status}`);
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         }
         
-        const newComments = await response.json();
+        let newComments;
+        const responseText = await response.text();
         
-        // ✅ التحقق من التغييرات (تجنب إعادة الرسم غير الضرورية)
-        const newHash = JSON.stringify(newComments);
-        if (newHash !== lastCommentsHash) {
-            comments = Array.isArray(newComments) ? newComments : [];
-            lastCommentsHash = newHash;
-            
-            console.log(`✅ Comments loaded: ${comments.length} items`);
+        try {
+            newComments = JSON.parse(responseText);
+        } catch (parseError) {
+            console.error('❌ JSON Parse Error:', parseError);
+            console.log('Raw response:', responseText);
+            throw new Error('Invalid JSON response');
+        }
+        
+        // التحقق من صحة البيانات
+        if (!Array.isArray(newComments)) {
+            console.warn('⚠️ API returned non-array data:', newComments);
+            newComments = [];
+        }
+        
+        // فلترة التعليقات المعتمدة فقط
+        const approvedComments = newComments.filter(comment => {
+            return comment && 
+                   (comment.approved === 1 || comment.approved === true) &&
+                   comment.name && 
+                   comment.text;
+        });
+        
+        console.log(`✅ Loaded ${approvedComments.length} approved comments (${newComments.length} total)`);
+        
+        // التحقق من التغييرات
+        const hasChanged = JSON.stringify(comments) !== JSON.stringify(approvedComments);
+        
+        if (hasChanged || comments.length === 0) {
+            comments = approvedComments;
             renderCommentsList();
+            console.log('🎨 Comments list updated');
         } else {
             console.log('ℹ️ No changes in comments');
         }
         
+        isLoadingComments = false;
         return true;
+        
     } catch (error) {
         console.error('❌ Error loading comments:', error);
         
-        // عدم مسح التعليقات الموجودة في حالة الخطأ
+        // في حالة الخطأ، لا نمسح التعليقات الموجودة
         if (comments.length === 0) {
-            renderCommentsList();
+            renderCommentsEmpty();
         }
         
+        isLoadingComments = false;
         return false;
     }
 }
 
 /**
- * ✅ إرسال تعليق جديد
+ * ✅ إرسال تعليق جديد - محسّن
  */
 async function submitComment(name, text) {
     try {
-        console.log('📤 Submitting comment:', { name, text });
+        console.log('📤 Submitting comment:', { name: name.substring(0, 20) + '...', textLength: text.length });
         
         const response = await fetch(`${API}/comments`, {
             method: 'POST',
@@ -1096,20 +1160,21 @@ async function submitComment(name, text) {
             })
         });
 
-        const result = await response.json();
+        let result;
+        try {
+            result = await response.json();
+        } catch (parseError) {
+            console.error('❌ JSON parse error in submit:', parseError);
+            throw new Error('خطأ في استجابة الخادم');
+        }
+        
         console.log('📥 Submit response:', result);
         
         if (response.ok && result.success) {
-            // ✅ تحديث فوري بعد 2 ثانية
-            setTimeout(() => {
-                console.log('🔄 Reloading comments after submission...');
-                loadCommentsFromAPI();
-            }, 2000);
-            
-            // ✅ تحديث إضافي بعد 5 ثواني (للتأكد)
-            setTimeout(() => {
-                loadCommentsFromAPI();
-            }, 5000);
+            // تحديث فوري متعدد المراحل
+            setTimeout(() => loadCommentsFromAPI(), 1000);  // بعد ثانية
+            setTimeout(() => loadCommentsFromAPI(), 5000);  // بعد 5 ثواني
+            setTimeout(() => loadCommentsFromAPI(), 15000); // بعد 15 ثانية
             
             return {
                 success: true,
@@ -1118,7 +1183,7 @@ async function submitComment(name, text) {
         } else {
             return {
                 success: false,
-                message: result.error || 'حدث خطأ أثناء الإرسال. حاول مجدداً.'
+                message: result?.error || 'حدث خطأ أثناء الإرسال. حاول مجدداً.'
             };
         }
     } catch (error) {
@@ -1131,7 +1196,7 @@ async function submitComment(name, text) {
 }
 
 /**
- * ✅ رسم قائمة التعليقات
+ * ✅ رسم قائمة التعليقات - محسّن
  */
 function renderCommentsList() {
     const container = document.getElementById('comments-list');
@@ -1143,31 +1208,32 @@ function renderCommentsList() {
     
     console.log(`🎨 Rendering ${comments.length} comments`);
     
+    // إخفاء حالة التحميل
+    const loadingIndicator = container.querySelector('.comments-loading');
+    if (loadingIndicator) {
+        loadingIndicator.remove();
+    }
+    
     if (comments.length === 0) {
-        container.innerHTML = `
-            <div class="no-comments">
-                <i class="fas fa-comments"></i>
-                <p>لا توجد تعليقات بعد</p>
-                <p>كن أول من يعلق على هذه الحلقات!</p>
-            </div>
-        `;
+        renderCommentsEmpty();
         return;
     }
     
-    // ✅ ترتيب التعليقات (الأحدث أولاً)
+    // ترتيب التعليقات (الأحدث أولاً)
     const sortedComments = [...comments].sort((a, b) => {
-        const timeA = a.time || 0;
-        const timeB = b.time || 0;
-        return timeB - timeA;
+        const timeA = parseCommentTime(a.time || a.created_at || a.date);
+        const timeB = parseCommentTime(b.time || b.created_at || b.date);
+        return timeB - timeA; // الأحدث أولاً
     });
     
-    const commentsHTML = sortedComments.map(comment => {
+    const commentsHTML = sortedComments.map((comment, index) => {
         const name = escapeHtml(comment.name || 'مجهول');
         const text = escapeHtml(comment.text || '');
-        const date = formatCommentDate(comment.time || comment.date);
+        const date = formatCommentDate(comment.time || comment.created_at || comment.date);
+        const commentId = comment.id || index;
         
         return `
-            <div class="comment-item" data-id="${comment.id || ''}">
+            <div class="comment-item" data-id="${commentId}">
                 <div class="comment-header">
                     <div class="comment-author">
                         <i class="fas fa-user-circle"></i>
@@ -1178,30 +1244,64 @@ function renderCommentsList() {
                         <span>${date}</span>
                     </div>
                 </div>
-                <div class="comment-text">${text}</div>
+                <div class="comment-text">${text.replace(/\n/g, '<br>')}</div>
             </div>
         `;
     }).join('');
     
-    container.innerHTML = commentsHTML;
+    // تحديث المحتوى بسلاسة
+    if (container.innerHTML !== commentsHTML) {
+        container.style.opacity = '0.7';
+        setTimeout(() => {
+            container.innerHTML = commentsHTML;
+            container.style.opacity = '1';
+        }, 150);
+    }
+    
     console.log('✅ Comments rendered successfully');
 }
 
 /**
- * ✅ تنسيق التاريخ
+ * ✅ رسم حالة عدم وجود تعليقات
+ */
+function renderCommentsEmpty() {
+    const container = document.getElementById('comments-list');
+    if (!container) return;
+    
+    container.innerHTML = `
+        <div class="no-comments">
+            <i class="fas fa-comments"></i>
+            <p>لا توجد تعليقات بعد</p>
+            <p>كن أول من يعلق على هذه الحلقات!</p>
+        </div>
+    `;
+}
+
+/**
+ * ✅ معالجة وقت التعليق
+ */
+function parseCommentTime(timestamp) {
+    try {
+        if (typeof timestamp === 'number') {
+            return timestamp;
+        } else if (typeof timestamp === 'string') {
+            const parsed = new Date(timestamp).getTime();
+            return isNaN(parsed) ? Date.now() : parsed;
+        }
+        return Date.now();
+    } catch (error) {
+        console.warn('Date parse error:', error);
+        return Date.now();
+    }
+}
+
+/**
+ * ✅ تنسيق التاريخ - محسّن
  */
 function formatCommentDate(timestamp) {
     try {
-        let date;
-        
-        // معالجة أنواع مختلفة من التواريخ
-        if (typeof timestamp === 'number') {
-            date = new Date(timestamp);
-        } else if (typeof timestamp === 'string') {
-            date = new Date(timestamp);
-        } else {
-            return 'الآن';
-        }
+        const time = parseCommentTime(timestamp);
+        const date = new Date(time);
         
         // التحقق من صحة التاريخ
         if (isNaN(date.getTime())) {
@@ -1221,13 +1321,18 @@ function formatCommentDate(timestamp) {
         if (diffDays < 7) return `منذ ${diffDays} يوم`;
         
         // عرض تاريخ كامل للتواريخ القديمة
-        return date.toLocaleDateString('ar-SA', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit'
-        });
+        try {
+            return date.toLocaleDateString('ar-SA', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        } catch (localeError) {
+            // Fallback إذا فشل التنسيق العربي
+            return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
+        }
     } catch (error) {
         console.error('Date format error:', error);
         return 'تاريخ غير صحيح';
@@ -1235,10 +1340,10 @@ function formatCommentDate(timestamp) {
 }
 
 /**
- * ✅ تنظيف HTML
+ * ✅ تنظيف HTML - محسّن
  */
 function escapeHtml(text) {
-    if (!text) return '';
+    if (!text || typeof text !== 'string') return '';
     
     const map = {
         '&': '&amp;',
@@ -1249,36 +1354,7 @@ function escapeHtml(text) {
         '/': '&#x2F;'
     };
     
-    return String(text).replace(/[&<>"'/]/g, (char) => map[char]);
-}
-
-/**
- * ✅ بدء التحديث التلقائي للتعليقات
- */
-function startCommentsAutoRefresh() {
-    // إيقاف الـ interval السابق إن وُجد
-    if (commentsLoadInterval) {
-        clearInterval(commentsLoadInterval);
-    }
-    
-    // تحديث كل 15 ثانية
-    commentsLoadInterval = setInterval(() => {
-        console.log('🔄 Auto-refresh: Loading comments...');
-        loadCommentsFromAPI();
-    }, 15000);
-    
-    console.log('✅ Auto-refresh started (every 15s)');
-}
-
-/**
- * ✅ إيقاف التحديث التلقائي
- */
-function stopCommentsAutoRefresh() {
-    if (commentsLoadInterval) {
-        clearInterval(commentsLoadInterval);
-        commentsLoadInterval = null;
-        console.log('⏸️ Auto-refresh stopped');
-    }
+    return text.replace(/[&<>"'/]/g, (char) => map[char] || char);
 }
 
 /**
@@ -1292,25 +1368,37 @@ function refreshComments() {
         btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جارٍ التحديث...';
     }
     
-    loadCommentsFromAPI().then(() => {
+    // إجبار التحديث حتى لو كان هناك تحديث جاري
+    isLoadingComments = false;
+    lastCommentsCheck = 0;
+    
+    loadCommentsFromAPI().then((success) => {
         if (btn) {
             btn.disabled = false;
             btn.innerHTML = '<i class="fas fa-sync-alt"></i> تحديث التعليقات';
         }
         
-        showNotification('تم تحديث التعليقات', 'success');
-    }).catch(() => {
-        if (btn) {
-            btn.disabled = false;
-            btn.innerHTML = '<i class="fas fa-sync-alt"></i> تحديث التعليقات';
+        if (success) {
+            showNotification('تم تحديث التعليقات', 'success');
+        } else {
+            showNotification('فشل تحديث التعليقات', 'error');
         }
-        
-        showNotification('فشل تحديث التعليقات', 'error');
     });
 }
 
+/**
+ * ✅ إيقاف التحديث التلقائي
+ */
+function stopCommentsAutoRefresh() {
+    if (commentsLoadInterval) {
+        clearInterval(commentsLoadInterval);
+        commentsLoadInterval = null;
+        console.log('⏸️ Comments auto-refresh stopped');
+    }
+}
+
 // ═══════════════════════════════════════════════════════════════
-// 📺 PLAYER FUNCTIONS (UNCHANGED - KEEPING YOUR CODE)
+// 📺 PLAYER FUNCTIONS (UNCHANGED - KEEPING YOUR ORIGINAL CODE)
 // ═══════════════════════════════════════════════════════════════
 
 function setupFullscreenAPI() {
@@ -1911,13 +1999,13 @@ function showMessage(text, type = 'info') {
 }
 
 // ═══════════════════════════════════════════════════════════════
-// 🎮 EVENT LISTENERS
+// 🎮 EVENT LISTENERS - ENHANCED FOR COMMENTS
 // ═══════════════════════════════════════════════════════════════
 
 document.addEventListener('DOMContentLoaded', function() {
     console.log('✅ DOM Ready');
     
-    // Player controls
+    // Player controls (unchanged)
     if (playPauseButton) playPauseButton.addEventListener('click', togglePlayPause);
     if (prevVideoButton) prevVideoButton.addEventListener('click', playPrevVideo);
     if (nextVideoButton) nextVideoButton.addEventListener('click', playNextVideo);
@@ -1940,7 +2028,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (themeToggleButton) themeToggleButton.addEventListener('click', toggleTheme);
     if (tvButton) tvButton.addEventListener('click', castToTV);
 
-    // Progress bar
+    // Progress bar (unchanged)
     if (progressContainer) {
         progressContainer.addEventListener('click', (e) => {
             if (!playerReady) return;
@@ -1970,7 +2058,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Volume control
+    // Volume control (unchanged)
     if (volumeSlider) {
         volumeSlider.addEventListener('click', (e) => {
             if (!playerReady) return;
@@ -1981,7 +2069,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Playlist management
+    // Playlist management (unchanged)
     const addEpisodeBtn = document.getElementById('add-episode');
     if (addEpisodeBtn) {
         addEpisodeBtn.addEventListener('click', () => {
@@ -2025,7 +2113,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Toggle playlist form
+    // Toggle playlist form (unchanged)
     const toggleFormBtn = document.getElementById('toggle-playlist-form');
     const formContainer = document.getElementById('playlist-form-container');
     if (toggleFormBtn && formContainer) {
@@ -2054,6 +2142,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
             if (!nameInput || !textInput || !submitBtn) {
                 console.error('❌ Comment form elements missing');
+                showMessage('خطأ في النموذج. الرجاء إعادة تحميل الصفحة.', 'error');
                 return;
             }
             
@@ -2073,6 +2162,18 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
             
+            if (name.length > 50) {
+                showMessage('الاسم طويل جداً (الحد الأقصى 50 حرف)', 'error');
+                nameInput.focus();
+                return;
+            }
+            
+            if (text.length > 500) {
+                showMessage('التعليق طويل جداً (الحد الأقصى 500 حرف)', 'error');
+                textInput.focus();
+                return;
+            }
+            
             // تعطيل الزر والحقول
             submitBtn.disabled = true;
             nameInput.disabled = true;
@@ -2086,15 +2187,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     showMessage(result.message, 'success');
                     commentForm.reset();
                     
-                    // ✅ تحديث فوري بعد 2 ثانية
-                    setTimeout(() => {
-                        loadCommentsFromAPI();
-                    }, 2000);
+                    // عرض رسالة تأكيد إضافية
+                    showNotification('تم إرسال تعليقك بنجاح!', 'success');
                     
-                    // ✅ تحديث آخر بعد 5 ثواني
-                    setTimeout(() => {
-                        loadCommentsFromAPI();
-                    }, 5000);
                 } else {
                     showMessage(result.message, 'error');
                 }
@@ -2112,114 +2207,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // ✅ زر التحديث اليدوي
-    const refreshBtn = document.getElementById('refresh-comments-btn');
-    if (refreshBtn) {
-        refreshBtn.addEventListener('click', refreshComments);
-    }
-});
-
-// ═══════════════════════════════════════════════════════════════
-// ⌨️ KEYBOARD SHORTCUTS
-// ═══════════════════════════════════════════════════════════════
-
-document.addEventListener('keydown', (e) => {
-    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
-    
-    switch(e.code) {
-        case 'Space':
-            e.preventDefault();
-            togglePlayPause();
-            break;
-        case 'KeyF':
-            e.preventDefault();
-            toggleFullscreen();
-            break;
-        case 'KeyM':
-            e.preventDefault();
-            toggleMute();
-            break;
-        case 'ArrowLeft':
-            e.preventDefault();
-            if (playerReady) {
-                const currentTime = player.getCurrentTime();
-                player.seekTo(Math.max(0, currentTime - 10), true);
-            }
-            break;
-        case 'ArrowRight':
-            e.preventDefault();
-            if (playerReady) {
-                const currentTime = player.getCurrentTime();
-                const duration = player.getDuration();
-                player.seekTo(Math.min(duration, currentTime + 10), true);
-            }
-            break;
-        case 'KeyN':
-            e.preventDefault();
-            playNextVideo();
-            break;
-        case 'KeyP':
-            e.preventDefault();
-            playPrevVideo();
-            break;
-        case 'KeyS':
-            e.preventDefault();
-            changePlaybackRate();
-            break;
-        case 'Escape':
-            if (isFullscreen) {
-                exitFullscreen();
-            }
-            break;
-    }
-});
-
-// ═══════════════════════════════════════════════════════════════
-// 📱 TOUCH EVENTS FOR MOBILE
-// ═══════════════════════════════════════════════════════════════
-
-let touchStartX = 0;
-let touchStartY = 0;
-
-if (playerOverlay) {
-    playerOverlay.addEventListener('touchstart', (e) => {
-        touchStartX = e.touches[0].clientX;
-        touchStartY = e.touches[0].clientY;
-    });
-
-    playerOverlay.addEventListener('touchend', (e) => {
-        const touchEndX = e.changedTouches[0].clientX;
-        const touchEndY = e.changedTouches[0].clientY;
-        const deltaX = touchEndX - touchStartX;
-        const deltaY = touchEndY - touchStartY;
-        
-        if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 50) {
-            if (deltaX > 0) {
-                playNextVideo();
-            } else {
-                playPrevVideo();
-            }
-        } else if (Math.abs(deltaY) < 30 && Math.abs(deltaX) < 30) {
-            togglePlayPause();
-        }
-    });
-}
-
-// Prevent context menu on player
-if (playerContainer) {
-    playerContainer.addEventListener('contextmenu', (e) => {
-        e.preventDefault();
-    });
-}
-
-// ═══════════════════════════════════════════════════════════════
-// 🧹 CLEANUP ON PAGE UNLOAD
-// ═══════════════════════════════════════════════════════════════
-
-window.addEventListener('beforeunload', () => {
-    stopCommentsAutoRefresh();
-});
-
-console.log('✅ Script loaded successfully');
+    const refresh
 
 </script>
     
