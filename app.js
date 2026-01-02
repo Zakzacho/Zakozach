@@ -26,7 +26,6 @@ const videos = [
 
 document.addEventListener("DOMContentLoaded", () => {
   loadVideos();
-  loadApprovedComments();
 });
 
 /* =========================
@@ -74,7 +73,7 @@ function closePlayer() {
 }
 
 /* =========================
-   نظام التعليقات (مرتبط بالبوت)
+   إرسال التعليق إلى البوت
 ========================= */
 function submitComment() {
   const nameInput = document.getElementById("userName");
@@ -94,45 +93,14 @@ function submitComment() {
       "Content-Type": "application/json"
     },
     body: JSON.stringify({
-      name: name,
-      comment: comment
+      name,
+      comment
     })
+  }).then(() => {
+    alert("تم إرسال تعليقك بنجاح وسيصل إلى الإدارة");
+    nameInput.value = "";
+    commentInput.value = "";
+  }).catch(() => {
+    alert("حدث خطأ أثناء إرسال التعليق");
   });
-
-  nameInput.value = "";
-  commentInput.value = "";
-
-  alert("تم إرسال تعليقك، في انتظار المراجعة");
-}
-
-/* =========================
-   جلب التعليقات الموافق عليها
-========================= */
-function loadApprovedComments() {
-  fetch(API_URL + "/comments")
-    .then(res => res.json())
-    .then(data => renderComments(data))
-    .catch(() => {
-      document.getElementById("commentsList").innerHTML =
-        '<p class="no-comments">لا توجد تعليقات بعد.</p>';
-    });
-}
-
-function renderComments(comments) {
-  const commentsList = document.getElementById("commentsList");
-
-  if (!comments.length) {
-    commentsList.innerHTML =
-      '<p class="no-comments">لا توجد تعليقات بعد. كن أول من يعلق!</p>';
-    return;
-  }
-
-  commentsList.innerHTML = comments.map(c => `
-    <div class="comment-card">
-      <div class="comment-header">
-        <span class="comment-user">👤 ${c.name}</span>
-      </div>
-      <p class="comment-text">${c.comment}</p>
-    </div>
-  `).join("");
 }
