@@ -2,7 +2,7 @@
 // 🎬 TV SHOW PLAYER - COMPLETE SCRIPT (OPTIMIZED & FIXED)
 // ═══════════════════════════════════════════════════════════════
 
-const API = "https://shrill-wood-c3f7.jaafardarim.workers.dev";
+const API = "https://shrill-wood-c3f7.jaafardarim.workers.dev/";
 
 // ═══════════════════════════════════════════════════════════════
 // 📺 PLAYER VARIABLES
