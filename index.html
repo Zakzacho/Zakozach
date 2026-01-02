@@ -2,331 +2,63 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="theme-color" content="#f47521">
-    <meta name="description" content="Darnafull - منصة المشاهدة المتقدمة مع نظام تعليقات متطور">
-    <title>Darnafull - منصة المشاهدة المتقدمة</title>
-    
-    <!-- External Resources -->
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- Internal Styles -->
-    <link rel="stylesheet" href="styles.css">
-    
-    <!-- Manifest for PWA -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Darnafull - مشغل الفيديوهات</title>
     <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <!-- Main Container -->
-    <div class="container">
-        <!-- Header Section -->
-        <header class="header-bar">
-            <div class="header-info">
-                <h1 class="site-title">Darnafull</h1>
-                <p class="header-subtitle">منصة المشاهدة المتقدمة</p>
-            </div>
-            <div class="header-actions">
-                <button id="theme-toggle" class="theme-toggle tooltip" aria-label="تبديل المظهر">
-                    <i class="fas fa-moon"></i>
-                    <span class="tooltiptext">تبديل المظهر (Ctrl+T)</span>
-                </button>
-            </div>
-        </header>
-        
-        <!-- Video Player Section -->
-        <section class="player-container" id="player-container">
-            <!-- Loading Spinner -->
-            <div class="loader" id="loader"></div>
-            
-            <!-- Video Container -->
+    <header>
+        <h1>🎬 Darnafull</h1>
+        <p>مكتبة الفيديوهات المميزة</p>
+    </header>
+
+    <main>
+        <!-- قسم قائمة الفيديوهات -->
+        <section class="video-list-section">
+            <h2>الفيديوهات المتاحة (<span id="videoCount">0</span>)</h2>
+            <div id="videoList" class="video-grid"></div>
+        </section>
+
+        <!-- قسم المشغل -->
+        <section class="player-section" id="playerSection" style="display: none;">
+            <button class="close-btn" onclick="closePlayer()">✕ إغلاق</button>
+            <h2 id="currentVideoTitle">عنوان الفيديو</h2>
             <div class="video-container">
-                <div id="youtube-player"></div>
-                <div class="overlay" id="player-overlay"></div>
-            </div>
-            
-            <!-- TV Cast Button -->
-            <button class="tv-button tooltip" id="tv-button" aria-label="عرض على التلفاز">
-                <i class="fas fa-tv"></i>
-                <span class="tooltiptext">عرض على التلفاز</span>
-            </button>
-            
-            <!-- Custom Video Controls -->
-            <div class="controls" id="custom-controls">
-                <!-- Progress Bar -->
-                <div class="progress-container" id="progress-container">
-                    <div class="progress-bar" id="progress-bar">
-                        <div class="progress-handle"></div>
-                    </div>
-                    <div class="progress-hover-time" id="progress-hover-time">0:00</div>
-                </div>
-                
-                <!-- Control Buttons Container -->
-                <div class="buttons-container">
-                    <!-- Left Side Controls -->
-                    <div class="control-buttons">
-                        <button class="control-button tooltip" id="play-pause" aria-label="تشغيل/إيقاف">
-                            <i class="fas fa-play"></i>
-                            <span class="tooltiptext">تشغيل/إيقاف (Space)</span>
-                        </button>
-                        <button class="control-button tooltip" id="prev-video" aria-label="الحلقة السابقة">
-                            <i class="fas fa-step-backward"></i>
-                            <span class="tooltiptext">الحلقة السابقة (P)</span>
-                        </button>
-                        <button class="control-button tooltip" id="next-video" aria-label="الحلقة التالية">
-                            <i class="fas fa-step-forward"></i>
-                            <span class="tooltiptext">الحلقة التالية (N)</span>
-                        </button>
-                        <button class="control-button tooltip" id="rewind" aria-label="رجوع 10 ثواني">
-                            <i class="fas fa-backward"></i>
-                            <span class="tooltiptext">رجوع 10 ثواني (←)</span>
-                        </button>
-                        <button class="control-button tooltip" id="forward" aria-label="تقديم 10 ثواني">
-                            <i class="fas fa-forward"></i>
-                            <span class="tooltiptext">تقديم 10 ثواني (→)</span>
-                        </button>
-                        
-                        <!-- Volume Control -->
-                        <div class="volume-container">
-                            <button class="control-button tooltip" id="mute" aria-label="كتم الصوت">
-                                <i class="fas fa-volume-up"></i>
-                                <span class="tooltiptext">كتم الصوت (M)</span>
-                            </button>
-                            <div class="volume-slider" id="volume-slider">
-                                <div class="volume-level" id="volume-level"></div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Right Side Controls -->
-                    <div class="right-controls">
-                        <span class="time-display" id="time-display">0:00 / 0:00</span>
-                        <button class="control-button tooltip" id="playback-speed" aria-label="سرعة التشغيل">
-                            <i class="fas fa-tachometer-alt"></i>
-                            <span class="tooltiptext">سرعة التشغيل (S)</span>
-                        </button>
-                        <button class="control-button tooltip" id="settings" aria-label="الإعدادات">
-                            <i class="fas fa-cog"></i>
-                            <span class="tooltiptext">الإعدادات</span>
-                        </button>
-                        <button class="control-button tooltip" id="fullscreen" aria-label="ملء الشاشة">
-                            <i class="fas fa-expand"></i>
-                            <span class="tooltiptext">ملء الشاشة (F)</span>
-                        </button>
-                    </div>
-                </div>
+                <iframe id="youtubePlayer" 
+                        width="100%" 
+                        height="100%" 
+                        frameborder="0" 
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                        allowfullscreen>
+                </iframe>
             </div>
         </section>
 
-        <!-- Playlist Section -->
-        <section class="playlist-section" id="playlist-section">
-            <div class="section-header">
-                <h2 class="section-title">
-                    <i class="fas fa-list"></i>
-                    قائمة التشغيل
-                </h2>
-                <div class="playlist-controls">
-                    <button id="add-episode-btn" class="action-btn add-btn">
-                        <i class="fas fa-plus"></i>
-                        إضافة حلقة
-                    </button>
-                    <button id="import-playlist-btn" class="action-btn import-btn">
-                        <i class="fas fa-file-import"></i>
-                        استيراد
-                    </button>
-                    <button id="export-playlist-btn" class="action-btn export-btn">
-                        <i class="fas fa-file-export"></i>
-                        تصدير
-                    </button>
-                    <button id="clear-playlist-btn" class="action-btn danger-btn">
-                        <i class="fas fa-trash"></i>
-                        مسح الكل
-                    </button>
-                </div>
-            </div>
+        <!-- قسم التعليقات العامة -->
+        <section class="comments-section">
+            <h2>💬 صندوق الطلبات والتعليقات</h2>
+            <p class="comments-hint">اطلب إضافة فيديوهات معينة أو شارك رأيك</p>
             
-            <div id="episodes-list" class="episodes-grid">
-                <!-- Episodes will be inserted dynamically -->
+            <div class="comment-form">
+                <input type="text" id="userName" placeholder="اسمك (اختياري)" maxlength="50">
+                <textarea id="commentText" placeholder="اكتب طلبك أو تعليقك هنا..." rows="4" maxlength="500"></textarea>
+                <button onclick="addComment()" class="submit-btn">إرسال التعليق</button>
             </div>
+
+            <div id="commentsList" class="comments-list"></div>
         </section>
+    </main>
 
-        <!-- Add Episode Modal -->
-        <div id="add-episode-modal" class="modal">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h3 class="modal-title">
-                        <i class="fas fa-plus-circle"></i>
-                        إضافة حلقة جديدة
-                    </h3>
-                    <button class="modal-close" id="close-add-modal">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-                <form id="add-episode-form" class="modal-form">
-                    <div class="form-group">
-                        <label for="episode-title">
-                            <i class="fas fa-heading"></i>
-                            عنوان الحلقة
-                        </label>
-                        <input type="text" id="episode-title" class="form-input" placeholder="مثال: الحلقة 1 - البداية" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="episode-video-id">
-                            <i class="fas fa-video"></i>
-                            رابط الفيديو أو Video ID
-                        </label>
-                        <input type="text" id="episode-video-id" class="form-input" placeholder="مثال: dQw4w9WgXcQ" required>
-                        <small class="form-hint">يمكنك لصق رابط YouTube الكامل أو Video ID فقط</small>
-                    </div>
-                    <div class="form-actions">
-                        <button type="submit" class="submit-btn">
-                            <i class="fas fa-check"></i>
-                            إضافة الحلقة
-                        </button>
-                        <button type="button" class="cancel-btn" id="cancel-add-episode">
-                            <i class="fas fa-times"></i>
-                            إلغاء
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
+    <footer>
+        <p>&copy; 2024 Darnafull - جميع الحقوق محفوظة</p>
+    </footer>
 
-        <!-- Import Playlist Modal -->
-        <div id="import-modal" class="modal">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h3 class="modal-title">
-                        <i class="fas fa-file-import"></i>
-                        استيراد قائمة تشغيل
-                    </h3>
-                    <button class="modal-close" id="close-import-modal">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <div class="form-group">
-                        <label for="import-file">
-                            <i class="fas fa-file-upload"></i>
-                            اختر ملف JSON
-                        </label>
-                        <input type="file" id="import-file" class="file-input" accept=".json">
-                    </div>
-                    <div class="form-group">
-                        <label>
-                            <i class="fas fa-info-circle"></i>
-                            أو الصق محتوى JSON
-                        </label>
-                        <textarea id="import-json" class="form-input" placeholder='[{"title":"...","videoId":"..."}]' style="height: 150px; font-family: monospace;"></textarea>
-                    </div>
-                </div>
-                <div class="form-actions">
-                    <button id="confirm-import-btn" class="submit-btn">
-                        <i class="fas fa-check"></i>
-                        استيراد
-                    </button>
-                    <button id="cancel-import" class="cancel-btn">
-                        <i class="fas fa-times"></i>
-                        إلغاء
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Comments Section -->
-        <section class="comments-section" id="comments-section">
-            <div class="comments-header">
-                <h2 class="comments-title">
-                    <i class="fas fa-comments"></i>
-                    أرشيف التعليقات والطلبات
-                    <span class="comments-count" id="comments-count">(0)</span>
-                </h2>
-                <div class="comments-actions">
-                    <button id="refresh-comments-btn" class="refresh-btn">
-                        <i class="fas fa-sync-alt"></i>
-                        تحديث
-                    </button>
-                    <button id="toggle-auto-refresh" class="action-btn active" data-active="true">
-                        <i class="fas fa-clock"></i>
-                        <span class="btn-text">تحديث تلقائي</span>
-                    </button>
-                </div>
-            </div>
-
-            <!-- Comment Form -->
-            <form id="commentForm" class="comment-form">
-                <h3 class="form-title">
-                    <i class="fas fa-pen"></i>
-                    إضافة تعليق جديد
-                </h3>
-                <div class="form-group">
-                    <label for="name">
-                        <i class="fas fa-user"></i>
-                        الاسم
-                    </label>
-                    <input type="text" id="name" class="form-input" placeholder="اسمك" required maxlength="50">
-                </div>
-
-                <div class="form-group">
-                    <label for="text">
-                        <i class="fas fa-comment"></i>
-                        التعليق أو الطلب
-                    </label>
-                    <textarea id="text" class="form-input" placeholder="اكتب تعليقك أو طلبك هنا..." required maxlength="500" style="height: 120px; resize: vertical;"></textarea>
-                    <small class="form-hint char-counter">
-                        <span id="char-count">0</span> / 500 حرف
-                    </small>
-                </div>
-
-                <button type="submit" id="submit-comment-btn" class="submit-btn">
-                    <i class="fas fa-paper-plane"></i>
-                    <span class="btn-text">إرسال التعليق</span>
-                </button>
-            </form>
-
-            <!-- Message Display -->
-            <div id="msg" class="message-box" style="display: none;"></div>
-
-            <!-- Comments List -->
-            <div id="comments-list" class="comments-list">
-                <!-- Comments will be inserted dynamically -->
-            </div>
-        </section>
-
-        <!-- Footer -->
-        <footer class="footer">
-            <div class="footer-content">
-                <p class="footer-text">
-                    <i class="fas fa-heart" style="color: #f47521;"></i>
-                    صُنع بحب من Darnafull
-                </p>
-                <p class="footer-version">الإصدار 2.0.0</p>
-            </div>
-        </footer>
-    </div>
-
-    <!-- Notification Container -->
-    <div id="notification-container" class="notification-container"></div>
-
-    <!-- YouTube IFrame API -->
-    <script src="https://www.youtube.com/iframe_api"></script>
-    
-    <!-- Main Application Script -->
     <script src="app.js"></script>
-    
-    <!-- Service Worker Registration -->
     <script>
         if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('sw.js')
-                    .then(reg => console.log('✅ Service Worker مسجل:', reg))
-                    .catch(err => console.log('❌ خطأ في تسجيل Service Worker:', err));
-            });
+            navigator.serviceWorker.register('sw.js');
         }
     </script>
-    
-    
 </body>
 </html>
