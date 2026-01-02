@@ -4,61 +4,74 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Darnafull - مشغل الفيديوهات</title>
+
     <link rel="manifest" href="manifest.json">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <header>
-        <h1>🎬 Darnafull</h1>
-        <p>مكتبة الفيديوهات المميزة</p>
-    </header>
 
-    <main>
-        <!-- قسم قائمة الفيديوهات -->
-        <section class="video-list-section">
-            <h2>الفيديوهات المتاحة (<span id="videoCount">0</span>)</h2>
-            <div id="videoList" class="video-grid"></div>
-        </section>
+<header>
+    <h1>🎬 Darnafull</h1>
+    <p>مكتبة الفيديوهات المميزة</p>
+</header>
 
-        <!-- قسم المشغل -->
-        <section class="player-section" id="playerSection" style="display: none;">
-            <button class="close-btn" onclick="closePlayer()">✕ إغلاق</button>
-            <h2 id="currentVideoTitle">عنوان الفيديو</h2>
-            <div class="video-container">
-                <iframe id="youtubePlayer" 
-                        width="100%" 
-                        height="100%" 
-                        frameborder="0" 
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                        allowfullscreen>
-                </iframe>
-            </div>
-        </section>
+<main>
 
-        <!-- قسم التعليقات العامة -->
-        <section class="comments-section">
-            <h2>💬 صندوق الطلبات والتعليقات</h2>
-            <p class="comments-hint">اطلب إضافة فيديوهات معينة أو شارك رأيك</p>
-            
-            <div class="comment-form">
-                <input type="text" id="userName" placeholder="اسمك (اختياري)" maxlength="50">
-                <textarea id="commentText" placeholder="اكتب طلبك أو تعليقك هنا..." rows="4" maxlength="500"></textarea>
-                <button onclick="addComment()" class="submit-btn">إرسال التعليق</button>
-            </div>
+    <section class="video-list-section">
+        <h2>الفيديوهات المتاحة (<span id="videoCount">0</span>)</h2>
+        <div id="videoList" class="video-grid"></div>
+    </section>
 
-            <div id="commentsList" class="comments-list"></div>
-        </section>
-    </main>
+    <section class="player-section" id="playerSection" style="display:none;">
+        <button class="close-btn" onclick="closePlayer()">✕ إغلاق</button>
+        <h2 id="currentVideoTitle"></h2>
+        <div class="video-container">
+            <iframe
+                id="youtubePlayer"
+                frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen>
+            </iframe>
+        </div>
+    </section>
 
-    <footer>
-        <p>&copy; 2024 Darnafull - جميع الحقوق محفوظة</p>
-    </footer>
+    <section class="comments-section">
+        <h2>💬 صندوق الطلبات والتعليقات</h2>
+        <p class="comments-hint">اطلب إضافة فيديوهات أو اترك رأيك</p>
 
-    <script src="app.js"></script>
-    <script>
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js');
-        }
-    </script>
+        <div class="comment-form">
+            <input
+                type="text"
+                id="userName"
+                placeholder="اسمك (اختياري)"
+                maxlength="50">
+
+            <textarea
+                id="commentText"
+                placeholder="اكتب تعليقك هنا..."
+                rows="4"
+                maxlength="500"></textarea>
+
+            <button class="submit-btn" onclick="submitComment()">
+                إرسال التعليق
+            </button>
+        </div>
+
+        <div id="commentsList" class="comments-list"></div>
+    </section>
+
+</main>
+
+<footer>
+    <p>© 2024 Darnafull</p>
+</footer>
+
+<script src="app.js"></script>
+<script>
+    if ("serviceWorker" in navigator) {
+        navigator.serviceWorker.register("sw.js");
+    }
+</script>
+
 </body>
 </html>
