@@ -3,98 +3,141 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مشغل الفيديو</title>
+    <meta name="description" content="مشغل فيديو احترافي مع نظام تعليقات مباشر">
+    <title>Watch VIP - مشغل الفيديو</title>
+    
     <style>
+        /* ===========================
+           إعادة تعيين وتنسيقات عامة
+        =========================== */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
+        :root {
+            --primary-color: #ff0000;
+            --secondary-color: #282828;
+            --bg-dark: #0f0f0f;
+            --bg-light: #1f1f1f;
+            --text-primary: #ffffff;
+            --text-secondary: #aaaaaa;
+            --border-color: #303030;
+            --success-color: #00ff00;
+            --verified-color: #1da1f2;
+            --shadow: 0 2px 10px rgba(0,0,0,0.3);
         }
 
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        /* ===========================
+           حاوية رئيسية
+        =========================== */
         .container {
             max-width: 1200px;
             margin: 0 auto;
-        }
-
-        h1 {
-            text-align: center;
-            color: white;
-            margin-bottom: 30px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-        }
-
-        .video-section {
-            background: white;
-            border-radius: 15px;
             padding: 20px;
-            margin-bottom: 30px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
         }
 
-        .video-wrapper {
+        /* ===========================
+           قسم مشغل الفيديو
+        =========================== */
+        .video-section {
+            background: var(--bg-light);
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 30px;
+            box-shadow: var(--shadow);
+        }
+
+        .video-header {
+            padding: 15px 20px;
+            background: var(--secondary-color);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .video-header h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .video-container {
             position: relative;
             padding-bottom: 56.25%;
             height: 0;
             overflow: hidden;
-            border-radius: 10px;
+            background: #000;
         }
 
-        .video-wrapper iframe {
+        .video-container iframe {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-        }
-
-        .video-controls {
-            margin-top: 20px;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 10px;
-        }
-
-        .video-btn {
-            padding: 12px 20px;
-            background: #667eea;
-            color: white;
             border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 14px;
-            transition: all 0.3s;
-            font-weight: bold;
         }
 
-        .video-btn:hover {
-            background: #764ba2;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        .video-info {
+            padding: 20px;
         }
 
+        .video-title {
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .video-description {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        /* ===========================
+           قسم التعليقات
+        =========================== */
         .comments-section {
-            background: white;
-            border-radius: 15px;
-            padding: 30px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            background: var(--bg-light);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: var(--shadow);
         }
 
-        .comments-section h2 {
-            color: #667eea;
+        .comments-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
             margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 3px solid #667eea;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
         }
 
+        .comments-header h2 {
+            font-size: 1.4rem;
+            font-weight: 600;
+        }
+
+        .comments-count {
+            background: var(--secondary-color);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        /* نموذج إضافة تعليق */
         .comment-form {
             margin-bottom: 30px;
+            padding: 20px;
+            background: var(--secondary-color);
+            border-radius: 8px;
         }
 
         .form-group {
@@ -103,25 +146,28 @@
 
         .form-group label {
             display: block;
-            margin-bottom: 5px;
-            color: #333;
-            font-weight: bold;
+            margin-bottom: 8px;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
         }
 
         .form-group input,
         .form-group textarea {
             width: 100%;
-            padding: 12px;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            font-size: 14px;
+            padding: 12px 15px;
+            background: var(--bg-dark);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+            font-family: inherit;
             transition: border-color 0.3s;
         }
 
         .form-group input:focus,
         .form-group textarea:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: var(--primary-color);
         }
 
         .form-group textarea {
@@ -129,413 +175,596 @@
             min-height: 100px;
         }
 
+        .form-hint {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-top: 5px;
+        }
+
         .submit-btn {
             width: 100%;
-            padding: 15px;
-            background: #667eea;
-            color: white;
+            padding: 12px;
+            background: var(--primary-color);
+            color: var(--text-primary);
             border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: bold;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: opacity 0.3s;
         }
 
         .submit-btn:hover {
-            background: #764ba2;
-            transform: translateY(-2px);
+            opacity: 0.9;
         }
 
         .submit-btn:disabled {
-            background: #ccc;
+            opacity: 0.5;
             cursor: not-allowed;
-            transform: none;
         }
 
-        .comments-list {
-            margin-top: 30px;
-        }
-
-        .comment {
-            background: #f8f9fa;
-            padding: 20px;
-            border-radius: 10px;
+        /* رسائل الحالة */
+        .status-message {
+            padding: 12px 15px;
+            border-radius: 6px;
             margin-bottom: 15px;
-            border-right: 4px solid #667eea;
+            font-size: 0.9rem;
+            display: none;
+        }
+
+        .status-message.show {
+            display: block;
+        }
+
+        .status-message.success {
+            background: rgba(0, 255, 0, 0.1);
+            border: 1px solid var(--success-color);
+            color: var(--success-color);
+        }
+
+        .status-message.error {
+            background: rgba(255, 0, 0, 0.1);
+            border: 1px solid var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .status-message.info {
+            background: rgba(29, 161, 242, 0.1);
+            border: 1px solid var(--verified-color);
+            color: var(--verified-color);
+        }
+
+        /* قائمة التعليقات */
+        .comments-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .comment-item {
+            background: var(--secondary-color);
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
             transition: all 0.3s;
             cursor: pointer;
         }
 
-        .comment.pinned {
-            background: #fff3cd;
-            border-right-color: #ffc107;
+        .comment-item:hover {
+            border-color: var(--text-secondary);
         }
 
-        .comment.user-comment {
-            background: #d1ecf1;
-            border-right-color: #17a2b8;
-        }
-
-        .comment:hover {
-            transform: translateX(-5px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        .comment-item.user-comment {
+            border: 2px solid var(--primary-color);
+            background: rgba(255, 0, 0, 0.05);
         }
 
         .comment-header {
             display: flex;
-            justify-content: space-between;
             align-items: center;
+            justify-content: space-between;
             margin-bottom: 10px;
         }
 
         .comment-author {
-            font-weight: bold;
-            color: #667eea;
             display: flex;
             align-items: center;
             gap: 8px;
+            font-weight: 600;
+            font-size: 0.95rem;
         }
 
         .verified-badge {
-            background: #28a745;
-            color: white;
-            padding: 2px 8px;
-            border-radius: 12px;
-            font-size: 11px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            color: var(--verified-color);
+            font-size: 0.85rem;
         }
 
-        .comment-number {
-            background: #667eea;
-            color: white;
-            padding: 4px 12px;
-            border-radius: 15px;
-            font-size: 12px;
+        .verified-icon {
+            width: 16px;
+            height: 16px;
+            fill: var(--verified-color);
+        }
+
+        .comment-time {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
         }
 
         .comment-text {
-            color: #333;
+            color: var(--text-primary);
             line-height: 1.6;
+            word-wrap: break-word;
         }
 
-        .comment-date {
-            font-size: 12px;
-            color: #999;
+        .comment-actions {
             margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid var(--border-color);
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .click-count {
+            font-weight: 500;
+        }
+
+        .no-comments {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-secondary);
         }
 
         .loading {
             text-align: center;
-            color: #667eea;
             padding: 20px;
-            font-weight: bold;
+            color: var(--text-secondary);
         }
 
-        .message {
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-            font-weight: bold;
-        }
-
-        .message.success {
-            background: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-
-        .message.error {
-            background: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-
-        .message.info {
-            background: #d1ecf1;
-            color: #0c5460;
-            border: 1px solid #bee5eb;
-        }
-
+        /* ===========================
+           تصميم متجاوب
+        =========================== */
         @media (max-width: 768px) {
             .container {
-                padding: 10px;
-            }
-
-            h1 {
-                font-size: 24px;
-            }
-
-            .video-section,
-            .comments-section {
                 padding: 15px;
             }
 
-            .video-controls {
-                grid-template-columns: 1fr;
+            .video-header h1 {
+                font-size: 1.2rem;
             }
+
+            .video-title {
+                font-size: 1.1rem;
+            }
+
+            .comments-header h2 {
+                font-size: 1.2rem;
+            }
+
+            .comment-form {
+                padding: 15px;
+            }
+        }
+
+        /* ===========================
+           أنيميشن
+        =========================== */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .comment-item {
+            animation: fadeIn 0.3s ease-out;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🎬 مشغل الفيديو المميز</h1>
-
+        <!-- قسم الفيديو -->
         <div class="video-section">
-            <div class="video-wrapper">
-                <iframe 
-                    id="videoPlayer"
-                    src="https://www.youtube.com/embed/dQw4w9WgXcQ?enablejsapi=1"
-                    frameborder="0"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowfullscreen>
-                </iframe>
+            <div class="video-header">
+                <h1>🎬 Watch VIP</h1>
             </div>
-            <div class="video-controls">
-                <button class="video-btn" onclick="changeVideo('dQw4w9WgXcQ')">فيديو 1</button>
-                <button class="video-btn" onclick="changeVideo('9bZkp7q19f0')">فيديو 2</button>
-                <button class="video-btn" onclick="changeVideo('kJQP7kiw5Fk')">فيديو 3</button>
-                <button class="video-btn" onclick="changeVideo('JGwWNGJdvx8')">فيديو 4</button>
+            <div class="video-container" id="videoContainer">
+                <!-- سيتم إدراج الفيديو هنا -->
+            </div>
+            <div class="video-info">
+                <h2 class="video-title" id="videoTitle">مشغل الفيديو</h2>
+                <p class="video-description" id="videoDescription">شاهد الفيديو المفضل لديك دون إعلانات</p>
             </div>
         </div>
 
+        <!-- قسم التعليقات -->
         <div class="comments-section">
-            <h2>💬 التعليقات</h2>
+            <div class="comments-header">
+                <h2>💬 التعليقات</h2>
+                <span class="comments-count" id="commentsCount">0 تعليق</span>
+            </div>
 
-            <div id="messageContainer"></div>
+            <!-- رسالة الحالة -->
+            <div class="status-message" id="statusMessage"></div>
 
-            <form class="comment-form" id="commentForm">
-                <div class="form-group">
-                    <label for="userName">الاسم (اختياري)</label>
-                    <input type="text" id="userName" placeholder="اترك فارغاً للحصول على حساب موثق">
-                </div>
-                <div class="form-group">
-                    <label for="commentText">التعليق *</label>
-                    <textarea id="commentText" required placeholder="اكتب تعليقك هنا..."></textarea>
-                </div>
-                <button type="submit" class="submit-btn" id="submitBtn">إرسال التعليق</button>
-            </form>
+            <!-- نموذج إضافة تعليق -->
+            <div class="comment-form">
+                <form id="commentForm">
+                    <div class="form-group">
+                        <label for="commentName">الاسم (اختياري)</label>
+                        <input 
+                            type="text" 
+                            id="commentName" 
+                            placeholder="اترك فارغاً لتوليد اسم تلقائي"
+                            maxlength="50"
+                        >
+                        <div class="form-hint">سيتم توليد اسم بصيغة "حساب موثق رقم X" إذا تركت الحقل فارغاً</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="commentText">التعليق *</label>
+                        <textarea 
+                            id="commentText" 
+                            placeholder="اكتب تعليقك هنا..."
+                            required
+                            maxlength="500"
+                        ></textarea>
+                    </div>
+                    <button type="submit" class="submit-btn" id="submitBtn">نشر التعليق</button>
+                </form>
+            </div>
 
-            <div class="comments-list">
-                <h3 style="color: #667eea; margin-bottom: 15px;">التعليقات المعتمدة</h3>
-                <div id="commentsList">
-                    <div class="loading">جاري تحميل التعليقات...</div>
-                </div>
+            <!-- قائمة التعليقات -->
+            <div id="commentsListContainer">
+                <div class="loading">جاري تحميل التعليقات...</div>
             </div>
         </div>
     </div>
 
     <script>
-        const BACKEND_URL = 'https://watch-vip.onrender.com';
-        let userIP = null;
-        let userComment = null;
+        // ===========================
+        // CONFIG - الإعدادات العامة
+        // ===========================
+        const CONFIG = {
+            BACKEND_URL: 'https://site--watch-vip--j9hb6dlmp4qm.code.run',
+            DEFAULT_VIDEO_ID: 'dQw4w9WgXcQ', // معرف الفيديو الافتراضي
+            REFRESH_INTERVAL: 10000, // تحديث التعليقات كل 10 ثوانٍ
+            MAX_COMMENT_LENGTH: 500,
+            MAX_NAME_LENGTH: 50,
+            DOUBLE_CLICK_TIMEOUT: 500 // نصف ثانية للنقر المزدوج
+        };
 
-        // الحصول على IP المستخدم
-        async function getUserIP() {
-            try {
-                const response = await fetch('https://api.ipify.org?format=json');
-                const data = await response.json();
-                userIP = data.ip;
-            } catch (error) {
-                console.error('خطأ في الحصول على IP:', error);
-                userIP = 'unknown-' + Math.random().toString(36).substr(2, 9);
-            }
-        }
+        // ===========================
+        // UTILS - أدوات مساعدة
+        // ===========================
+        const Utils = {
+            // تنقية النصوص من أكواد HTML خطيرة
+            sanitize: function(text) {
+                const div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML;
+            },
 
-        // تغيير الفيديو
-        function changeVideo(videoId) {
-            const iframe = document.getElementById('videoPlayer');
-            iframe.src = `https://www.youtube.com/embed/${videoId}?enablejsapi=1`;
-        }
+            // تنسيق الوقت النسبي
+            formatTimeAgo: function(timestamp) {
+                const now = Date.now();
+                const diff = now - timestamp;
+                const seconds = Math.floor(diff / 1000);
+                const minutes = Math.floor(seconds / 60);
+                const hours = Math.floor(minutes / 60);
+                const days = Math.floor(hours / 24);
 
-        // عرض رسالة
-        function showMessage(text, type = 'info') {
-            const container = document.getElementById('messageContainer');
-            const message = document.createElement('div');
-            message.className = `message ${type}`;
-            message.textContent = text;
-            container.innerHTML = '';
-            container.appendChild(message);
-
-            setTimeout(() => {
-                message.remove();
-            }, 5000);
-        }
-
-        // تحميل التعليقات
-        async function loadComments() {
-            try {
-                const response = await fetch(`${BACKEND_URL}/comments`);
-                const data = await response.json();
-                displayComments(data.comments);
-            } catch (error) {
-                console.error('خطأ في تحميل التعليقات:', error);
-                document.getElementById('commentsList').innerHTML = 
-                    '<div class="message error">فشل تحميل التعليقات</div>';
-            }
-        }
-
-        // عرض التعليقات
-        function displayComments(comments) {
-            const container = document.getElementById('commentsList');
-            
-            if (!comments || comments.length === 0) {
-                container.innerHTML = '<div class="message info">لا توجد تعليقات بعد. كن أول من يعلق!</div>';
-                return;
-            }
-
-            container.innerHTML = comments.map((comment, index) => {
-                const isUserComment = comment.ip === userIP;
-                const isPinned = isUserComment;
+                if (seconds < 60) return 'الآن';
+                if (minutes < 60) return `منذ ${minutes} دقيقة`;
+                if (hours < 24) return `منذ ${hours} ساعة`;
+                if (days < 7) return `منذ ${days} يوم`;
                 
+                const date = new Date(timestamp);
+                return date.toLocaleDateString('ar-EG', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+            },
+
+            // توليد معرف فريد بسيط
+            generateId: function() {
+                return Date.now().toString(36) + Math.random().toString(36).substr(2);
+            },
+
+            // الحصول على معرف IP محاكى من المتصفح
+            getClientId: function() {
+                let clientId = localStorage.getItem('watch_vip_client_id');
+                if (!clientId) {
+                    clientId = this.generateId();
+                    localStorage.setItem('watch_vip_client_id', clientId);
+                }
+                return clientId;
+            },
+
+            // عرض رسالة حالة
+            showStatus: function(message, type = 'info') {
+                const statusEl = document.getElementById('statusMessage');
+                statusEl.textContent = message;
+                statusEl.className = `status-message ${type} show`;
+                
+                setTimeout(() => {
+                    statusEl.classList.remove('show');
+                }, 5000);
+            }
+        };
+
+        // ===========================
+        // PLAYER - منطق مشغل الفيديو
+        // ===========================
+        const Player = {
+            currentVideoId: null,
+
+            init: function() {
+                this.loadVideoFromURL();
+                this.setupPlayer();
+            },
+
+            // استخراج معرف الفيديو من URL
+            loadVideoFromURL: function() {
+                const urlParams = new URLSearchParams(window.location.search);
+                const videoId = urlParams.get('v') || CONFIG.DEFAULT_VIDEO_ID;
+                this.currentVideoId = videoId;
+            },
+
+            // إعداد المشغل
+            setupPlayer: function() {
+                const container = document.getElementById('videoContainer');
+                
+                // إنشاء iframe للفيديو مع تعطيل الروابط الخارجية
+                const iframe = document.createElement('iframe');
+                iframe.src = `https://www.youtube.com/embed/${this.currentVideoId}?rel=0&modestbranding=1&fs=1&controls=1`;
+                iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
+                iframe.allowFullscreen = true;
+                
+                container.innerHTML = '';
+                container.appendChild(iframe);
+                
+                // تحديث معلومات الفيديو
+                this.updateVideoInfo();
+            },
+
+            // تحديث معلومات الفيديو
+            updateVideoInfo: function() {
+                document.getElementById('videoTitle').textContent = `فيديو ${this.currentVideoId}`;
+                document.getElementById('videoDescription').textContent = 'استمتع بمشاهدة الفيديو بدون إعلانات مزعجة';
+            }
+        };
+
+        // ===========================
+        // COMMENTS - منطق التعليقات
+        // ===========================
+        const Comments = {
+            userCommentId: null,
+            clickCount: {},
+            lastClickTime: {},
+
+            init: function() {
+                this.loadUserComment();
+                this.setupForm();
+                this.loadComments();
+                this.startAutoRefresh();
+            },
+
+            // تحميل معرف تعليق المستخدم من localStorage
+            loadUserComment: function() {
+                this.userCommentId = localStorage.getItem('watch_vip_user_comment_id');
+            },
+
+            // حفظ معرف تعليق المستخدم
+            saveUserComment: function(commentId) {
+                this.userCommentId = commentId;
+                localStorage.setItem('watch_vip_user_comment_id', commentId);
+            },
+
+            // إعداد نموذج التعليق
+            setupForm: function() {
+                const form = document.getElementById('commentForm');
+                form.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    this.submitComment();
+                });
+            },
+
+            // إرسال تعليق جديد
+            submitComment: async function() {
+                const nameInput = document.getElementById('commentName');
+                const textInput = document.getElementById('commentText');
+                const submitBtn = document.getElementById('submitBtn');
+
+                const name = nameInput.value.trim();
+                const text = textInput.value.trim();
+
+                if (!text) {
+                    Utils.showStatus('يرجى كتابة تعليق', 'error');
+                    return;
+                }
+
+                // التحقق من وجود تعليق سابق
+                if (this.userCommentId) {
+                    Utils.showStatus('لديك تعليق بالفعل. انقر مرتين على تعليقك لحذفه والتعليق مرة أخرى', 'info');
+                    return;
+                }
+
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'جاري النشر...';
+
+                try {
+                    const response = await fetch(`${CONFIG.BACKEND_URL}/submit-comment`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            name: name || null,
+                            text: text,
+                            clientId: Utils.getClientId()
+                        })
+                    });
+
+                    const result = await response.json();
+
+                    if (response.ok) {
+                        Utils.showStatus('تم إرسال تعليقك بنجاح! في انتظار الموافقة', 'success');
+                        this.saveUserComment(result.commentId);
+                        textInput.value = '';
+                        nameInput.value = '';
+                    } else {
+                        Utils.showStatus(result.error || 'حدث خطأ أثناء إرسال التعليق', 'error');
+                    }
+                } catch (error) {
+                    console.error('Error submitting comment:', error);
+                    Utils.showStatus('فشل الاتصال بالخادم', 'error');
+                } finally {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'نشر التعليق';
+                }
+            },
+
+            // تحميل التعليقات من الخادم
+            loadComments: async function() {
+                try {
+                    const response = await fetch(`${CONFIG.BACKEND_URL}/comments`);
+                    const comments = await response.json();
+                    
+                    this.renderComments(comments);
+                } catch (error) {
+                    console.error('Error loading comments:', error);
+                    document.getElementById('commentsListContainer').innerHTML = 
+                        '<div class="no-comments">تعذر تحميل التعليقات</div>';
+                }
+            },
+
+            // عرض التعليقات
+            renderComments: function(comments) {
+                const container = document.getElementById('commentsListContainer');
+                const count = document.getElementById('commentsCount');
+
+                if (!comments || comments.length === 0) {
+                    container.innerHTML = '<div class="no-comments">لا توجد تعليقات بعد. كن أول من يعلق!</div>';
+                    count.textContent = '0 تعليق';
+                    return;
+                }
+
+                count.textContent = `${comments.length} ${comments.length === 1 ? 'تعليق' : 'تعليق'}`;
+
+                // ترتيب التعليقات: تعليق المستخدم أولاً ثم الباقي
+                let sortedComments = [...comments];
+                const userCommentIndex = sortedComments.findIndex(c => c.commentId === this.userCommentId);
+                
+                if (userCommentIndex > -1) {
+                    const userComment = sortedComments.splice(userCommentIndex, 1)[0];
+                    sortedComments.unshift(userComment);
+                }
+
+                const html = sortedComments.map(comment => this.createCommentHTML(comment)).join('');
+                container.innerHTML = `<div class="comments-list">${html}</div>`;
+
+                // إضافة مستمعات الأحداث للنقر المزدوج
+                this.attachClickListeners();
+            },
+
+            // إنشاء HTML لتعليق واحد
+            createCommentHTML: function(comment) {
+                const isUserComment = comment.commentId === this.userCommentId;
+                const isVerified = comment.displayName && comment.displayName.startsWith('حساب موثق');
+                
+                const verifiedBadge = isVerified ? `
+                    <span class="verified-badge">
+                        <svg class="verified-icon" viewBox="0 0 24 24">
+                            <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
+                        </svg>
+                        موثق
+                    </span>
+                ` : '';
+
                 return `
-                    <div class="comment ${isPinned ? 'pinned' : ''} ${isUserComment ? 'user-comment' : ''}" 
-                         onclick="handleCommentClick('${comment.ip}')">
+                    <div class="comment-item ${isUserComment ? 'user-comment' : ''}" 
+                         data-comment-id="${comment.commentId}">
                         <div class="comment-header">
                             <div class="comment-author">
-                                ${comment.name}
-                                ${comment.verified ? '<span class="verified-badge">✓ موثق</span>' : ''}
+                                <span>${Utils.sanitize(comment.displayName)}</span>
+                                ${verifiedBadge}
                             </div>
-                            <span class="comment-number">#${index + 1}</span>
+                            <span class="comment-time">${Utils.formatTimeAgo(comment.timestamp)}</span>
                         </div>
-                        <div class="comment-text">${comment.text}</div>
-                        <div class="comment-date">${new Date(comment.date).toLocaleString('ar-EG')}</div>
+                        <div class="comment-text">${Utils.sanitize(comment.text)}</div>
+                        ${isUserComment ? `
+                            <div class="comment-actions">
+                                <span class="click-count">انقر مرتين لحذف التعليق والسماح بتعليق جديد</span>
+                            </div>
+                        ` : ''}
                     </div>
                 `;
-            }).join('');
-        }
+            },
 
-        // معالجة النقر المزدوج على التعليق
-        let clickCount = 0;
-        let clickTimer = null;
-
-        function handleCommentClick(commentIP) {
-            if (commentIP !== userIP) return;
-
-            clickCount++;
-
-            if (clickCount === 1) {
-                clickTimer = setTimeout(() => {
-                    clickCount = 0;
-                }, 500);
-            } else if (clickCount === 2) {
-                clearTimeout(clickTimer);
-                clickCount = 0;
-                deleteUserComment();
-            }
-        }
-
-        // حذف تعليق المستخدم
-        async function deleteUserComment() {
-            if (!confirm('هل تريد حذف تعليقك؟ ستتمكن من التعليق مرة أخرى.')) {
-                return;
-            }
-
-            try {
-                const response = await fetch(`${BACKEND_URL}/delete-comment`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ ip: userIP })
+            // إضافة مستمعات النقر المزدوج
+            attachClickListeners: function() {
+                const commentItems = document.querySelectorAll('.comment-item');
+                
+                commentItems.forEach(item => {
+                    const commentId = item.getAttribute('data-comment-id');
+                    
+                    item.addEventListener('click', () => {
+                        this.handleCommentClick(commentId);
+                    });
                 });
+            },
 
-                const data = await response.json();
+            // معالجة النقر على التعليق
+            handleCommentClick: function(commentId) {
+                if (commentId !== this.userCommentId) return;
 
-                if (data.success) {
-                    showMessage('تم حذف تعليقك بنجاح. يمكنك التعليق مرة أخرى.', 'success');
-                    userComment = null;
-                    document.getElementById('submitBtn').disabled = false;
-                    loadComments();
+                const now = Date.now();
+                const lastClick = this.lastClickTime[commentId] || 0;
+                
+                if (now - lastClick < CONFIG.DOUBLE_CLICK_TIMEOUT) {
+                    // نقر مزدوج
+                    this.deleteUserComment();
+                    this.clickCount[commentId] = 0;
                 } else {
-                    showMessage(data.message || 'فشل حذف التعليق', 'error');
+                    // نقر واحد
+                    this.clickCount[commentId] = (this.clickCount[commentId] || 0) + 1;
                 }
-            } catch (error) {
-                console.error('خطأ في حذف التعليق:', error);
-                showMessage('حدث خطأ أثناء حذف التعليق', 'error');
-            }
-        }
+                
+                this.lastClickTime[commentId] = now;
+            },
 
-        // إرسال تعليق
-        document.getElementById('commentForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-
-            const userName = document.getElementById('userName').value.trim();
-            const commentText = document.getElementById('commentText').value.trim();
-            const submitBtn = document.getElementById('submitBtn');
-
-            if (!commentText) {
-                showMessage('الرجاء كتابة تعليق', 'error');
-                return;
-            }
-
-            submitBtn.disabled = true;
-            submitBtn.textContent = 'جاري الإرسال...';
-
-            try {
-                const response = await fetch(`${BACKEND_URL}/submit-comment`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        name: userName,
-                        text: commentText,
-                        ip: userIP
-                    })
-                });
-
-                const data = await response.json();
-
-                if (data.success) {
-                    showMessage('تم إرسال تعليقك بنجاح! في انتظار الموافقة من المشرف.', 'success');
-                    document.getElementById('commentText').value = '';
-                    document.getElementById('userName').value = '';
-                    userComment = { name: userName || data.assignedName, text: commentText };
-                } else {
-                    showMessage(data.message || 'فشل إرسال التعليق', 'error');
-                    submitBtn.disabled = false;
+            // حذف تعليق المستخدم
+            deleteUserComment: function() {
+                if (confirm('هل تريد حذف تعليقك؟ سيسمح لك هذا بنشر تعليق جديد.')) {
+                    localStorage.removeItem('watch_vip_user_comment_id');
+                    this.userCommentId = null;
+                    Utils.showStatus('تم حذف تعليقك. يمكنك الآن التعليق مرة أخرى', 'success');
+                    this.loadComments();
                 }
-            } catch (error) {
-                console.error('خطأ في إرسال التعليق:', error);
-                showMessage('حدث خطأ أثناء إرسال التعليق', 'error');
-                submitBtn.disabled = false;
-            }
+            },
 
-            submitBtn.textContent = 'إرسال التعليق';
+            // تحديث تلقائي للتعليقات
+            startAutoRefresh: function() {
+                setInterval(() => {
+                    this.loadComments();
+                }, CONFIG.REFRESH_INTERVAL);
+            }
+        };
+
+        // ===========================
+        // تهيئة التطبيق عند تحميل الصفحة
+        // ===========================
+        document.addEventListener('DOMContentLoaded', function() {
+            Player.init();
+            Comments.init();
         });
-
-        // التحقق من وجود تعليق سابق للمستخدم
-        async function checkUserComment() {
-            try {
-                const response = await fetch(`${BACKEND_URL}/check-comment`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ ip: userIP })
-                });
-
-                const data = await response.json();
-
-                if (data.hasComment) {
-                    userComment = data.comment;
-                    document.getElementById('submitBtn').disabled = true;
-                    showMessage('لديك تعليق بالفعل. اضغط مرتين على تعليقك لحذفه والتعليق مرة أخرى.', 'info');
-                }
-            } catch (error) {
-                console.error('خطأ في التحقق من التعليق:', error);
-            }
-        }
-
-        // تحديث التعليقات كل 10 ثواني
-        setInterval(loadComments, 10000);
-
-        // التهيئة
-        (async function init() {
-            await getUserIP();
-            await loadComments();
-            await checkUserComment();
-        })();
     </script>
 </body>
 </html>
