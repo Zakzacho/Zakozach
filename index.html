@@ -428,343 +428,449 @@
 
     <script>
         // ===========================
-        // CONFIG - الإعدادات العامة
-        // ===========================
-        const CONFIG = {
-            BACKEND_URL: 'https://site--watch-vip--j9hb6dlmp4qm.code.run',
-            DEFAULT_VIDEO_ID: 'dQw4w9WgXcQ', // معرف الفيديو الافتراضي
-            REFRESH_INTERVAL: 10000, // تحديث التعليقات كل 10 ثوانٍ
-            MAX_COMMENT_LENGTH: 500,
-            MAX_NAME_LENGTH: 50,
-            DOUBLE_CLICK_TIMEOUT: 500 // نصف ثانية للنقر المزدوج
-        };
+// CONFIG - الإعدادات العامة
+// ===========================
+const CONFIG = {
+    BACKEND_URL: 'https://site--watch-vip--j9hb6dlmp4qm.code.run',
+    DEFAULT_VIDEO_ID: 'dQw4w9WgXcQ',
+    REFRESH_INTERVAL: 10000,
+    MAX_COMMENT_LENGTH: 500,
+    MAX_NAME_LENGTH: 50,
+    DOUBLE_CLICK_TIMEOUT: 500
+};
 
-        // ===========================
-        // UTILS - أدوات مساعدة
-        // ===========================
-        const Utils = {
-            // تنقية النصوص من أكواد HTML خطيرة
-            sanitize: function(text) {
-                const div = document.createElement('div');
-                div.textContent = text;
-                return div.innerHTML;
-            },
+// ===========================
+// UTILS - أدوات مساعدة
+// ===========================
+const Utils = {
+    sanitize: function(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    },
 
-            // تنسيق الوقت النسبي
-            formatTimeAgo: function(timestamp) {
-                const now = Date.now();
-                const diff = now - timestamp;
-                const seconds = Math.floor(diff / 1000);
-                const minutes = Math.floor(seconds / 60);
-                const hours = Math.floor(minutes / 60);
-                const days = Math.floor(hours / 24);
+    formatTimeAgo: function(timestamp) {
+        const now = Date.now();
+        const diff = now - timestamp;
+        const seconds = Math.floor(diff / 1000);
+        const minutes = Math.floor(seconds / 60);
+        const hours = Math.floor(minutes / 60);
+        const days = Math.floor(hours / 24);
 
-                if (seconds < 60) return 'الآن';
-                if (minutes < 60) return `منذ ${minutes} دقيقة`;
-                if (hours < 24) return `منذ ${hours} ساعة`;
-                if (days < 7) return `منذ ${days} يوم`;
-                
-                const date = new Date(timestamp);
-                return date.toLocaleDateString('ar-EG', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric'
-                });
-            },
-
-            // توليد معرف فريد بسيط
-            generateId: function() {
-                return Date.now().toString(36) + Math.random().toString(36).substr(2);
-            },
-
-            // الحصول على معرف IP محاكى من المتصفح
-            getClientId: function() {
-                let clientId = localStorage.getItem('watch_vip_client_id');
-                if (!clientId) {
-                    clientId = this.generateId();
-                    localStorage.setItem('watch_vip_client_id', clientId);
-                }
-                return clientId;
-            },
-
-            // عرض رسالة حالة
-            showStatus: function(message, type = 'info') {
-                const statusEl = document.getElementById('statusMessage');
-                statusEl.textContent = message;
-                statusEl.className = `status-message ${type} show`;
-                
-                setTimeout(() => {
-                    statusEl.classList.remove('show');
-                }, 5000);
-            }
-        };
-
-        // ===========================
-        // PLAYER - منطق مشغل الفيديو
-        // ===========================
-        const Player = {
-            currentVideoId: null,
-
-            init: function() {
-                this.loadVideoFromURL();
-                this.setupPlayer();
-            },
-
-            // استخراج معرف الفيديو من URL
-            loadVideoFromURL: function() {
-                const urlParams = new URLSearchParams(window.location.search);
-                const videoId = urlParams.get('v') || CONFIG.DEFAULT_VIDEO_ID;
-                this.currentVideoId = videoId;
-            },
-
-            // إعداد المشغل
-            setupPlayer: function() {
-                const container = document.getElementById('videoContainer');
-                
-                // إنشاء iframe للفيديو مع تعطيل الروابط الخارجية
-                const iframe = document.createElement('iframe');
-                iframe.src = `https://www.youtube.com/embed/${this.currentVideoId}?rel=0&modestbranding=1&fs=1&controls=1`;
-                iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
-                iframe.allowFullscreen = true;
-                
-                container.innerHTML = '';
-                container.appendChild(iframe);
-                
-                // تحديث معلومات الفيديو
-                this.updateVideoInfo();
-            },
-
-            // تحديث معلومات الفيديو
-            updateVideoInfo: function() {
-                document.getElementById('videoTitle').textContent = `فيديو ${this.currentVideoId}`;
-                document.getElementById('videoDescription').textContent = 'استمتع بمشاهدة الفيديو بدون إعلانات مزعجة';
-            }
-        };
-
-        // ===========================
-        // COMMENTS - منطق التعليقات
-        // ===========================
-        const Comments = {
-            userCommentId: null,
-            clickCount: {},
-            lastClickTime: {},
-
-            init: function() {
-                this.loadUserComment();
-                this.setupForm();
-                this.loadComments();
-                this.startAutoRefresh();
-            },
-
-            // تحميل معرف تعليق المستخدم من localStorage
-            loadUserComment: function() {
-                this.userCommentId = localStorage.getItem('watch_vip_user_comment_id');
-            },
-
-            // حفظ معرف تعليق المستخدم
-            saveUserComment: function(commentId) {
-                this.userCommentId = commentId;
-                localStorage.setItem('watch_vip_user_comment_id', commentId);
-            },
-
-            // إعداد نموذج التعليق
-            setupForm: function() {
-                const form = document.getElementById('commentForm');
-                form.addEventListener('submit', (e) => {
-                    e.preventDefault();
-                    this.submitComment();
-                });
-            },
-
-            // إرسال تعليق جديد
-            submitComment: async function() {
-                const nameInput = document.getElementById('commentName');
-                const textInput = document.getElementById('commentText');
-                const submitBtn = document.getElementById('submitBtn');
-
-                const name = nameInput.value.trim();
-                const text = textInput.value.trim();
-
-                if (!text) {
-                    Utils.showStatus('يرجى كتابة تعليق', 'error');
-                    return;
-                }
-
-                // التحقق من وجود تعليق سابق
-                if (this.userCommentId) {
-                    Utils.showStatus('لديك تعليق بالفعل. انقر مرتين على تعليقك لحذفه والتعليق مرة أخرى', 'info');
-                    return;
-                }
-
-                submitBtn.disabled = true;
-                submitBtn.textContent = 'جاري النشر...';
-
-                try {
-                    const response = await fetch(`${CONFIG.BACKEND_URL}/submit-comment`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            name: name || null,
-                            text: text,
-                            clientId: Utils.getClientId()
-                        })
-                    });
-
-                    const result = await response.json();
-
-                    if (response.ok) {
-                        Utils.showStatus('تم إرسال تعليقك بنجاح! في انتظار الموافقة', 'success');
-                        this.saveUserComment(result.commentId);
-                        textInput.value = '';
-                        nameInput.value = '';
-                    } else {
-                        Utils.showStatus(result.error || 'حدث خطأ أثناء إرسال التعليق', 'error');
-                    }
-                } catch (error) {
-                    console.error('Error submitting comment:', error);
-                    Utils.showStatus('فشل الاتصال بالخادم', 'error');
-                } finally {
-                    submitBtn.disabled = false;
-                    submitBtn.textContent = 'نشر التعليق';
-                }
-            },
-
-            // تحميل التعليقات من الخادم
-            loadComments: async function() {
-                try {
-                    const response = await fetch(`${CONFIG.BACKEND_URL}/comments`);
-                    const comments = await response.json();
-                    
-                    this.renderComments(comments);
-                } catch (error) {
-                    console.error('Error loading comments:', error);
-                    document.getElementById('commentsListContainer').innerHTML = 
-                        '<div class="no-comments">تعذر تحميل التعليقات</div>';
-                }
-            },
-
-            // عرض التعليقات
-            renderComments: function(comments) {
-                const container = document.getElementById('commentsListContainer');
-                const count = document.getElementById('commentsCount');
-
-                if (!comments || comments.length === 0) {
-                    container.innerHTML = '<div class="no-comments">لا توجد تعليقات بعد. كن أول من يعلق!</div>';
-                    count.textContent = '0 تعليق';
-                    return;
-                }
-
-                count.textContent = `${comments.length} ${comments.length === 1 ? 'تعليق' : 'تعليق'}`;
-
-                // ترتيب التعليقات: تعليق المستخدم أولاً ثم الباقي
-                let sortedComments = [...comments];
-                const userCommentIndex = sortedComments.findIndex(c => c.commentId === this.userCommentId);
-                
-                if (userCommentIndex > -1) {
-                    const userComment = sortedComments.splice(userCommentIndex, 1)[0];
-                    sortedComments.unshift(userComment);
-                }
-
-                const html = sortedComments.map(comment => this.createCommentHTML(comment)).join('');
-                container.innerHTML = `<div class="comments-list">${html}</div>`;
-
-                // إضافة مستمعات الأحداث للنقر المزدوج
-                this.attachClickListeners();
-            },
-
-            // إنشاء HTML لتعليق واحد
-            createCommentHTML: function(comment) {
-                const isUserComment = comment.commentId === this.userCommentId;
-                const isVerified = comment.displayName && comment.displayName.startsWith('حساب موثق');
-                
-                const verifiedBadge = isVerified ? `
-                    <span class="verified-badge">
-                        <svg class="verified-icon" viewBox="0 0 24 24">
-                            <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
-                        </svg>
-                        موثق
-                    </span>
-                ` : '';
-
-                return `
-                    <div class="comment-item ${isUserComment ? 'user-comment' : ''}" 
-                         data-comment-id="${comment.commentId}">
-                        <div class="comment-header">
-                            <div class="comment-author">
-                                <span>${Utils.sanitize(comment.displayName)}</span>
-                                ${verifiedBadge}
-                            </div>
-                            <span class="comment-time">${Utils.formatTimeAgo(comment.timestamp)}</span>
-                        </div>
-                        <div class="comment-text">${Utils.sanitize(comment.text)}</div>
-                        ${isUserComment ? `
-                            <div class="comment-actions">
-                                <span class="click-count">انقر مرتين لحذف التعليق والسماح بتعليق جديد</span>
-                            </div>
-                        ` : ''}
-                    </div>
-                `;
-            },
-
-            // إضافة مستمعات النقر المزدوج
-            attachClickListeners: function() {
-                const commentItems = document.querySelectorAll('.comment-item');
-                
-                commentItems.forEach(item => {
-                    const commentId = item.getAttribute('data-comment-id');
-                    
-                    item.addEventListener('click', () => {
-                        this.handleCommentClick(commentId);
-                    });
-                });
-            },
-
-            // معالجة النقر على التعليق
-            handleCommentClick: function(commentId) {
-                if (commentId !== this.userCommentId) return;
-
-                const now = Date.now();
-                const lastClick = this.lastClickTime[commentId] || 0;
-                
-                if (now - lastClick < CONFIG.DOUBLE_CLICK_TIMEOUT) {
-                    // نقر مزدوج
-                    this.deleteUserComment();
-                    this.clickCount[commentId] = 0;
-                } else {
-                    // نقر واحد
-                    this.clickCount[commentId] = (this.clickCount[commentId] || 0) + 1;
-                }
-                
-                this.lastClickTime[commentId] = now;
-            },
-
-            // حذف تعليق المستخدم
-            deleteUserComment: function() {
-                if (confirm('هل تريد حذف تعليقك؟ سيسمح لك هذا بنشر تعليق جديد.')) {
-                    localStorage.removeItem('watch_vip_user_comment_id');
-                    this.userCommentId = null;
-                    Utils.showStatus('تم حذف تعليقك. يمكنك الآن التعليق مرة أخرى', 'success');
-                    this.loadComments();
-                }
-            },
-
-            // تحديث تلقائي للتعليقات
-            startAutoRefresh: function() {
-                setInterval(() => {
-                    this.loadComments();
-                }, CONFIG.REFRESH_INTERVAL);
-            }
-        };
-
-        // ===========================
-        // تهيئة التطبيق عند تحميل الصفحة
-        // ===========================
-        document.addEventListener('DOMContentLoaded', function() {
-            Player.init();
-            Comments.init();
+        if (seconds < 60) return 'الآن';
+        if (minutes < 60) return `منذ ${minutes} دقيقة`;
+        if (hours < 24) return `منذ ${hours} ساعة`;
+        if (days < 7) return `منذ ${days} يوم`;
+        
+        const date = new Date(timestamp);
+        return date.toLocaleDateString('ar-EG', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
         });
+    },
+
+    generateId: function() {
+        return Date.now().toString(36) + Math.random().toString(36).substr(2);
+    },
+
+    getClientId: function() {
+        let clientId = localStorage.getItem('watch_vip_client_id');
+        if (!clientId) {
+            clientId = this.generateId();
+            localStorage.setItem('watch_vip_client_id', clientId);
+        }
+        return clientId;
+    },
+
+    showStatus: function(message, type = 'info') {
+        const statusEl = document.getElementById('statusMessage');
+        if (!statusEl) {
+            console.error('Status message element not found');
+            alert(message);
+            return;
+        }
+        
+        statusEl.textContent = message;
+        statusEl.className = `status-message ${type} show`;
+        
+        setTimeout(() => {
+            statusEl.classList.remove('show');
+        }, 5000);
+    },
+
+    // دالة جديدة للتحقق من اتصال السيرفر
+    checkServerConnection: async function() {
+        try {
+            console.log('Testing server connection...');
+            const response = await fetch(`${CONFIG.BACKEND_URL}/`, {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json'
+                }
+            });
+            
+            if (response.ok) {
+                const data = await response.json();
+                console.log('Server is running:', data);
+                return true;
+            } else {
+                console.error('Server returned error:', response.status);
+                return false;
+            }
+        } catch (error) {
+            console.error('Server connection failed:', error);
+            return false;
+        }
+    }
+};
+
+// ===========================
+// PLAYER - منطق مشغل الفيديو
+// ===========================
+const Player = {
+    currentVideoId: null,
+
+    init: function() {
+        this.loadVideoFromURL();
+        this.setupPlayer();
+    },
+
+    loadVideoFromURL: function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const videoId = urlParams.get('v') || CONFIG.DEFAULT_VIDEO_ID;
+        this.currentVideoId = videoId;
+    },
+
+    setupPlayer: function() {
+        const container = document.getElementById('videoContainer');
+        if (!container) {
+            console.error('Video container not found');
+            return;
+        }
+        
+        const iframe = document.createElement('iframe');
+        iframe.src = `https://www.youtube.com/embed/${this.currentVideoId}?rel=0&modestbranding=1&fs=1&controls=1`;
+        iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
+        iframe.allowFullscreen = true;
+        
+        container.innerHTML = '';
+        container.appendChild(iframe);
+        
+        this.updateVideoInfo();
+    },
+
+    updateVideoInfo: function() {
+        const titleEl = document.getElementById('videoTitle');
+        const descEl = document.getElementById('videoDescription');
+        
+        if (titleEl) titleEl.textContent = `فيديو ${this.currentVideoId}`;
+        if (descEl) descEl.textContent = 'استمتع بمشاهدة الفيديو بدون إعلانات مزعجة';
+    }
+};
+
+// ===========================
+// COMMENTS - منطق التعليقات
+// ===========================
+const Comments = {
+    userCommentId: null,
+    clickCount: {},
+    lastClickTime: {},
+    isSubmitting: false,
+
+    init: function() {
+        console.log('Initializing comments system...');
+        this.loadUserComment();
+        this.setupForm();
+        this.loadComments();
+        this.startAutoRefresh();
+        
+        // اختبار اتصال السيرفر عند التحميل
+        Utils.checkServerConnection();
+    },
+
+    loadUserComment: function() {
+        this.userCommentId = localStorage.getItem('watch_vip_user_comment_id');
+        console.log('User comment ID:', this.userCommentId);
+    },
+
+    saveUserComment: function(commentId) {
+        this.userCommentId = commentId;
+        localStorage.setItem('watch_vip_user_comment_id', commentId);
+        console.log('Saved user comment ID:', commentId);
+    },
+
+    setupForm: function() {
+        const form = document.getElementById('commentForm');
+        if (!form) {
+            console.error('Comment form not found');
+            return;
+        }
+        
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            this.submitComment();
+        });
+        
+        console.log('Comment form initialized');
+    },
+
+    submitComment: async function() {
+        if (this.isSubmitting) {
+            console.log('Already submitting...');
+            return;
+        }
+
+        const nameInput = document.getElementById('commentName');
+        const textInput = document.getElementById('commentText');
+        const submitBtn = document.getElementById('submitBtn');
+
+        if (!nameInput || !textInput || !submitBtn) {
+            console.error('Form elements not found');
+            Utils.showStatus('خطأ في النموذج', 'error');
+            return;
+        }
+
+        const name = nameInput.value.trim();
+        const text = textInput.value.trim();
+
+        console.log('Submitting comment:', { name, text });
+
+        if (!text) {
+            Utils.showStatus('يرجى كتابة تعليق', 'error');
+            return;
+        }
+
+        if (text.length > CONFIG.MAX_COMMENT_LENGTH) {
+            Utils.showStatus(`التعليق طويل جداً. الحد الأقصى ${CONFIG.MAX_COMMENT_LENGTH} حرف`, 'error');
+            return;
+        }
+
+        if (this.userCommentId) {
+            Utils.showStatus('لديك تعليق بالفعل. انقر مرتين على تعليقك لحذفه والتعليق مرة أخرى', 'info');
+            return;
+        }
+
+        this.isSubmitting = true;
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'جاري النشر...';
+
+        try {
+            const payload = {
+                name: name || null,
+                text: text,
+                clientId: Utils.getClientId()
+            };
+
+            console.log('Sending request to:', `${CONFIG.BACKEND_URL}/submit-comment`);
+            console.log('Payload:', payload);
+
+            const response = await fetch(`${CONFIG.BACKEND_URL}/submit-comment`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            });
+
+            console.log('Response status:', response.status);
+            console.log('Response headers:', response.headers);
+
+            let result;
+            try {
+                result = await response.json();
+                console.log('Response data:', result);
+            } catch (parseError) {
+                console.error('Failed to parse response:', parseError);
+                throw new Error('استجابة غير صالحة من الخادم');
+            }
+
+            if (response.ok) {
+                Utils.showStatus('تم إرسال تعليقك بنجاح! في انتظار الموافقة ✅', 'success');
+                this.saveUserComment(result.commentId);
+                textInput.value = '';
+                nameInput.value = '';
+                
+                // تحديث التعليقات بعد 2 ثانية
+                setTimeout(() => this.loadComments(), 2000);
+            } else {
+                const errorMsg = result.message || result.error || 'حدث خطأ أثناء إرسال التعليق';
+                Utils.showStatus(errorMsg, 'error');
+            }
+        } catch (error) {
+            console.error('Error submitting comment:', error);
+            
+            let errorMessage = 'فشل الاتصال بالخادم';
+            
+            if (error.name === 'TypeError' && error.message.includes('Failed to fetch')) {
+                errorMessage = 'لا يمكن الاتصال بالخادم. تحقق من الاتصال بالإنترنت';
+            } else if (error.message) {
+                errorMessage = error.message;
+            }
+            
+            Utils.showStatus(errorMessage, 'error');
+        } finally {
+            this.isSubmitting = false;
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'نشر التعليق';
+        }
+    },
+
+    loadComments: async function() {
+        try {
+            console.log('Loading comments from:', `${CONFIG.BACKEND_URL}/comments`);
+            
+            const response = await fetch(`${CONFIG.BACKEND_URL}/comments`, {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json'
+                }
+            });
+            
+            console.log('Comments response status:', response.status);
+            
+            if (!response.ok) {
+                throw new Error(`Server returned ${response.status}`);
+            }
+            
+            const comments = await response.json();
+            console.log('Loaded comments:', comments);
+            
+            this.renderComments(comments);
+        } catch (error) {
+            console.error('Error loading comments:', error);
+            const container = document.getElementById('commentsListContainer');
+            if (container) {
+                container.innerHTML = '<div class="no-comments">تعذر تحميل التعليقات. جاري المحاولة...</div>';
+            }
+        }
+    },
+
+    renderComments: function(comments) {
+        const container = document.getElementById('commentsListContainer');
+        const count = document.getElementById('commentsCount');
+
+        if (!container) {
+            console.error('Comments container not found');
+            return;
+        }
+
+        if (!comments || comments.length === 0) {
+            container.innerHTML = '<div class="no-comments">لا توجد تعليقات بعد. كن أول من يعلق!</div>';
+            if (count) count.textContent = '0 تعليق';
+            return;
+        }
+
+        if (count) {
+            count.textContent = `${comments.length} ${comments.length === 1 ? 'تعليق' : 'تعليق'}`;
+        }
+
+        let sortedComments = [...comments];
+        const userCommentIndex = sortedComments.findIndex(c => c.commentId === this.userCommentId);
+        
+        if (userCommentIndex > -1) {
+            const userComment = sortedComments.splice(userCommentIndex, 1)[0];
+            sortedComments.unshift(userComment);
+        }
+
+        const html = sortedComments.map(comment => this.createCommentHTML(comment)).join('');
+        container.innerHTML = `<div class="comments-list">${html}</div>`;
+
+        this.attachClickListeners();
+    },
+
+    createCommentHTML: function(comment) {
+        const isUserComment = comment.commentId === this.userCommentId;
+        const isVerified = comment.displayName && comment.displayName.startsWith('حساب موثق');
+        
+        const verifiedBadge = isVerified ? `
+            <span class="verified-badge">
+                <svg class="verified-icon" viewBox="0 0 24 24">
+                    <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
+                </svg>
+                موثق
+            </span>
+        ` : '';
+
+        return `
+            <div class="comment-item ${isUserComment ? 'user-comment' : ''}" 
+                 data-comment-id="${comment.commentId}">
+                <div class="comment-header">
+                    <div class="comment-author">
+                        <span>${Utils.sanitize(comment.displayName)}</span>
+                        ${verifiedBadge}
+                    </div>
+                    <span class="comment-time">${Utils.formatTimeAgo(comment.timestamp)}</span>
+                </div>
+                <div class="comment-text">${Utils.sanitize(comment.text)}</div>
+                ${isUserComment ? `
+                    <div class="comment-actions">
+                        <span class="click-count">انقر مرتين لحذف التعليق والسماح بتعليق جديد</span>
+                    </div>
+                ` : ''}
+            </div>
+        `;
+    },
+
+    attachClickListeners: function() {
+        const commentItems = document.querySelectorAll('.comment-item');
+        
+        commentItems.forEach(item => {
+            const commentId = item.getAttribute('data-comment-id');
+            
+            item.addEventListener('click', () => {
+                this.handleCommentClick(commentId);
+            });
+        });
+    },
+
+    handleCommentClick: function(commentId) {
+        if (commentId !== this.userCommentId) return;
+
+        const now = Date.now();
+        const lastClick = this.lastClickTime[commentId] || 0;
+        
+        if (now - lastClick < CONFIG.DOUBLE_CLICK_TIMEOUT) {
+            this.deleteUserComment();
+            this.clickCount[commentId] = 0;
+        } else {
+            this.clickCount[commentId] = (this.clickCount[commentId] || 0) + 1;
+        }
+        
+        this.lastClickTime[commentId] = now;
+    },
+
+    deleteUserComment: function() {
+        if (confirm('هل تريد حذف تعليقك؟ سيسمح لك هذا بنشر تعليق جديد.')) {
+            localStorage.removeItem('watch_vip_user_comment_id');
+            this.userCommentId = null;
+            Utils.showStatus('تم حذف تعليقك. يمكنك الآن التعليق مرة أخرى', 'success');
+            this.loadComments();
+        }
+    },
+
+    startAutoRefresh: function() {
+        setInterval(() => {
+            this.loadComments();
+        }, CONFIG.REFRESH_INTERVAL);
+    }
+};
+
+// ===========================
+// تهيئة التطبيق عند تحميل الصفحة
+// ===========================
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM loaded, initializing app...');
+    console.log('Backend URL:', CONFIG.BACKEND_URL);
+    
+    Player.init();
+    Comments.init();
+});
+
+// اختبار فوري للاتصال
+console.log('Script loaded successfully');
+console.log('Config:', CONFIG);
     </script>
 </body>
 </html>
