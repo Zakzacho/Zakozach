@@ -47,7 +47,116 @@
         }
 
         /* ===========================
-           قسم مشغل الفيديو
+           شريط الملاحة
+        =========================== */
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            padding: 10px 15px;
+            background: var(--bg-light);
+            border-radius: 6px;
+            font-size: 0.9rem;
+        }
+
+        .breadcrumb button {
+            background: none;
+            border: none;
+            color: var(--verified-color);
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        .breadcrumb button:hover {
+            color: var(--primary-color);
+        }
+
+        /* ===========================
+           عرض المكتبة (المجلدات والحلقات)
+        =========================== */
+        .library-view {
+            margin-bottom: 30px;
+        }
+
+        .library-header {
+            padding: 15px 20px;
+            background: var(--secondary-color);
+            border-radius: 12px 12px 0 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .library-header h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .library-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+            padding: 20px;
+            background: var(--bg-light);
+            border-radius: 0 0 12px 12px;
+        }
+
+        .library-item {
+            cursor: pointer;
+            transition: all 0.3s;
+            border-radius: 8px;
+            overflow: hidden;
+            background: var(--secondary-color);
+            border: 2px solid transparent;
+        }
+
+        .library-item:hover {
+            border-color: var(--primary-color);
+            transform: translateY(-5px);
+            box-shadow: var(--shadow);
+        }
+
+        .item-cover {
+            width: 100%;
+            aspect-ratio: 16/9;
+            background: linear-gradient(135deg, #ff0000, #cc0000);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .item-cover.episode {
+            aspect-ratio: 2/1;
+        }
+
+        .item-cover img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .item-info {
+            padding: 15px;
+        }
+
+        .item-title {
+            font-weight: 600;
+            margin-bottom: 8px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .item-subtitle {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        /* ===========================
+           عرض الفيديو
         =========================== */
         .video-section {
             background: var(--bg-light);
@@ -323,12 +432,22 @@
             color: var(--text-secondary);
         }
 
+        /* إخفاء العناصر */
+        .hidden {
+            display: none;
+        }
+
         /* ===========================
            تصميم متجاوب
         =========================== */
         @media (max-width: 768px) {
             .container {
                 padding: 15px;
+            }
+
+            .library-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+                gap: 15px;
             }
 
             .video-header h1 {
@@ -362,224 +481,374 @@
             }
         }
 
-        .comment-item {
+        .library-item, .comment-item {
             animation: fadeIn 0.3s ease-out;
+        }
+
+        .back-btn {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            background: var(--secondary-color);
+            color: var(--verified-color);
+            border: none;
+            padding: 8px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+        }
+
+        .back-btn:hover {
+            background: var(--primary-color);
+            color: white;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- قسم الفيديو -->
-        <div class="video-section">
-            <div class="video-header">
-                <h1>🎬 Watch VIP</h1>
-            </div>
-            <div class="video-container" id="videoContainer">
-                <!-- سيتم إدراج الفيديو هنا -->
-            </div>
-            <div class="video-info">
-                <h2 class="video-title" id="videoTitle">مشغل الفيديو</h2>
-                <p class="video-description" id="videoDescription">شاهد الفيديو المفضل لديك دون إعلانات</p>
-            </div>
+        <!-- شريط الملاحة -->
+        <div class="breadcrumb" id="breadcrumb">
+            <button class="back-btn" id="backBtn" onclick="App.goHome()">← الرئيسية</button>
+            <span id="breadcrumbText">المكتبة</span>
         </div>
 
-        <!-- قسم التعليقات -->
-        <div class="comments-section">
-            <div class="comments-header">
-                <h2>💬 التعليقات</h2>
-                <span class="comments-count" id="commentsCount">0 تعليق</span>
+        <!-- عرض المكتبة -->
+        <div id="libraryView" class="library-view">
+            <div class="library-header">
+                <h1 id="libraryTitle">مكتبة المسلسلات</h1>
+            </div>
+            <div class="library-grid" id="libraryGrid"></div>
+        </div>
+
+        <!-- عرض الفيديو -->
+        <div id="videoView" class="hidden">
+            <div class="video-section">
+                <div class="video-header">
+                    <h1>🎬 Watch VIP</h1>
+                </div>
+                <div class="video-container" id="videoContainer"></div>
+                <div class="video-info">
+                    <h2 class="video-title" id="videoTitle">مشغل الفيديو</h2>
+                    <p class="video-description" id="videoDescription">شاهد الفيديو المفضل لديك</p>
+                </div>
             </div>
 
-            <!-- رسالة الحالة -->
-            <div class="status-message" id="statusMessage"></div>
+            <!-- قسم التعليقات -->
+            <div class="comments-section">
+                <div class="comments-header">
+                    <h2>💬 التعليقات</h2>
+                    <span class="comments-count" id="commentsCount">0 تعليق</span>
+                </div>
 
-            <!-- نموذج إضافة تعليق -->
-            <div class="comment-form">
-                <form id="commentForm">
-                    <div class="form-group">
-                        <label for="commentName">الاسم (اختياري)</label>
-                        <input 
-                            type="text" 
-                            id="commentName" 
-                            placeholder="اترك فارغاً لتوليد اسم تلقائي"
-                            maxlength="50"
-                        >
-                        <div class="form-hint">سيتم توليد اسم بصيغة "حساب موثق رقم X" إذا تركت الحقل فارغاً</div>
-                    </div>
-                    <div class="form-group">
-                        <label for="commentText">التعليق *</label>
-                        <textarea 
-                            id="commentText" 
-                            placeholder="اكتب تعليقك هنا..."
-                            required
-                            maxlength="500"
-                        ></textarea>
-                    </div>
-                    <button type="submit" class="submit-btn" id="submitBtn">نشر التعليق</button>
-                </form>
-            </div>
+                <!-- رسالة الحالة -->
+                <div class="status-message" id="statusMessage"></div>
 
-            <!-- قائمة التعليقات -->
-            <div id="commentsListContainer">
-                <div class="loading">جاري تحميل التعليقات...</div>
+                <!-- نموذج إضافة تعليق -->
+                <div class="comment-form">
+                    <form id="commentForm">
+                        <div class="form-group">
+                            <label for="commentName">الاسم (اختياري)</label>
+                            <input 
+                                type="text" 
+                                id="commentName" 
+                                placeholder="اترك فارغاً لتوليد اسم تلقائي"
+                                maxlength="50"
+                            >
+                            <div class="form-hint">سيتم توليد اسم بصيغة "حساب موثق رقم X" إذا تركت الحقل فارغاً</div>
+                        </div>
+                        <div class="form-group">
+                            <label for="commentText">التعليق *</label>
+                            <textarea 
+                                id="commentText" 
+                                placeholder="اكتب تعليقك هنا..."
+                                required
+                                maxlength="500"
+                            ></textarea>
+                        </div>
+                        <button type="submit" class="submit-btn" id="submitBtn">نشر التعليق</button>
+                    </form>
+                </div>
+
+                <!-- قائمة التعليقات -->
+                <div id="commentsListContainer">
+                    <div class="loading">جاري تحميل التعليقات...</div>
+                </div>
             </div>
         </div>
     </div>
-<script>
-    const CONFIG = {
-    BACKEND_URL: 'https://site--watch-vip--j9hb6dlmp4qm.code.run',
-    REFRESH_INTERVAL: 10000,
-    DOUBLE_CLICK_TIMEOUT: 500
-};
 
-const Utils = {
-    sanitize(text) {
-        const d = document.createElement('div');
-        d.textContent = text;
-        return d.innerHTML;
-    },
-    timeAgo(ts) {
-        const diff = Date.now() - ts;
-        const m = Math.floor(diff / 60000);
-        if (m < 1) return 'الآن';
-        if (m < 60) return `منذ ${m} دقيقة`;
-        const h = Math.floor(m / 60);
-        if (h < 24) return `منذ ${h} ساعة`;
-        return `منذ ${Math.floor(h / 24)} يوم`;
-    },
-    clientId() {
-        let id = localStorage.getItem('watch_vip_client_id');
-        if (!id) {
-            id = Date.now().toString(36) + Math.random().toString(36).slice(2);
-            localStorage.setItem('watch_vip_client_id', id);
-        }
-        return id;
-    },
-    status(msg, type='info') {
-        const el = document.getElementById('statusMessage');
-        el.textContent = msg;
-        el.className = `status-message ${type} show`;
-        setTimeout(()=>el.classList.remove('show'), 4000);
-    }
-};
+    <script>
+        const CONFIG = {
+            BACKEND_URL: 'https://site--watch-vip--j9hb6dlmp4qm.code.run',
+            REFRESH_INTERVAL: 10000,
+            DOUBLE_CLICK_TIMEOUT: 500
+        };
 
-const API = {
-    async submit(name, text) {
-        const r = await fetch(`${CONFIG.BACKEND_URL}/submit-comment`, {
-            method: 'POST',
-            headers: {'Content-Type':'application/json'},
-            body: JSON.stringify({
-                name, text,
-                clientId: Utils.clientId()
-            })
-        });
-        if (!r.ok) throw new Error('فشل الإرسال');
-        return r.json();
-    },
-    async comments() {
-        const r = await fetch(`${CONFIG.BACKEND_URL}/comments`);
-        return r.ok ? r.json() : [];
-    }
-};
+        // قاعدة البيانات المحلية
+        const LIBRARY = {
+            series: [
+                {
+                    id: 'doraemon',
+                    title: 'حلقات دورايمون',
+                    emoji: '🤖',
+                    episodes: [
+                        {
+                            id: 'ep1',
+                            title: 'نوبي الغبي بحاجة الى دورايمون!',
+                            url: 'https://youtu.be/bn924_vcepg',
+                            description: 'الحلقة الأولى من مسلسل دورايمون'
+                        }
+                    ]
+                }
+            ]
+        };
 
-const Comments = {
-    userCommentId: localStorage.getItem('watch_vip_user_comment_id'),
+        const Utils = {
+            sanitize(text) {
+                const d = document.createElement('div');
+                d.textContent = text;
+                return d.innerHTML;
+            },
+            timeAgo(ts) {
+                const diff = Date.now() - ts;
+                const m = Math.floor(diff / 60000);
+                if (m < 1) return 'الآن';
+                if (m < 60) return `منذ ${m} دقيقة`;
+                const h = Math.floor(m / 60);
+                if (h < 24) return `منذ ${h} ساعة`;
+                return `منذ ${Math.floor(h / 24)} يوم`;
+            },
+            clientId() {
+                let id = localStorage.getItem('watch_vip_client_id');
+                if (!id) {
+                    id = Date.now().toString(36) + Math.random().toString(36).slice(2);
+                    localStorage.setItem('watch_vip_client_id', id);
+                }
+                return id;
+            },
+            status(msg, type='info') {
+                const el = document.getElementById('statusMessage');
+                el.textContent = msg;
+                el.className = `status-message ${type} show`;
+                setTimeout(()=>el.classList.remove('show'), 4000);
+            },
+            extractYoutubeId(url) {
+                const regex = /(?:youtu\.be\/|youtube\.com\/watch\?v=)([^&\n?#]+)/;
+                const match = url.match(regex);
+                return match ? match[1] : null;
+            }
+        };
 
-    async init() {
-        document.getElementById('commentForm')
-            .addEventListener('submit', e => {
-                e.preventDefault();
-                this.send();
-            });
+        const API = {
+            async submit(name, text) {
+                const r = await fetch(`${CONFIG.BACKEND_URL}/submit-comment`, {
+                    method: 'POST',
+                    headers: {'Content-Type':'application/json'},
+                    body: JSON.stringify({
+                        name, text,
+                        clientId: Utils.clientId()
+                    })
+                });
+                if (!r.ok) throw new Error('فشل الإرسال');
+                return r.json();
+            },
+            async comments() {
+                const r = await fetch(`${CONFIG.BACKEND_URL}/comments`);
+                return r.ok ? r.json() : [];
+            }
+        };
 
-        await this.load();
-        setInterval(()=>this.load(), CONFIG.REFRESH_INTERVAL);
-    },
+        const App = {
+            currentView: 'home',
+            currentSeries: null,
+            currentEpisode: null,
 
-    async send() {
-        if (this.userCommentId) {
-            Utils.status('لديك تعليق قيد المعالجة أو معتمد', 'info');
-            return;
-        }
+            init() {
+                this.renderHome();
+                Comments.init();
+            },
 
-        const name = commentName.value.trim();
-        const text = commentText.value.trim();
-        if (!text) return Utils.status('اكتب تعليقًا', 'error');
+            renderHome() {
+                document.getElementById('libraryView').classList.remove('hidden');
+                document.getElementById('videoView').classList.add('hidden');
+                document.getElementById('backBtn').classList.add('hidden');
+                document.getElementById('breadcrumbText').textContent = 'المكتبة';
 
-        try {
-            const res = await API.submit(name || null, text);
-            this.userCommentId = res.commentId;
-            localStorage.setItem('watch_vip_user_comment_id', res.commentId);
-            Utils.status('تم الإرسال بانتظار الموافقة', 'success');
-            commentText.value = '';
-        } catch {
-            Utils.status('تعذر الإرسال', 'error');
-        }
-    },
-
-    async load() {
-        const list = await API.comments();
-        const box = document.getElementById('commentsListContainer');
-
-        // تحديث عدد التعليقات
-        document.getElementById('commentsCount').textContent = `عدد التعليقات: ${list.length}`;
-
-        if (!list.length) {
-            box.innerHTML = '<div class="no-comments">لا توجد تعليقات</div>';
-            return;
-        }
-
-        // إن لم يكن تعليق المستخدم موجودًا فعليًا → فك القفل
-        if (this.userCommentId && list.length > 0 && !list.some(c => c.commentId === this.userCommentId)) {
-            localStorage.removeItem('watch_vip_user_comment_id');
-            this.userCommentId = null;
-        }
-
-        // تثبيت تعليق المستخدم أعلى
-        list.sort((a,b)=>{
-            if (a.commentId === this.userCommentId) return -1;
-            if (b.commentId === this.userCommentId) return 1;
-            return b.timestamp - a.timestamp;
-        });
-
-        box.innerHTML = `
-            <div class="comments-list">
-                ${list.map(c=>`
-                    <div class="comment-item ${c.commentId===this.userCommentId?'user-comment':''}"
-                         data-id="${c.commentId}">
-                        <div class="comment-header">
-                            <b>
-                                ${Utils.sanitize(c.displayName)}
-                                ${c.verified ? '<span class="verified">✔️</span>' : ''}
-                            </b>
-                            <span>${Utils.timeAgo(c.timestamp)}</span>
+                const grid = document.getElementById('libraryGrid');
+                grid.innerHTML = LIBRARY.series.map(series => `
+                    <div class="library-item" onclick="App.viewSeries('${series.id}')">
+                        <div class="item-cover">
+                            ${series.emoji}
                         </div>
-                        <div>${Utils.sanitize(c.text)}</div>
+                        <div class="item-info">
+                            <div class="item-title">${Utils.sanitize(series.title)}</div>
+                            <div class="item-subtitle">${series.episodes.length} حلقة</div>
+                        </div>
                     </div>
-                `).join('')}
-            </div>
-        `;
+                `).join('');
 
-        this.bindClicks();
-    },
+                this.currentView = 'home';
+            },
 
-    bindClicks() {
-        document.querySelectorAll('.user-comment').forEach(el=>{
-            let last = 0;
-            el.onclick = () => {
-                const now = Date.now();
-                if (now - last < CONFIG.DOUBLE_CLICK_TIMEOUT) {
+            viewSeries(seriesId) {
+                this.currentSeries = LIBRARY.series.find(s => s.id === seriesId);
+                if (!this.currentSeries) return;
+
+                document.getElementById('libraryView').classList.remove('hidden');
+                document.getElementById('videoView').classList.add('hidden');
+                document.getElementById('backBtn').classList.remove('hidden');
+                document.getElementById('libraryTitle').textContent = this.currentSeries.title;
+                document.getElementById('breadcrumbText').textContent = this.currentSeries.title;
+
+                const grid = document.getElementById('libraryGrid');
+                grid.innerHTML = this.currentSeries.episodes.map(ep => `
+                    <div class="library-item" onclick="App.playEpisode('${ep.id}')">
+                        <div class="item-cover episode">
+                            <span>▶️</span>
+                        </div>
+                        <div class="item-info">
+                            <div class="item-title">${Utils.sanitize(ep.title)}</div>
+                            <div class="item-subtitle">${Utils.sanitize(ep.description)}</div>
+                        </div>
+                    </div>
+                `).join('');
+
+                this.currentView = 'series';
+            },
+
+            playEpisode(episodeId) {
+                if (!this.currentSeries) return;
+                this.currentEpisode = this.currentSeries.episodes.find(e => e.id === episodeId);
+                if (!this.currentEpisode) return;
+
+                document.getElementById('libraryView').classList.add('hidden');
+                document.getElementById('videoView').classList.remove('hidden');
+                document.getElementById('backBtn').classList.remove('hidden');
+                document.getElementById('breadcrumbText').textContent = this.currentEpisode.title;
+
+                const videoId = Utils.extractYoutubeId(this.currentEpisode.url);
+                if (videoId) {
+                    document.getElementById('videoContainer').innerHTML = `
+                        <iframe 
+                            src="https://www.youtube.com/embed/${videoId}?modestbranding=1&controls=1&showinfo=0" 
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                            allowfullscreen>
+                        </iframe>
+                    `;
+                }
+
+                document.getElementById('videoTitle').textContent = this.currentEpisode.title;
+                document.getElementById('videoDescription').textContent = this.currentEpisode.description;
+
+                this.currentView = 'video';
+                Comments.load();
+            },
+
+            goHome() {
+                if (this.currentView === 'video') {
+                    this.viewSeries(this.currentSeries.id);
+                } else if (this.currentView === 'series') {
+                    this.renderHome();
+                }
+            }
+        };
+
+        const Comments = {
+            userCommentId: localStorage.getItem('watch_vip_user_comment_id'),
+
+            async init() {
+                document.getElementById('commentForm')
+                    .addEventListener('submit', e => {
+                        e.preventDefault();
+                        this.send();
+                    });
+
+                await this.load();
+                setInterval(()=>this.load(), CONFIG.REFRESH_INTERVAL);
+            },
+
+            async send() {
+                if (this.userCommentId) {
+                    Utils.status('لديك تعليق قيد المعالجة أو معتمد', 'info');
+                    return;
+                }
+
+                const name = document.getElementById('commentName').value.trim();
+                const text = document.getElementById('commentText').value.trim();
+                if (!text) return Utils.status('اكتب تعليقًا', 'error');
+
+                try {
+                    const res = await API.submit(name || null, text);
+                    this.userCommentId = res.commentId;
+                    localStorage.setItem('watch_vip_user_comment_id', res.commentId);
+                    Utils.status('تم الإرسال بانتظار الموافقة', 'success');
+                    document.getElementById('commentText').value = '';
+                } catch {
+                    Utils.status('تعذر الإرسال', 'error');
+                }
+            },
+
+            async load() {
+                const list = await API.comments();
+                const box = document.getElementById('commentsListContainer');
+
+                document.getElementById('commentsCount').textContent = `عدد التعليقات: ${list.length}`;
+
+                if (!list.length) {
+                    box.innerHTML = '<div class="no-comments">لا توجد تعليقات</div>';
+                    return;
+                }
+
+                if (this.userCommentId && list.length > 0 && !list.some(c => c.commentId === this.userCommentId)) {
                     localStorage.removeItem('watch_vip_user_comment_id');
                     this.userCommentId = null;
-                    Utils.status('يمكنك التعليق مجددًا', 'success');
                 }
-                last = now;
-            };
-        });
-    }
-};
 
-document.addEventListener('DOMContentLoaded', ()=>Comments.init());
-</script>
+                list.sort((a,b)=>{
+                    if (a.commentId === this.userCommentId) return -1;
+                    if (b.commentId === this.userCommentId) return 1;
+                    return b.timestamp - a.timestamp;
+                });
+
+                box.innerHTML = `
+                    <div class="comments-list">
+                        ${list.map(c=>`
+                            <div class="comment-item ${c.commentId===this.userCommentId?'user-comment':''}"
+                                 data-id="${c.commentId}">
+                                <div class="comment-header">
+                                    <b>
+                                        ${Utils.sanitize(c.displayName)}
+                                        ${c.verified ? '<span class="verified">✔️</span>' : ''}
+                                    </b>
+                                    <span>${Utils.timeAgo(c.timestamp)}</span>
+                                </div>
+                                <div>${Utils.sanitize(c.text)}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+
+                this.bindClicks();
+            },
+
+            bindClicks() {
+                document.querySelectorAll('.user-comment').forEach(el=>{
+                    let last = 0;
+                    el.onclick = () => {
+                        const now = Date.now();
+                        if (now - last < CONFIG.DOUBLE_CLICK_TIMEOUT) {
+                            localStorage.removeItem('watch_vip_user_comment_id');
+                            this.userCommentId = null;
+                            Utils.status('يمكنك التعليق مجددًا', 'success');
+                        }
+                        last = now;
+                    };
+                });
+            }
+        };
+
+        document.addEventListener('DOMContentLoaded', ()=>App.init());
+    </script>
 </body>
 </html>
