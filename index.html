@@ -426,7 +426,7 @@
         </div>
     </div>
 <script>
-const CONFIG = {
+    const CONFIG = {
     BACKEND_URL: 'https://site--watch-vip--j9hb6dlmp4qm.code.run',
     REFRESH_INTERVAL: 10000,
     DOUBLE_CLICK_TIMEOUT: 500
@@ -521,13 +521,16 @@ const Comments = {
         const list = await API.comments();
         const box = document.getElementById('commentsListContainer');
 
+        // تحديث عدد التعليقات
+        document.getElementById('commentsCount').textContent = `عدد التعليقات: ${list.length}`;
+
         if (!list.length) {
             box.innerHTML = '<div class="no-comments">لا توجد تعليقات</div>';
             return;
         }
 
         // إن لم يكن تعليق المستخدم موجودًا فعليًا → فك القفل
-        if (this.userCommentId && !list.some(c => c.commentId === this.userCommentId)) {
+        if (this.userCommentId && list.length > 0 && !list.some(c => c.commentId === this.userCommentId)) {
             localStorage.removeItem('watch_vip_user_comment_id');
             this.userCommentId = null;
         }
@@ -545,7 +548,10 @@ const Comments = {
                     <div class="comment-item ${c.commentId===this.userCommentId?'user-comment':''}"
                          data-id="${c.commentId}">
                         <div class="comment-header">
-                            <b>${Utils.sanitize(c.displayName)}</b>
+                            <b>
+                                ${Utils.sanitize(c.displayName)}
+                                ${c.verified ? '<span class="verified">✔️</span>' : ''}
+                            </b>
                             <span>${Utils.timeAgo(c.timestamp)}</span>
                         </div>
                         <div>${Utils.sanitize(c.text)}</div>
