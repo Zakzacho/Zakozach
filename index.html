@@ -1,10 +1,12 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar" dir="rtl" data-lang="ar">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="منصة بث فيديو احترافية مع نظام تعليقات تفاعلي">
     <title>Watch VIP - منصة البث</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet">
     
     <style>
         /* ===========================
@@ -29,8 +31,23 @@
             --shadow: 0 2px 10px rgba(0,0,0,0.3);
         }
 
+        html[data-lang="ar"] body {
+            font-family: 'Cairo', sans-serif;
+            direction: rtl;
+        }
+
+        html[data-lang="en"] body,
+        html[data-lang="fr"] body {
+            font-family: 'Inter', sans-serif;
+            direction: ltr;
+        }
+
+        html[data-lang="ja"] body {
+            font-family: 'Noto Sans JP', sans-serif;
+            direction: ltr;
+        }
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: var(--bg-dark);
             color: var(--text-primary);
             line-height: 1.6;
@@ -61,15 +78,21 @@
         }
 
         .breadcrumb button {
-            background: none;
-            border: none;
+            background: var(--secondary-color);
+            border: 1px solid var(--border-color);
             color: var(--verified-color);
             cursor: pointer;
-            text-decoration: underline;
+            text-decoration: none;
+            padding: 8px 15px;
+            border-radius: 6px;
+            transition: all 0.3s;
+            font-size: 0.9rem;
         }
 
         .breadcrumb button:hover {
-            color: var(--primary-color);
+            background: var(--primary-color);
+            color: var(--text-primary);
+            border-color: var(--primary-color);
         }
 
         /* ===========================
@@ -258,6 +281,7 @@
             margin-bottom: 8px;
             color: var(--text-secondary);
             font-size: 0.9rem;
+            font-weight: 500;
         }
 
         .form-group input,
@@ -273,10 +297,16 @@
             transition: border-color 0.3s;
         }
 
+        .form-group input::placeholder,
+        .form-group textarea::placeholder {
+            color: var(--text-secondary);
+        }
+
         .form-group input:focus,
         .form-group textarea:focus {
             outline: none;
             border-color: var(--primary-color);
+            background: var(--bg-dark);
         }
 
         .form-group textarea {
@@ -295,16 +325,18 @@
             padding: 12px;
             background: var(--primary-color);
             color: var(--text-primary);
-            border: none;
+            border: 1px solid var(--primary-color);
             border-radius: 6px;
             font-size: 1rem;
             font-weight: 600;
             cursor: pointer;
-            transition: opacity 0.3s;
+            transition: all 0.3s;
+            font-family: inherit;
         }
 
-        .submit-btn:hover {
-            opacity: 0.9;
+        .submit-btn:hover:not(:disabled) {
+            background: #cc0000;
+            border-color: #cc0000;
         }
 
         .submit-btn:disabled {
@@ -386,15 +418,13 @@
         .verified-badge {
             display: inline-flex;
             align-items: center;
-            gap: 4px;
             color: var(--verified-color);
-            font-size: 0.85rem;
         }
 
-        .verified-icon {
-            width: 16px;
-            height: 16px;
-            fill: var(--verified-color);
+        .verified-svg {
+            width: 14px;
+            height: 14px;
+            margin-inline-start: 4px;
         }
 
         .comment-time {
@@ -486,22 +516,25 @@
         }
 
         .back-btn {
-            display: flex;
+            display: inline-flex;
             align-items: center;
             gap: 5px;
             background: var(--secondary-color);
             color: var(--verified-color);
-            border: none;
+            border: 1px solid var(--border-color);
             padding: 8px 15px;
             border-radius: 6px;
             cursor: pointer;
             font-size: 0.9rem;
             transition: all 0.3s;
+            font-family: inherit;
+            font-weight: 500;
         }
 
         .back-btn:hover {
             background: var(--primary-color);
-            color: white;
+            color: var(--text-primary);
+            border-color: var(--primary-color);
         }
 
         .comments-update-indicator {
@@ -523,13 +556,100 @@
             0%, 100% { opacity: 1; }
             50% { opacity: 0.5; }
         }
+
+        /* ===========================
+           زر تغيير اللغة
+        =========================== */
+        #langToggle {
+            position: fixed;
+            right: 20px;
+            bottom: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 9999;
+            font-size: 0.7rem;
+            font-weight: 600;
+            border: 2px solid var(--text-primary);
+            transition: all 0.3s;
+            box-shadow: var(--shadow);
+            text-align: center;
+            padding: 5px;
+        }
+
+        #langToggle:hover {
+            transform: scale(1.1);
+            background: #cc0000;
+        }
+
+        #langMenu {
+            position: fixed;
+            right: 20px;
+            bottom: 80px;
+            background: var(--bg-light);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            overflow: hidden;
+            z-index: 9999;
+            box-shadow: var(--shadow);
+            min-width: 140px;
+        }
+
+        #langMenu button {
+            display: block;
+            width: 100%;
+            padding: 12px 16px;
+            background: var(--secondary-color);
+            border: none;
+            color: var(--text-primary);
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s;
+            font-size: 0.9rem;
+            font-family: inherit;
+            font-weight: 500;
+        }
+
+        #langMenu button:hover {
+            background: var(--primary-color);
+            color: var(--text-primary);
+        }
+
+        #langMenu button.active {
+            background: var(--primary-color);
+            color: var(--text-primary);
+            font-weight: 700;
+        }
+
+        /* ===========================
+           مؤشر التحميل
+        =========================== */
+        .spinner {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top: 2px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <!-- شريط الملاحة -->
         <div class="breadcrumb" id="breadcrumb">
-            <button class="back-btn" id="backBtn" onclick="App.goHome()">← الرجوع</button>
+            <button class="back-btn" id="backBtn" onclick="App.goHome()" style="display: none;"></button>
             <span id="breadcrumbText">المكتبة</span>
         </div>
 
@@ -559,7 +679,7 @@
                 <div class="comments-header">
                     <h2>
                         <span class="comments-update-indicator paused" id="updateIndicator"></span>
-                        التعليقات
+                        <span id="commentsTitle">التعليقات</span>
                     </h2>
                     <span class="comments-count" id="commentsCount">0 تعليق</span>
                 </div>
@@ -571,20 +691,18 @@
                 <div class="comment-form">
                     <form id="commentForm">
                         <div class="form-group">
-                            <label for="commentName">الاسم (اختياري)</label>
+                            <label for="commentName" id="labelName">الاسم (اختياري)</label>
                             <input 
                                 type="text" 
                                 id="commentName" 
-                                placeholder="سيتم توليد اسم تلقائي إن لم تكتب"
                                 maxlength="50"
                             >
-                            <div class="form-hint">إذا تركت الحقل فارغاً، سيتم إنشاء اسم مستخدم تلقائي</div>
+                            <div class="form-hint" id="hintName">سيتم توليد اسم تلقائي إن لم تكتب</div>
                         </div>
                         <div class="form-group">
-                            <label for="commentText">التعليق *</label>
+                            <label for="commentText" id="labelComment">التعليق *</label>
                             <textarea 
                                 id="commentText" 
-                                placeholder="شارك رأيك..."
                                 required
                                 maxlength="500"
                             ></textarea>
@@ -595,17 +713,29 @@
 
                 <!-- قائمة التعليقات -->
                 <div id="commentsListContainer">
-                    <div class="loading">جاري التحميل...</div>
+                    <div class="loading" id="loadingText">جاري التحميل...</div>
                 </div>
             </div>
         </div>
+    </div>
+
+    <!-- Language Toggle Button -->
+    <div id="langToggle" title="تغيير اللغة"></div>
+
+    <!-- Language Menu -->
+    <div id="langMenu" class="hidden">
+        <button data-lang="ar">العربية</button>
+        <button data-lang="en">English</button>
+        <button data-lang="fr">Français</button>
+        <button data-lang="ja">日本語</button>
     </div>
 
     <script>
         const CONFIG = {
             BACKEND_URL: 'https://site--watch-vip--j9hb6dlmp4qm.code.run',
             REFRESH_INTERVAL: 10000,
-            DOUBLE_CLICK_TIMEOUT: 500
+            DOUBLE_CLICK_TIMEOUT: 500,
+            SUBMIT_COOLDOWN: 3000
         };
 
         // قاعدة البيانات المحلية
@@ -627,6 +757,98 @@
             ]
         };
 
+        // قاموس اللغات
+        const TRANSLATIONS = {
+            ar: {
+                library: 'المسلسلات',
+                back: '← الرجوع',
+                comments: 'التعليقات',
+                commentCount: (n) => `${n} تعليق`,
+                labelName: 'الاسم (اختياري)',
+                hintName: 'سيتم توليد اسم تلقائي إن لم تكتب',
+                labelComment: 'التعليق *',
+                placeholderName: 'اترك فارغاً للتوليد التلقائي',
+                placeholderComment: 'شارك رأيك...',
+                submit: 'إرسال التعليق',
+                submitting: 'جاري الإرسال',
+                noComments: 'لا توجد تعليقات حتى الآن',
+                loading: 'جاري التحميل...',
+                pending: 'لديك تعليق قيد المراجعة',
+                empty: 'أكمل كتابة التعليق',
+                success: 'تم إرسال تعليقك بنجاح',
+                error: 'حدث خطأ في الإرسال',
+                canComment: 'يمكنك التعليق مجدداً',
+                rateLimitError: 'الرجاء الانتظار قليلاً قبل الإرسال',
+                langButtonLabel: 'تغيير اللغة'
+            },
+            en: {
+                library: 'Series',
+                back: 'Back',
+                comments: 'Comments',
+                commentCount: (n) => `${n} comment${n !== 1 ? 's' : ''}`,
+                labelName: 'Name (Optional)',
+                hintName: 'An automatic name will be generated if left blank',
+                labelComment: 'Comment *',
+                placeholderName: 'Leave blank for auto-generation',
+                placeholderComment: 'Share your thoughts...',
+                submit: 'Post Comment',
+                submitting: 'Posting',
+                noComments: 'No comments yet',
+                loading: 'Loading...',
+                pending: 'Your comment is under review',
+                empty: 'Please write a comment',
+                success: 'Comment posted successfully',
+                error: 'Failed to send comment',
+                canComment: 'You can comment again',
+                rateLimitError: 'Please wait a moment before posting',
+                langButtonLabel: 'Change Language'
+            },
+            fr: {
+                library: 'Séries',
+                back: 'Retour',
+                comments: 'Commentaires',
+                commentCount: (n) => `${n} commentaire${n !== 1 ? 's' : ''}`,
+                labelName: 'Nom (Optionnel)',
+                hintName: 'Un nom automatique sera généré si laissé vide',
+                labelComment: 'Commentaire *',
+                placeholderName: 'Laisser vide pour la génération automatique',
+                placeholderComment: 'Partagez vos pensées...',
+                submit: 'Publier le commentaire',
+                submitting: 'Publication',
+                noComments: 'Pas encore de commentaires',
+                loading: 'Chargement...',
+                pending: 'Votre commentaire est en attente d\'approbation',
+                empty: 'Veuillez écrire un commentaire',
+                success: 'Commentaire publié avec succès',
+                error: 'Erreur lors de l\'envoi',
+                canComment: 'Vous pouvez commenter à nouveau',
+                rateLimitError: 'Veuillez attendre un moment avant de publier',
+                langButtonLabel: 'Changer la Langue'
+            },
+            ja: {
+                library: 'シリーズ',
+                back: '戻る',
+                comments: 'コメント',
+                commentCount: (n) => `${n}件のコメント`,
+                labelName: '名前 (オプション)',
+                hintName: '空白のままにするとランダムに生成されます',
+                labelComment: 'コメント *',
+                placeholderName: '自動生成のため空白のままにしてください',
+                placeholderComment: 'あなたの考えを共有してください...',
+                submit: 'コメントを投稿',
+                submitting: '投稿中',
+                noComments: 'まだコメントがありません',
+                loading: '読み込み中...',
+                pending: 'コメントは審査中です',
+                empty: 'コメントを入力してください',
+                success: 'コメントが正常に投稿されました',
+                error: '送信に失敗しました',
+                canComment: 'もう一度コメントできます',
+                rateLimitError: '投稿する前にお待ちください',
+                langButtonLabel: '言語を変更'
+            }
+        };
+
         const Utils = {
             sanitize(text) {
                 const d = document.createElement('div');
@@ -636,11 +858,41 @@
             timeAgo(ts) {
                 const diff = Date.now() - ts;
                 const m = Math.floor(diff / 60000);
-                if (m < 1) return 'للتو';
-                if (m < 60) return `منذ ${m} دقيقة`;
+                const lang = document.documentElement.getAttribute('data-lang');
+                
+                const times = {
+                    ar: {
+                        now: 'للتو',
+                        minutes: (n) => `منذ ${n} دقيقة`,
+                        hours: (n) => `منذ ${n} ساعة`,
+                        days: (n) => `منذ ${n} يوم`
+                    },
+                    en: {
+                        now: 'just now',
+                        minutes: (n) => `${n}m ago`,
+                        hours: (n) => `${n}h ago`,
+                        days: (n) => `${n}d ago`
+                    },
+                    fr: {
+                        now: 'à l\'instant',
+                        minutes: (n) => `il y a ${n}m`,
+                        hours: (n) => `il y a ${n}h`,
+                        days: (n) => `il y a ${n}j`
+                    },
+                    ja: {
+                        now: '今',
+                        minutes: (n) => `${n}分前`,
+                        hours: (n) => `${n}時間前`,
+                        days: (n) => `${n}日前`
+                    }
+                };
+
+                const t = times[lang] || times.en;
+                if (m < 1) return t.now;
+                if (m < 60) return t.minutes(m);
                 const h = Math.floor(m / 60);
-                if (h < 24) return `منذ ${h} ساعة`;
-                return `منذ ${Math.floor(h / 24)} يوم`;
+                if (h < 24) return t.hours(h);
+                return t.days(Math.floor(h / 24));
             },
             clientId() {
                 let id = localStorage.getItem('watch_vip_client_id');
@@ -665,20 +917,28 @@
 
         const API = {
             async submit(name, text) {
-                const r = await fetch(`${CONFIG.BACKEND_URL}/submit-comment`, {
-                    method: 'POST',
-                    headers: {'Content-Type':'application/json'},
-                    body: JSON.stringify({
-                        name, text,
-                        clientId: Utils.clientId()
-                    })
-                });
-                if (!r.ok) throw new Error('فشل الإرسال');
-                return r.json();
+                try {
+                    const r = await fetch(`${CONFIG.BACKEND_URL}/submit-comment`, {
+                        method: 'POST',
+                        headers: {'Content-Type':'application/json'},
+                        body: JSON.stringify({
+                            name, text,
+                            clientId: Utils.clientId()
+                        })
+                    });
+                    if (!r.ok) throw new Error('فشل الإرسال');
+                    return r.json();
+                } catch (e) {
+                    throw new Error('خطأ في الاتصال: ' + e.message);
+                }
             },
             async comments() {
-                const r = await fetch(`${CONFIG.BACKEND_URL}/comments`);
-                return r.ok ? r.json() : [];
+                try {
+                    const r = await fetch(`${CONFIG.BACKEND_URL}/comments`);
+                    return r.ok ? r.json() : [];
+                } catch {
+                    return [];
+                }
             }
         };
 
@@ -693,10 +953,13 @@
             },
 
             renderHome() {
+                const lang = document.documentElement.getAttribute('data-lang');
+                const t = TRANSLATIONS[lang];
+
                 document.getElementById('libraryView').classList.remove('hidden');
                 document.getElementById('videoView').classList.add('hidden');
-                document.getElementById('backBtn').classList.add('hidden');
-                document.getElementById('breadcrumbText').textContent = 'المكتبة';
+                document.getElementById('backBtn').style.display = 'none';
+                document.getElementById('breadcrumbText').textContent = t.library;
 
                 const grid = document.getElementById('libraryGrid');
                 grid.innerHTML = LIBRARY.series.map(series => `
@@ -716,12 +979,16 @@
             },
 
             viewSeries(seriesId) {
+                const lang = document.documentElement.getAttribute('data-lang');
+                const t = TRANSLATIONS[lang];
+
                 this.currentSeries = LIBRARY.series.find(s => s.id === seriesId);
                 if (!this.currentSeries) return;
 
                 document.getElementById('libraryView').classList.remove('hidden');
                 document.getElementById('videoView').classList.add('hidden');
-                document.getElementById('backBtn').classList.remove('hidden');
+                document.getElementById('backBtn').style.display = 'inline-flex';
+                document.getElementById('backBtn').textContent = t.back;
                 document.getElementById('libraryTitle').textContent = this.currentSeries.title;
                 document.getElementById('breadcrumbText').textContent = this.currentSeries.title;
 
@@ -743,23 +1010,27 @@
             },
 
             playEpisode(episodeId) {
+                const lang = document.documentElement.getAttribute('data-lang');
+                const t = TRANSLATIONS[lang];
+
                 if (!this.currentSeries) return;
                 this.currentEpisode = this.currentSeries.episodes.find(e => e.id === episodeId);
                 if (!this.currentEpisode) return;
 
                 document.getElementById('libraryView').classList.add('hidden');
                 document.getElementById('videoView').classList.remove('hidden');
-                document.getElementById('backBtn').classList.remove('hidden');
+                document.getElementById('backBtn').style.display = 'inline-flex';
+                document.getElementById('backBtn').textContent = t.back;
                 document.getElementById('breadcrumbText').textContent = this.currentEpisode.title;
 
                 const videoId = Utils.extractYoutubeId(this.currentEpisode.url);
                 if (videoId) {
-                    const origin = location.origin;
                     document.getElementById('videoContainer').innerHTML = `
                         <iframe 
-                            src="https://www.youtube.com/embed/${videoId}?enablejsapi=1&origin=${origin}&modestbranding=1&controls=1&showinfo=0" 
+                            src="https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1&controls=1" 
                             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                            allowfullscreen>
+                            allowfullscreen
+                            title="${Utils.sanitize(this.currentEpisode.title)}">
                         </iframe>
                     `;
                 }
@@ -785,13 +1056,14 @@
             userCommentId: localStorage.getItem('watch_vip_user_comment_id'),
             autoRefreshInterval: null,
             isRefreshing: false,
+            lastSubmitTime: 0,
 
             async init() {
-                document.getElementById('commentForm')
-                    .addEventListener('submit', e => {
-                        e.preventDefault();
-                        this.send();
-                    });
+                const form = document.getElementById('commentForm');
+                form.addEventListener('submit', e => {
+                    e.preventDefault();
+                    this.send();
+                });
 
                 await this.load();
                 this.startAutoRefresh();
@@ -801,7 +1073,7 @@
                 if (this.autoRefreshInterval) clearInterval(this.autoRefreshInterval);
                 
                 this.autoRefreshInterval = setInterval(() => {
-                    if (App.currentView !== 'video') {
+                    if (App.currentView === 'video') {
                         this.load();
                     }
                 }, CONFIG.REFRESH_INTERVAL);
@@ -811,31 +1083,55 @@
                 const indicator = document.getElementById('updateIndicator');
                 if (indicator) {
                     if (App.currentView === 'video') {
-                        indicator.classList.add('paused');
-                    } else {
                         indicator.classList.remove('paused');
+                    } else {
+                        indicator.classList.add('paused');
                     }
                 }
             },
 
             async send() {
+                const lang = document.documentElement.getAttribute('data-lang');
+                const t = TRANSLATIONS[lang];
+                const now = Date.now();
+
+                // Rate limiting
+                if (now - this.lastSubmitTime < CONFIG.SUBMIT_COOLDOWN) {
+                    Utils.status(t.rateLimitError, 'error');
+                    return;
+                }
+
                 if (this.userCommentId) {
-                    Utils.status('لديك تعليق قيد المراجعة', 'info');
+                    Utils.status(t.pending, 'info');
                     return;
                 }
 
                 const name = document.getElementById('commentName').value.trim();
                 const text = document.getElementById('commentText').value.trim();
-                if (!text) return Utils.status('أكمل كتابة التعليق', 'error');
+                
+                if (!text) {
+                    Utils.status(t.empty, 'error');
+                    return;
+                }
+
+                // Disable button
+                const btn = document.getElementById('submitBtn');
+                btn.disabled = true;
+                btn.textContent = '⏳ ' + t.submitting;
 
                 try {
                     const res = await API.submit(name || null, text);
                     this.userCommentId = res.commentId;
                     localStorage.setItem('watch_vip_user_comment_id', res.commentId);
-                    Utils.status('تم إرسال تعليقك بنجاح', 'success');
+                    this.lastSubmitTime = now;
+                    Utils.status(t.success, 'success');
                     document.getElementById('commentText').value = '';
-                } catch {
-                    Utils.status('حدث خطأ في الإرسال', 'error');
+                    document.getElementById('commentName').value = '';
+                } catch (e) {
+                    Utils.status(t.error, 'error');
+                } finally {
+                    btn.disabled = false;
+                    btn.textContent = t.submit;
                 }
             },
 
@@ -844,13 +1140,15 @@
                 this.isRefreshing = true;
 
                 try {
+                    const lang = document.documentElement.getAttribute('data-lang');
+                    const t = TRANSLATIONS[lang];
                     const list = await API.comments();
                     const box = document.getElementById('commentsListContainer');
 
-                    document.getElementById('commentsCount').textContent = `${list.length} تعليق`;
+                    document.getElementById('commentsCount').textContent = t.commentCount(list.length);
 
                     if (!list.length) {
-                        box.innerHTML = '<div class="no-comments">لا توجد تعليقات حتى الآن</div>';
+                        box.innerHTML = `<div class="no-comments">${t.noComments}</div>`;
                         this.isRefreshing = false;
                         return;
                     }
@@ -872,13 +1170,15 @@
                                 <div class="comment-item ${c.commentId===this.userCommentId?'user-comment':''}"
                                      data-id="${c.commentId}">
                                     <div class="comment-header">
-                                        <b>
+                                        <div class="comment-author">
                                             ${Utils.sanitize(c.displayName)}
-                                            ${c.verified ? '<span class="verified">✓</span>' : ''}
-                                        </b>
-                                        <span>${Utils.timeAgo(c.timestamp)}</span>
+                                            ${c.verified ? `<svg class="verified-svg" viewBox="0 0 24 24" fill="#1da1f2">
+                                                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+                                            </svg>` : ''}
+                                        </div>
+                                        <span class="comment-time">${Utils.timeAgo(c.timestamp)}</span>
                                     </div>
-                                    <div>${Utils.sanitize(c.text)}</div>
+                                    <div class="comment-text">${Utils.sanitize(c.text)}</div>
                                 </div>
                             `).join('')}
                         </div>
@@ -891,6 +1191,9 @@
             },
 
             bindClicks() {
+                const lang = document.documentElement.getAttribute('data-lang');
+                const t = TRANSLATIONS[lang];
+
                 document.querySelectorAll('.user-comment').forEach(el=>{
                     let last = 0;
                     el.onclick = () => {
@@ -898,13 +1201,84 @@
                         if (now - last < CONFIG.DOUBLE_CLICK_TIMEOUT) {
                             localStorage.removeItem('watch_vip_user_comment_id');
                             this.userCommentId = null;
-                            Utils.status('يمكنك التعليق مجدداً', 'success');
+                            Utils.status(t.canComment, 'success');
+                            this.load();
                         }
                         last = now;
                     };
                 });
             }
         };
+
+        // نظام تغيير اللغة
+        function applyLanguage(lang) {
+            const t = TRANSLATIONS[lang];
+            document.documentElement.setAttribute('data-lang', lang);
+            localStorage.setItem('site_lang', lang);
+
+            // تحديث النصوص
+            document.getElementById('libraryTitle').textContent = t.library;
+            document.getElementById('breadcrumbText').textContent = t.library;
+            document.getElementById('backBtn').textContent = t.back;
+            document.getElementById('commentsTitle').textContent = t.comments;
+            document.getElementById('labelName').textContent = t.labelName;
+            document.getElementById('hintName').textContent = t.hintName;
+            document.getElementById('labelComment').textContent = t.labelComment;
+            document.getElementById('commentName').placeholder = t.placeholderName;
+            document.getElementById('commentText').placeholder = t.placeholderComment;
+            document.getElementById('submitBtn').textContent = t.submit;
+            document.getElementById('loadingText').textContent = t.loading;
+            
+            // تحديث زر اللغة بالنص الدولالي
+            const langButton = document.getElementById('langToggle');
+            const langLabels = {
+                ar: 'اللغة',
+                en: 'Lang',
+                fr: 'Langue',
+                ja: '言語'
+            };
+            langButton.textContent = langLabels[lang] || 'Lang';
+            langButton.title = t.langButtonLabel;
+
+            // تحديث قائمة اللغات
+            document.querySelectorAll('#langMenu button').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.dataset.lang === lang) {
+                    btn.classList.add('active');
+                }
+            });
+
+            // إعادة تحميل التعليقات إذا كانت مرئية
+            if (App.currentView === 'video') {
+                Comments.load();
+            }
+        }
+
+        const langToggle = document.getElementById('langToggle');
+        const langMenu = document.getElementById('langMenu');
+
+        langToggle.onclick = (e) => {
+            e.stopPropagation();
+            langMenu.classList.toggle('hidden');
+        };
+
+        langMenu.querySelectorAll('button').forEach(btn => {
+            btn.onclick = () => {
+                applyLanguage(btn.dataset.lang);
+                langMenu.classList.add('hidden');
+            };
+        });
+
+        // إغلاق القائمة عند النقر خارجها
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('#langToggle') && !e.target.closest('#langMenu')) {
+                langMenu.classList.add('hidden');
+            }
+        });
+
+        // تحميل اللغة المحفوظة
+        const savedLang = localStorage.getItem('site_lang') || 'ar';
+        applyLanguage(savedLang);
 
         document.addEventListener('DOMContentLoaded', ()=>App.init());
     </script>
