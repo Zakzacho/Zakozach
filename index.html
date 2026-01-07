@@ -503,6 +503,26 @@
             background: var(--primary-color);
             color: white;
         }
+
+        .comments-update-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background: var(--primary-color);
+            border-radius: 50%;
+            margin-right: 8px;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        .comments-update-indicator.paused {
+            animation: none;
+            opacity: 0.5;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
     </style>
 </head>
 <body>
@@ -537,7 +557,10 @@
             <!-- قسم التعليقات -->
             <div class="comments-section">
                 <div class="comments-header">
-                    <h2>💬 التعليقات</h2>
+                    <h2>
+                        <span class="comments-update-indicator paused" id="updateIndicator"></span>
+                        💬 التعليقات
+                    </h2>
                     <span class="comments-count" id="commentsCount">0 تعليق</span>
                 </div>
 
@@ -596,7 +619,7 @@
                         {
                             id: 'ep1',
                             title: 'نوبي الغبي بحاجة الى دورايمون!',
-                            url: 'https://youtu.be/bn924_vcepg',
+                            url: 'https://youtu.be/bn924_vcepg?si=s0ciXZNCUj_rCprZ',
                             description: 'الحلقة الأولى من مسلسل دورايمون'
                         }
                     ]
@@ -689,6 +712,7 @@
                 `).join('');
 
                 this.currentView = 'home';
+                Comments.pauseAutoRefresh();
             },
 
             viewSeries(seriesId) {
@@ -715,6 +739,7 @@
                 `).join('');
 
                 this.currentView = 'series';
+                Comments.pauseAutoRefresh();
             },
 
             playEpisode(episodeId) {
@@ -729,9 +754,10 @@
 
                 const videoId = Utils.extractYoutubeId(this.currentEpisode.url);
                 if (videoId) {
+                    const origin = location.origin;
                     document.getElementById('videoContainer').innerHTML = `
                         <iframe 
-                            src="https://www.youtube.com/embed/${videoId}?modestbranding=1&controls=1&showinfo=0" 
+                            src="https://www.youtube.com/embed/${videoId}?enablejsapi=1&origin=${origin}&modestbranding=1&controls=1&showinfo=0" 
                             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
                             allowfullscreen>
                         </iframe>
@@ -742,6 +768,7 @@
                 document.getElementById('videoDescription').textContent = this.currentEpisode.description;
 
                 this.currentView = 'video';
+                Comments.pauseAutoRefresh();
                 Comments.load();
             },
 
@@ -756,6 +783,8 @@
 
         const Comments = {
             userCommentId: localStorage.getItem('watch_vip_user_comment_id'),
+            autoRefreshInterval: null,
+            isRefreshing: false,
 
             async init() {
                 document.getElementById('commentForm')
@@ -765,7 +794,30 @@
                     });
 
                 await this.load();
-                setInterval(()=>this.load(), CONFIG.REFRESH_INTERVAL);
+                this.startAutoRefresh();
+            },
+
+            startAutoRefresh() {
+                if (this.autoRefreshInterval) clearInterval(this.autoRefreshInterval);
+                
+                this.autoRefreshInterval = setInterval(() => {
+                    // تحديث التعليقات فقط عندما لا يكون المستخدم يشاهد الفيديو
+                    if (App.currentView !== 'video') {
+                        this.load();
+                    }
+                }, CONFIG.REFRESH_INTERVAL);
+            },
+
+            pauseAutoRefresh() {
+                // إظهار حالة المؤشر بأن التحديث موقوف
+                const indicator = document.getElementById('updateIndicator');
+                if (indicator) {
+                    if (App.currentView === 'video') {
+                        indicator.classList.add('paused');
+                    } else {
+                        indicator.classList.remove('paused');
+                    }
+                }
             },
 
             async send() {
@@ -790,46 +842,54 @@
             },
 
             async load() {
-                const list = await API.comments();
-                const box = document.getElementById('commentsListContainer');
+                if (this.isRefreshing) return;
+                this.isRefreshing = true;
 
-                document.getElementById('commentsCount').textContent = `عدد التعليقات: ${list.length}`;
+                try {
+                    const list = await API.comments();
+                    const box = document.getElementById('commentsListContainer');
 
-                if (!list.length) {
-                    box.innerHTML = '<div class="no-comments">لا توجد تعليقات</div>';
-                    return;
-                }
+                    document.getElementById('commentsCount').textContent = `عدد التعليقات: ${list.length}`;
 
-                if (this.userCommentId && list.length > 0 && !list.some(c => c.commentId === this.userCommentId)) {
-                    localStorage.removeItem('watch_vip_user_comment_id');
-                    this.userCommentId = null;
-                }
+                    if (!list.length) {
+                        box.innerHTML = '<div class="no-comments">لا توجد تعليقات</div>';
+                        this.isRefreshing = false;
+                        return;
+                    }
 
-                list.sort((a,b)=>{
-                    if (a.commentId === this.userCommentId) return -1;
-                    if (b.commentId === this.userCommentId) return 1;
-                    return b.timestamp - a.timestamp;
-                });
+                    if (this.userCommentId && list.length > 0 && !list.some(c => c.commentId === this.userCommentId)) {
+                        localStorage.removeItem('watch_vip_user_comment_id');
+                        this.userCommentId = null;
+                    }
 
-                box.innerHTML = `
-                    <div class="comments-list">
-                        ${list.map(c=>`
-                            <div class="comment-item ${c.commentId===this.userCommentId?'user-comment':''}"
-                                 data-id="${c.commentId}">
-                                <div class="comment-header">
-                                    <b>
-                                        ${Utils.sanitize(c.displayName)}
-                                        ${c.verified ? '<span class="verified">✔️</span>' : ''}
-                                    </b>
-                                    <span>${Utils.timeAgo(c.timestamp)}</span>
+                    list.sort((a,b)=>{
+                        if (a.commentId === this.userCommentId) return -1;
+                        if (b.commentId === this.userCommentId) return 1;
+                        return b.timestamp - a.timestamp;
+                    });
+
+                    box.innerHTML = `
+                        <div class="comments-list">
+                            ${list.map(c=>`
+                                <div class="comment-item ${c.commentId===this.userCommentId?'user-comment':''}"
+                                     data-id="${c.commentId}">
+                                    <div class="comment-header">
+                                        <b>
+                                            ${Utils.sanitize(c.displayName)}
+                                            ${c.verified ? '<span class="verified">✔️</span>' : ''}
+                                        </b>
+                                        <span>${Utils.timeAgo(c.timestamp)}</span>
+                                    </div>
+                                    <div>${Utils.sanitize(c.text)}</div>
                                 </div>
-                                <div>${Utils.sanitize(c.text)}</div>
-                            </div>
-                        `).join('')}
-                    </div>
-                `;
+                            `).join('')}
+                        </div>
+                    `;
 
-                this.bindClicks();
+                    this.bindClicks();
+                } finally {
+                    this.isRefreshing = false;
+                }
             },
 
             bindClicks() {
