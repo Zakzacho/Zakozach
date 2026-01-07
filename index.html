@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="مشغل فيديو احترافي مع نظام تعليقات مباشر">
-    <title>Watch VIP - مشغل الفيديو</title>
+    <meta name="description" content="منصة بث فيديو احترافية مع نظام تعليقات تفاعلي">
+    <title>Watch VIP - منصة البث</title>
     
     <style>
         /* ===========================
@@ -529,14 +529,14 @@
     <div class="container">
         <!-- شريط الملاحة -->
         <div class="breadcrumb" id="breadcrumb">
-            <button class="back-btn" id="backBtn" onclick="App.goHome()">← الرئيسية</button>
+            <button class="back-btn" id="backBtn" onclick="App.goHome()">← الرجوع</button>
             <span id="breadcrumbText">المكتبة</span>
         </div>
 
         <!-- عرض المكتبة -->
         <div id="libraryView" class="library-view">
             <div class="library-header">
-                <h1 id="libraryTitle">مكتبة المسلسلات</h1>
+                <h1 id="libraryTitle">المسلسلات</h1>
             </div>
             <div class="library-grid" id="libraryGrid"></div>
         </div>
@@ -545,12 +545,12 @@
         <div id="videoView" class="hidden">
             <div class="video-section">
                 <div class="video-header">
-                    <h1>🎬 Watch VIP</h1>
+                    <h1>Watch VIP</h1>
                 </div>
                 <div class="video-container" id="videoContainer"></div>
                 <div class="video-info">
-                    <h2 class="video-title" id="videoTitle">مشغل الفيديو</h2>
-                    <p class="video-description" id="videoDescription">شاهد الفيديو المفضل لديك</p>
+                    <h2 class="video-title" id="videoTitle">العنوان</h2>
+                    <p class="video-description" id="videoDescription">الوصف</p>
                 </div>
             </div>
 
@@ -559,7 +559,7 @@
                 <div class="comments-header">
                     <h2>
                         <span class="comments-update-indicator paused" id="updateIndicator"></span>
-                        💬 التعليقات
+                        التعليقات
                     </h2>
                     <span class="comments-count" id="commentsCount">0 تعليق</span>
                 </div>
@@ -575,27 +575,27 @@
                             <input 
                                 type="text" 
                                 id="commentName" 
-                                placeholder="اترك فارغاً لتوليد اسم تلقائي"
+                                placeholder="سيتم توليد اسم تلقائي إن لم تكتب"
                                 maxlength="50"
                             >
-                            <div class="form-hint">سيتم توليد اسم بصيغة "حساب موثق رقم X" إذا تركت الحقل فارغاً</div>
+                            <div class="form-hint">إذا تركت الحقل فارغاً، سيتم إنشاء اسم مستخدم تلقائي</div>
                         </div>
                         <div class="form-group">
                             <label for="commentText">التعليق *</label>
                             <textarea 
                                 id="commentText" 
-                                placeholder="اكتب تعليقك هنا..."
+                                placeholder="شارك رأيك..."
                                 required
                                 maxlength="500"
                             ></textarea>
                         </div>
-                        <button type="submit" class="submit-btn" id="submitBtn">نشر التعليق</button>
+                        <button type="submit" class="submit-btn" id="submitBtn">إرسال التعليق</button>
                     </form>
                 </div>
 
                 <!-- قائمة التعليقات -->
                 <div id="commentsListContainer">
-                    <div class="loading">جاري تحميل التعليقات...</div>
+                    <div class="loading">جاري التحميل...</div>
                 </div>
             </div>
         </div>
@@ -613,14 +613,14 @@
             series: [
                 {
                     id: 'doraemon',
-                    title: 'حلقات دورايمون',
+                    title: 'دورايمون',
                     emoji: '🤖',
                     episodes: [
                         {
                             id: 'ep1',
-                            title: 'نوبي الغبي بحاجة الى دورايمون!',
+                            title: 'الحلقة الأولى',
                             url: 'https://youtu.be/bn924_vcepg?si=s0ciXZNCUj_rCprZ',
-                            description: 'الحلقة الأولى من مسلسل دورايمون'
+                            description: 'الحلقة الافتتاحية من المسلسل'
                         }
                     ]
                 }
@@ -636,7 +636,7 @@
             timeAgo(ts) {
                 const diff = Date.now() - ts;
                 const m = Math.floor(diff / 60000);
-                if (m < 1) return 'الآن';
+                if (m < 1) return 'للتو';
                 if (m < 60) return `منذ ${m} دقيقة`;
                 const h = Math.floor(m / 60);
                 if (h < 24) return `منذ ${h} ساعة`;
@@ -729,7 +729,7 @@
                 grid.innerHTML = this.currentSeries.episodes.map(ep => `
                     <div class="library-item" onclick="App.playEpisode('${ep.id}')">
                         <div class="item-cover episode">
-                            <span>▶️</span>
+                            <span>▶</span>
                         </div>
                         <div class="item-info">
                             <div class="item-title">${Utils.sanitize(ep.title)}</div>
@@ -801,7 +801,6 @@
                 if (this.autoRefreshInterval) clearInterval(this.autoRefreshInterval);
                 
                 this.autoRefreshInterval = setInterval(() => {
-                    // تحديث التعليقات فقط عندما لا يكون المستخدم يشاهد الفيديو
                     if (App.currentView !== 'video') {
                         this.load();
                     }
@@ -809,7 +808,6 @@
             },
 
             pauseAutoRefresh() {
-                // إظهار حالة المؤشر بأن التحديث موقوف
                 const indicator = document.getElementById('updateIndicator');
                 if (indicator) {
                     if (App.currentView === 'video') {
@@ -822,22 +820,22 @@
 
             async send() {
                 if (this.userCommentId) {
-                    Utils.status('لديك تعليق قيد المعالجة أو معتمد', 'info');
+                    Utils.status('لديك تعليق قيد المراجعة', 'info');
                     return;
                 }
 
                 const name = document.getElementById('commentName').value.trim();
                 const text = document.getElementById('commentText').value.trim();
-                if (!text) return Utils.status('اكتب تعليقًا', 'error');
+                if (!text) return Utils.status('أكمل كتابة التعليق', 'error');
 
                 try {
                     const res = await API.submit(name || null, text);
                     this.userCommentId = res.commentId;
                     localStorage.setItem('watch_vip_user_comment_id', res.commentId);
-                    Utils.status('تم الإرسال بانتظار الموافقة', 'success');
+                    Utils.status('تم إرسال تعليقك بنجاح', 'success');
                     document.getElementById('commentText').value = '';
                 } catch {
-                    Utils.status('تعذر الإرسال', 'error');
+                    Utils.status('حدث خطأ في الإرسال', 'error');
                 }
             },
 
@@ -849,10 +847,10 @@
                     const list = await API.comments();
                     const box = document.getElementById('commentsListContainer');
 
-                    document.getElementById('commentsCount').textContent = `عدد التعليقات: ${list.length}`;
+                    document.getElementById('commentsCount').textContent = `${list.length} تعليق`;
 
                     if (!list.length) {
-                        box.innerHTML = '<div class="no-comments">لا توجد تعليقات</div>';
+                        box.innerHTML = '<div class="no-comments">لا توجد تعليقات حتى الآن</div>';
                         this.isRefreshing = false;
                         return;
                     }
@@ -876,7 +874,7 @@
                                     <div class="comment-header">
                                         <b>
                                             ${Utils.sanitize(c.displayName)}
-                                            ${c.verified ? '<span class="verified">✔️</span>' : ''}
+                                            ${c.verified ? '<span class="verified">✓</span>' : ''}
                                         </b>
                                         <span>${Utils.timeAgo(c.timestamp)}</span>
                                     </div>
@@ -900,7 +898,7 @@
                         if (now - last < CONFIG.DOUBLE_CLICK_TIMEOUT) {
                             localStorage.removeItem('watch_vip_user_comment_id');
                             this.userCommentId = null;
-                            Utils.status('يمكنك التعليق مجددًا', 'success');
+                            Utils.status('يمكنك التعليق مجدداً', 'success');
                         }
                         last = now;
                     };
