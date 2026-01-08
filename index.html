@@ -1,1992 +1,2108 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl" data-lang="ar">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="منصة بث فيديو احترافية مع نظام دبلجة متعددة اللغات">
-    <title>Watch VIP - منصة البث</title>
-    
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
-    <style>
-        /* ===========================
-           إعادة تعيين وتنسيقات عامة
-        =========================== */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        :root {
-            --primary-color: #ff0000;
-            --secondary-color: #282828;
-            --bg-dark: #0f0f0f;
-            --bg-light: #1f1f1f;
-            --text-primary: #ffffff;
-            --text-secondary: #aaaaaa;
-            --border-color: #303030;
-            --success-color: #00ff00;
-            --verified-color: #1da1f2;
-            --shadow: 0 2px 10px rgba(0,0,0,0.3);
-        }
-
-        html[data-lang="ar"] body {
-            font-family: 'Cairo', sans-serif;
-            direction: rtl;
-        }
-
-        html[data-lang="en"] body,
-        html[data-lang="fr"] body {
-            font-family: 'Inter', sans-serif;
-            direction: ltr;
-        }
-
-        html[data-lang="ja"] body {
-            font-family: 'Noto Sans JP', sans-serif;
-            direction: ltr;
-        }
-
-        body {
-            background-color: var(--bg-dark);
-            color: var(--text-primary);
-            line-height: 1.6;
-            min-height: 100vh;
-        }
-
-        /* ===========================
-           حاوية رئيسية
-        =========================== */
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
-        /* ===========================
-           شريط الملاحة
-        =========================== */
-        .breadcrumb {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 20px;
-            padding: 10px 15px;
-            background: var(--bg-light);
-            border-radius: 6px;
-            font-size: 0.9rem;
-        }
-
-        .breadcrumb button {
-            background: var(--secondary-color);
-            border: 1px solid var(--border-color);
-            color: var(--verified-color);
-            cursor: pointer;
-            text-decoration: none;
-            padding: 8px 15px;
-            border-radius: 6px;
-            transition: all 0.3s;
-            font-size: 0.9rem;
-            font-family: inherit;
-        }
-
-        .breadcrumb button:hover {
-            background: var(--primary-color);
-            color: var(--text-primary);
-            border-color: var(--primary-color);
-        }
-
-        /* ===========================
-           عرض المكتبة (المجلدات والحلقات)
-        =========================== */
-        .library-view {
-            margin-bottom: 30px;
-        }
-
-        .library-header {
-            padding: 15px 20px;
-            background: var(--secondary-color);
-            border-radius: 12px 12px 0 0;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .library-header h1 {
-            font-size: 1.5rem;
-            font-weight: 600;
-        }
-
-        .library-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 20px;
-            padding: 20px;
-            background: var(--bg-light);
-            border-radius: 0 0 12px 12px;
-        }
-
-        .library-item {
-            cursor: pointer;
-            transition: all 0.3s;
-            border-radius: 8px;
-            overflow: hidden;
-            background: var(--secondary-color);
-            border: 2px solid transparent;
-        }
-
-        .library-item:hover {
-            border-color: var(--primary-color);
-            transform: translateY(-5px);
-            box-shadow: var(--shadow);
-        }
-
-        .item-cover {
-            width: 100%;
-            aspect-ratio: 16/9;
-            background: linear-gradient(135deg, #ff0000, #cc0000);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 3rem;
-            color: white;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .item-cover.episode {
-            aspect-ratio: 2/1;
-        }
-
-        .item-cover img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .item-info {
-            padding: 15px;
-        }
-
-        .item-title {
-            font-weight: 600;
-            margin-bottom: 8px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-
-        .item-subtitle {
-            font-size: 0.85rem;
-            color: var(--text-secondary);
-        }
-
-        /* ===========================
-           عرض الفيديو
-        =========================== */
-        .video-section {
-            background: var(--bg-light);
-            border-radius: 12px;
-            overflow: hidden;
-            margin-bottom: 30px;
-            box-shadow: var(--shadow);
-        }
-
-        .video-header {
-            padding: 15px 20px;
-            background: var(--secondary-color);
-            border-bottom: 1px solid var(--border-color);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 15px;
-        }
-
-        .video-header h1 {
-            font-size: 1.5rem;
-            font-weight: 600;
-            flex: 1;
-        }
-
-        .video-controls {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .video-container {
-            position: relative;
-            padding-bottom: 56.25%;
-            height: 0;
-            overflow: hidden;
-            background: #000;
-        }
-
-        .video-container iframe {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            border: none;
-        }
-
-        /* ===========================
-           نظام التحكم السريع بالدبلجة
-        =========================== */
-        .quick-toggle {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .sys-toggle {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            border: none;
-            background: #2a2a2a;
-            color: #aaa;
-            font-size: 20px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.25s ease;
-            box-shadow: inset 0 0 0 2px #333;
-            font-family: inherit;
-            user-select: none;
-        }
-
-        .sys-toggle:hover {
-            background: #333;
-        }
-
-        .sys-toggle.active {
-            background: var(--primary-color);
-            color: #fff;
-            box-shadow: 0 0 12px rgba(255, 0, 0, 0.6), inset 0 0 0 2px rgba(255,255,255,0.3);
-        }
-
-        .sys-toggle .icon {
-            pointer-events: none;
-        }
-
-        /* ===========================
-           نظام الدبلجة
-        =========================== */
-        .dub-selector {
-            background: var(--secondary-color);
-            padding: 20px;
-            border-bottom: 1px solid var(--border-color);
-            margin-bottom: 0;
-            animation: slideDown 0.3s ease-out;
-        }
-
-        @keyframes slideDown {
-            from {
-                opacity: 0;
-                max-height: 0;
-                overflow: hidden;
-            }
-            to {
-                opacity: 1;
-                max-height: 1000px;
-            }
-        }
-
-        .dub-selector h3 {
-            margin-bottom: 12px;
-            font-size: 0.95rem;
-            color: var(--text-secondary);
-            font-weight: 500;
-        }
-
-        .dub-buttons {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            margin-bottom: 15px;
-        }
-
-        .dub-btn {
-            padding: 10px 18px;
-            background: var(--bg-dark);
-            border: 2px solid var(--border-color);
-            color: var(--text-primary);
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            font-weight: 500;
-            transition: all 0.3s;
-            font-family: inherit;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .dub-btn:hover {
-            border-color: var(--text-secondary);
-            background: var(--bg-light);
-        }
-
-        .dub-btn.active {
-            border-color: var(--primary-color);
-            background: var(--primary-color);
-            color: var(--text-primary);
-            font-weight: 600;
-            box-shadow: 0 0 15px rgba(255, 0, 0, 0.3);
-        }
-
-        .dub-icon {
-            font-size: 1.1rem;
-        }
-
-        /* ===========================
-           مضبط التأخير
-        =========================== */
-        .delay-control {
-            background: rgba(255, 0, 0, 0.05);
-            border: 1px solid rgba(255, 0, 0, 0.2);
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-        }
-
-        .delay-control.hidden {
-            display: none;
-        }
-
-        .delay-label {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-            font-size: 0.9rem;
-            color: var(--text-secondary);
-        }
-
-        .delay-value {
-            color: var(--primary-color);
-            font-weight: 600;
-        }
-
-        .delay-slider {
-            width: 100%;
-            height: 6px;
-            border-radius: 3px;
-            background: var(--bg-dark);
-            outline: none;
-            -webkit-appearance: none;
-            appearance: none;
-            cursor: pointer;
-        }
-
-        .delay-slider::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 16px;
-            height: 16px;
-            border-radius: 50%;
-            background: var(--primary-color);
-            cursor: pointer;
-            transition: all 0.2s;
-            box-shadow: 0 0 8px rgba(255, 0, 0, 0.4);
-        }
-
-        .delay-slider::-webkit-slider-thumb:hover {
-            transform: scale(1.2);
-            box-shadow: 0 0 12px rgba(255, 0, 0, 0.6);
-        }
-
-        .delay-slider::-moz-range-thumb {
-            width: 16px;
-            height: 16px;
-            border-radius: 50%;
-            background: var(--primary-color);
-            cursor: pointer;
-            border: none;
-            transition: all 0.2s;
-            box-shadow: 0 0 8px rgba(255, 0, 0, 0.4);
-        }
-
-        .delay-slider::-moz-range-thumb:hover {
-            transform: scale(1.2);
-            box-shadow: 0 0 12px rgba(255, 0, 0, 0.6);
-        }
-
-        .delay-hint {
-            font-size: 0.8rem;
-            color: var(--text-secondary);
-            margin-top: 8px;
-        }
-
-        .dub-status-indicator {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 12px 15px;
-            background: rgba(255, 0, 0, 0.1);
-            border-radius: 6px;
-            margin-top: 15px;
-            font-size: 0.9rem;
-            color: #ff0000;
-            border: 1px solid rgba(255, 0, 0, 0.2);
-        }
-
-        .dub-status-dot {
-            display: inline-block;
-            width: 8px;
-            height: 8px;
-            background: #aaa;
-            border-radius: 50%;
-        }
-
-        .dub-status-dot.active {
-            background: var(--success-color);
-            animation: pulse 1.5s ease-in-out infinite;
-        }
-
-        .video-info {
-            padding: 20px;
-        }
-
-        .video-title {
-            font-size: 1.3rem;
-            margin-bottom: 10px;
-            font-weight: 600;
-        }
-
-        .video-description {
-            color: var(--text-secondary);
-            font-size: 0.95rem;
-        }
-
-        /* ===========================
-           قسم التعليقات
-        =========================== */
-        .comments-section {
-            background: var(--bg-light);
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: var(--shadow);
-        }
-
-        .comments-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .comments-header h2 {
-            font-size: 1.4rem;
-            font-weight: 600;
-        }
-
-        .comments-count {
-            background: var(--secondary-color);
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 0.9rem;
-            color: var(--text-secondary);
-        }
-
-        /* نموذج إضافة تعليق */
-        .comment-form {
-            margin-bottom: 30px;
-            padding: 20px;
-            background: var(--secondary-color);
-            border-radius: 8px;
-        }
-
-        .form-group {
-            margin-bottom: 15px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            color: var(--text-secondary);
-            font-size: 0.9rem;
-            font-weight: 500;
-        }
-
-        .form-group input,
-        .form-group textarea {
-            width: 100%;
-            padding: 12px 15px;
-            background: var(--bg-dark);
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            color: var(--text-primary);
-            font-size: 0.95rem;
-            font-family: inherit;
-            transition: border-color 0.3s;
-        }
-
-        .form-group input::placeholder,
-        .form-group textarea::placeholder {
-            color: var(--text-secondary);
-        }
-
-        .form-group input:focus,
-        .form-group textarea:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            background: var(--bg-dark);
-        }
-
-        .form-group textarea {
-            resize: vertical;
-            min-height: 100px;
-        }
-
-        .form-hint {
-            font-size: 0.85rem;
-            color: var(--text-secondary);
-            margin-top: 5px;
-        }
-
-        .submit-btn {
-            width: 100%;
-            padding: 12px;
-            background: var(--primary-color);
-            color: var(--text-primary);
-            border: 1px solid var(--primary-color);
-            border-radius: 6px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-family: inherit;
-        }
-
-        .submit-btn:hover:not(:disabled) {
-            background: #cc0000;
-            border-color: #cc0000;
-        }
-
-        .submit-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        /* رسائل الحالة */
-        .status-message {
-            padding: 12px 15px;
-            border-radius: 6px;
-            margin-bottom: 15px;
-            font-size: 0.9rem;
-            display: none;
-        }
-
-        .status-message.show {
-            display: block;
-        }
-
-        .status-message.success {
-            background: rgba(0, 255, 0, 0.1);
-            border: 1px solid var(--success-color);
-            color: var(--success-color);
-        }
-
-        .status-message.error {
-            background: rgba(255, 0, 0, 0.1);
-            border: 1px solid var(--primary-color);
-            color: var(--primary-color);
-        }
-
-        .status-message.info {
-            background: rgba(29, 161, 242, 0.1);
-            border: 1px solid var(--verified-color);
-            color: var(--verified-color);
-        }
-
-        /* قائمة التعليقات */
-        .comments-list {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        .comment-item {
-            background: var(--secondary-color);
-            padding: 15px;
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
-            transition: all 0.3s;
-            cursor: pointer;
-        }
-
-        .comment-item:hover {
-            border-color: var(--text-secondary);
-        }
-
-        .comment-item.user-comment {
-            border: 2px solid var(--primary-color);
-            background: rgba(255, 0, 0, 0.05);
-        }
-
-        .comment-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 10px;
-        }
-
-        .comment-author {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-weight: 600;
-            font-size: 0.95rem;
-        }
-
-        .verified-badge {
-            display: inline-flex;
-            align-items: center;
-            color: var(--verified-color);
-        }
-
-        .verified-svg {
-            width: 14px;
-            height: 14px;
-            margin-inline-start: 4px;
-        }
-
-        .comment-time {
-            color: var(--text-secondary);
-            font-size: 0.85rem;
-        }
-
-        .comment-text {
-            color: var(--text-primary);
-            line-height: 1.6;
-            word-wrap: break-word;
-        }
-
-        .comment-actions {
-            margin-top: 10px;
-            padding-top: 10px;
-            border-top: 1px solid var(--border-color);
-            font-size: 0.85rem;
-            color: var(--text-secondary);
-        }
-
-        .click-count {
-            font-weight: 500;
-        }
-
-        .no-comments {
-            text-align: center;
-            padding: 40px 20px;
-            color: var(--text-secondary);
-        }
-
-        .loading {
-            text-align: center;
-            padding: 20px;
-            color: var(--text-secondary);
-        }
-
-        /* إخفاء العناصر */
-        .hidden {
-            display: none;
-        }
-
-        /* ===========================
-           تصميم متجاوب
-        =========================== */
-        @media (max-width: 768px) {
-            .container {
-                padding: 15px;
-            }
-
-            .library-grid {
-                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-                gap: 15px;
-            }
-
-            .video-header {
-                flex-direction: column;
-                gap: 10px;
-                align-items: flex-start;
-            }
-
-            .video-header h1 {
-                font-size: 1.2rem;
-            }
-
-            .video-title {
-                font-size: 1.1rem;
-            }
-
-            .comments-header h2 {
-                font-size: 1.2rem;
-            }
-
-            .comment-form {
-                padding: 15px;
-            }
-
-            .dub-buttons {
-                flex-direction: column;
-            }
-
-            .dub-btn {
-                width: 100%;
-                justify-content: center;
-            }
-
-            .video-controls {
-                width: 100%;
-                justify-content: flex-start;
-            }
-
-            .delay-control {
-                margin-bottom: 10px;
-            }
-        }
-
-        /* ===========================
-           أنيميشن
-        =========================== */
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-
-        .library-item, .comment-item {
-            animation: fadeIn 0.3s ease-out;
-        }
-
-        .back-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            background: var(--secondary-color);
-            color: var(--verified-color);
-            border: 1px solid var(--border-color);
-            padding: 8px 15px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            transition: all 0.3s;
-            font-family: inherit;
-            font-weight: 500;
-        }
-
-        .back-btn:hover {
-            background: var(--primary-color);
-            color: var(--text-primary);
-            border-color: var(--primary-color);
-        }
-
-        .comments-update-indicator {
-            display: inline-block;
-            width: 8px;
-            height: 8px;
-            background: var(--primary-color);
-            border-radius: 50%;
-            margin-right: 8px;
-            animation: pulse 1.5s ease-in-out infinite;
-        }
-
-        .comments-update-indicator.paused {
-            animation: none;
-            opacity: 0.5;
-        }
-
-        /* ===========================
-           زر تغيير اللغة
-        =========================== */
-        #langToggle {
-            position: fixed;
-            right: 20px;
-            bottom: 20px;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background: var(--primary-color);
-            color: var(--text-primary);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            z-index: 9999;
-            font-size: 0.7rem;
-            font-weight: 600;
-            border: 2px solid var(--text-primary);
-            transition: all 0.3s;
-            box-shadow: var(--shadow);
-            text-align: center;
-            padding: 5px;
-        }
-
-        #langToggle:hover {
-            transform: scale(1.1);
-            background: #cc0000;
-        }
-
-        #langMenu {
-            position: fixed;
-            right: 20px;
-            bottom: 80px;
-            background: var(--bg-light);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            overflow: hidden;
-            z-index: 9999;
-            box-shadow: var(--shadow);
-            min-width: 140px;
-        }
-
-        #langMenu button {
-            display: block;
-            width: 100%;
-            padding: 12px 16px;
-            background: var(--secondary-color);
-            border: none;
-            color: var(--text-primary);
-            cursor: pointer;
-            text-align: center;
-            transition: all 0.3s;
-            font-size: 0.9rem;
-            font-family: inherit;
-            font-weight: 500;
-        }
-
-        #langMenu button:hover {
-            background: var(--primary-color);
-            color: var(--text-primary);
-        }
-
-        #langMenu button.active {
-            background: var(--primary-color);
-            color: var(--text-primary);
-            font-weight: 700;
-        }
-
-        /* ===========================
-           مؤشر التحميل
-        =========================== */
-        .spinner {
-            display: inline-block;
-            width: 12px;
-            height: 12px;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            border-top: 2px solid var(--primary-color);
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <!-- شريط الملاحة -->
-        <div class="breadcrumb" id="breadcrumb">
-            <button class="back-btn" id="backBtn" onclick="App.goHome()" style="display: none;"></button>
-            <span id="breadcrumbText">المكتبة</span>
-        </div>
-
-        <!-- عرض المكتبة -->
-        <div id="libraryView" class="library-view">
-            <div class="library-header">
-                <h1 id="libraryTitle">المسلسلات</h1>
-            </div>
-            <div class="library-grid" id="libraryGrid"></div>
-        </div>
-
-        <!-- عرض الفيديو -->
-        <div id="videoView" class="hidden">
-            <div class="video-section">
-                <div class="video-header">
-                    <h1>Watch VIP</h1>
-                    <div class="video-controls">
-                        <div class="quick-toggle">
-                            <button id="dubToggle" class="sys-toggle" title="الدبلجة">
-                                <span class="icon">🔇</span>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- نظام اختيار الدبلجة -->
-                <div class="dub-selector" id="dubSelector" style="display: none;">
-                    <h3 id="dubTitle">اختر نسخة العرض:</h3>
-                    <div class="dub-buttons" id="dubButtons"></div>
-                    
-                    <!-- مضبط التأخير -->
-                    <div class="delay-control hidden" id="delayControl">
-                        <div class="delay-label">
-                            <span id="delayLabelText">مزامنة التأخير (ثواني)</span>
-                            <span class="delay-value" id="delayValue">0.0</span>
-                        </div>
-                        <input type="range" id="delaySlider" class="delay-slider" min="0" max="50" step="1" value="0">
-                        <div class="delay-hint" id="delayHint">اسحب المنزلق لتعديل التأخير بين الصوت والصورة</div>
-                    </div>
-
-                    <!-- مؤشر حالة الدبلجة -->
-                    <div class="dub-status-indicator" id="dubStatusIndicator">
-                        <span class="dub-status-dot" id="statusDot"></span>
-                        <span id="statusText">▶ النسخة الأصلية قيد التشغيل</span>
-                    </div>
-                </div>
-
-                <!-- حاوية الفيديو -->
-                <div class="video-container" id="videoContainer"></div>
-
-                <!-- معلومات الفيديو -->
-                <div class="video-info">
-                    <h2 class="video-title" id="videoTitle">العنوان</h2>
-                    <p class="video-description" id="videoDescription">الوصف</p>
-                </div>
-            </div>
-
-            <!-- قسم التعليقات -->
-            <div class="comments-section">
-                <div class="comments-header">
-                    <h2>
-                        <span class="comments-update-indicator paused" id="updateIndicator"></span>
-                        <span id="commentsTitle">التعليقات</span>
-                    </h2>
-                    <span class="comments-count" id="commentsCount">0 تعليق</span>
-                </div>
-
-                <!-- رسالة الحالة -->
-                <div class="status-message" id="statusMessage"></div>
-
-                <!-- نموذج إضافة تعليق -->
-                <div class="comment-form">
-                    <form id="commentForm">
-                        <div class="form-group">
-                            <label for="commentName" id="labelName">الاسم (اختياري)</label>
-                            <input 
-                                type="text" 
-                                id="commentName" 
-                                maxlength="50"
-                            >
-                            <div class="form-hint" id="hintName">سيتم توليد اسم تلقائي إن لم تكتب</div>
-                        </div>
-                        <div class="form-group">
-                            <label for="commentText" id="labelComment">التعليق *</label>
-                            <textarea 
-                                id="commentText" 
-                                required
-                                maxlength="500"
-                            ></textarea>
-                        </div>
-                        <button type="submit" class="submit-btn" id="submitBtn">إرسال التعليق</button>
-                    </form>
-                </div>
-
-                <!-- قائمة التعليقات -->
-                <div id="commentsListContainer">
-                    <div class="loading" id="loadingText">جاري التحميل...</div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Language Toggle Button -->
-    <div id="langToggle" title="تغيير اللغة"></div>
-
-    <!-- Language Menu -->
-    <div id="langMenu" class="hidden">
-        <button data-lang="ar">العربية</button>
-        <button data-lang="en">English</button>
-        <button data-lang="fr">Français</button>
-        <button data-lang="ja">日本語</button>
-    </div>
-
-    <script>
-        const CONFIG = {
-            BACKEND_URL: 'https://site--watch-vip--j9hb6dlmp4qm.code.run',
-            REFRESH_INTERVAL: 10000,
-            DOUBLE_CLICK_TIMEOUT: 500,
-            SUBMIT_COOLDOWN: 3000,
-            LONG_PRESS_DURATION: 500
-        };
-
-        // قاعدة البيانات المحلية مع نظام الدبلجة المحسّن
-        const LIBRARY = {
-            series: [
-                {
-                    id: 'doraemon',
-                    title: 'دورايمون',
-                    emoji: '🤖',
-                    cover: 'https://images.justwatch.com/backdrop/53298157/s640/doraemon',
-                    episodes: [
-                        {
-                            id: 'ep01',
-                            title: 'الحلقة 01 - بداية دورايمون',
-                            description: 'الحلقة الأولى من المسلسل الشهير حيث يقدم دورايمون نفسه لنوبيتا',
-                            versions: {
-                                original: {
-                                    name: 'النسخة الأصلية (يابانية)',
-                                    icon: '🎬',
-                                    id: 'ZYycK1Paq4M',
-                                    delay: 0
-                                },
-                                arabic: {
-                                    name: 'دبلجة عربية',
-                                    icon: '🔊',
-                                    id: 'oBdv4JrvO6I',
-                                    delay: 1
-                                },
-                                japanese: {
-                                    name: 'النسخة اليابانية الأصلية',
-                                    icon: '🎌',
-                                    id: 'NtUwXhqBwSI',
-                                    delay: 0
-                                }
-                            }
-                        },
-                        {
-                            id: 'ep02',
-                            title: 'الحلقة 02 - الآلة الزمنية',
-                            description: 'دورايمون يقدم آلته المميزة الآلة الزمنية لنوبيتا',
-                            versions: {
-                                original: {
-                                    name: 'النسخة الأصلية (يابانية)',
-                                    icon: '🎬',
-                                    id: 'ZYycK1Paq4M',
-                                    delay: 0
-                                },
-                                arabic: {
-                                    name: 'دبلجة عربية',
-                                    icon: '🔊',
-                                    id: 'oBdv4JrvO6I',
-                                    delay: 1
-                                },
-                                japanese: {
-                                    name: 'النسخة اليابانية الأصلية',
-                                    icon: '🎌',
-                                    id: 'NtUwXhqBwSI',
-                                    delay: 0
-                                }
-                            }
-                        },
-                        {
-                            id: 'ep03',
-                            title: 'الحلقة 03 - مغامرة جديدة',
-                            description: 'دورايمون ونوبيتا يذهبان في مغامرة إلى الماضي',
-                            versions: {
-                                original: {
-                                    name: 'النسخة الأصلية (يابانية)',
-                                    icon: '🎬',
-                                    id: 'ZYycK1Paq4M',
-                                    delay: 0
-                                },
-                                arabic: {
-                                    name: 'دبلجة عربية',
-                                    icon: '🔊',
-                                    id: 'oBdv4JrvO6I',
-                                    delay: 1
-                                },
-                                japanese: {
-                                    name: 'النسخة اليابانية الأصلية',
-                                    icon: '🎌',
-                                    id: 'NtUwXhqBwSI',
-                                    delay: 0
-                                }
-                            }
-                        }
-                    ]
-                },
-                {
-                    id: 'naruto',
-                    title: 'ناروتو',
-                    emoji: '🥷',
-                    cover: 'https://images.justwatch.com/backdrop/53298157/s640/naruto',
-                    episodes: [
-                        {
-                            id: 'naruto_ep01',
-                            title: 'الحلقة 01 - بداية الطريق',
-                            description: 'ناروتو يبدأ رحلته لتصبح نينجا قوياً',
-                            versions: {
-                                original: {
-                                    name: 'النسخة الأصلية (يابانية)',
-                                    icon: '🎬',
-                                    id: 'ZYycK1Paq4M',
-                                    delay: 0
-                                },
-                                arabic: {
-                                    name: 'دبلجة عربية',
-                                    icon: '🔊',
-                                    id: 'oBdv4JrvO6I',
-                                    delay: 1
-                                }
-                            }
-                        }
-                    ]
-                }
-            ]
-        };
-
-        // قاموس اللغات المحسّن
-        const TRANSLATIONS = {
-            ar: {
-                library: 'المسلسلات',
-                back: '← الرجوع',
-                comments: 'التعليقات',
-                commentCount: (n) => `${n} تعليق`,
-                labelName: 'الاسم (اختياري)',
-                hintName: 'سيتم توليد اسم تلقائي إن لم تكتب',
-                labelComment: 'التعليق *',
-                placeholderName: 'اترك فارغاً للتوليد التلقائي',
-                placeholderComment: 'شارك رأيك...',
-                submit: 'إرسال التعليق',
-                submitting: 'جاري الإرسال...',
-                noComments: 'لا توجد تعليقات حتى الآن',
-                loading: 'جاري التحميل...',
-                pending: 'لديك تعليق قيد المراجعة',
-                empty: 'أكمل كتابة التعليق',
-                success: 'تم إرسال تعليقك بنجاح ✓',
-                error: 'حدث خطأ في الإرسال',
-                canComment: 'يمكنك التعليق مجدداً',
-                rateLimitError: 'الرجاء الانتظار قليلاً قبل الإرسال',
-                langButtonLabel: 'تغيير اللغة',
-                dubTitle: 'اختر نسخة العرض:',
-                dubHint: 'انقر للتبديل، اضغط طويلاً لعرض القائمة',
-                delayLabel: 'مزامنة التأخير (ثواني)',
-                delayHint: 'اسحب المنزلق لتعديل التأخير بين الصوت والصورة'
-            },
-            en: {
-                library: 'Series',
-                back: 'Back',
-                comments: 'Comments',
-                commentCount: (n) => `${n} comment${n !== 1 ? 's' : ''}`,
-                labelName: 'Name (Optional)',
-                hintName: 'An automatic name will be generated if left blank',
-                labelComment: 'Comment *',
-                placeholderName: 'Leave blank for auto-generation',
-                placeholderComment: 'Share your thoughts...',
-                submit: 'Post Comment',
-                submitting: 'Posting...',
-                noComments: 'No comments yet',
-                loading: 'Loading...',
-                pending: 'Your comment is under review',
-                empty: 'Please write a comment',
-                success: 'Comment posted successfully ✓',
-                error: 'Failed to send comment',
-                canComment: 'You can comment again',
-                rateLimitError: 'Please wait a moment before posting',
-                langButtonLabel: 'Change Language',
-                dubTitle: 'Choose Version:',
-                dubHint: 'Click to toggle, long press to show menu',
-                delayLabel: 'Sync Delay (seconds)',
-                delayHint: 'Drag the slider to adjust audio-video delay'
-            },
-            fr: {
-                library: 'Séries',
-                back: 'Retour',
-                comments: 'Commentaires',
-                commentCount: (n) => `${n} commentaire${n !== 1 ? 's' : ''}`,
-                labelName: 'Nom (Optionnel)',
-                hintName: 'Un nom automatique sera généré si laissé vide',
-                labelComment: 'Commentaire *',
-                placeholderName: 'Laisser vide pour la génération automatique',
-                placeholderComment: 'Partagez vos pensées...',
-                submit: 'Publier le commentaire',
-                submitting: 'Publication...',
-                noComments: 'Pas encore de commentaires',
-                loading: 'Chargement...',
-                pending: 'Votre commentaire est en attente d\'approbation',
-                empty: 'Veuillez écrire un commentaire',
-                success: 'Commentaire publié avec succès ✓',
-                error: 'Erreur lors de l\'envoi',
-                canComment: 'Vous pouvez commenter à nouveau',
-                rateLimitError: 'Veuillez attendre un moment avant de publier',
-                langButtonLabel: 'Changer la Langue',
-                dubTitle: 'Choisir la version:',
-                dubHint: 'Cliquez pour basculer, appuyez longuement pour le menu',
-                delayLabel: 'Délai de synchronisation (secondes)',
-                delayHint: 'Glissez le curseur pour ajuster le délai audio-vidéo'
-            },
-            ja: {
-                library: 'シリーズ',
-                back: '戻る',
-                comments: 'コメント',
-                commentCount: (n) => `${n}件のコメント`,
-                labelName: '名前 (オプション)',
-                hintName: '空白のままにするとランダムに生成されます',
-                labelComment: 'コメント *',
-                placeholderName: '自動生成のため空白のままにしてください',
-                placeholderComment: 'あなたの考えを共有してください...',
-                submit: 'コメントを投稿',
-                submitting: '投稿中...',
-                noComments: 'まだコメントがありません',
-                loading: '読み込み中...',
-                pending: 'コメントは審査中です',
-                empty: 'コメントを入力してください',
-                success: 'コメントが正常に投稿されました ✓',
-                error: '送信に失敗しました',
-                canComment: 'もう一度コメントできます',
-                rateLimitError: '投稿する前にお待ちください',
-                langButtonLabel: '言語を変更',
-                dubTitle: 'バージョンを選択:',
-                dubHint: 'クリックして切り替え、長押ししてメニューを表示',
-                delayLabel: '同期遅延（秒）',
-                delayHint: 'スライダーをドラッグして音声-ビデオ遅延を調整します'
-            }
-        };
-
-        const Utils = {
-            sanitize(text) {
-                const d = document.createElement('div');
-                d.textContent = text;
-                return d.innerHTML;
-            },
-            timeAgo(ts) {
-                const diff = Date.now() - ts;
-                const m = Math.floor(diff / 60000);
-                const lang = document.documentElement.getAttribute('data-lang');
-                
-                const times = {
-                    ar: {
-                        now: 'للتو',
-                        minutes: (n) => `منذ ${n} دقيقة`,
-                        hours: (n) => `منذ ${n} ساعة`,
-                        days: (n) => `منذ ${n} يوم`
-                    },
-                    en: {
-                        now: 'just now',
-                        minutes: (n) => `${n}m ago`,
-                        hours: (n) => `${n}h ago`,
-                        days: (n) => `${n}d ago`
-                    },
-                    fr: {
-                        now: 'à l\'instant',
-                        minutes: (n) => `il y a ${n}m`,
-                        hours: (n) => `il y a ${n}h`,
-                        days: (n) => `il y a ${n}j`
-                    },
-                    ja: {
-                        now: '今',
-                        minutes: (n) => `${n}分前`,
-                        hours: (n) => `${n}時間前`,
-                        days: (n) => `${n}日前`
-                    }
-                };
-
-                const t = times[lang] || times.en;
-                if (m < 1) return t.now;
-                if (m < 60) return t.minutes(m);
-                const h = Math.floor(m / 60);
-                if (h < 24) return t.hours(h);
-                return t.days(Math.floor(h / 24));
-            },
-            clientId() {
-                let id = localStorage.getItem('watch_vip_client_id');
-                if (!id) {
-                    id = Date.now().toString(36) + Math.random().toString(36).slice(2);
-                    localStorage.setItem('watch_vip_client_id', id);
-                }
-                return id;
-            },
-            status(msg, type='info') {
-                const el = document.getElementById('statusMessage');
-                el.textContent = msg;
-                el.className = `status-message ${type} show`;
-                setTimeout(()=>el.classList.remove('show'), 4000);
-            },
-            playHaptic() {
-                if (navigator.vibrate) {
-                    navigator.vibrate(30);
-                }
-            }
-        };
-
-        const API = {
-            async submit(name, text) {
-                try {
-                    const r = await fetch(`${CONFIG.BACKEND_URL}/submit-comment`, {
-                        method: 'POST',
-                        headers: {'Content-Type':'application/json'},
-                        body: JSON.stringify({
-                            name, text,
-                            clientId: Utils.clientId()
-                        })
-                    });
-                    if (!r.ok) throw new Error('فشل الإرسال');
-                    return r.json();
-                } catch (e) {
-                    throw new Error('خطأ في الاتصال');
-                }
-            },
-            async comments() {
-                try {
-                    const r = await fetch(`${CONFIG.BACKEND_URL}/comments`);
-                    return r.ok ? r.json() : [];
-                } catch {
-                    return [];
-                }
-            }
-        };
-
-        // محرك الدبلجة المتقدم مع دعم التأخير الديناميكي
-        const DubEngine = {
-            mainFrame: null,
-            audioFrames: {},
-            currentMode: 'original',
-            playbackTimer: null,
-            customDelays: {},
-
-            init(mainId, versions) {
-                const container = document.getElementById('videoContainer');
-                
-                let html = `<iframe id="dub-main"
-                    src="https://www.youtube.com/embed/${mainId}?enablejsapi=1&controls=1&modestbranding=1"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowfullscreen></iframe>`;
-
-                Object.entries(versions).forEach(([key, version]) => {
-                    if (key !== 'original') {
-                        html += `<iframe id="dub-${key}"
-                            src="https://www.youtube.com/embed/${version.id}?enablejsapi=1"
-                            style="display:none"
-                            allow="autoplay"></iframe>`;
-                    }
-                });
-
-                container.innerHTML = html;
-                this.mainFrame = document.getElementById('dub-main');
-                
-                Object.keys(versions).forEach(key => {
-                    if (key !== 'original') {
-                        this.audioFrames[key] = document.getElementById(`dub-${key}`);
-                    }
-                });
-
-                this.currentMode = 'original';
-            },
-
-            postCommand(frame, action, args = []) {
-                if (!frame) return;
-                try {
-                    frame.contentWindow.postMessage(
-                        JSON.stringify({
-                            event: 'command',
-                            func: action,
-                            args: args
-                        }),
-                        '*'
-                    );
-                } catch (e) {
-                    console.warn('Failed to send command to iframe:', e);
-                }
-            },
-
-            getDelay(mode) {
-                if (this.customDelays[mode] !== undefined) {
-                    return this.customDelays[mode];
-                }
-                return 0;
-            },
-
-            setCustomDelay(mode, delay) {
-                this.customDelays[mode] = delay;
-                localStorage.setItem(`dub_delay_${mode}`, delay);
-            },
-
-            loadCustomDelays() {
-                Object.keys(this.audioFrames).forEach(key => {
-                    const saved = localStorage.getItem(`dub_delay_${key}`);
-                    if (saved !== null) {
-                        this.customDelays[key] = parseFloat(saved);
-                    }
-                });
-            },
-
-            play() {
-                if (this.playbackTimer) clearTimeout(this.playbackTimer);
-
-                this.postCommand(this.mainFrame, 'stopVideo');
-                Object.values(this.audioFrames).forEach(f => {
-                    if (f) this.postCommand(f, 'stopVideo');
-                });
-
-                const delayMs = this.getDelay(this.currentMode) * 1000;
-
-                this.playbackTimer = setTimeout(() => {
-                    if (this.currentMode === 'original') {
-                        this.postCommand(this.mainFrame, 'unMute');
-                        this.postCommand(this.mainFrame, 'playVideo');
-                    } else {
-                        this.postCommand(this.mainFrame, 'mute');
-                        this.postCommand(this.mainFrame, 'playVideo');
-                        
-                        const audioFrame = this.audioFrames[this.currentMode];
-                        if (audioFrame) {
-                            this.postCommand(audioFrame, 'playVideo');
-                        }
-                    }
-                }, delayMs);
-            },
-
-            setMode(mode) {
-                this.currentMode = mode;
-                this.play();
-            }
-        };
-
-        const App = {
-            currentView: 'home',
-            currentSeries: null,
-            currentEpisode: null,
-            dubEnabled: false,
-            lastDubMode: localStorage.getItem('last_dub') || 'arabic',
-            longPressTimer: null,
-            dubSelectorVisible: false,
-
-            init() {
-                this.renderHome();
-                Comments.init();
-                this.setupDubToggle();
-            },
-
-            setupDubToggle() {
-                const btn = document.getElementById('dubToggle');
-                let touchStartTime = 0;
-                let isLongPress = false;
-                
-                const handleLongPress = () => {
-                    if (App.currentView !== 'video') return;
-                    
-                    isLongPress = true;
-                    Utils.playHaptic();
-                    App.toggleDubSelector();
-                };
-
-                const handleClick = () => {
-                    if (App.currentView !== 'video') return;
-                    if (isLongPress) {
-                        isLongPress = false;
-                        return;
-                    }
-                    
-                    App.toggleDub();
-                };
-
-                btn.addEventListener('mousedown', () => {
-                    if (App.currentView !== 'video') return;
-                    touchStartTime = Date.now();
-                    this.longPressTimer = setTimeout(handleLongPress, CONFIG.LONG_PRESS_DURATION);
-                });
-
-                btn.addEventListener('mouseup', () => {
-                    if (this.longPressTimer) clearTimeout(this.longPressTimer);
-                    if (Date.now() - touchStartTime < CONFIG.LONG_PRESS_DURATION) {
-                        handleClick();
-                    }
-                });
-
-                btn.addEventListener('touchstart', () => {
-                    if (App.currentView !== 'video') return;
-                    touchStartTime = Date.now();
-                    isLongPress = false;
-                    this.longPressTimer = setTimeout(handleLongPress, CONFIG.LONG_PRESS_DURATION);
-                });
-
-                btn.addEventListener('touchend', () => {
-                    if (this.longPressTimer) clearTimeout(this.longPressTimer);
-                    if (Date.now() - touchStartTime < CONFIG.LONG_PRESS_DURATION && !isLongPress) {
-                        handleClick();
-                    }
-                    isLongPress = false;
-                });
-            },
-
-            toggleDub() {
-                Utils.playHaptic();
-                
-                this.dubEnabled = !this.dubEnabled;
-                
-                if (this.dubEnabled) {
-                    document.getElementById('dubToggle').classList.add('active');
-                    document.getElementById('dubToggle').querySelector('.icon').textContent = '🔊';
-                    DubEngine.setMode(this.lastDubMode);
-                } else {
-                    document.getElementById('dubToggle').classList.remove('active');
-                    document.getElementById('dubToggle').querySelector('.icon').textContent = '🔇';
-                    DubEngine.setMode('original');
-                }
-            },
-
-            toggleDubSelector() {
-                const selector = document.getElementById('dubSelector');
-                this.dubSelectorVisible = !this.dubSelectorVisible;
-                
-                if (this.dubSelectorVisible) {
-                    selector.style.display = 'block';
-                    selector.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-                } else {
-                    selector.style.display = 'none';
-                }
-            },
-
-            renderHome() {
-                const lang = document.documentElement.getAttribute('data-lang');
-                const t = TRANSLATIONS[lang];
-
-                document.getElementById('libraryView').classList.remove('hidden');
-                document.getElementById('videoView').classList.add('hidden');
-                document.getElementById('backBtn').style.display = 'none';
-                document.getElementById('breadcrumbText').textContent = t.library;
-
-                const grid = document.getElementById('libraryGrid');
-                grid.innerHTML = LIBRARY.series.map(series => `
-                    <div class="library-item" onclick="App.viewSeries('${series.id}')">
-                        <div class="item-cover">
-                            ${series.emoji}
-                        </div>
-                        <div class="item-info">
-                            <div class="item-title">${Utils.sanitize(series.title)}</div>
-                            <div class="item-subtitle">${series.episodes.length} حلقة</div>
-                        </div>
-                    </div>
-                `).join('');
-
-                this.currentView = 'home';
-                this.dubSelectorVisible = false;
-                Comments.pauseAutoRefresh();
-            },
-
-            viewSeries(seriesId) {
-                const lang = document.documentElement.getAttribute('data-lang');
-                const t = TRANSLATIONS[lang];
-
-                this.currentSeries = LIBRARY.series.find(s => s.id === seriesId);
-                if (!this.currentSeries) return;
-
-                document.getElementById('libraryView').classList.remove('hidden');
-                document.getElementById('videoView').classList.add('hidden');
-                document.getElementById('backBtn').style.display = 'inline-flex';
-                document.getElementById('backBtn').textContent = t.back;
-                document.getElementById('libraryTitle').textContent = this.currentSeries.title;
-                document.getElementById('breadcrumbText').textContent = this.currentSeries.title;
-
-                const grid = document.getElementById('libraryGrid');
-                grid.innerHTML = this.currentSeries.episodes.map(ep => `
-                    <div class="library-item" onclick="App.playEpisode('${ep.id}')">
-                        <div class="item-cover episode">
-                            <span>▶</span>
-                        </div>
-                        <div class="item-info">
-                            <div class="item-title">${Utils.sanitize(ep.title)}</div>
-                            <div class="item-subtitle">${Utils.sanitize(ep.description)}</div>
-                        </div>
-                    </div>
-                `).join('');
-
-                this.currentView = 'series';
-                this.dubSelectorVisible = false;
-                Comments.pauseAutoRefresh();
-            },
-
-            playEpisode(episodeId) {
-                const lang = document.documentElement.getAttribute('data-lang');
-                const t = TRANSLATIONS[lang];
-
-                if (!this.currentSeries) return;
-                this.currentEpisode = this.currentSeries.episodes.find(e => e.id === episodeId);
-                if (!this.currentEpisode) return;
-
-                document.getElementById('libraryView').classList.add('hidden');
-                document.getElementById('videoView').classList.remove('hidden');
-                document.getElementById('backBtn').style.display = 'inline-flex';
-                document.getElementById('backBtn').textContent = t.back;
-                document.getElementById('breadcrumbText').textContent = this.currentEpisode.title;
-
-                document.getElementById('videoTitle').textContent = this.currentEpisode.title;
-                document.getElementById('videoDescription').textContent = this.currentEpisode.description;
-
-                this.setupDubButtons();
-
-                const mainId = this.currentEpisode.versions.original.id;
-                DubEngine.init(mainId, this.currentEpisode.versions);
-                DubEngine.loadCustomDelays();
-
-                this.dubEnabled = false;
-                this.dubSelectorVisible = false;
-                document.getElementById('dubToggle').classList.remove('active');
-                document.getElementById('dubToggle').querySelector('.icon').textContent = '🔇';
-
-                this.currentView = 'video';
-                Comments.pauseAutoRefresh();
-                Comments.load();
-            },
-
-            setupDubButtons() {
-                const lang = document.documentElement.getAttribute('data-lang');
-                const t = TRANSLATIONS[lang];
-                const versions = this.currentEpisode.versions;
-                const dubButtons = document.getElementById('dubButtons');
-                const dubSelector = document.getElementById('dubSelector');
-
-                if (!versions || Object.keys(versions).length === 0) {
-                    dubSelector.style.display = 'none';
-                    return;
-                }
-
-                dubSelector.style.display = 'none';
-                this.dubSelectorVisible = false;
-                document.getElementById('dubTitle').textContent = t.dubTitle;
-
-                dubButtons.innerHTML = Object.entries(versions).map(([key, version]) => `
-                    <button 
-                        class="dub-btn ${key === 'original' ? 'active' : ''}" 
-                        onclick="App.selectDubVersion('${key}', this)"
-                    >
-                        <span class="dub-icon">${version.icon}</span>
-                        <span>${version.name}</span>
-                    </button>
-                `).join('');
-
-                // Slider setup
-                const delayControl = document.getElementById('delayControl');
-                const delaySlider = document.getElementById('delaySlider');
-                const delayValue = document.getElementById('delayValue');
-                const delayLabelText = document.getElementById('delayLabelText');
-                const delayHint = document.getElementById('delayHint');
-
-                delayLabelText.textContent = t.delayLabel;
-                delayHint.textContent = t.delayHint;
-
-                delaySlider.oninput = () => {
-                    const val = parseFloat(delaySlider.value) / 10;
-                    delayValue.textContent = val.toFixed(1);
-                    DubEngine.setCustomDelay(DubEngine.currentMode, val);
-                };
-
-                this.updateStatusIndicator('original');
-            },
-
-            updateStatusIndicator(mode) {
-                const lang = document.documentElement.getAttribute('data-lang');
-                const statusText = document.getElementById('statusText');
-                const statusDot = document.getElementById('statusDot');
-                const delayControl = document.getElementById('delayControl');
-                const delaySlider = document.getElementById('delaySlider');
-                const delayValue = document.getElementById('delayValue');
-                
-                const statusMessages = {
-                    ar: {
-                        original: '▶ النسخة الأصلية قيد التشغيل',
-                        arabic: '🔊 الدبلجة العربية مفعلة',
-                        japanese: '🎌 الدبلجة اليابانية مفعلة'
-                    },
-                    en: {
-                        original: '▶ Original version is playing',
-                        arabic: '🔊 Arabic dub is enabled',
-                        japanese: '🎌 Japanese dub is enabled'
-                    },
-                    fr: {
-                        original: '▶ La version originale est en cours de lecture',
-                        arabic: '🔊 Le doublage arabe est activé',
-                        japanese: '🎌 Le doublage japonais est activé'
-                    },
-                    ja: {
-                        original: '▶ オリジナルバージョンが再生中',
-                        arabic: '🔊 アラビア語吹き替えが有効',
-                        japanese: '🎌 日本語吹き替えが有効'
-                    }
-                };
-
-                const messages = statusMessages[lang] || statusMessages.en;
-                statusText.textContent = messages[mode] || messages.original;
-
-                if (mode === 'original') {
-                    statusDot.classList.remove('active');
-                    delayControl.classList.add('hidden');
-                } else {
-                    statusDot.classList.add('active');
-                    delayControl.classList.remove('hidden');
-                    const currentDelay = DubEngine.getDelay(mode);
-                    delaySlider.value = (currentDelay * 10).toString();
-                    delayValue.textContent = currentDelay.toFixed(1);
-                }
-            },
-
-            selectDubVersion(versionKey, button) {
-                Utils.playHaptic();
-                
-                document.querySelectorAll('.dub-btn').forEach(btn => {
-                    btn.classList.remove('active');
-                });
-                button.classList.add('active');
-
-                this.updateStatusIndicator(versionKey);
-
-                if (versionKey === 'original') {
-                    this.dubEnabled = false;
-                    document.getElementById('dubToggle').classList.remove('active');
-                    document.getElementById('dubToggle').querySelector('.icon').textContent = '🔇';
-                    DubEngine.setMode('original');
-                } else {
-                    this.lastDubMode = versionKey;
-                    localStorage.setItem('last_dub', versionKey);
-                    this.dubEnabled = true;
-                    document.getElementById('dubToggle').classList.add('active');
-                    document.getElementById('dubToggle').querySelector('.icon').textContent = '🔊';
-                    DubEngine.setMode(versionKey);
-                }
-            },
-
-            goHome() {
-                if (this.currentView === 'video') {
-                    this.viewSeries(this.currentSeries.id);
-                } else if (this.currentView === 'series') {
-                    this.renderHome();
-                }
-            }
-        };
-
-        const Comments = {
-            userCommentId: localStorage.getItem('watch_vip_user_comment_id'),
-            autoRefreshInterval: null,
-            isRefreshing: false,
-            lastSubmitTime: 0,
-
-            async init() {
-                const form = document.getElementById('commentForm');
-                form.addEventListener('submit', e => {
-                    e.preventDefault();
-                    this.send();
-                });
-
-                await this.load();
-                this.startAutoRefresh();
-            },
-
-            startAutoRefresh() {
-                if (this.autoRefreshInterval) clearInterval(this.autoRefreshInterval);
-                
-                this.autoRefreshInterval = setInterval(() => {
-                    if (App.currentView === 'video') {
-                        this.load();
-                    }
-                }, CONFIG.REFRESH_INTERVAL);
-            },
-
-            pauseAutoRefresh() {
-                const indicator = document.getElementById('updateIndicator');
-                if (indicator) {
-                    if (App.currentView === 'video') {
-                        indicator.classList.remove('paused');
-                    } else {
-                        indicator.classList.add('paused');
-                    }
-                }
-            },
-
-            async send() {
-                const lang = document.documentElement.getAttribute('data-lang');
-                const t = TRANSLATIONS[lang];
-                const now = Date.now();
-
-                if (now - this.lastSubmitTime < CONFIG.SUBMIT_COOLDOWN) {
-                    Utils.status(t.rateLimitError, 'error');
-                    return;
-                }
-
-                if (this.userCommentId) {
-                    Utils.status(t.pending, 'info');
-                    return;
-                }
-
-                const name = document.getElementById('commentName').value.trim();
-                const text = document.getElementById('commentText').value.trim();
-                
-                if (!text) {
-                    Utils.status(t.empty, 'error');
-                    return;
-                }
-
-                const btn = document.getElementById('submitBtn');
-                btn.disabled = true;
-                btn.textContent = '⏳ ' + t.submitting;
-
-                try {
-                    const res = await API.submit(name || null, text);
-                    this.userCommentId = res.commentId;
-                    localStorage.setItem('watch_vip_user_comment_id', res.commentId);
-                    this.lastSubmitTime = now;
-                    Utils.status(t.success, 'success');
-                    Utils.playHaptic();
-                    document.getElementById('commentText').value = '';
-                    document.getElementById('commentName').value = '';
-                } catch (e) {
-                    Utils.status(t.error, 'error');
-                } finally {
-                    btn.disabled = false;
-                    btn.textContent = t.submit;
-                }
-            },
-
-            async load() {
-                if (this.isRefreshing) return;
-                this.isRefreshing = true;
-
-                try {
-                    const lang = document.documentElement.getAttribute('data-lang');
-                    const t = TRANSLATIONS[lang];
-                    const list = await API.comments();
-                    const box = document.getElementById('commentsListContainer');
-
-                    document.getElementById('commentsCount').textContent = t.commentCount(list.length);
-
-                    if (!list.length) {
-                        box.innerHTML = `<div class="no-comments">${t.noComments}</div>`;
-                        this.isRefreshing = false;
-                        return;
-                    }
-
-                    if (this.userCommentId && list.length > 0 && !list.some(c => c.commentId === this.userCommentId)) {
-                        localStorage.removeItem('watch_vip_user_comment_id');
-                        this.userCommentId = null;
-                    }
-
-                    list.sort((a,b)=>{
-                        if (a.commentId === this.userCommentId) return -1;
-                        if (b.commentId === this.userCommentId) return 1;
-                        return b.timestamp - a.timestamp;
-                    });
-
-                    box.innerHTML = `
-                        <div class="comments-list">
-                            ${list.map(c=>`
-                                <div class="comment-item ${c.commentId===this.userCommentId?'user-comment':''}"
-                                     data-id="${c.commentId}">
-                                    <div class="comment-header">
-                                        <div class="comment-author">
-                                            ${Utils.sanitize(c.displayName)}
-                                            ${c.verified ? `<svg class="verified-svg" viewBox="0 0 24 24" fill="#1da1f2">
-                                                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
-                                            </svg>` : ''}
-                                        </div>
-                                        <span class="comment-time">${Utils.timeAgo(c.timestamp)}</span>
-                                    </div>
-                                    <div class="comment-text">${Utils.sanitize(c.text)}</div>
-                                </div>
-                            `).join('')}
-                        </div>
-                    `;
-
-                    this.bindClicks();
-                } finally {
-                    this.isRefreshing = false;
-                }
-            },
-
-            bindClicks() {
-                const lang = document.documentElement.getAttribute('data-lang');
-                const t = TRANSLATIONS[lang];
-
-                document.querySelectorAll('.user-comment').forEach(el=>{
-                    let last = 0;
-                    el.onclick = () => {
-                        const now = Date.now();
-                        if (now - last < CONFIG.DOUBLE_CLICK_TIMEOUT) {
-                            localStorage.removeItem('watch_vip_user_comment_id');
-                            this.userCommentId = null;
-                            Utils.status(t.canComment, 'success');
-                            Utils.playHaptic();
-                            this.load();
-                        }
-                        last = now;
-                    };
-                });
-            }
-        };
-
-        function applyLanguage(lang) {
-            const t = TRANSLATIONS[lang];
-            document.documentElement.setAttribute('data-lang', lang);
-            localStorage.setItem('site_lang', lang);
-
-            document.getElementById('libraryTitle').textContent = t.library;
-            document.getElementById('breadcrumbText').textContent = t.library;
-            document.getElementById('backBtn').textContent = t.back;
-            document.getElementById('commentsTitle').textContent = t.comments;
-            document.getElementById('labelName').textContent = t.labelName;
-            document.getElementById('hintName').textContent = t.hintName;
-            document.getElementById('labelComment').textContent = t.labelComment;
-            document.getElementById('commentName').placeholder = t.placeholderName;
-            document.getElementById('commentText').placeholder = t.placeholderComment;
-            document.getElementById('submitBtn').textContent = t.submit;
-            document.getElementById('loadingText').textContent = t.loading;
-            document.getElementById('dubTitle').textContent = t.dubTitle;
-            document.getElementById('dubToggle').title = t.dubHint;
-            document.getElementById('delayLabelText').textContent = t.delayLabel;
-            document.getElementById('delayHint').textContent = t.delayHint;
-            
-            const langButton = document.getElementById('langToggle');
-            const langLabels = {
-                ar: 'اللغة',
-                en: 'Lang',
-                fr: 'Langue',
-                ja: '言語'
-            };
-            langButton.textContent = langLabels[lang] || 'Lang';
-            langButton.title = t.langButtonLabel;
-
-            document.querySelectorAll('#langMenu button').forEach(btn => {
-                btn.classList.remove('active');
-                if (btn.dataset.lang === lang) {
-                    btn.classList.add('active');
-                }
-            });
-
-            if (App.currentView === 'video') {
-                Comments.load();
-            }
-        }
-
-        const langToggle = document.getElementById('langToggle');
-        const langMenu = document.getElementById('langMenu');
-
-        langToggle.onclick = (e) => {
-            e.stopPropagation();
-            langMenu.classList.toggle('hidden');
-        };
-
-        langMenu.querySelectorAll('button').forEach(btn => {
-            btn.onclick = () => {
-                applyLanguage(btn.dataset.lang);
-                langMenu.classList.add('hidden');
-                Utils.playHaptic();
-            };
-        });
-
-        document.addEventListener('click', (e) => {
-            if (!e.target.closest('#langToggle') && !e.target.closest('#langMenu')) {
-                langMenu.classList.add('hidden');
-            }
-        });
-
-        const savedLang = localStorage.getItem('site_lang') || 'ar';
-        applyLanguage(savedLang);
-
-        document.addEventListener('DOMContentLoaded', ()=>App.init());
-    </script>
-</body>
+<!DOCTYPE html>  
+<html lang="ar" dir="rtl" data-lang="ar">  
+<head>  
+    <meta charset="UTF-8">  
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">  
+    <meta name="description" content="منصة بث فيديو احترافية مع نظام دبلجة متعددة اللغات">  
+    <title>Watch VIP - منصة البث</title>  
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet">  
+
+<style>  
+    * {  
+        margin: 0;  
+        padding: 0;  
+        box-sizing: border-box;  
+    }  
+
+    :root {  
+        --primary-color: #ff0000;  
+        --secondary-color: #282828;  
+        --bg-dark: #0f0f0f;  
+        --bg-light: #1f1f1f;  
+        --text-primary: #ffffff;  
+        --text-secondary: #aaaaaa;  
+        --border-color: #303030;  
+        --success-color: #00ff00;  
+        --verified-color: #1da1f2;  
+        --shadow: 0 2px 10px rgba(0,0,0,0.3);  
+    }  
+
+    html[data-lang="ar"] body {  
+        font-family: 'Cairo', sans-serif;  
+        direction: rtl;  
+    }  
+
+    html[data-lang="en"] body,  
+    html[data-lang="fr"] body {  
+        font-family: 'Inter', sans-serif;  
+        direction: ltr;  
+    }  
+
+    html[data-lang="ja"] body {  
+        font-family: 'Noto Sans JP', sans-serif;  
+        direction: ltr;  
+    }  
+
+    body {  
+        background-color: var(--bg-dark);  
+        color: var(--text-primary);  
+        line-height: 1.6;  
+        min-height: 100vh;  
+    }  
+
+    .container {  
+        max-width: 1200px;  
+        margin: 0 auto;  
+        padding: 20px;  
+    }  
+
+    .breadcrumb {  
+        display: flex;  
+        align-items: center;  
+        gap: 10px;  
+        margin-bottom: 20px;  
+        padding: 10px 15px;  
+        background: var(--bg-light);  
+        border-radius: 6px;  
+        font-size: 0.9rem;  
+    }  
+
+    .breadcrumb button {  
+        background: var(--secondary-color);  
+        border: 1px solid var(--border-color);  
+        color: var(--verified-color);  
+        cursor: pointer;  
+        text-decoration: none;  
+        padding: 8px 15px;  
+        border-radius: 6px;  
+        transition: all 0.3s;  
+        font-size: 0.9rem;  
+        font-family: inherit;  
+    }  
+
+    .breadcrumb button:hover {  
+        background: var(--primary-color);  
+        color: var(--text-primary);  
+        border-color: var(--primary-color);  
+    }  
+
+    .library-view {  
+        margin-bottom: 30px;  
+    }  
+
+    .library-header {  
+        padding: 15px 20px;  
+        background: var(--secondary-color);  
+        border-radius: 12px 12px 0 0;  
+        border-bottom: 1px solid var(--border-color);  
+    }  
+
+    .library-header h1 {  
+        font-size: 1.5rem;  
+        font-weight: 600;  
+    }  
+
+    .library-grid {  
+        display: grid;  
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));  
+        gap: 20px;  
+        padding: 20px;  
+        background: var(--bg-light);  
+        border-radius: 0 0 12px 12px;  
+    }  
+
+    .library-item {  
+        cursor: pointer;  
+        transition: all 0.3s;  
+        border-radius: 8px;  
+        overflow: hidden;  
+        background: var(--secondary-color);  
+        border: 2px solid transparent;  
+    }  
+
+    .library-item:hover {  
+        border-color: var(--primary-color);  
+        transform: translateY(-5px);  
+        box-shadow: var(--shadow);  
+    }  
+
+    .item-cover {  
+        width: 100%;  
+        aspect-ratio: 16/9;  
+        background: linear-gradient(135deg, #ff0000, #cc0000);  
+        display: flex;  
+        align-items: center;  
+        justify-content: center;  
+        font-size: 3rem;  
+        color: white;  
+        position: relative;  
+        overflow: hidden;  
+    }  
+
+    .item-cover.episode {  
+        aspect-ratio: 2/1;  
+    }  
+
+    .item-cover img {  
+        width: 100%;  
+        height: 100%;  
+        object-fit: cover;  
+    }  
+
+    .item-info {  
+        padding: 15px;  
+    }  
+
+    .item-title {  
+        font-weight: 600;  
+        margin-bottom: 8px;  
+        overflow: hidden;  
+        text-overflow: ellipsis;  
+        white-space: nowrap;  
+    }  
+
+    .item-subtitle {  
+        font-size: 0.85rem;  
+        color: var(--text-secondary);  
+    }  
+
+    .video-section {  
+        background: var(--bg-light);  
+        border-radius: 12px;  
+        overflow: hidden;  
+        margin-bottom: 30px;  
+        box-shadow: var(--shadow);  
+    }  
+
+    .video-header {  
+        padding: 15px 20px;  
+        background: var(--secondary-color);  
+        border-bottom: 1px solid var(--border-color);  
+        display: flex;  
+        justify-content: space-between;  
+        align-items: center;  
+        flex-wrap: wrap;  
+        gap: 15px;  
+    }  
+
+    .video-header h1 {  
+        font-size: 1.5rem;  
+        font-weight: 600;  
+        flex: 1;  
+    }  
+
+    .video-controls {  
+        display: flex;  
+        align-items: center;  
+        gap: 10px;  
+    }  
+
+    .video-container {  
+        position: relative;  
+        padding-bottom: 56.25%;  
+        height: 0;  
+        overflow: hidden;  
+        background: #000;  
+    }  
+
+    .video-container iframe {  
+        position: absolute;  
+        top: 0;  
+        left: 0;  
+        width: 100%;  
+        height: 100%;  
+        border: none;  
+    }  
+
+    .quick-toggle {  
+        display: flex;  
+        align-items: center;  
+        gap: 10px;  
+    }  
+
+    .sys-toggle {  
+        width: 50px;  
+        height: 50px;  
+        border-radius: 50%;  
+        border: none;  
+        background: #2a2a2a;  
+        color: #aaa;  
+        font-size: 20px;  
+        cursor: pointer;  
+        display: flex;  
+        align-items: center;  
+        justify-content: center;  
+        transition: all 0.25s ease;  
+        box-shadow: inset 0 0 0 2px #333;  
+        font-family: inherit;  
+        user-select: none;  
+    }  
+
+    .sys-toggle:hover {  
+        background: #333;  
+    }  
+
+    .sys-toggle.active {  
+        background: var(--primary-color);  
+        color: #fff;  
+        box-shadow: 0 0 12px rgba(255, 0, 0, 0.6), inset 0 0 0 2px rgba(255,255,255,0.3);  
+    }  
+
+    .sys-toggle .icon {  
+        pointer-events: none;  
+    }  
+
+    .dub-selector {  
+        background: var(--secondary-color);  
+        padding: 20px;  
+        border-bottom: 1px solid var(--border-color);  
+        margin-bottom: 0;  
+        animation: slideDown 0.3s ease-out;  
+    }  
+
+    @keyframes slideDown {  
+        from {  
+            opacity: 0;  
+            max-height: 0;  
+            overflow: hidden;  
+        }  
+        to {  
+            opacity: 1;  
+            max-height: 1000px;  
+        }  
+    }  
+
+    .dub-selector h3 {  
+        margin-bottom: 12px;  
+        font-size: 0.95rem;  
+        color: var(--text-secondary);  
+        font-weight: 500;  
+    }  
+
+    .dub-buttons {  
+        display: flex;  
+        gap: 10px;  
+        flex-wrap: wrap;  
+        margin-bottom: 15px;  
+    }  
+
+    .dub-btn {  
+        padding: 10px 18px;  
+        background: var(--bg-dark);  
+        border: 2px solid var(--border-color);  
+        color: var(--text-primary);  
+        border-radius: 8px;  
+        cursor: pointer;  
+        font-size: 0.9rem;  
+        font-weight: 500;  
+        transition: all 0.3s;  
+        font-family: inherit;  
+        display: flex;  
+        align-items: center;  
+        gap: 6px;  
+    }  
+
+    .dub-btn:hover {  
+        border-color: var(--text-secondary);  
+        background: var(--bg-light);  
+    }  
+
+    .dub-btn.active {  
+        border-color: var(--primary-color);  
+        background: var(--primary-color);  
+        color: var(--text-primary);  
+        font-weight: 600;  
+        box-shadow: 0 0 15px rgba(255, 0, 0, 0.3);  
+    }  
+
+    .dub-icon {  
+        font-size: 1.1rem;  
+    }  
+
+    .delay-control {  
+        background: rgba(255, 0, 0, 0.05);  
+        border: 1px solid rgba(255, 0, 0, 0.2);  
+        padding: 15px;  
+        border-radius: 8px;  
+        margin-bottom: 15px;  
+    }  
+
+    .delay-control.hidden {  
+        display: none;  
+    }  
+
+    .delay-label {  
+        display: flex;  
+        justify-content: space-between;  
+        align-items: center;  
+        margin-bottom: 10px;  
+        font-size: 0.9rem;  
+        color: var(--text-secondary);  
+    }  
+
+    .delay-value {  
+        color: var(--primary-color);  
+        font-weight: 600;  
+        font-size: 1.1rem;  
+    }  
+
+    .sync-controls {  
+        display: flex;  
+        align-items: center;  
+        gap: 12px;  
+        margin-bottom: 12px;  
+    }  
+
+    .sync-btn {  
+        width: 36px;  
+        height: 36px;  
+        border-radius: 6px;  
+        border: 2px solid var(--border-color);  
+        background: var(--bg-dark);  
+        color: var(--text-primary);  
+        cursor: pointer;  
+        display: flex;  
+        align-items: center;  
+        justify-content: center;  
+        font-size: 1rem;  
+        transition: all 0.2s;  
+        font-family: inherit;  
+        font-weight: 600;  
+    }  
+
+    .sync-btn:hover {  
+        border-color: var(--primary-color);  
+        background: var(--bg-light);  
+    }  
+
+    .sync-btn:active {  
+        transform: scale(0.95);  
+    }  
+
+    .delay-slider {  
+        flex: 1;  
+        height: 6px;  
+        border-radius: 3px;  
+        background: var(--bg-dark);  
+        outline: none;  
+        -webkit-appearance: none;  
+        appearance: none;  
+        cursor: pointer;  
+    }  
+
+    .delay-slider::-webkit-slider-thumb {  
+        -webkit-appearance: none;  
+        appearance: none;  
+        width: 16px;  
+        height: 16px;  
+        border-radius: 50%;  
+        background: var(--primary-color);  
+        cursor: pointer;  
+        transition: all 0.2s;  
+        box-shadow: 0 0 8px rgba(255, 0, 0, 0.4);  
+    }  
+
+    .delay-slider::-webkit-slider-thumb:hover {  
+        transform: scale(1.2);  
+        box-shadow: 0 0 12px rgba(255, 0, 0, 0.6);  
+    }  
+
+    .delay-slider::-moz-range-thumb {  
+        width: 16px;  
+        height: 16px;  
+        border-radius: 50%;  
+        background: var(--primary-color);  
+        cursor: pointer;  
+        border: none;  
+        transition: all 0.2s;  
+        box-shadow: 0 0 8px rgba(255, 0, 0, 0.4);  
+    }  
+
+    .delay-slider::-moz-range-thumb:hover {  
+        transform: scale(1.2);  
+        box-shadow: 0 0 12px rgba(255, 0, 0, 0.6);  
+    }  
+
+    .delay-hint {  
+        font-size: 0.8rem;  
+        color: var(--text-secondary);  
+        margin-top: 8px;  
+    }  
+
+    .sync-indicator {  
+        display: inline-flex;  
+        align-items: center;  
+        gap: 8px;  
+        padding: 8px 12px;  
+        background: rgba(0, 255, 0, 0.1);  
+        border-radius: 4px;  
+        font-size: 0.8rem;  
+        color: var(--success-color);  
+    }  
+
+    .sync-indicator.syncing {  
+        background: rgba(255, 0, 0, 0.1);  
+        color: var(--primary-color);  
+    }  
+
+    .sync-dot {  
+        width: 6px;  
+        height: 6px;  
+        border-radius: 50%;  
+        background: var(--success-color);  
+    }  
+
+    .sync-dot.syncing {  
+        background: var(--primary-color);  
+        animation: pulse 0.8s ease-in-out infinite;  
+    }  
+
+    .dub-status-indicator {  
+        display: flex;  
+        align-items: center;  
+        gap: 10px;  
+        padding: 12px 15px;  
+        background: rgba(255, 0, 0, 0.1);  
+        border-radius: 6px;  
+        margin-top: 15px;  
+        font-size: 0.9rem;  
+        color: #ff0000;  
+        border: 1px solid rgba(255, 0, 0, 0.2);  
+    }  
+
+    .dub-status-dot {  
+        display: inline-block;  
+        width: 8px;  
+        height: 8px;  
+        background: #aaa;  
+        border-radius: 50%;  
+    }  
+
+    .dub-status-dot.active {  
+        background: var(--success-color);  
+        animation: pulse 1.5s ease-in-out infinite;  
+    }  
+
+    .video-info {  
+        padding: 20px;  
+    }  
+
+    .video-title {  
+        font-size: 1.3rem;  
+        margin-bottom: 10px;  
+        font-weight: 600;  
+    }  
+
+    .video-description {  
+        color: var(--text-secondary);  
+        font-size: 0.95rem;  
+    }  
+
+    .comments-section {  
+        background: var(--bg-light);  
+        border-radius: 12px;  
+        padding: 20px;  
+        box-shadow: var(--shadow);  
+    }  
+
+    .comments-header {  
+        display: flex;  
+        align-items: center;  
+        justify-content: space-between;  
+        margin-bottom: 20px;  
+        padding-bottom: 15px;  
+        border-bottom: 1px solid var(--border-color);  
+    }  
+
+    .comments-header h2 {  
+        font-size: 1.4rem;  
+        font-weight: 600;  
+    }  
+
+    .comments-count {  
+        background: var(--secondary-color);  
+        padding: 5px 12px;  
+        border-radius: 20px;  
+        font-size: 0.9rem;  
+        color: var(--text-secondary);  
+    }  
+
+    .comment-form {  
+        margin-bottom: 30px;  
+        padding: 20px;  
+        background: var(--secondary-color);  
+        border-radius: 8px;  
+    }  
+
+    .form-group {  
+        margin-bottom: 15px;  
+    }  
+
+    .form-group label {  
+        display: block;  
+        margin-bottom: 8px;  
+        color: var(--text-secondary);  
+        font-size: 0.9rem;  
+        font-weight: 500;  
+    }  
+
+    .form-group input,  
+    .form-group textarea {  
+        width: 100%;  
+        padding: 12px 15px;  
+        background: var(--bg-dark);  
+        border: 1px solid var(--border-color);  
+        border-radius: 6px;  
+        color: var(--text-primary);  
+        font-size: 0.95rem;  
+        font-family: inherit;  
+        transition: border-color 0.3s;  
+    }  
+
+    .form-group input::placeholder,  
+    .form-group textarea::placeholder {  
+        color: var(--text-secondary);  
+    }  
+
+    .form-group input:focus,  
+    .form-group textarea:focus {  
+        outline: none;  
+        border-color: var(--primary-color);  
+        background: var(--bg-dark);  
+    }  
+
+    .form-group textarea {  
+        resize: vertical;  
+        min-height: 100px;  
+    }  
+
+    .form-hint {  
+        font-size: 0.85rem;  
+        color: var(--text-secondary);  
+        margin-top: 5px;  
+    }  
+
+    .submit-btn {  
+        width: 100%;  
+        padding: 12px;  
+        background: var(--primary-color);  
+        color: var(--text-primary);  
+        border: 1px solid var(--primary-color);  
+        border-radius: 6px;  
+        font-size: 1rem;  
+        font-weight: 600;  
+        cursor: pointer;  
+        transition: all 0.3s;  
+        font-family: inherit;  
+    }  
+
+    .submit-btn:hover:not(:disabled) {  
+        background: #cc0000;  
+        border-color: #cc0000;  
+    }  
+
+    .submit-btn:disabled {  
+        opacity: 0.5;  
+        cursor: not-allowed;  
+    }  
+
+    .status-message {  
+        padding: 12px 15px;  
+        border-radius: 6px;  
+        margin-bottom: 15px;  
+        font-size: 0.9rem;  
+        display: none;  
+    }  
+
+    .status-message.show {  
+        display: block;  
+    }  
+
+    .status-message.success {  
+        background: rgba(0, 255, 0, 0.1);  
+        border: 1px solid var(--success-color);  
+        color: var(--success-color);  
+    }  
+
+    .status-message.error {  
+        background: rgba(255, 0, 0, 0.1);  
+        border: 1px solid var(--primary-color);  
+        color: var(--primary-color);  
+    }  
+
+    .status-message.info {  
+        background: rgba(29, 161, 242, 0.1);  
+        border: 1px solid var(--verified-color);  
+        color: var(--verified-color);  
+    }  
+
+    .comments-list {  
+        display: flex;  
+        flex-direction: column;  
+        gap: 15px;  
+    }  
+
+    .comment-item {  
+        background: var(--secondary-color);  
+        padding: 15px;  
+        border-radius: 8px;  
+        border: 1px solid var(--border-color);  
+        transition: all 0.3s;  
+        cursor: pointer;  
+    }  
+
+    .comment-item:hover {  
+        border-color: var(--text-secondary);  
+    }  
+
+    .comment-item.user-comment {  
+        border: 2px solid var(--primary-color);  
+        background: rgba(255, 0, 0, 0.05);  
+    }  
+
+    .comment-header {  
+        display: flex;  
+        align-items: center;  
+        justify-content: space-between;  
+        margin-bottom: 10px;  
+    }  
+
+    .comment-author {  
+        display: flex;  
+        align-items: center;  
+        gap: 8px;  
+        font-weight: 600;  
+        font-size: 0.95rem;  
+    }  
+
+    .verified-badge {  
+        display: inline-flex;  
+        align-items: center;  
+        color: var(--verified-color);  
+    }  
+
+    .verified-svg {  
+        width: 14px;  
+        height: 14px;  
+        margin-inline-start: 4px;  
+    }  
+
+    .comment-time {  
+        color: var(--text-secondary);  
+        font-size: 0.85rem;  
+    }  
+
+    .comment-text {  
+        color: var(--text-primary);  
+        line-height: 1.6;  
+        word-wrap: break-word;  
+    }  
+
+    .comment-actions {  
+        margin-top: 10px;  
+        padding-top: 10px;  
+        border-top: 1px solid var(--border-color);  
+        font-size: 0.85rem;  
+        color: var(--text-secondary);  
+    }  
+
+    .click-count {  
+        font-weight: 500;  
+    }  
+
+    .no-comments {  
+        text-align: center;  
+        padding: 40px 20px;  
+        color: var(--text-secondary);  
+    }  
+
+    .loading {  
+        text-align: center;  
+        padding: 20px;  
+        color: var(--text-secondary);  
+    }  
+
+    .hidden {  
+        display: none;  
+    }  
+
+    @media (max-width: 768px) {  
+        .container {  
+            padding: 15px;  
+        }  
+
+        .library-grid {  
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));  
+            gap: 15px;  
+        }  
+
+        .video-header {  
+            flex-direction: column;  
+            gap: 10px;  
+            align-items: flex-start;  
+        }  
+
+        .video-header h1 {  
+            font-size: 1.2rem;  
+        }  
+
+        .video-title {  
+            font-size: 1.1rem;  
+        }  
+
+        .comments-header h2 {  
+            font-size: 1.2rem;  
+        }  
+
+        .comment-form {  
+            padding: 15px;  
+        }  
+
+        .dub-buttons {  
+            flex-direction: column;  
+        }  
+
+        .dub-btn {  
+            width: 100%;  
+            justify-content: center;  
+        }  
+
+        .video-controls {  
+            width: 100%;  
+            justify-content: flex-start;  
+        }  
+
+        .delay-control {  
+            margin-bottom: 10px;  
+        }  
+
+        .sync-controls {  
+            flex-wrap: wrap;  
+        }  
+    }  
+
+    @keyframes fadeIn {  
+        from {  
+            opacity: 0;  
+            transform: translateY(10px);  
+        }  
+        to {  
+            opacity: 1;  
+            transform: translateY(0);  
+        }  
+    }  
+
+    @keyframes pulse {  
+        0%, 100% { opacity: 1; }  
+        50% { opacity: 0.5; }  
+    }  
+
+    .library-item, .comment-item {  
+        animation: fadeIn 0.3s ease-out;  
+    }  
+
+    .back-btn {  
+        display: inline-flex;  
+        align-items: center;  
+        gap: 5px;  
+        background: var(--secondary-color);  
+        color: var(--verified-color);  
+        border: 1px solid var(--border-color);  
+        padding: 8px 15px;  
+        border-radius: 6px;  
+        cursor: pointer;  
+        font-size: 0.9rem;  
+        transition: all 0.3s;  
+        font-family: inherit;  
+        font-weight: 500;  
+    }  
+
+    .back-btn:hover {  
+        background: var(--primary-color);  
+        color: var(--text-primary);  
+        border-color: var(--primary-color);  
+    }  
+
+    .comments-update-indicator {  
+        display: inline-block;  
+        width: 8px;  
+        height: 8px;  
+        background: var(--primary-color);  
+        border-radius: 50%;  
+        margin-right: 8px;  
+        animation: pulse 1.5s ease-in-out infinite;  
+    }  
+
+    .comments-update-indicator.paused {  
+        animation: none;  
+        opacity: 0.5;  
+    }  
+
+    #langToggle {  
+        position: fixed;  
+        right: 20px;  
+        bottom: 20px;  
+        width: 50px;  
+        height: 50px;  
+        border-radius: 50%;  
+        background: var(--primary-color);  
+        color: var(--text-primary);  
+        display: flex;  
+        align-items: center;  
+        justify-content: center;  
+        cursor: pointer;  
+        z-index: 9999;  
+        font-size: 0.7rem;  
+        font-weight: 600;  
+        border: 2px solid var(--text-primary);  
+        transition: all 0.3s;  
+        box-shadow: var(--shadow);  
+        text-align: center;  
+        padding: 5px;  
+    }  
+
+    #langToggle:hover {  
+        transform: scale(1.1);  
+        background: #cc0000;  
+    }  
+
+    #langMenu {  
+        position: fixed;  
+        right: 20px;  
+        bottom: 80px;  
+        background: var(--bg-light);  
+        border: 1px solid var(--border-color);  
+        border-radius: 8px;  
+        overflow: hidden;  
+        z-index: 9999;  
+        box-shadow: var(--shadow);  
+        min-width: 140px;  
+    }  
+
+    #langMenu button {  
+        display: block;  
+        width: 100%;  
+        padding: 12px 16px;  
+        background: var(--secondary-color);  
+        border: none;  
+        color: var(--text-primary);  
+        cursor: pointer;  
+        text-align: center;  
+        transition: all 0.3s;  
+        font-size: 0.9rem;  
+        font-family: inherit;  
+        font-weight: 500;  
+    }  
+
+    #langMenu button:hover {  
+        background: var(--primary-color);  
+        color: var(--text-primary);  
+    }  
+
+    #langMenu button.active {  
+        background: var(--primary-color);  
+        color: var(--text-primary);  
+        font-weight: 700;  
+    }  
+
+    .spinner {  
+        display: inline-block;  
+        width: 12px;  
+        height: 12px;  
+        border: 2px solid rgba(255, 255, 255, 0.3);  
+        border-top: 2px solid var(--primary-color);  
+        border-radius: 50%;  
+        animation: spin 0.8s linear infinite;  
+    }  
+
+    @keyframes spin {  
+        to { transform: rotate(360deg); }  
+    }  
+
+    .reset-sync-btn {  
+        width: 36px;  
+        height: 36px;  
+        border-radius: 6px;  
+        border: 2px solid var(--border-color);  
+        background: var(--bg-dark);  
+        color: var(--text-primary);  
+        cursor: pointer;  
+        display: flex;  
+        align-items: center;  
+        justify-content: center;  
+        font-size: 1rem;  
+        transition: all 0.2s;  
+        font-family: inherit;  
+        font-weight: 600;  
+    }  
+
+    .reset-sync-btn:hover {  
+        border-color: var(--success-color);  
+        background: var(--bg-light);  
+    }  
+
+    .reset-sync-btn:active {  
+        transform: scale(0.95);  
+    }  
+</style>
+
+</head>  
+<body>  
+    <div class="container">  
+        <div class="breadcrumb" id="breadcrumb">  
+            <button class="back-btn" id="backBtn" onclick="App.goHome()" style="display: none;"></button>  
+            <span id="breadcrumbText">المكتبة</span>  
+        </div>  
+
+        <div id="libraryView" class="library-view">  
+            <div class="library-header">  
+                <h1 id="libraryTitle">المسلسلات</h1>  
+            </div>  
+            <div class="library-grid" id="libraryGrid"></div>  
+        </div>  
+
+        <div id="videoView" class="hidden">  
+            <div class="video-section">  
+                <div class="video-header">  
+                    <h1>Watch VIP</h1>  
+                    <div class="video-controls">  
+                        <div class="quick-toggle">  
+                            <button id="dubToggle" class="sys-toggle" title="الدبلجة">  
+                                <span class="icon">🔇</span>  
+                            </button>  
+                        </div>  
+                    </div>  
+                </div>  
+
+                <div class="dub-selector" id="dubSelector" style="display: none;">  
+                    <h3 id="dubTitle">اختر نسخة العرض:</h3>  
+                    <div class="dub-buttons" id="dubButtons"></div>  
+                      
+                    <div class="delay-control hidden" id="delayControl">  
+                        <div class="delay-label">  
+                            <span id="delayLabelText">مزامنة التأخير</span>  
+                            <span class="delay-value" id="delayValue">0.0s</span>  
+                        </div>  
+
+                        <div class="sync-controls">  
+                            <button class="sync-btn" id="nudgeBackBtn" onclick="DubEngine.nudge(-0.1)" title="-0.1s">◀︎</button>  
+                            <input   
+                                type="range"   
+                                id="delaySlider"   
+                                class="delay-slider"   
+                                min="0"   
+                                max="100"   
+                                step="1"   
+                                value="50"  
+                            >  
+                            <button class="sync-btn" id="nudgeForwardBtn" onclick="DubEngine.nudge(0.1)" title="+0.1s">▶︎</button>  
+                            <button class="reset-sync-btn" id="resetSyncBtn" onclick="DubEngine.hardReset()" title="إعادة مزامنة">⟲</button>  
+                        </div>  
+
+                        <div class="sync-indicator" id="syncIndicator">  
+                            <span class="sync-dot"></span>  
+                            <span id="syncText">مزامنة جاهزة</span>  
+                        </div>  
+
+                        <div class="delay-hint" id="delayHint">اسحب أو استخدم الأزرار لتعديل التأخير بين الصوت والصورة</div>  
+                    </div>  
+
+                    <div class="dub-status-indicator" id="dubStatusIndicator">  
+                        <span class="dub-status-dot" id="statusDot"></span>  
+                        <span id="statusText">▶ النسخة الأصلية قيد التشغيل</span>  
+                    </div>  
+                </div>  
+
+                <div class="video-container" id="videoContainer"></div>  
+
+                <div class="video-info">  
+                    <h2 class="video-title" id="videoTitle">العنوان</h2>  
+                    <p class="video-description" id="videoDescription">الوصف</p>  
+                </div>  
+            </div>  
+
+            <div class="comments-section">  
+                <div class="comments-header">  
+                    <h2>  
+                        <span class="comments-update-indicator paused" id="updateIndicator"></span>  
+                        <span id="commentsTitle">التعليقات</span>  
+                    </h2>  
+                    <span class="comments-count" id="commentsCount">0 تعليق</span>  
+                </div>  
+
+                <div class="status-message" id="statusMessage"></div>  
+
+                <div class="comment-form">  
+                    <form id="commentForm">  
+                        <div class="form-group">  
+                            <label for="commentName" id="labelName">الاسم (اختياري)</label>  
+                            <input   
+                                type="text"   
+                                id="commentName"   
+                                maxlength="50"  
+                            >  
+                            <div class="form-hint" id="hintName">سيتم توليد اسم تلقائي إن لم تكتب</div>  
+                        </div>  
+                        <div class="form-group">  
+                            <label for="commentText" id="labelComment">التعليق *</label>  
+                            <textarea   
+                                id="commentText"   
+                                required  
+                                maxlength="500"  
+                            ></textarea>  
+                        </div>  
+                        <button type="submit" class="submit-btn" id="submitBtn">إرسال التعليق</button>  
+                    </form>  
+                </div>  
+
+                <div id="commentsListContainer">  
+                    <div class="loading" id="loadingText">جاري التحميل...</div>  
+                </div>  
+            </div>  
+        </div>  
+    </div>  
+
+    <div id="langToggle" title="تغيير اللغة"></div>  
+    <div id="langMenu" class="hidden">  
+        <button data-lang="ar">العربية</button>  
+        <button data-lang="en">English</button>  
+        <button data-lang="fr">Français</button>  
+        <button data-lang="ja">日本語</button>  
+    </div>  
+
+<script>  
+    const CONFIG = {  
+        BACKEND_URL: 'https://site--watch-vip--j9hb6dlmp4qm.code.run',  
+        REFRESH_INTERVAL: 10000,  
+        DOUBLE_CLICK_TIMEOUT: 500,  
+        SUBMIT_COOLDOWN: 3000,  
+        LONG_PRESS_DURATION: 500,  
+        SYNC_POLL_INTERVAL: 500,  
+        SLIDER_DEBOUNCE: 150,  
+        MAX_DELAY: 5,  
+        MIN_DELAY: -5  
+    };  
+
+    const LIBRARY = {  
+        series: [  
+            {  
+                id: 'doraemon',  
+                title: 'دورايمون',  
+                emoji: '🤖',  
+                cover: 'https://images.justwatch.com/backdrop/53298157/s640/doraemon',  
+                episodes: [  
+                    {  
+                        id: 'ep01',  
+                        title: 'الحلقة 01 - بداية دورايمون',  
+                        description: 'الحلقة الأولى من المسلسل الشهير حيث يقدم دورايمون نفسه لنوبيتا',  
+                        versions: {  
+                            original: {  
+                                name: 'النسخة الأصلية (يابانية)',  
+                                icon: '🎬',  
+                                id: 'ZYycK1Paq4M',  
+                                delay: 0  
+                            },  
+                            arabic: {  
+                                name: 'دبلجة عربية',  
+                                icon: '🔊',  
+                                id: 'oBdv4JrvO6I',  
+                                delay: 1  
+                            }  
+                        }  
+                    },  
+                    {  
+                        id: 'ep02',  
+                        title: 'الحلقة 02 - الآلة الزمنية',  
+                        description: 'دورايمون يقدم آلته المميزة الآلة الزمنية لنوبيتا',  
+                        versions: {  
+                            original: {  
+                                name: 'النسخة الأصلية (يابانية)',  
+                                icon: '🎬',  
+                                id: 'ZYycK1Paq4M',  
+                                delay: 0  
+                            },  
+                            arabic: {  
+                                name: 'دبلجة عربية',  
+                                icon: '🔊',  
+                                id: 'oBdv4JrvO6I',  
+                                delay: 1  
+                            }  
+                        }  
+                    }  
+                ]  
+            },  
+            {  
+                id: 'naruto',  
+                title: 'ناروتو',  
+                emoji: '🥷',  
+                cover: 'https://images.justwatch.com/backdrop/53298157/s640/naruto',  
+                episodes: [  
+                    {  
+                        id: 'naruto_ep01',  
+                        title: 'الحلقة 01 - بداية الطريق',  
+                        description: 'ناروتو يبدأ رحلته لتصبح نينجا قوياً',  
+                        versions: {  
+                            original: {  
+                                name: 'النسخة الأصلية (يابانية)',  
+                                icon: '🎬',  
+                                id: 'ZYycK1Paq4M',  
+                                delay: 0  
+                            }  
+                        }  
+                    }  
+                ]  
+            }  
+        ]  
+    };  
+
+    const TRANSLATIONS = {  
+        ar: {  
+            library: 'المسلسلات',  
+            back: '← الرجوع',  
+            comments: 'التعليقات',  
+            commentCount: (n) => `${n} تعليق`,  
+            labelName: 'الاسم (اختياري)',  
+            hintName: 'سيتم توليد اسم تلقائي إن لم تكتب',  
+            labelComment: 'التعليق *',  
+            placeholderName: 'اترك فارغاً للتوليد التلقائي',  
+            placeholderComment: 'شارك رأيك...',  
+            submit: 'إرسال التعليق',  
+            submitting: 'جاري الإرسال...',  
+            noComments: 'لا توجد تعليقات حتى الآن',  
+            loading: 'جاري التحميل...',  
+            pending: 'لديك تعليق قيد المراجعة',  
+            empty: 'أكمل كتابة التعليق',  
+            success: 'تم إرسال تعليقك بنجاح ✓',  
+            error: 'حدث خطأ في الإرسال',  
+            canComment: 'يمكنك التعليق مجدداً',  
+            rateLimitError: 'الرجاء الانتظار قليلاً قبل الإرسال',  
+            langButtonLabel: 'تغيير اللغة',  
+            dubTitle: 'اختر نسخة العرض:',  
+            delayLabel: 'مزامنة التأخير',  
+            delayHint: 'اسحب أو استخدم الأزرار لتعديل التأخير',  
+            syncReady: 'مزامنة جاهزة',  
+            syncing: 'جاري المزامنة...'  
+        },  
+        en: {  
+            library: 'Series',  
+            back: 'Back',  
+            comments: 'Comments',  
+            commentCount: (n) => `${n} comment${n !== 1 ? 's' : ''}`,  
+            labelName: 'Name (Optional)',  
+            hintName: 'An automatic name will be generated if left blank',  
+            labelComment: 'Comment *',  
+            placeholderName: 'Leave blank for auto-generation',  
+            placeholderComment: 'Share your thoughts...',  
+            submit: 'Post Comment',  
+            submitting: 'Posting...',  
+            noComments: 'No comments yet',  
+            loading: 'Loading...',  
+            pending: 'Your comment is under review',  
+            empty: 'Please write a comment',  
+            success: 'Comment posted successfully ✓',  
+            error: 'Failed to send comment',  
+            canComment: 'You can comment again',  
+            rateLimitError: 'Please wait a moment before posting',  
+            langButtonLabel: 'Change Language',  
+            dubTitle: 'Choose Version:',  
+            delayLabel: 'Sync Delay',  
+            delayHint: 'Drag or use buttons to adjust delay',  
+            syncReady: 'Sync ready',  
+            syncing: 'Syncing...'  
+        },  
+        fr: {  
+            library: 'Séries',  
+            back: 'Retour',  
+            comments: 'Commentaires',  
+            commentCount: (n) => `${n} commentaire${n !== 1 ? 's' : ''}`,  
+            labelName: 'Nom (Optionnel)',  
+            hintName: 'Un nom automatique sera généré si laissé vide',  
+            labelComment: 'Commentaire *',  
+            placeholderName: 'Laisser vide pour la génération automatique',  
+            placeholderComment: 'Partagez vos pensées...',  
+            submit: 'Publier le commentaire',  
+            submitting: 'Publication...',  
+            noComments: 'Pas encore de commentaires',  
+            loading: 'Chargement...',  
+            pending: 'Votre commentaire est en attente',  
+            empty: 'Veuillez écrire un commentaire',  
+            success: 'Commentaire publié ✓',  
+            error: 'Erreur lors de l\'envoi',  
+            canComment: 'Vous pouvez commenter à nouveau',  
+            rateLimitError: 'Veuillez attendre avant de publier',  
+            langButtonLabel: 'Changer la Langue',  
+            dubTitle: 'Choisir la version:',  
+            delayLabel: 'Délai de synchronisation',  
+            delayHint: 'Glissez pour ajuster le délai',  
+            syncReady: 'Sync prête',  
+            syncing: 'Synchronisation...'  
+        },  
+        ja: {  
+            library: 'シリーズ',  
+            back: '戻る',  
+            comments: 'コメント',  
+            commentCount: (n) => `${n}件のコメント`,  
+            labelName: '名前 (オプション)',  
+            hintName: '空白のままにするとランダムに生成されます',  
+            labelComment: 'コメント *',  
+            placeholderName: '自動生成のため空白のままにしてください',  
+            placeholderComment: 'あなたの考えを共有してください...',  
+            submit: 'コメントを投稿',  
+            submitting: '投稿中...',  
+            noComments: 'まだコメントがありません',  
+            loading: '読み込み中...',  
+            pending: 'コメントは審査中です',  
+            empty: 'コメントを入力してください',  
+            success: 'コメントが正常に投稿されました ✓',  
+            error: '送信に失敗しました',  
+            canComment: 'もう一度コメントできます',  
+            rateLimitError: '投稿する前にお待ちください',  
+            langButtonLabel: '言語を変更',  
+            dubTitle: 'バージョンを選択:',  
+            delayLabel: '同期遅延',  
+            delayHint: 'スライダーをドラッグして遅延を調整',  
+            syncReady: 'シンク準備完了',  
+            syncing: '同期中...'  
+        }  
+    };  
+
+    const Utils = {  
+        sanitize(text) {  
+            const d = document.createElement('div');  
+            d.textContent = text;  
+            return d.innerHTML;  
+        },  
+        timeAgo(ts) {  
+            const diff = Date.now() - ts;  
+            const m = Math.floor(diff / 60000);  
+            const lang = document.documentElement.getAttribute('data-lang');  
+              
+            const times = {  
+                ar: {  
+                    now: 'للتو',  
+                    minutes: (n) => `منذ ${n} دقيقة`,  
+                    hours: (n) => `منذ ${n} ساعة`,  
+                    days: (n) => `منذ ${n} يوم`  
+                },  
+                en: {  
+                    now: 'just now',  
+                    minutes: (n) => `${n}m ago`,  
+                    hours: (n) => `${n}h ago`,  
+                    days: (n) => `${n}d ago`  
+                },  
+                fr: {  
+                    now: 'à l\'instant',  
+                    minutes: (n) => `il y a ${n}m`,  
+                    hours: (n) => `il y a ${n}h`,  
+                    days: (n) => `il y a ${n}j`  
+                },  
+                ja: {  
+                    now: '今',  
+                    minutes: (n) => `${n}分前`,  
+                    hours: (n) => `${n}時間前`,  
+                    days: (n) => `${n}日前`  
+                }  
+            };  
+
+            const t = times[lang] || times.en;  
+            if (m < 1) return t.now;  
+            if (m < 60) return t.minutes(m);  
+            const h = Math.floor(m / 60);  
+            if (h < 24) return t.hours(h);  
+            return t.days(Math.floor(h / 24));  
+        },  
+        clientId() {  
+            let id = localStorage.getItem('watch_vip_client_id');  
+            if (!id) {  
+                id = Date.now().toString(36) + Math.random().toString(36).slice(2);  
+                localStorage.setItem('watch_vip_client_id', id);  
+            }  
+            return id;  
+        },  
+        status(msg, type='info') {  
+            const el = document.getElementById('statusMessage');  
+            el.textContent = msg;  
+            el.className = `status-message ${type} show`;  
+            setTimeout(()=>el.classList.remove('show'), 4000);  
+        },  
+        playHaptic() {  
+            if (navigator.vibrate) {  
+                navigator.vibrate(30);  
+            }  
+        }  
+    };  
+
+    const API = {  
+        async submit(name, text) {  
+            try {  
+                const r = await fetch(`${CONFIG.BACKEND_URL}/submit-comment`, {  
+                    method: 'POST',  
+                    headers: {'Content-Type':'application/json'},  
+                    body: JSON.stringify({  
+                        name, text,  
+                        clientId: Utils.clientId()  
+                    })  
+                });  
+                if (!r.ok) throw new Error('فشل الإرسال');  
+                return r.json();  
+            } catch (e) {  
+                throw new Error('خطأ في الاتصال');  
+            }  
+        },  
+        async comments() {  
+            try {  
+                const r = await fetch(`${CONFIG.BACKEND_URL}/comments`);  
+                return r.ok ? r.json() : [];  
+            } catch {  
+                return [];  
+            }  
+        }  
+    };  
+
+    // ✅ محرك الدبلجة المحسّن - نسخة محسّنة
+    const DubEngine = {  
+        mainFrame: null,  
+        audioFrames: {},  
+        currentMode: 'original',  
+        syncOffset: 0,  
+        syncPollInterval: null,  
+        customDelays: {},  
+        isPlaying: false,  
+        customDelaysCached: {},  
+        sliderDebounceTimer: null,  
+
+        init(mainId, versions) {  
+            const container = document.getElementById('videoContainer');  
+            this.stopSyncPoll();  
+            this.resetState();  
+              
+            let html = `<iframe id="dub-main"  
+                src="https://www.youtube.com/embed/${mainId}?enablejsapi=1&controls=1&modestbranding=1"  
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"  
+                allowfullscreen></iframe>`;  
+
+            Object.entries(versions).forEach(([key, version]) => {  
+                if (key !== 'original') {  
+                    html += `<iframe id="dub-${key}"  
+                        src="https://www.youtube.com/embed/${version.id}?enablejsapi=1&allow=autoplay"  
+                        style="display:none"  
+                        allow="autoplay; accelerometer"></iframe>`;  
+                }  
+            });  
+
+            container.innerHTML = html;  
+            this.mainFrame = document.getElementById('dub-main');  
+              
+            Object.keys(versions).forEach(key => {  
+                if (key !== 'original') {  
+                    this.audioFrames[key] = document.getElementById(`dub-${key}`);  
+                }  
+            });  
+
+            this.loadCustomDelays();  
+        },  
+
+        resetState() {  
+            this.currentMode = 'original';  
+            this.syncOffset = 0;  
+            this.isPlaying = false;  
+            this.audioFrames = {};  
+            if (this.sliderDebounceTimer) clearTimeout(this.sliderDebounceTimer);  
+        },  
+
+        postCommand(frame, action, args = []) {  
+            if (!frame) return;  
+            try {  
+                frame.contentWindow.postMessage(  
+                    JSON.stringify({  
+                        event: 'command',  
+                        func: action,  
+                        args: args  
+                    }),  
+                    '*'  
+                );  
+            } catch (e) {  
+                console.warn('YouTube command failed:', action);  
+            }  
+        },  
+
+        seek(frame, time) {  
+            if (!frame) return;  
+            time = Math.max(0, Math.min(time, 10000));  
+            this.postCommand(frame, 'seekTo', [time, false]);  
+        },  
+
+        play() {  
+            this.isPlaying = true;  
+              
+            if (this.currentMode === 'original') {  
+                this.postCommand(this.mainFrame, 'unMute');  
+                this.postCommand(this.mainFrame, 'playVideo');  
+                this.stopSyncPoll();  
+            } else {  
+                this.postCommand(this.mainFrame, 'mute');  
+                this.postCommand(this.mainFrame, 'playVideo');  
+                  
+                const audioFrame = this.audioFrames[this.currentMode];  
+                if (audioFrame) {  
+                    this.postCommand(audioFrame, 'playVideo');  
+                    this.startSyncPoll();  
+                }  
+            }  
+        },  
+
+        pause() {  
+            this.isPlaying = false;  
+            this.stopSyncPoll();  
+            this.postCommand(this.mainFrame, 'pauseVideo');  
+              
+            Object.values(this.audioFrames).forEach(f => {  
+                if (f) this.postCommand(f, 'pauseVideo');  
+            });  
+        },  
+
+        startSyncPoll() {  
+            if (this.syncPollInterval) clearInterval(this.syncPollInterval);  
+              
+            this.syncPollInterval = setInterval(() => {  
+                if (this.currentMode !== 'original' && this.isPlaying) {  
+                    this.syncDub();  
+                }  
+            }, CONFIG.SYNC_POLL_INTERVAL);  
+        },  
+
+        stopSyncPoll() {  
+            if (this.syncPollInterval) {  
+                clearInterval(this.syncPollInterval);  
+                this.syncPollInterval = null;  
+            }  
+        },  
+
+        syncDub() {  
+            const audioFrame = this.audioFrames[this.currentMode];  
+            if (!audioFrame || !this.mainFrame) return;  
+
+            this.postCommand(this.mainFrame, 'getCurrentTime');  
+            this.postCommand(audioFrame, 'getCurrentTime');  
+        },  
+
+        setMode(mode) {  
+            this.currentMode = mode;  
+            this.syncOffset = this.customDelays[mode] || 0;  
+            this.updateDelaySlider();  
+            this.updateSyncIndicator();  
+            this.play();  
+        },  
+
+        nudge(amount) {  
+            this.syncOffset += amount;  
+            this.syncOffset = Math.max(CONFIG.MIN_DELAY, Math.min(CONFIG.MAX_DELAY, this.syncOffset));  
+            this.setCustomDelay(this.currentMode, this.syncOffset);  
+            this.updateDelaySlider();  
+            this.updateSyncIndicator();  
+            Utils.playHaptic();  
+        },  
+
+        hardReset() {  
+            const lang = document.documentElement.getAttribute('data-lang');  
+            const t = TRANSLATIONS[lang];  
+              
+            this.syncOffset = 0;  
+            this.setCustomDelay(this.currentMode, 0);  
+            this.updateDelaySlider();  
+            this.updateSyncIndicator();  
+            Utils.playHaptic();  
+            Utils.status(t.syncReady, 'success');  
+        },  
+
+        setCustomDelay(mode, delay) {  
+            this.customDelays[mode] = delay;  
+            try {  
+                localStorage.setItem(`dub_delay_${mode}`, delay);  
+            } catch (e) {  
+                console.warn('Storage failed');  
+            }  
+        },  
+
+        loadCustomDelays() {  
+            Object.keys(this.audioFrames).forEach(key => {  
+                try {  
+                    const saved = localStorage.getItem(`dub_delay_${key}`);  
+                    if (saved !== null) {  
+                        this.customDelays[key] = parseFloat(saved);  
+                    }  
+                } catch (e) {  
+                    console.warn('Load delay failed');  
+                }  
+            });  
+        },  
+
+        updateDelaySlider() {  
+            const slider = document.getElementById('delaySlider');  
+            const value = document.getElementById('delayValue');  
+            if (!slider || !value) return;  
+              
+            const sliderValue = (this.syncOffset * 10 + 50);  
+            slider.value = Math.max(0, Math.min(100, sliderValue)).toString();  
+            value.textContent = this.syncOffset.toFixed(1) + 's';  
+        },  
+
+        updateSyncIndicator() {  
+            const indicator = document.getElementById('syncIndicator');  
+            const text = document.getElementById('syncText');  
+            const lang = document.documentElement.getAttribute('data-lang');  
+            const t = TRANSLATIONS[lang];  
+
+            if (!indicator || !text) return;  
+
+            if (Math.abs(this.syncOffset) > 0.1 || this.currentMode !== 'original') {  
+                indicator.classList.add('syncing');  
+                text.textContent = t.syncing;  
+            } else {  
+                indicator.classList.remove('syncing');  
+                text.textContent = t.syncReady;  
+            }  
+        }  
+    };  
+
+    const App = {  
+        currentView: 'home',  
+        currentSeries: null,  
+        currentEpisode: null,  
+        dubEnabled: false,  
+        lastDubMode: localStorage.getItem('last_dub') || 'arabic',  
+        longPressTimer: null,  
+        dubSelectorVisible: false,  
+
+        init() {  
+            this.renderHome();  
+            Comments.init();  
+            this.setupDubToggle();  
+        },  
+
+        setupDubToggle() {  
+            const btn = document.getElementById('dubToggle');  
+            if (!btn) return;  
+              
+            let touchStartTime = 0;  
+            let isLongPress = false;  
+              
+            const handleLongPress = () => {  
+                if (App.currentView !== 'video') return;  
+                isLongPress = true;  
+                Utils.playHaptic();  
+                App.toggleDubSelector();  
+            };  
+
+            const handleClick = () => {  
+                if (App.currentView !== 'video') return;  
+                if (isLongPress) {  
+                    isLongPress = false;  
+                    return;  
+                }  
+                App.toggleDub();  
+            };  
+
+            btn.addEventListener('mousedown', () => {  
+                if (App.currentView !== 'video') return;  
+                touchStartTime = Date.now();  
+                this.longPressTimer = setTimeout(handleLongPress, CONFIG.LONG_PRESS_DURATION);  
+            });  
+
+            btn.addEventListener('mouseup', () => {  
+                if (this.longPressTimer) clearTimeout(this.longPressTimer);  
+                if (Date.now() - touchStartTime < CONFIG.LONG_PRESS_DURATION) {  
+                    handleClick();  
+                }  
+            });  
+
+            btn.addEventListener('touchstart', () => {  
+                if (App.currentView !== 'video') return;  
+                touchStartTime = Date.now();  
+                isLongPress = false;  
+                this.longPressTimer = setTimeout(handleLongPress, CONFIG.LONG_PRESS_DURATION);  
+            });  
+
+            btn.addEventListener('touchend', () => {  
+                if (this.longPressTimer) clearTimeout(this.longPressTimer);  
+                if (Date.now() - touchStartTime < CONFIG.LONG_PRESS_DURATION && !isLongPress) {  
+                    handleClick();  
+                }  
+                isLongPress = false;  
+            });  
+        },  
+
+        toggleDub() {  
+            Utils.playHaptic();  
+            this.dubEnabled = !this.dubEnabled;  
+              
+            if (this.dubEnabled) {  
+                document.getElementById('dubToggle').classList.add('active');  
+                document.getElementById('dubToggle').querySelector('.icon').textContent = '🔊';  
+                DubEngine.setMode(this.lastDubMode);  
+            } else {  
+                document.getElementById('dubToggle').classList.remove('active');  
+                document.getElementById('dubToggle').querySelector('.icon').textContent = '🔇';  
+                DubEngine.setMode('original');  
+            }  
+        },  
+
+        toggleDubSelector() {  
+            const selector = document.getElementById('dubSelector');  
+            this.dubSelectorVisible = !this.dubSelectorVisible;  
+              
+            if (this.dubSelectorVisible) {  
+                selector.style.display = 'block';  
+                selector.scrollIntoView({ behavior: 'smooth', block: 'nearest' });  
+            } else {  
+                selector.style.display = 'none';  
+            }  
+        },  
+
+        renderHome() {  
+            const lang = document.documentElement.getAttribute('data-lang');  
+            const t = TRANSLATIONS[lang];  
+
+            document.getElementById('libraryView').classList.remove('hidden');  
+            document.getElementById('videoView').classList.add('hidden');  
+            document.getElementById('backBtn').style.display = 'none';  
+            document.getElementById('breadcrumbText').textContent = t.library;  
+
+            const grid = document.getElementById('libraryGrid');  
+            grid.innerHTML = LIBRARY.series.map(series => `  
+                <div class="library-item" onclick="App.viewSeries('${series.id}')">  
+                    <div class="item-cover">  
+                        ${series.emoji}  
+                    </div>  
+                    <div class="item-info">  
+                        <div class="item-title">${Utils.sanitize(series.title)}</div>  
+                        <div class="item-subtitle">${series.episodes.length} حلقة</div>  
+                    </div>  
+                </div>  
+            `).join('');  
+
+            this.currentView = 'home';  
+            this.dubSelectorVisible = false;  
+            DubEngine.stopSyncPoll();  
+            Comments.pauseAutoRefresh();  
+        },  
+
+        viewSeries(seriesId) {  
+            const lang = document.documentElement.getAttribute('data-lang');  
+            const t = TRANSLATIONS[lang];  
+
+            this.currentSeries = LIBRARY.series.find(s => s.id === seriesId);  
+            if (!this.currentSeries) return;  
+
+            document.getElementById('libraryView').classList.remove('hidden');  
+            document.getElementById('videoView').classList.add('hidden');  
+            document.getElementById('backBtn').style.display = 'inline-flex';  
+            document.getElementById('backBtn').textContent = t.back;  
+            document.getElementById('libraryTitle').textContent = this.currentSeries.title;  
+            document.getElementById('breadcrumbText').textContent = this.currentSeries.title;  
+
+            const grid = document.getElementById('libraryGrid');  
+            grid.innerHTML = this.currentSeries.episodes.map(ep => `  
+                <div class="library-item" onclick="App.playEpisode('${ep.id}')">  
+                    <div class="item-cover episode">  
+                        <span>▶</span>  
+                    </div>  
+                    <div class="item-info">  
+                        <div class="item-title">${Utils.sanitize(ep.title)}</div>  
+                        <div class="item-subtitle">${Utils.sanitize(ep.description)}</div>  
+                    </div>  
+                </div>  
+            `).join('');  
+
+            this.currentView = 'series';  
+            this.dubSelectorVisible = false;  
+            DubEngine.stopSyncPoll();  
+            Comments.pauseAutoRefresh();  
+        },  
+
+        playEpisode(episodeId) {  
+            const lang = document.documentElement.getAttribute('data-lang');  
+            const t = TRANSLATIONS[lang];  
+
+            if (!this.currentSeries) return;  
+            this.currentEpisode = this.currentSeries.episodes.find(e => e.id === episodeId);  
+            if (!this.currentEpisode) return;  
+
+            document.getElementById('libraryView').classList.add('hidden');  
+            document.getElementById('videoView').classList.remove('hidden');  
+            document.getElementById('backBtn').style.display = 'inline-flex';  
+            document.getElementById('backBtn').textContent = t.back;  
+            document.getElementById('breadcrumbText').textContent = this.currentEpisode.title;  
+
+            document.getElementById('videoTitle').textContent = this.currentEpisode.title;  
+            document.getElementById('videoDescription').textContent = this.currentEpisode.description;  
+
+            const mainId = this.currentEpisode.versions.original.id;  
+            DubEngine.init(mainId, this.currentEpisode.versions);  
+            this.setupDubButtons();  
+
+            this.dubEnabled = false;  
+            this.dubSelectorVisible = false;  
+            document.getElementById('dubToggle').classList.remove('active');  
+            document.getElementById('dubToggle').querySelector('.icon').textContent = '🔇';  
+
+            this.currentView = 'video';  
+            Comments.load();  
+        },  
+
+        setupDubButtons() {  
+            const lang = document.documentElement.getAttribute('data-lang');  
+            const t = TRANSLATIONS[lang];  
+            const versions = this.currentEpisode.versions;  
+            const dubButtons = document.getElementById('dubButtons');  
+            const dubSelector = document.getElementById('dubSelector');  
+
+            if (!versions || Object.keys(versions).length <= 1) {  
+                dubSelector.style.display = 'none';  
+                return;  
+            }  
+
+            dubSelector.style.display = 'none';  
+            this.dubSelectorVisible = false;  
+            document.getElementById('dubTitle').textContent = t.dubTitle;  
+
+            dubButtons.innerHTML = Object.entries(versions).map(([key, version]) => `  
+                <button   
+                    class="dub-btn ${key === 'original' ? 'active' : ''}"   
+                    onclick="App.selectDubVersion('${key}', this)"  
+                >  
+                    <span class="dub-icon">${version.icon}</span>  
+                    <span>${version.name}</span>  
+                </button>  
+            `).join('');  
+
+            const delaySlider = document.getElementById('delaySlider');  
+            if (delaySlider) {  
+                delaySlider.oninput = () => {  
+                    if (DubEngine.sliderDebounceTimer) {  
+                        clearTimeout(DubEngine.sliderDebounceTimer);  
+                    }  
+                      
+                    DubEngine.sliderDebounceTimer = setTimeout(() => {  
+                        const offset = (delaySlider.value - 50) / 10;  
+                        DubEngine.syncOffset = offset;  
+                        DubEngine.setCustomDelay(DubEngine.currentMode, offset);  
+                        DubEngine.updateDelaySlider();  
+                    }, CONFIG.SLIDER_DEBOUNCE);  
+                };  
+            }  
+
+            this.updateStatusIndicator('original');  
+        },  
+
+        updateStatusIndicator(mode) {  
+            const statusText = document.getElementById('statusText');  
+            const statusDot = document.getElementById('statusDot');  
+            const delayControl = document.getElementById('delayControl');  
+            const lang = document.documentElement.getAttribute('data-lang');  
+              
+            const statusMessages = {  
+                ar: {  
+                    original: '▶ النسخة الأصلية قيد التشغيل',  
+                    arabic: '🔊 الدبلجة العربية مفعلة',  
+                    japanese: '🎌 الدبلجة اليابانية مفعلة'  
+                },  
+                en: {  
+                    original: '▶ Original version is playing',  
+                    arabic: '🔊 Arabic dub is enabled',  
+                    japanese: '🎌 Japanese dub is enabled'  
+                },  
+                fr: {  
+                    original: '▶ La version originale',  
+                    arabic: '🔊 Doublage arabe',  
+                    japanese: '🎌 Doublage japonais'  
+                },  
+                ja: {  
+                    original: '▶ オリジナル版',  
+                    arabic: '🔊 アラビア語吹替',  
+                    japanese: '🎌 日本語吹替'  
+                }  
+            };  
+
+            const messages = statusMessages[lang] || statusMessages.en;  
+            if (statusText) statusText.textContent = messages[mode] || messages.original;  
+
+            if (statusDot) {  
+                if (mode === 'original') {  
+                    statusDot.classList.remove('active');  
+                } else {  
+                    statusDot.classList.add('active');  
+                }  
+            }  
+
+            if (delayControl) {  
+                if (mode === 'original') {  
+                    delayControl.classList.add('hidden');  
+                } else {  
+                    delayControl.classList.remove('hidden');  
+                    DubEngine.updateDelaySlider();  
+                }  
+            }  
+        },  
+
+        selectDubVersion(versionKey, button) {  
+            Utils.playHaptic();  
+              
+            document.querySelectorAll('.dub-btn').forEach(btn => {  
+                btn.classList.remove('active');  
+            });  
+            button.classList.add('active');  
+
+            this.updateStatusIndicator(versionKey);  
+
+            if (versionKey === 'original') {  
+                this.dubEnabled = false;  
+                document.getElementById('dubToggle').classList.remove('active');  
+                document.getElementById('dubToggle').querySelector('.icon').textContent = '🔇';  
+                DubEngine.setMode('original');  
+            } else {  
+                this.lastDubMode = versionKey;  
+                localStorage.setItem('last_dub', versionKey);  
+                this.dubEnabled = true;  
+                document.getElementById('dubToggle').classList.add('active');  
+                document.getElementById('dubToggle').querySelector('.icon').textContent = '🔊';  
+                DubEngine.setMode(versionKey);  
+            }  
+        },  
+
+        goHome() {  
+            if (this.currentView === 'video') {  
+                this.viewSeries(this.currentSeries.id);  
+            } else if (this.currentView === 'series') {  
+                this.renderHome();  
+            }  
+        }  
+    };  
+
+    const Comments = {  
+        userCommentId: localStorage.getItem('watch_vip_user_comment_id'),  
+        autoRefreshInterval: null,  
+        isRefreshing: false,  
+        lastSubmitTime: 0,  
+
+        async init() {  
+            const form = document.getElementById('commentForm');  
+            if (form) {  
+                form.addEventListener('submit', e => {  
+                    e.preventDefault();  
+                    this.send();  
+                });  
+            }  
+            await this.load();  
+            this.startAutoRefresh();  
+        },  
+
+        startAutoRefresh() {  
+            if (this.autoRefreshInterval) clearInterval(this.autoRefreshInterval);  
+              
+            this.autoRefreshInterval = setInterval(() => {  
+                if (App.currentView === 'video') {  
+                    this.load();  
+                }  
+            }, CONFIG.REFRESH_INTERVAL);  
+        },  
+
+        pauseAutoRefresh() {  
+            const indicator = document.getElementById('updateIndicator');  
+            if (indicator) {  
+                if (App.currentView === 'video') {  
+                    indicator.classList.remove('paused');  
+                } else {  
+                    indicator.classList.add('paused');  
+                }  
+            }  
+        },  
+
+        async send() {  
+            const lang = document.documentElement.getAttribute('data-lang');  
+            const t = TRANSLATIONS[lang];  
+            const now = Date.now();  
+
+            if (now - this.lastSubmitTime < CONFIG.SUBMIT_COOLDOWN) {  
+                Utils.status(t.rateLimitError, 'error');  
+                return;  
+            }  
+
+            if (this.userCommentId) {  
+                Utils.status(t.pending, 'info');  
+                return;  
+            }  
+
+            const name = document.getElementById('commentName').value.trim();  
+            const text = document.getElementById('commentText').value.trim();  
+              
+            if (!text) {  
+                Utils.status(t.empty, 'error');  
+                return;  
+            }  
+
+            const btn = document.getElementById('submitBtn');  
+            btn.disabled = true;  
+            btn.textContent = '⏳ ' + t.submitting;  
+
+            try {  
+                const res = await API.submit(name || null, text);  
+                this.userCommentId = res.commentId;  
+                localStorage.setItem('watch_vip_user_comment_id', res.commentId);  
+                this.lastSubmitTime = now;  
+                Utils.status(t.success, 'success');  
+                Utils.playHaptic();  
+                document.getElementById('commentText').value = '';  
+                document.getElementById('commentName').value = '';  
+                await this.load();  
+            } catch (e) {  
+                Utils.status(t.error, 'error');  
+            } finally {  
+                btn.disabled = false;  
+                btn.textContent = t.submit;  
+            }  
+        },  
+
+        async load() {  
+            if (this.isRefreshing) return;  
+            this.isRefreshing = true;  
+
+            try {  
+                const lang = document.documentElement.getAttribute('data-lang');  
+                const t = TRANSLATIONS[lang];  
+                const list = await API.comments();  
+                const box = document.getElementById('commentsListContainer');  
+
+                if (!box) {  
+                    this.isRefreshing = false;  
+                    return;  
+                }  
+
+                document.getElementById('commentsCount').textContent = t.commentCount(list.length);  
+
+                if (!list.length) {  
+                    box.innerHTML = `<div class="no-comments">${t.noComments}</div>`;  
+                    this.isRefreshing = false;  
+                    return;  
+                }  
+
+                if (this.userCommentId && list.length > 0 && !list.some(c => c.commentId === this.userCommentId)) {  
+                    localStorage.removeItem('watch_vip_user_comment_id');  
+                    this.userCommentId = null;  
+                }  
+
+                list.sort((a,b)=>{  
+                    if (a.commentId === this.userCommentId) return -1;  
+                    if (b.commentId === this.userCommentId) return 1;  
+                    return b.timestamp - a.timestamp;  
+                });  
+
+                box.innerHTML = `  
+                    <div class="comments-list">  
+                        ${list.map(c=>`  
+                            <div class="comment-item ${c.commentId===this.userCommentId?'user-comment':''}" data-id="${c.commentId}">  
+                                <div class="comment-header">  
+                                    <div class="comment-author">  
+                                        ${Utils.sanitize(c.displayName)}  
+                                        ${c.verified ? `<svg class="verified-svg" viewBox="0 0 24 24" fill="#1da1f2"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>` : ''}  
+                                    </div>  
+                                    <span class="comment-time">${Utils.timeAgo(c.timestamp)}</span>  
+                                </div>  
+                                <div class="comment-text">${Utils.sanitize(c.text)}</div>  
+                            </div>  
+                        `).join('')}  
+                    </div>  
+                `;  
+
+                this.bindClicks();  
+            } finally {  
+                this.isRefreshing = false;  
+            }  
+        },  
+
+        bindClicks() {  
+            const lang = document.documentElement.getAttribute('data-lang');  
+            const t = TRANSLATIONS[lang];  
+
+            document.querySelectorAll('.user-comment').forEach(el=>{  
+                let last = 0;  
+                el.onclick = () => {  
+                    const now = Date.now();  
+                    if (now - last < CONFIG.DOUBLE_CLICK_TIMEOUT) {  
+                        localStorage.removeItem('watch_vip_user_comment_id');  
+                        this.userCommentId = null;  
+                        Utils.status(t.canComment, 'success');  
+                        Utils.playHaptic();  
+                        this.load();  
+                    }  
+                    last = now;  
+                };  
+            });  
+        }  
+    };  
+
+    function applyLanguage(lang) {  
+        const t = TRANSLATIONS[lang];  
+        document.documentElement.setAttribute('data-lang', lang);  
+        localStorage.setItem('site_lang', lang);  
+
+        const el = (id) => document.getElementById(id);  
+        if (el('libraryTitle')) el('libraryTitle').textContent = t.library;  
+        if (el('breadcrumbText')) el('breadcrumbText').textContent = t.library;  
+        if (el('backBtn')) el('backBtn').textContent = t.back;  
+        if (el('commentsTitle')) el('commentsTitle').textContent = t.comments;  
+        if (el('labelName')) el('labelName').textContent = t.labelName;  
+        if (el('hintName')) el('hintName').textContent = t.hintName;  
+        if (el('labelComment')) el('labelComment').textContent = t.labelComment;  
+        if (el('commentName')) el('commentName').placeholder = t.placeholderName;  
+        if (el('commentText')) el('commentText').placeholder = t.placeholderComment;  
+        if (el('submitBtn')) el('submitBtn').textContent = t.submit;  
+        if (el('loadingText')) el('loadingText').textContent = t.loading;  
+        if (el('dubTitle')) el('dubTitle').textContent = t.dubTitle;  
+        if (el('delayLabelText')) el('delayLabelText').textContent = t.delayLabel;  
+        if (el('delayHint')) el('delayHint').textContent = t.delayHint;  
+
+        const langButton = document.getElementById('langToggle');  
+        const langLabels = {ar: 'اللغة', en: 'Lang', fr: 'Langue', ja: '言語'};  
+        if (langButton) langButton.textContent = langLabels[lang] || 'Lang';  
+
+        document.querySelectorAll('#langMenu button').forEach(btn => {  
+            btn.classList.remove('active');  
+            if (btn.dataset.lang === lang) btn.classList.add('active');  
+        });  
+
+        if (App.currentView === 'video') Comments.load();  
+    }  
+
+    const langToggle = document.getElementById('langToggle');  
+    const langMenu = document.getElementById('langMenu');  
+
+    if (langToggle && langMenu) {  
+        langToggle.onclick = (e) => {  
+            e.stopPropagation();  
+            langMenu.classList.toggle('hidden');  
+        };  
+
+        langMenu.querySelectorAll('button').forEach(btn => {  
+            btn.onclick = () => {  
+                applyLanguage(btn.dataset.lang);  
+                langMenu.classList.add('hidden');  
+                Utils.playHaptic();  
+            };  
+        });  
+
+        document.addEventListener('click', (e) => {  
+            if (!e.target.closest('#langToggle') && !e.target.closest('#langMenu')) {  
+                langMenu.classList.add('hidden');  
+            }  
+        });  
+    }  
+
+    const savedLang = localStorage.getItem('site_lang') || 'ar';  
+    applyLanguage(savedLang);  
+
+    document.addEventListener('DOMContentLoaded', ()=>App.init());  
+</script>
+
+</body>  
 </html>
