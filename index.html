@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="منصة بث فيديو احترافية مع نظام تعليقات تفاعلي">
+    <meta name="description" content="منصة بث فيديو احترافية مع نظام دبلجة متعددة اللغات">
     <title>Watch VIP - منصة البث</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -87,6 +87,7 @@
             border-radius: 6px;
             transition: all 0.3s;
             font-size: 0.9rem;
+            font-family: inherit;
         }
 
         .breadcrumb button:hover {
@@ -193,11 +194,23 @@
             padding: 15px 20px;
             background: var(--secondary-color);
             border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
         }
 
         .video-header h1 {
             font-size: 1.5rem;
             font-weight: 600;
+            flex: 1;
+        }
+
+        .video-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
         .video-container {
@@ -215,6 +228,142 @@
             width: 100%;
             height: 100%;
             border: none;
+        }
+
+        /* ===========================
+           نظام التحكم السريع بالدبلجة
+        =========================== */
+        .quick-toggle {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .sys-toggle {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: none;
+            background: #2a2a2a;
+            color: #aaa;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.25s ease;
+            box-shadow: inset 0 0 0 2px #333;
+            font-family: inherit;
+            user-select: none;
+        }
+
+        .sys-toggle:hover {
+            background: #333;
+        }
+
+        .sys-toggle.active {
+            background: var(--primary-color);
+            color: #fff;
+            box-shadow: 0 0 12px rgba(255, 0, 0, 0.6), inset 0 0 0 2px rgba(255,255,255,0.3);
+        }
+
+        .sys-toggle .icon {
+            pointer-events: none;
+        }
+
+        /* ===========================
+           نظام الدبلجة
+        =========================== */
+        .dub-selector {
+            background: var(--secondary-color);
+            padding: 20px;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 0;
+            animation: slideDown 0.3s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                max-height: 0;
+                overflow: hidden;
+            }
+            to {
+                opacity: 1;
+                max-height: 500px;
+            }
+        }
+
+        .dub-selector h3 {
+            margin-bottom: 12px;
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .dub-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .dub-btn {
+            padding: 10px 18px;
+            background: var(--bg-dark);
+            border: 2px solid var(--border-color);
+            color: var(--text-primary);
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s;
+            font-family: inherit;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .dub-btn:hover {
+            border-color: var(--text-secondary);
+            background: var(--bg-light);
+        }
+
+        .dub-btn.active {
+            border-color: var(--primary-color);
+            background: var(--primary-color);
+            color: var(--text-primary);
+            font-weight: 600;
+            box-shadow: 0 0 15px rgba(255, 0, 0, 0.3);
+        }
+
+        .dub-icon {
+            font-size: 1.1rem;
+        }
+
+        .dub-status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 15px;
+            background: rgba(255, 0, 0, 0.1);
+            border-radius: 6px;
+            margin-top: 15px;
+            font-size: 0.9rem;
+            color: #ff0000;
+            border: 1px solid rgba(255, 0, 0, 0.2);
+        }
+
+        .dub-status-dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background: #aaa;
+            border-radius: 50%;
+        }
+
+        .dub-status-dot.active {
+            background: var(--success-color);
+            animation: pulse 1.5s ease-in-out infinite;
         }
 
         .video-info {
@@ -480,6 +629,12 @@
                 gap: 15px;
             }
 
+            .video-header {
+                flex-direction: column;
+                gap: 10px;
+                align-items: flex-start;
+            }
+
             .video-header h1 {
                 font-size: 1.2rem;
             }
@@ -495,6 +650,20 @@
             .comment-form {
                 padding: 15px;
             }
+
+            .dub-buttons {
+                flex-direction: column;
+            }
+
+            .dub-btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .video-controls {
+                width: 100%;
+                justify-content: flex-start;
+            }
         }
 
         /* ===========================
@@ -509,6 +678,11 @@
                 opacity: 1;
                 transform: translateY(0);
             }
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
         }
 
         .library-item, .comment-item {
@@ -550,11 +724,6 @@
         .comments-update-indicator.paused {
             animation: none;
             opacity: 0.5;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
         }
 
         /* ===========================
@@ -643,6 +812,15 @@
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
+
+        /* Long Press Indicator */
+        .long-press-hint {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            margin-top: 8px;
+            text-align: center;
+            display: block;
+        }
     </style>
 </head>
 <body>
@@ -666,8 +844,30 @@
             <div class="video-section">
                 <div class="video-header">
                     <h1>Watch VIP</h1>
+                    <div class="video-controls">
+                        <div class="quick-toggle">
+                            <button id="dubToggle" class="sys-toggle" title="الدبلجة">
+                                <span class="icon">🔇</span>
+                            </button>
+                        </div>
+                    </div>
                 </div>
+
+                <!-- نظام اختيار الدبلجة -->
+                <div class="dub-selector" id="dubSelector" style="display: none;">
+                    <h3 id="dubTitle">اختر نسخة العرض:</h3>
+                    <div class="dub-buttons" id="dubButtons"></div>
+                    <!-- مؤشر حالة الدبلجة -->
+                    <div class="dub-status-indicator" id="dubStatusIndicator">
+                        <span class="dub-status-dot" id="statusDot"></span>
+                        <span id="statusText">▶ النسخة الأصلية قيد التشغيل</span>
+                    </div>
+                </div>
+
+                <!-- حاوية الفيديو -->
                 <div class="video-container" id="videoContainer"></div>
+
+                <!-- معلومات الفيديو -->
                 <div class="video-info">
                     <h2 class="video-title" id="videoTitle">العنوان</h2>
                     <p class="video-description" id="videoDescription">الوصف</p>
@@ -735,22 +935,109 @@
             BACKEND_URL: 'https://site--watch-vip--j9hb6dlmp4qm.code.run',
             REFRESH_INTERVAL: 10000,
             DOUBLE_CLICK_TIMEOUT: 500,
-            SUBMIT_COOLDOWN: 3000
+            SUBMIT_COOLDOWN: 3000,
+            LONG_PRESS_DURATION: 500
         };
 
-        // قاعدة البيانات المحلية
+        // قاعدة البيانات المحلية مع نظام الدبلجة
         const LIBRARY = {
             series: [
                 {
                     id: 'doraemon',
                     title: 'دورايمون',
                     emoji: '🤖',
+                    cover: 'https://images.justwatch.com/backdrop/53298157/s640/doraemon',
                     episodes: [
                         {
-                            id: 'ep1',
-                            title: 'الحلقة الأولى',
-                            url: 'https://youtu.be/bn924_vcepg?si=s0ciXZNCUj_rCprZ',
-                            description: 'الحلقة الافتتاحية من المسلسل'
+                            id: 'ep01',
+                            title: 'الحلقة 01 - بداية دورايمون',
+                            description: 'الحلقة الأولى من المسلسل الشهير حيث يقدم دورايمون نفسه لنوبيتا',
+                            versions: {
+                                original: {
+                                    name: 'النسخة الأصلية (يابانية)',
+                                    icon: '🎬',
+                                    id: 'ZYycK1Paq4M'
+                                },
+                                arabic: {
+                                    name: 'دبلجة عربية',
+                                    icon: '🔊',
+                                    id: 'dQw4w9WgXcQ'
+                                },
+                                japanese: {
+                                    name: 'النسخة اليابانية الأصلية',
+                                    icon: '🎌',
+                                    id: 'jNQXAC9IVRw'
+                                }
+                            }
+                        },
+                        {
+                            id: 'ep02',
+                            title: 'الحلقة 02 - الآلة الزمنية',
+                            description: 'دورايمون يقدم آلته المميزة الآلة الزمنية لنوبيتا',
+                            versions: {
+                                original: {
+                                    name: 'النسخة الأصلية (يابانية)',
+                                    icon: '🎬',
+                                    id: 'ZYycK1Paq4M'
+                                },
+                                arabic: {
+                                    name: 'دبلجة عربية',
+                                    icon: '🔊',
+                                    id: 'dQw4w9WgXcQ'
+                                },
+                                japanese: {
+                                    name: 'النسخة اليابانية الأصلية',
+                                    icon: '🎌',
+                                    id: 'jNQXAC9IVRw'
+                                }
+                            }
+                        },
+                        {
+                            id: 'ep03',
+                            title: 'الحلقة 03 - مغامرة جديدة',
+                            description: 'دورايمون ونوبيتا يذهبان في مغامرة إلى الماضي',
+                            versions: {
+                                original: {
+                                    name: 'النسخة الأصلية (يابانية)',
+                                    icon: '🎬',
+                                    id: 'ZYycK1Paq4M'
+                                },
+                                arabic: {
+                                    name: 'دبلجة عربية',
+                                    icon: '🔊',
+                                    id: 'dQw4w9WgXcQ'
+                                },
+                                japanese: {
+                                    name: 'النسخة اليابانية الأصلية',
+                                    icon: '🎌',
+                                    id: 'jNQXAC9IVRw'
+                                }
+                            }
+                        }
+                    ]
+                },
+                {
+                    id: 'naruto',
+                    title: 'ناروتو',
+                    emoji: '🥷',
+                    cover: 'https://images.justwatch.com/backdrop/53298157/s640/naruto',
+                    episodes: [
+                        {
+                            id: 'naruto_ep01',
+                            title: 'الحلقة 01 - بداية الطريق',
+                            description: 'ناروتو يبدأ رحلته لتصبح نينجا قوياً',
+                            versions: {
+                                original: {
+                                    name: 'النسخة الأصلية (يابانية)',
+                                    icon: '🎬',
+                                    id: 'ZYycK1Paq4M'
+                                },
+                                arabic: {
+                                    name: 'دبلجة عربية',
+                                    icon: '🔊',
+                                    id: 'dQw4w9WgXcQ'
+                                }
+                            }
                         }
                     ]
                 }
@@ -770,16 +1057,18 @@
                 placeholderName: 'اترك فارغاً للتوليد التلقائي',
                 placeholderComment: 'شارك رأيك...',
                 submit: 'إرسال التعليق',
-                submitting: 'جاري الإرسال',
+                submitting: 'جاري الإرسال...',
                 noComments: 'لا توجد تعليقات حتى الآن',
                 loading: 'جاري التحميل...',
                 pending: 'لديك تعليق قيد المراجعة',
                 empty: 'أكمل كتابة التعليق',
-                success: 'تم إرسال تعليقك بنجاح',
+                success: 'تم إرسال تعليقك بنجاح ✓',
                 error: 'حدث خطأ في الإرسال',
                 canComment: 'يمكنك التعليق مجدداً',
                 rateLimitError: 'الرجاء الانتظار قليلاً قبل الإرسال',
-                langButtonLabel: 'تغيير اللغة'
+                langButtonLabel: 'تغيير اللغة',
+                dubTitle: 'اختر نسخة العرض:',
+                dubHint: 'انقر للتبديل، اضغط طويلاً لعرض القائمة'
             },
             en: {
                 library: 'Series',
@@ -792,16 +1081,18 @@
                 placeholderName: 'Leave blank for auto-generation',
                 placeholderComment: 'Share your thoughts...',
                 submit: 'Post Comment',
-                submitting: 'Posting',
+                submitting: 'Posting...',
                 noComments: 'No comments yet',
                 loading: 'Loading...',
                 pending: 'Your comment is under review',
                 empty: 'Please write a comment',
-                success: 'Comment posted successfully',
+                success: 'Comment posted successfully ✓',
                 error: 'Failed to send comment',
                 canComment: 'You can comment again',
                 rateLimitError: 'Please wait a moment before posting',
-                langButtonLabel: 'Change Language'
+                langButtonLabel: 'Change Language',
+                dubTitle: 'Choose Version:',
+                dubHint: 'Click to toggle, long press to show menu'
             },
             fr: {
                 library: 'Séries',
@@ -814,16 +1105,18 @@
                 placeholderName: 'Laisser vide pour la génération automatique',
                 placeholderComment: 'Partagez vos pensées...',
                 submit: 'Publier le commentaire',
-                submitting: 'Publication',
+                submitting: 'Publication...',
                 noComments: 'Pas encore de commentaires',
                 loading: 'Chargement...',
                 pending: 'Votre commentaire est en attente d\'approbation',
                 empty: 'Veuillez écrire un commentaire',
-                success: 'Commentaire publié avec succès',
+                success: 'Commentaire publié avec succès ✓',
                 error: 'Erreur lors de l\'envoi',
                 canComment: 'Vous pouvez commenter à nouveau',
                 rateLimitError: 'Veuillez attendre un moment avant de publier',
-                langButtonLabel: 'Changer la Langue'
+                langButtonLabel: 'Changer la Langue',
+                dubTitle: 'Choisir la version:',
+                dubHint: 'Cliquez pour basculer, appuyez longuement pour le menu'
             },
             ja: {
                 library: 'シリーズ',
@@ -836,16 +1129,18 @@
                 placeholderName: '自動生成のため空白のままにしてください',
                 placeholderComment: 'あなたの考えを共有してください...',
                 submit: 'コメントを投稿',
-                submitting: '投稿中',
+                submitting: '投稿中...',
                 noComments: 'まだコメントがありません',
                 loading: '読み込み中...',
                 pending: 'コメントは審査中です',
                 empty: 'コメントを入力してください',
-                success: 'コメントが正常に投稿されました',
+                success: 'コメントが正常に投稿されました ✓',
                 error: '送信に失敗しました',
                 canComment: 'もう一度コメントできます',
                 rateLimitError: '投稿する前にお待ちください',
-                langButtonLabel: '言語を変更'
+                langButtonLabel: '言語を変更',
+                dubTitle: 'バージョンを選択:',
+                dubHint: 'クリックして切り替え、長押ししてメニューを表示'
             }
         };
 
@@ -908,10 +1203,10 @@
                 el.className = `status-message ${type} show`;
                 setTimeout(()=>el.classList.remove('show'), 4000);
             },
-            extractYoutubeId(url) {
-                const regex = /(?:youtu\.be\/|youtube\.com\/watch\?v=)([^&\n?#]+)/;
-                const match = url.match(regex);
-                return match ? match[1] : null;
+            playHaptic() {
+                if (navigator.vibrate) {
+                    navigator.vibrate(30);
+                }
             }
         };
 
@@ -929,7 +1224,7 @@
                     if (!r.ok) throw new Error('فشل الإرسال');
                     return r.json();
                 } catch (e) {
-                    throw new Error('خطأ في الاتصال: ' + e.message);
+                    throw new Error('خطأ في الاتصال');
                 }
             },
             async comments() {
@@ -942,14 +1237,197 @@
             }
         };
 
+        // محرك الدبلجة المتقدم
+        const DubEngine = {
+            mainFrame: null,
+            audioFrames: {},
+            currentMode: 'original',
+            playbackTimer: null,
+
+            delays: {
+                main: 3,
+                arabic: 1,
+                japanese: 0
+            },
+
+            init(mainId, versions) {
+                const container = document.getElementById('videoContainer');
+                
+                let html = `<iframe id="dub-main"
+                    src="https://www.youtube.com/embed/${mainId}?enablejsapi=1&controls=1&modestbranding=1"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen></iframe>`;
+
+                // إضافة iframes الصوت المخفية
+                Object.entries(versions).forEach(([key, version]) => {
+                    if (key !== 'original') {
+                        html += `<iframe id="dub-${key}"
+                            src="https://www.youtube.com/embed/${version.id}?enablejsapi=1"
+                            style="display:none"
+                            allow="autoplay"></iframe>`;
+                    }
+                });
+
+                container.innerHTML = html;
+                this.mainFrame = document.getElementById('dub-main');
+                
+                Object.keys(versions).forEach(key => {
+                    if (key !== 'original') {
+                        this.audioFrames[key] = document.getElementById(`dub-${key}`);
+                    }
+                });
+
+                this.currentMode = 'original';
+            },
+
+            postCommand(frame, action, args = []) {
+                if (!frame) return;
+                try {
+                    frame.contentWindow.postMessage(
+                        JSON.stringify({
+                            event: 'command',
+                            func: action,
+                            args: args
+                        }),
+                        '*'
+                    );
+                } catch (e) {
+                    console.warn('Failed to send command to iframe:', e);
+                }
+            },
+
+            play() {
+                if (this.playbackTimer) clearTimeout(this.playbackTimer);
+
+                this.postCommand(this.mainFrame, 'stopVideo');
+                Object.values(this.audioFrames).forEach(f => {
+                    if (f) this.postCommand(f, 'stopVideo');
+                });
+
+                const delayMs = this.delays[this.currentMode] !== undefined 
+                    ? this.delays[this.currentMode] 
+                    : this.delays.main;
+
+                this.playbackTimer = setTimeout(() => {
+                    if (this.currentMode === 'original') {
+                        this.postCommand(this.mainFrame, 'unMute');
+                        this.postCommand(this.mainFrame, 'playVideo');
+                    } else {
+                        this.postCommand(this.mainFrame, 'mute');
+                        this.postCommand(this.mainFrame, 'playVideo');
+                        
+                        const audioDelay = this.delays[this.currentMode] || 0;
+                        setTimeout(() => {
+                            const audioFrame = this.audioFrames[this.currentMode];
+                            if (audioFrame) {
+                                this.postCommand(audioFrame, 'playVideo');
+                            }
+                        }, audioDelay * 1000);
+                    }
+                }, delayMs * 1000);
+            },
+
+            setMode(mode) {
+                this.currentMode = mode;
+                this.play();
+            }
+        };
+
         const App = {
             currentView: 'home',
             currentSeries: null,
             currentEpisode: null,
+            dubEnabled: false,
+            lastDubMode: localStorage.getItem('last_dub') || 'arabic',
+            longPressTimer: null,
+            dubSelectorVisible: false,
 
             init() {
                 this.renderHome();
                 Comments.init();
+                this.setupDubToggle();
+            },
+
+            setupDubToggle() {
+                const btn = document.getElementById('dubToggle');
+                let touchStartTime = 0;
+                let isLongPress = false;
+                
+                const handleLongPress = () => {
+                    if (App.currentView !== 'video') return;
+                    
+                    isLongPress = true;
+                    Utils.playHaptic();
+                    App.toggleDubSelector();
+                };
+
+                const handleClick = () => {
+                    if (App.currentView !== 'video') return;
+                    if (isLongPress) {
+                        isLongPress = false;
+                        return;
+                    }
+                    
+                    App.toggleDub();
+                };
+
+                // Mouse events
+                btn.addEventListener('mousedown', () => {
+                    if (App.currentView !== 'video') return;
+                    touchStartTime = Date.now();
+                    this.longPressTimer = setTimeout(handleLongPress, CONFIG.LONG_PRESS_DURATION);
+                });
+
+                btn.addEventListener('mouseup', () => {
+                    if (this.longPressTimer) clearTimeout(this.longPressTimer);
+                    if (Date.now() - touchStartTime < CONFIG.LONG_PRESS_DURATION) {
+                        handleClick();
+                    }
+                });
+
+                // Touch events
+                btn.addEventListener('touchstart', () => {
+                    if (App.currentView !== 'video') return;
+                    touchStartTime = Date.now();
+                    isLongPress = false;
+                    this.longPressTimer = setTimeout(handleLongPress, CONFIG.LONG_PRESS_DURATION);
+                });
+
+                btn.addEventListener('touchend', () => {
+                    if (this.longPressTimer) clearTimeout(this.longPressTimer);
+                    if (Date.now() - touchStartTime < CONFIG.LONG_PRESS_DURATION && !isLongPress) {
+                        handleClick();
+                    }
+                    isLongPress = false;
+                });
+            },
+
+            toggleDub() {
+                Utils.playHaptic();
+                
+                this.dubEnabled = !this.dubEnabled;
+                
+                if (this.dubEnabled) {
+                    document.getElementById('dubToggle').classList.add('active');
+                    document.getElementById('dubToggle').querySelector('.icon').textContent = '🔊';
+                    DubEngine.setMode(this.lastDubMode);
+                } else {
+                    document.getElementById('dubToggle').classList.remove('active');
+                    document.getElementById('dubToggle').querySelector('.icon').textContent = '🔇';
+                    DubEngine.setMode('original');
+                }
+            },
+
+            toggleDubSelector() {
+                const selector = document.getElementById('dubSelector');
+                this.dubSelectorVisible = !this.dubSelectorVisible;
+                
+                if (this.dubSelectorVisible) {
+                    selector.style.display = 'block';
+                    selector.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                } else {
+                    selector.style.display = 'none';
+                }
             },
 
             renderHome() {
@@ -975,6 +1453,7 @@
                 `).join('');
 
                 this.currentView = 'home';
+                this.dubSelectorVisible = false;
                 Comments.pauseAutoRefresh();
             },
 
@@ -1006,6 +1485,7 @@
                 `).join('');
 
                 this.currentView = 'series';
+                this.dubSelectorVisible = false;
                 Comments.pauseAutoRefresh();
             },
 
@@ -1023,24 +1503,117 @@
                 document.getElementById('backBtn').textContent = t.back;
                 document.getElementById('breadcrumbText').textContent = this.currentEpisode.title;
 
-                const videoId = Utils.extractYoutubeId(this.currentEpisode.url);
-                if (videoId) {
-                    document.getElementById('videoContainer').innerHTML = `
-                        <iframe 
-                            src="https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1&controls=1" 
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                            allowfullscreen
-                            title="${Utils.sanitize(this.currentEpisode.title)}">
-                        </iframe>
-                    `;
-                }
-
                 document.getElementById('videoTitle').textContent = this.currentEpisode.title;
                 document.getElementById('videoDescription').textContent = this.currentEpisode.description;
+
+                // إعداد أزرار الدبلجة
+                this.setupDubButtons();
+
+                // تهيئة محرك الدبلجة
+                const mainId = this.currentEpisode.versions.original.id;
+                DubEngine.init(mainId, this.currentEpisode.versions);
+
+                this.dubEnabled = false;
+                this.dubSelectorVisible = false;
+                document.getElementById('dubToggle').classList.remove('active');
+                document.getElementById('dubToggle').querySelector('.icon').textContent = '🔇';
 
                 this.currentView = 'video';
                 Comments.pauseAutoRefresh();
                 Comments.load();
+            },
+
+            setupDubButtons() {
+                const lang = document.documentElement.getAttribute('data-lang');
+                const t = TRANSLATIONS[lang];
+                const versions = this.currentEpisode.versions;
+                const dubButtons = document.getElementById('dubButtons');
+                const dubSelector = document.getElementById('dubSelector');
+
+                if (!versions || Object.keys(versions).length === 0) {
+                    dubSelector.style.display = 'none';
+                    return;
+                }
+
+                dubSelector.style.display = 'none';
+                this.dubSelectorVisible = false;
+                document.getElementById('dubTitle').textContent = t.dubTitle;
+
+                dubButtons.innerHTML = Object.entries(versions).map(([key, version]) => `
+                    <button 
+                        class="dub-btn ${key === 'original' ? 'active' : ''}" 
+                        onclick="App.selectDubVersion('${key}', this)"
+                    >
+                        <span class="dub-icon">${version.icon}</span>
+                        <span>${version.name}</span>
+                    </button>
+                `).join('');
+
+                this.updateStatusIndicator('original');
+            },
+
+            updateStatusIndicator(mode) {
+                const lang = document.documentElement.getAttribute('data-lang');
+                const statusText = document.getElementById('statusText');
+                const statusDot = document.getElementById('statusDot');
+                
+                const statusMessages = {
+                    ar: {
+                        original: '▶ النسخة الأصلية قيد التشغيل',
+                        arabic: '🔊 الدبلجة العربية مفعلة',
+                        japanese: '🎌 الدبلجة اليابانية مفعلة'
+                    },
+                    en: {
+                        original: '▶ Original version is playing',
+                        arabic: '🔊 Arabic dub is enabled',
+                        japanese: '🎌 Japanese dub is enabled'
+                    },
+                    fr: {
+                        original: '▶ La version originale est en cours de lecture',
+                        arabic: '🔊 Le doublage arabe est activé',
+                        japanese: '🎌 Le doublage japonais est activé'
+                    },
+                    ja: {
+                        original: '▶ オリジナルバージョンが再生中',
+                        arabic: '🔊 アラビア語吹き替えが有効',
+                        japanese: '🎌 日本語吹き替えが有効'
+                    }
+                };
+
+                const messages = statusMessages[lang] || statusMessages.en;
+                statusText.textContent = messages[mode] || messages.original;
+
+                if (mode === 'original') {
+                    statusDot.classList.remove('active');
+                } else {
+                    statusDot.classList.add('active');
+                }
+            },
+
+            selectDubVersion(versionKey, button) {
+                Utils.playHaptic();
+                
+                // تحديث الأزرار النشطة
+                document.querySelectorAll('.dub-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                button.classList.add('active');
+
+                this.updateStatusIndicator(versionKey);
+
+                if (versionKey === 'original') {
+                    this.dubEnabled = false;
+                    document.getElementById('dubToggle').classList.remove('active');
+                    document.getElementById('dubToggle').querySelector('.icon').textContent = '🔇';
+                    DubEngine.setMode('original');
+                } else {
+                    this.lastDubMode = versionKey;
+                    localStorage.setItem('last_dub', versionKey);
+                    this.dubEnabled = true;
+                    document.getElementById('dubToggle').classList.add('active');
+                    document.getElementById('dubToggle').querySelector('.icon').textContent = '🔊';
+                    DubEngine.setMode(versionKey);
+                }
             },
 
             goHome() {
@@ -1114,7 +1687,7 @@
                     return;
                 }
 
-                // Disable button
+                // تعطيل الزر
                 const btn = document.getElementById('submitBtn');
                 btn.disabled = true;
                 btn.textContent = '⏳ ' + t.submitting;
@@ -1125,6 +1698,7 @@
                     localStorage.setItem('watch_vip_user_comment_id', res.commentId);
                     this.lastSubmitTime = now;
                     Utils.status(t.success, 'success');
+                    Utils.playHaptic();
                     document.getElementById('commentText').value = '';
                     document.getElementById('commentName').value = '';
                 } catch (e) {
@@ -1202,6 +1776,7 @@
                             localStorage.removeItem('watch_vip_user_comment_id');
                             this.userCommentId = null;
                             Utils.status(t.canComment, 'success');
+                            Utils.playHaptic();
                             this.load();
                         }
                         last = now;
@@ -1228,8 +1803,10 @@
             document.getElementById('commentText').placeholder = t.placeholderComment;
             document.getElementById('submitBtn').textContent = t.submit;
             document.getElementById('loadingText').textContent = t.loading;
+            document.getElementById('dubTitle').textContent = t.dubTitle;
+            document.getElementById('dubToggle').title = t.dubHint;
             
-            // تحديث زر اللغة بالنص الدولالي
+            // تحديث زر اللغة
             const langButton = document.getElementById('langToggle');
             const langLabels = {
                 ar: 'اللغة',
@@ -1266,6 +1843,7 @@
             btn.onclick = () => {
                 applyLanguage(btn.dataset.lang);
                 langMenu.classList.add('hidden');
+                Utils.playHaptic();
             };
         });
 
