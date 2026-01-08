@@ -290,7 +290,7 @@
             }
             to {
                 opacity: 1;
-                max-height: 500px;
+                max-height: 1000px;
             }
         }
 
@@ -305,6 +305,7 @@
             display: flex;
             gap: 10px;
             flex-wrap: wrap;
+            margin-bottom: 15px;
         }
 
         .dub-btn {
@@ -338,6 +339,85 @@
 
         .dub-icon {
             font-size: 1.1rem;
+        }
+
+        /* ===========================
+           مضبط التأخير
+        =========================== */
+        .delay-control {
+            background: rgba(255, 0, 0, 0.05);
+            border: 1px solid rgba(255, 0, 0, 0.2);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .delay-control.hidden {
+            display: none;
+        }
+
+        .delay-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .delay-value {
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        .delay-slider {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: var(--bg-dark);
+            outline: none;
+            -webkit-appearance: none;
+            appearance: none;
+            cursor: pointer;
+        }
+
+        .delay-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 0 8px rgba(255, 0, 0, 0.4);
+        }
+
+        .delay-slider::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+            box-shadow: 0 0 12px rgba(255, 0, 0, 0.6);
+        }
+
+        .delay-slider::-moz-range-thumb {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+            box-shadow: 0 0 8px rgba(255, 0, 0, 0.4);
+        }
+
+        .delay-slider::-moz-range-thumb:hover {
+            transform: scale(1.2);
+            box-shadow: 0 0 12px rgba(255, 0, 0, 0.6);
+        }
+
+        .delay-hint {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-top: 8px;
         }
 
         .dub-status-indicator {
@@ -664,6 +744,10 @@
                 width: 100%;
                 justify-content: flex-start;
             }
+
+            .delay-control {
+                margin-bottom: 10px;
+            }
         }
 
         /* ===========================
@@ -812,15 +896,6 @@
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
-
-        /* Long Press Indicator */
-        .long-press-hint {
-            font-size: 0.75rem;
-            color: var(--text-secondary);
-            margin-top: 8px;
-            text-align: center;
-            display: block;
-        }
     </style>
 </head>
 <body>
@@ -857,6 +932,17 @@
                 <div class="dub-selector" id="dubSelector" style="display: none;">
                     <h3 id="dubTitle">اختر نسخة العرض:</h3>
                     <div class="dub-buttons" id="dubButtons"></div>
+                    
+                    <!-- مضبط التأخير -->
+                    <div class="delay-control hidden" id="delayControl">
+                        <div class="delay-label">
+                            <span id="delayLabelText">مزامنة التأخير (ثواني)</span>
+                            <span class="delay-value" id="delayValue">0.0</span>
+                        </div>
+                        <input type="range" id="delaySlider" class="delay-slider" min="0" max="50" step="1" value="0">
+                        <div class="delay-hint" id="delayHint">اسحب المنزلق لتعديل التأخير بين الصوت والصورة</div>
+                    </div>
+
                     <!-- مؤشر حالة الدبلجة -->
                     <div class="dub-status-indicator" id="dubStatusIndicator">
                         <span class="dub-status-dot" id="statusDot"></span>
@@ -939,7 +1025,7 @@
             LONG_PRESS_DURATION: 500
         };
 
-        // قاعدة البيانات المحلية مع نظام الدبلجة
+        // قاعدة البيانات المحلية مع نظام الدبلجة المحسّن
         const LIBRARY = {
             series: [
                 {
@@ -956,17 +1042,20 @@
                                 original: {
                                     name: 'النسخة الأصلية (يابانية)',
                                     icon: '🎬',
-                                    id: 'ZYycK1Paq4M'
+                                    id: 'ZYycK1Paq4M',
+                                    delay: 0
                                 },
                                 arabic: {
                                     name: 'دبلجة عربية',
                                     icon: '🔊',
-                                    id: 'dQw4w9WgXcQ'
+                                    id: 'oBdv4JrvO6I',
+                                    delay: 1
                                 },
                                 japanese: {
                                     name: 'النسخة اليابانية الأصلية',
                                     icon: '🎌',
-                                    id: 'jNQXAC9IVRw'
+                                    id: 'NtUwXhqBwSI',
+                                    delay: 0
                                 }
                             }
                         },
@@ -978,17 +1067,20 @@
                                 original: {
                                     name: 'النسخة الأصلية (يابانية)',
                                     icon: '🎬',
-                                    id: 'ZYycK1Paq4M'
+                                    id: 'ZYycK1Paq4M',
+                                    delay: 0
                                 },
                                 arabic: {
                                     name: 'دبلجة عربية',
                                     icon: '🔊',
-                                    id: 'dQw4w9WgXcQ'
+                                    id: 'oBdv4JrvO6I',
+                                    delay: 1
                                 },
                                 japanese: {
                                     name: 'النسخة اليابانية الأصلية',
                                     icon: '🎌',
-                                    id: 'jNQXAC9IVRw'
+                                    id: 'NtUwXhqBwSI',
+                                    delay: 0
                                 }
                             }
                         },
@@ -1000,17 +1092,20 @@
                                 original: {
                                     name: 'النسخة الأصلية (يابانية)',
                                     icon: '🎬',
-                                    id: 'ZYycK1Paq4M'
+                                    id: 'ZYycK1Paq4M',
+                                    delay: 0
                                 },
                                 arabic: {
                                     name: 'دبلجة عربية',
                                     icon: '🔊',
-                                    id: 'dQw4w9WgXcQ'
+                                    id: 'oBdv4JrvO6I',
+                                    delay: 1
                                 },
                                 japanese: {
                                     name: 'النسخة اليابانية الأصلية',
                                     icon: '🎌',
-                                    id: 'jNQXAC9IVRw'
+                                    id: 'NtUwXhqBwSI',
+                                    delay: 0
                                 }
                             }
                         }
@@ -1030,12 +1125,14 @@
                                 original: {
                                     name: 'النسخة الأصلية (يابانية)',
                                     icon: '🎬',
-                                    id: 'ZYycK1Paq4M'
+                                    id: 'ZYycK1Paq4M',
+                                    delay: 0
                                 },
                                 arabic: {
                                     name: 'دبلجة عربية',
                                     icon: '🔊',
-                                    id: 'dQw4w9WgXcQ'
+                                    id: 'oBdv4JrvO6I',
+                                    delay: 1
                                 }
                             }
                         }
@@ -1044,7 +1141,7 @@
             ]
         };
 
-        // قاموس اللغات
+        // قاموس اللغات المحسّن
         const TRANSLATIONS = {
             ar: {
                 library: 'المسلسلات',
@@ -1068,7 +1165,9 @@
                 rateLimitError: 'الرجاء الانتظار قليلاً قبل الإرسال',
                 langButtonLabel: 'تغيير اللغة',
                 dubTitle: 'اختر نسخة العرض:',
-                dubHint: 'انقر للتبديل، اضغط طويلاً لعرض القائمة'
+                dubHint: 'انقر للتبديل، اضغط طويلاً لعرض القائمة',
+                delayLabel: 'مزامنة التأخير (ثواني)',
+                delayHint: 'اسحب المنزلق لتعديل التأخير بين الصوت والصورة'
             },
             en: {
                 library: 'Series',
@@ -1092,7 +1191,9 @@
                 rateLimitError: 'Please wait a moment before posting',
                 langButtonLabel: 'Change Language',
                 dubTitle: 'Choose Version:',
-                dubHint: 'Click to toggle, long press to show menu'
+                dubHint: 'Click to toggle, long press to show menu',
+                delayLabel: 'Sync Delay (seconds)',
+                delayHint: 'Drag the slider to adjust audio-video delay'
             },
             fr: {
                 library: 'Séries',
@@ -1116,7 +1217,9 @@
                 rateLimitError: 'Veuillez attendre un moment avant de publier',
                 langButtonLabel: 'Changer la Langue',
                 dubTitle: 'Choisir la version:',
-                dubHint: 'Cliquez pour basculer, appuyez longuement pour le menu'
+                dubHint: 'Cliquez pour basculer, appuyez longuement pour le menu',
+                delayLabel: 'Délai de synchronisation (secondes)',
+                delayHint: 'Glissez le curseur pour ajuster le délai audio-vidéo'
             },
             ja: {
                 library: 'シリーズ',
@@ -1140,7 +1243,9 @@
                 rateLimitError: '投稿する前にお待ちください',
                 langButtonLabel: '言語を変更',
                 dubTitle: 'バージョンを選択:',
-                dubHint: 'クリックして切り替え、長押ししてメニューを表示'
+                dubHint: 'クリックして切り替え、長押ししてメニューを表示',
+                delayLabel: '同期遅延（秒）',
+                delayHint: 'スライダーをドラッグして音声-ビデオ遅延を調整します'
             }
         };
 
@@ -1237,18 +1342,13 @@
             }
         };
 
-        // محرك الدبلجة المتقدم
+        // محرك الدبلجة المتقدم مع دعم التأخير الديناميكي
         const DubEngine = {
             mainFrame: null,
             audioFrames: {},
             currentMode: 'original',
             playbackTimer: null,
-
-            delays: {
-                main: 3,
-                arabic: 1,
-                japanese: 0
-            },
+            customDelays: {},
 
             init(mainId, versions) {
                 const container = document.getElementById('videoContainer');
@@ -1258,7 +1358,6 @@
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                     allowfullscreen></iframe>`;
 
-                // إضافة iframes الصوت المخفية
                 Object.entries(versions).forEach(([key, version]) => {
                     if (key !== 'original') {
                         html += `<iframe id="dub-${key}"
@@ -1296,6 +1395,27 @@
                 }
             },
 
+            getDelay(mode) {
+                if (this.customDelays[mode] !== undefined) {
+                    return this.customDelays[mode];
+                }
+                return 0;
+            },
+
+            setCustomDelay(mode, delay) {
+                this.customDelays[mode] = delay;
+                localStorage.setItem(`dub_delay_${mode}`, delay);
+            },
+
+            loadCustomDelays() {
+                Object.keys(this.audioFrames).forEach(key => {
+                    const saved = localStorage.getItem(`dub_delay_${key}`);
+                    if (saved !== null) {
+                        this.customDelays[key] = parseFloat(saved);
+                    }
+                });
+            },
+
             play() {
                 if (this.playbackTimer) clearTimeout(this.playbackTimer);
 
@@ -1304,9 +1424,7 @@
                     if (f) this.postCommand(f, 'stopVideo');
                 });
 
-                const delayMs = this.delays[this.currentMode] !== undefined 
-                    ? this.delays[this.currentMode] 
-                    : this.delays.main;
+                const delayMs = this.getDelay(this.currentMode) * 1000;
 
                 this.playbackTimer = setTimeout(() => {
                     if (this.currentMode === 'original') {
@@ -1316,15 +1434,12 @@
                         this.postCommand(this.mainFrame, 'mute');
                         this.postCommand(this.mainFrame, 'playVideo');
                         
-                        const audioDelay = this.delays[this.currentMode] || 0;
-                        setTimeout(() => {
-                            const audioFrame = this.audioFrames[this.currentMode];
-                            if (audioFrame) {
-                                this.postCommand(audioFrame, 'playVideo');
-                            }
-                        }, audioDelay * 1000);
+                        const audioFrame = this.audioFrames[this.currentMode];
+                        if (audioFrame) {
+                            this.postCommand(audioFrame, 'playVideo');
+                        }
                     }
-                }, delayMs * 1000);
+                }, delayMs);
             },
 
             setMode(mode) {
@@ -1371,7 +1486,6 @@
                     App.toggleDub();
                 };
 
-                // Mouse events
                 btn.addEventListener('mousedown', () => {
                     if (App.currentView !== 'video') return;
                     touchStartTime = Date.now();
@@ -1385,7 +1499,6 @@
                     }
                 });
 
-                // Touch events
                 btn.addEventListener('touchstart', () => {
                     if (App.currentView !== 'video') return;
                     touchStartTime = Date.now();
@@ -1506,12 +1619,11 @@
                 document.getElementById('videoTitle').textContent = this.currentEpisode.title;
                 document.getElementById('videoDescription').textContent = this.currentEpisode.description;
 
-                // إعداد أزرار الدبلجة
                 this.setupDubButtons();
 
-                // تهيئة محرك الدبلجة
                 const mainId = this.currentEpisode.versions.original.id;
                 DubEngine.init(mainId, this.currentEpisode.versions);
+                DubEngine.loadCustomDelays();
 
                 this.dubEnabled = false;
                 this.dubSelectorVisible = false;
@@ -1549,6 +1661,22 @@
                     </button>
                 `).join('');
 
+                // Slider setup
+                const delayControl = document.getElementById('delayControl');
+                const delaySlider = document.getElementById('delaySlider');
+                const delayValue = document.getElementById('delayValue');
+                const delayLabelText = document.getElementById('delayLabelText');
+                const delayHint = document.getElementById('delayHint');
+
+                delayLabelText.textContent = t.delayLabel;
+                delayHint.textContent = t.delayHint;
+
+                delaySlider.oninput = () => {
+                    const val = parseFloat(delaySlider.value) / 10;
+                    delayValue.textContent = val.toFixed(1);
+                    DubEngine.setCustomDelay(DubEngine.currentMode, val);
+                };
+
                 this.updateStatusIndicator('original');
             },
 
@@ -1556,6 +1684,9 @@
                 const lang = document.documentElement.getAttribute('data-lang');
                 const statusText = document.getElementById('statusText');
                 const statusDot = document.getElementById('statusDot');
+                const delayControl = document.getElementById('delayControl');
+                const delaySlider = document.getElementById('delaySlider');
+                const delayValue = document.getElementById('delayValue');
                 
                 const statusMessages = {
                     ar: {
@@ -1585,15 +1716,19 @@
 
                 if (mode === 'original') {
                     statusDot.classList.remove('active');
+                    delayControl.classList.add('hidden');
                 } else {
                     statusDot.classList.add('active');
+                    delayControl.classList.remove('hidden');
+                    const currentDelay = DubEngine.getDelay(mode);
+                    delaySlider.value = (currentDelay * 10).toString();
+                    delayValue.textContent = currentDelay.toFixed(1);
                 }
             },
 
             selectDubVersion(versionKey, button) {
                 Utils.playHaptic();
                 
-                // تحديث الأزرار النشطة
                 document.querySelectorAll('.dub-btn').forEach(btn => {
                     btn.classList.remove('active');
                 });
@@ -1668,7 +1803,6 @@
                 const t = TRANSLATIONS[lang];
                 const now = Date.now();
 
-                // Rate limiting
                 if (now - this.lastSubmitTime < CONFIG.SUBMIT_COOLDOWN) {
                     Utils.status(t.rateLimitError, 'error');
                     return;
@@ -1687,7 +1821,6 @@
                     return;
                 }
 
-                // تعطيل الزر
                 const btn = document.getElementById('submitBtn');
                 btn.disabled = true;
                 btn.textContent = '⏳ ' + t.submitting;
@@ -1785,13 +1918,11 @@
             }
         };
 
-        // نظام تغيير اللغة
         function applyLanguage(lang) {
             const t = TRANSLATIONS[lang];
             document.documentElement.setAttribute('data-lang', lang);
             localStorage.setItem('site_lang', lang);
 
-            // تحديث النصوص
             document.getElementById('libraryTitle').textContent = t.library;
             document.getElementById('breadcrumbText').textContent = t.library;
             document.getElementById('backBtn').textContent = t.back;
@@ -1805,8 +1936,9 @@
             document.getElementById('loadingText').textContent = t.loading;
             document.getElementById('dubTitle').textContent = t.dubTitle;
             document.getElementById('dubToggle').title = t.dubHint;
+            document.getElementById('delayLabelText').textContent = t.delayLabel;
+            document.getElementById('delayHint').textContent = t.delayHint;
             
-            // تحديث زر اللغة
             const langButton = document.getElementById('langToggle');
             const langLabels = {
                 ar: 'اللغة',
@@ -1817,7 +1949,6 @@
             langButton.textContent = langLabels[lang] || 'Lang';
             langButton.title = t.langButtonLabel;
 
-            // تحديث قائمة اللغات
             document.querySelectorAll('#langMenu button').forEach(btn => {
                 btn.classList.remove('active');
                 if (btn.dataset.lang === lang) {
@@ -1825,7 +1956,6 @@
                 }
             });
 
-            // إعادة تحميل التعليقات إذا كانت مرئية
             if (App.currentView === 'video') {
                 Comments.load();
             }
@@ -1847,14 +1977,12 @@
             };
         });
 
-        // إغلاق القائمة عند النقر خارجها
         document.addEventListener('click', (e) => {
             if (!e.target.closest('#langToggle') && !e.target.closest('#langMenu')) {
                 langMenu.classList.add('hidden');
             }
         });
 
-        // تحميل اللغة المحفوظة
         const savedLang = localStorage.getItem('site_lang') || 'ar';
         applyLanguage(savedLang);
 
