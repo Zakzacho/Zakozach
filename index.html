@@ -1092,1168 +1092,1083 @@
     </div>
 
     <script>
-        // ============================================
-        // GLOBAL STATE & CONFIGURATION
-        // ============================================
-        const CONFIG = {
-            BACKEND_URL: 'https://site--watch-vip--j9hb6dlmp4qm.code.run',
-            REFRESH_INTERVAL: 10000,
-            SUBMIT_COOLDOWN: 3000,
-            LONG_PRESS_DURATION: 500,
-            DISPLAY_UPDATE_INTERVAL: 200,
-            SEEK_UPDATE_INTERVAL: 500
-        };
+    // ============================================
+// GLOBAL STATE & CONFIGURATION
+// ============================================
+const CONFIG = {
+    BACKEND_URL: 'https://site--watch-vip--j9hb6dlmp4qm.code.run',
+    REFRESH_INTERVAL: 10000,
+    SUBMIT_COOLDOWN: 3000,
+    LONG_PRESS_DURATION: 500
+};
 
-        // YouTube API
-        let YTReady = false;
-        window.onYouTubeIframeAPIReady = function() {
-            YTReady = true;
-            DubEngine.setupPlayersWhenReady();
-        };
+// YouTube API
+let YTReady = false;
+window.onYouTubeIframeAPIReady = function() {
+    YTReady = true;
+    DubEngine.setupPlayersWhenReady();
+};
 
-        (function loadYouTubeAPI() {
-            if (window.YT) {
-                YTReady = true;
-                return;
-            }
-            const tag = document.createElement('script');
-            tag.src = 'https://www.youtube.com/iframe_api';
-            document.head.appendChild(tag);
-        })();
+(function loadYouTubeAPI() {
+    if (window.YT) {
+        YTReady = true;
+        return;
+    }
+    const tag = document.createElement('script');
+    tag.src = 'https://www.youtube.com/iframe_api';
+    document.head.appendChild(tag);
+})();
 
-        // ============================================
-        // DATA
-        // ============================================
-        const LIBRARY = {
-            series: [
+// ============================================
+// DATA
+// ============================================
+const LIBRARY = {
+    series: [
+        {
+            id: 'doraemon',
+            title: 'دورايمون',
+            emoji: '🤖',
+            episodes: [
                 {
-                    id: 'doraemon',
-                    title: 'دورايمون',
-                    emoji: '🤖',
-                    episodes: [
-                        {
-                            id: 'ep01',
-                            title: 'الحلقة 01 - بداية دورايمون',
-                            description: 'الحلقة الأولى من المسلسل الشهير حيث يقدم دورايمون نفسه لنوبيتا',
-                            versions: {
-                                original: {
-                                    name: 'النسخة الأصلية',
-                                    icon: '🎬',
-                                    id: 'ZYycK1Paq4M'
-                                },
-                                arabic: {
-                                    name: 'دبلجة عربية',
-                                    icon: '🔊',
-                                    id: 'oBdv4JrvO6I'
-                                }
-                            }
+                    id: 'ep01',
+                    title: 'الحلقة 01 - بداية دورايمون',
+                    description: 'الحلقة الأولى من المسلسل الشهير حيث يقدم دورايمون نفسه لنوبيتا',
+                    versions: {
+                        original: {
+                            name: 'النسخة الأصلية',
+                            icon: '🎬',
+                            id: 'ZYycK1Paq4M'
                         },
-                        {
-                            id: 'ep02',
-                            title: 'الحلقة 02 - الآلة الزمنية',
-                            description: 'دورايمون يقدم آلته المميزة الآلة الزمنية لنوبيتا',
-                            versions: {
-                                original: {
-                                    name: 'النسخة الأصلية',
-                                    icon: '🎬',
-                                    id: 'NtUwXhqBwSI'
-                                },
-                                arabic: {
-                                    name: 'دبلجة عربية',
-                                    icon: '🔊',
-                                    id: 'oBdv4JrvO6I'
-                                }
-                            }
+                        arabic: {
+                            name: 'دبلجة عربية',
+                            icon: '🔊',
+                            id: 'oBdv4JrvO6I'
                         }
-                    ]
+                    }
+                },
+                {
+                    id: 'ep02',
+                    title: 'الحلقة 02 - الآلة الزمنية',
+                    description: 'دورايمون يقدم آلته المميزة الآلة الزمنية لنوبيتا',
+                    versions: {
+                        original: {
+                            name: 'النسخة الأصلية',
+                            icon: '🎬',
+                            id: 'NtUwXhqBwSI'
+                        },
+                        arabic: {
+                            name: 'دبلجة عربية',
+                            icon: '🔊',
+                            id: 'oBdv4JrvO6I'
+                        }
+                    }
                 }
             ]
-        };
+        }
+    ]
+};
 
-        const TRANSLATIONS = {
+const TRANSLATIONS = {
+    ar: {
+        library: 'المسلسلات',
+        back: '← الرجوع',
+        comments: 'التعليقات',
+        commentCount: (n) => `${n} تعليق`,
+        labelName: 'الاسم (اختياري)',
+        hintName: 'سيتم توليد اسم تلقائي إن لم تكتب',
+        labelComment: 'التعليق *',
+        placeholderName: 'اترك فارغاً للتوليد التلقائي',
+        placeholderComment: 'شارك رأيك...',
+        submit: 'إرسال التعليق',
+        submitting: 'جاري الإرسال...',
+        noComments: 'لا توجد تعليقات حتى الآن',
+        loading: 'جاري التحميل...',
+        pending: 'لديك تعليق قيد المراجعة',
+        empty: 'أكمل كتابة التعليق',
+        success: 'تم إرسال تعليقك بنجاح ✓',
+        error: 'حدث خطأ في الإرسال',
+        canComment: 'يمكنك التعليق مجدداً',
+        rateLimitError: 'الرجاء الانتظار قليلاً قبل الإرسال',
+        langButtonLabel: 'تغيير اللغة',
+        dubTitle: 'اختر نسخة العرض:',
+        dubHint: 'انقر للتبديل، اضغط طويلاً لعرض القائمة',
+        statusMessages: {
+            original: '▶ النسخة الأصلية قيد التشغيل',
+            arabic: '🔊 الدبلجة العربية مفعلة'
+        }
+    },
+    en: {
+        library: 'Series',
+        back: 'Back',
+        comments: 'Comments',
+        commentCount: (n) => `${n} comment${n !== 1 ? 's' : ''}`,
+        labelName: 'Name (Optional)',
+        hintName: 'An automatic name will be generated if left blank',
+        labelComment: 'Comment *',
+        placeholderName: 'Leave blank for auto-generation',
+        placeholderComment: 'Share your thoughts...',
+        submit: 'Post Comment',
+        submitting: 'Posting...',
+        noComments: 'No comments yet',
+        loading: 'Loading...',
+        pending: 'Your comment is under review',
+        empty: 'Please write a comment',
+        success: 'Comment posted successfully ✓',
+        error: 'Failed to send comment',
+        canComment: 'You can comment again',
+        rateLimitError: 'Please wait a moment before posting',
+        langButtonLabel: 'Change Language',
+        dubTitle: 'Choose Version:',
+        dubHint: 'Click to toggle, long press to show menu',
+        statusMessages: {
+            original: '▶ Original version is playing',
+            arabic: '🔊 Arabic dub is enabled'
+        }
+    },
+    fr: {
+        library: 'Séries',
+        back: 'Retour',
+        comments: 'Commentaires',
+        commentCount: (n) => `${n} commentaire${n !== 1 ? 's' : ''}`,
+        labelName: 'Nom (Optionnel)',
+        hintName: 'Un nom automatique sera généré si laissé vide',
+        labelComment: 'Commentaire *',
+        placeholderName: 'Laisser vide pour la génération automatique',
+        placeholderComment: 'Partagez vos pensées...',
+        submit: 'Publier le commentaire',
+        submitting: 'Publication...',
+        noComments: 'Pas encore de commentaires',
+        loading: 'Chargement...',
+        pending: 'Votre commentaire est en attente d\'approbation',
+        empty: 'Veuillez écrire un commentaire',
+        success: 'Commentaire publié avec succès ✓',
+        error: 'Erreur lors de l\'envoi',
+        canComment: 'Vous pouvez commenter à nouveau',
+        rateLimitError: 'Veuillez attendre un moment avant de publier',
+        langButtonLabel: 'Changer la Langue',
+        dubTitle: 'Choisir la version:',
+        dubHint: 'Cliquez pour basculer, appuyez longuement pour le menu',
+        statusMessages: {
+            original: '▶ La version originale est en cours de lecture',
+            arabic: '🔊 Le doublage arabe est activé'
+        }
+    },
+    ja: {
+        library: 'シリーズ',
+        back: '戻る',
+        comments: 'コメント',
+        commentCount: (n) => `${n}件のコメント`,
+        labelName: '名前 (オプション)',
+        hintName: '空白のままにするとランダムに生成されます',
+        labelComment: 'コメント *',
+        placeholderName: '自動生成のため空白のままにしてください',
+        placeholderComment: 'あなたの考えを共有してください...',
+        submit: 'コメントを投稿',
+        submitting: '投稿中...',
+        noComments: 'まだコメントがありません',
+        loading: '読み込み中...',
+        pending: 'コメントは審査中です',
+        empty: 'コメントを入力してください',
+        success: 'コメントが正常に投稿されました ✓',
+        error: '送信に失敗しました',
+        canComment: 'もう一度コメントできます',
+        rateLimitError: '投稿する前にお待ちください',
+        langButtonLabel: '言語を変更',
+        dubTitle: 'バージョンを選択:',
+        dubHint: 'クリックして切り替え、長押ししてメニューを表示',
+        statusMessages: {
+            original: '▶ オリジナルバージョンが再生中',
+            arabic: '🔊 アラビア語吹き替えが有効'
+        }
+    }
+};
+
+// ============================================
+// UTILITIES
+// ============================================
+const Utils = {
+    sanitize(text) {
+        const d = document.createElement('div');
+        d.textContent = text;
+        return d.innerHTML;
+    },
+
+    formatTime(seconds) {
+        if (!seconds || isNaN(seconds)) return '00:00';
+        const total = Math.floor(seconds);
+        const mins = Math.floor(total / 60);
+        const secs = total % 60;
+        return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+    },
+
+    timeAgo(ts) {
+        const diff = Date.now() - ts;
+        const m = Math.floor(diff / 60000);
+        const lang = document.documentElement.getAttribute('data-lang');
+        
+        const times = {
             ar: {
-                library: 'المسلسلات',
-                back: '← الرجوع',
-                comments: 'التعليقات',
-                commentCount: (n) => `${n} تعليق`,
-                labelName: 'الاسم (اختياري)',
-                hintName: 'سيتم توليد اسم تلقائي إن لم تكتب',
-                labelComment: 'التعليق *',
-                placeholderName: 'اترك فارغاً للتوليد التلقائي',
-                placeholderComment: 'شارك رأيك...',
-                submit: 'إرسال التعليق',
-                submitting: 'جاري الإرسال...',
-                noComments: 'لا توجد تعليقات حتى الآن',
-                loading: 'جاري التحميل...',
-                pending: 'لديك تعليق قيد المراجعة',
-                empty: 'أكمل كتابة التعليق',
-                success: 'تم إرسال تعليقك بنجاح ✓',
-                error: 'حدث خطأ في الإرسال',
-                canComment: 'يمكنك التعليق مجدداً',
-                rateLimitError: 'الرجاء الانتظار قليلاً قبل الإرسال',
-                langButtonLabel: 'تغيير اللغة',
-                dubTitle: 'اختر نسخة العرض:',
-                dubHint: 'انقر للتبديل، اضغط طويلاً لعرض القائمة',
-                audioLabel: 'إزاحة الصوت:',
-                statusMessages: {
-                    original: '▶ النسخة الأصلية قيد التشغيل',
-                    arabic: '🔊 الدبلجة العربية مفعلة'
-                }
+                now: 'للتو',
+                minutes: (n) => `منذ ${n} دقيقة`,
+                hours: (n) => `منذ ${n} ساعة`,
+                days: (n) => `منذ ${n} يوم`
             },
             en: {
-                library: 'Series',
-                back: 'Back',
-                comments: 'Comments',
-                commentCount: (n) => `${n} comment${n !== 1 ? 's' : ''}`,
-                labelName: 'Name (Optional)',
-                hintName: 'An automatic name will be generated if left blank',
-                labelComment: 'Comment *',
-                placeholderName: 'Leave blank for auto-generation',
-                placeholderComment: 'Share your thoughts...',
-                submit: 'Post Comment',
-                submitting: 'Posting...',
-                noComments: 'No comments yet',
-                loading: 'Loading...',
-                pending: 'Your comment is under review',
-                empty: 'Please write a comment',
-                success: 'Comment posted successfully ✓',
-                error: 'Failed to send comment',
-                canComment: 'You can comment again',
-                rateLimitError: 'Please wait a moment before posting',
-                langButtonLabel: 'Change Language',
-                dubTitle: 'Choose Version:',
-                dubHint: 'Click to toggle, long press to show menu',
-                audioLabel: 'Audio Offset:',
-                statusMessages: {
-                    original: '▶ Original version is playing',
-                    arabic: '🔊 Arabic dub is enabled'
-                }
+                now: 'just now',
+                minutes: (n) => `${n}m ago`,
+                hours: (n) => `${n}h ago`,
+                days: (n) => `${n}d ago`
             },
             fr: {
-                library: 'Séries',
-                back: 'Retour',
-                comments: 'Commentaires',
-                commentCount: (n) => `${n} commentaire${n !== 1 ? 's' : ''}`,
-                labelName: 'Nom (Optionnel)',
-                hintName: 'Un nom automatique sera généré si laissé vide',
-                labelComment: 'Commentaire *',
-                placeholderName: 'Laisser vide pour la génération automatique',
-                placeholderComment: 'Partagez vos pensées...',
-                submit: 'Publier le commentaire',
-                submitting: 'Publication...',
-                noComments: 'Pas encore de commentaires',
-                loading: 'Chargement...',
-                pending: 'Votre commentaire est en attente d\'approbation',
-                empty: 'Veuillez écrire un commentaire',
-                success: 'Commentaire publié avec succès ✓',
-                error: 'Erreur lors de l\'envoi',
-                canComment: 'Vous pouvez commenter à nouveau',
-                rateLimitError: 'Veuillez attendre un moment avant de publier',
-                langButtonLabel: 'Changer la Langue',
-                dubTitle: 'Choisir la version:',
-                dubHint: 'Cliquez pour basculer, appuyez longuement pour le menu',
-                audioLabel: 'Décalage audio:',
-                statusMessages: {
-                    original: '▶ La version originale est en cours de lecture',
-                    arabic: '🔊 Le doublage arabe est activé'
-                }
+                now: 'à l\'instant',
+                minutes: (n) => `il y a ${n}m`,
+                hours: (n) => `il y a ${n}h`,
+                days: (n) => `il y a ${n}j`
             },
             ja: {
-                library: 'シリーズ',
-                back: '戻る',
-                comments: 'コメント',
-                commentCount: (n) => `${n}件のコメント`,
-                labelName: '名前 (オプション)',
-                hintName: '空白のままにするとランダムに生成されます',
-                labelComment: 'コメント *',
-                placeholderName: '自動生成のため空白のままにしてください',
-                placeholderComment: 'あなたの考えを共有してください...',
-                submit: 'コメントを投稿',
-                submitting: '投稿中...',
-                noComments: 'まだコメントがありません',
-                loading: '読み込み中...',
-                pending: 'コメントは審査中です',
-                empty: 'コメントを入力してください',
-                success: 'コメントが正常に投稿されました ✓',
-                error: '送信に失敗しました',
-                canComment: 'もう一度コメントできます',
-                rateLimitError: '投稿する前にお待ちください',
-                langButtonLabel: '言語を変更',
-                dubTitle: 'バージョンを選択:',
-                dubHint: 'クリックして切り替え、長押ししてメニューを表示',
-                audioLabel: 'オーディオオフセット:',
-                statusMessages: {
-                    original: '▶ オリジナルバージョンが再生中',
-                    arabic: '🔊 アラビア語吹き替えが有効'
-                }
+                now: '今',
+                minutes: (n) => `${n}分前`,
+                hours: (n) => `${n}時間前`,
+                days: (n) => `${n}日前`
             }
         };
 
-        // ============================================
-        // UTILITIES
-        // ============================================
-        const Utils = {
-            sanitize(text) {
-                const d = document.createElement('div');
-                d.textContent = text;
-                return d.innerHTML;
-            },
-
-            formatTime(seconds) {
-                if (!seconds || isNaN(seconds)) return '00:00';
-                const total = Math.floor(seconds);
-                const mins = Math.floor(total / 60);
-                const secs = total % 60;
-                return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
-            },
-
-            timeAgo(ts) {
-                const diff = Date.now() - ts;
-                const m = Math.floor(diff / 60000);
-                const lang = document.documentElement.getAttribute('data-lang');
-                
-                const times = {
-                    ar: {
-                        now: 'للتو',
-                        minutes: (n) => `منذ ${n} دقيقة`,
-                        hours: (n) => `منذ ${n} ساعة`,
-                        days: (n) => `منذ ${n} يوم`
-                    },
-                    en: {
-                        now: 'just now',
-                        minutes: (n) => `${n}m ago`,
-                        hours: (n) => `${n}h ago`,
-                        days: (n) => `${n}d ago`
-                    },
-                    fr: {
-                        now: 'à l\'instant',
-                        minutes: (n) => `il y a ${n}m`,
-                        hours: (n) => `il y a ${n}h`,
-                        days: (n) => `il y a ${n}j`
-                    },
-                    ja: {
-                        now: '今',
-                        minutes: (n) => `${n}分前`,
-                        hours: (n) => `${n}時間前`,
-                        days: (n) => `${n}日前`
-                    }
-                };
-
-                const t = times[lang] || times.en;
-                if (m < 1) return t.now;
-                if (m < 60) return t.minutes(m);
-                const h = Math.floor(m / 60);
-                if (h < 24) return t.hours(h);
-                return t.days(Math.floor(h / 24));
-            },
-
-            clientId() {
-                let id = localStorage.getItem('watch_vip_client_id');
-                if (!id) {
-                    id = Date.now().toString(36) + Math.random().toString(36).slice(2);
-                    localStorage.setItem('watch_vip_client_id', id);
-                }
-                return id;
-            },
-
-            status(msg, type='info') {
-                const el = document.getElementById('statusMessage');
-                el.textContent = msg;
-                el.className = `status-message ${type} show`;
-                setTimeout(()=>el.classList.remove('show'), 4000);
-            },
-
-            playHaptic() {
-                if (navigator.vibrate) {
-                    navigator.vibrate(30);
-                }
-            }
-        };
-
-        // ============================================
-        // API
-        // ============================================
-        const API = {
-            async submit(name, text) {
-                try {
-                    const r = await fetch(`${CONFIG.BACKEND_URL}/submit-comment`, {
-                        method: 'POST',
-                        headers: {'Content-Type':'application/json'},
-                        body: JSON.stringify({
-                            name, text,
-                            clientId: Utils.clientId()
-                        })
-                    });
-                    if (!r.ok) throw new Error('Failed');
-                    return r.json();
-                } catch (e) {
-                    throw new Error('Connection error');
-                }
-            },
-
-            async comments() {
-                try {
-                    const r = await fetch(`${CONFIG.BACKEND_URL}/comments`);
-                    return r.ok ? r.json() : [];
-                } catch {
-                    return [];
-                }
-            }
-        };
-
-        // ============================================
-        // DUB ENGINE - نظام الإزاحة فقط
-        // ============================================
-        const DubEngine = {
-            state: {
-                isReady: false,
-                currentMode: 'original',
-                mainPlayer: null,
-                audioPlayers: {},
-                audioOffset: 0,
-                isSeeking: false
-            },
-
-            displayUpdateInterval: null,
-            seekUpdateInterval: null,
-
-            /**
-             * تهيئة المحركات
-             */
-            async init(mainId, versions) {
-                this.cleanup();
-
-                const container = document.getElementById('videoContainer');
-                let html = `<iframe id="dub-main"
-                    src="https://www.youtube.com/embed/${mainId}?enablejsapi=1&controls=1&modestbranding=1&rel=0"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowfullscreen></iframe>`;
-
-                Object.entries(versions).forEach(([key, version]) => {
-                    if (key !== 'original') {
-                        html += `<iframe id="dub-${key}"
-                            src="https://www.youtube.com/embed/${version.id}?enablejsapi=1&controls=0&modestbranding=1&rel=0"
-                            style="display:none"
-                            allow="autoplay; encrypted-media"></iframe>`;
-                    }
-                });
-
-                container.innerHTML = html;
-
-                this.state.currentMode = 'original';
-                this.state.isReady = false;
-                this.state.audioOffset = 0;
-                this.state.isSeeking = false;
-
-                if (YTReady) {
-                    this.setupPlayersWhenReady();
-                }
-            },
-
-            /**
-             * إعداد اللاعبين
-             */
-            setupPlayersWhenReady() {
-                if (!window.YT || !window.YT.Player) {
-                    setTimeout(() => this.setupPlayersWhenReady(), 500);
-                    return;
-                }
-
-                try {
-                    this.state.mainPlayer = new YT.Player('dub-main', {
-                        events: {
-                            'onReady': () => {
-                                this.state.isReady = true;
-                                console.log('Main player ready');
-                            },
-                            'onStateChange': (e) => this.onMainPlayerStateChange(e)
-                        }
-                    });
-                } catch (e) {
-                    console.error('Main player error:', e);
-                }
-
-                document.querySelectorAll('[id^="dub-"]').forEach(el => {
-                    if (el.id === 'dub-main') return;
-                    
-                    const key = el.id.replace('dub-', '');
-                    try {
-                        this.state.audioPlayers[key] = new YT.Player(el.id, {
-                            events: {
-                                'onReady': () => console.log(`Audio player ${key} ready`)
-                            }
-                        });
-                    } catch (e) {
-                        console.error(`Audio player ${key} error:`, e);
-                    }
-                });
-            },
-
-            /**
-             * مراقبة حالة الفيديو الرئيسي
-             */
-            onMainPlayerStateChange(event) {
-                if (this.state.currentMode === 'original') return;
-
-                const audioPlayer = this.state.audioPlayers[this.state.currentMode];
-                if (!audioPlayer) return;
-
-                try {
-                    if (event.data === YT.PlayerState.PLAYING) {
-                        const mainTime = this.state.mainPlayer.getCurrentTime();
-                        const targetTime = Math.max(0, mainTime + this.state.audioOffset);
-                        
-                        audioPlayer.seekTo(targetTime, true);
-                        audioPlayer.playVideo();
-                        this.startDisplayUpdate();
-                    } else if (event.data === YT.PlayerState.PAUSED) {
-                        audioPlayer.pauseVideo();
-                        this.stopDisplayUpdate();
-                    } else if (event.data === YT.PlayerState.ENDED) {
-                        audioPlayer.stopVideo();
-                        this.stopDisplayUpdate();
-                    }
-                } catch (e) {
-                    console.warn('Player state change error:', e);
-                }
-            },
-
-            /**
-             * تحديث العرض فقط (بدون seekTo)
-             */
-            startDisplayUpdate() {
-                if (this.displayUpdateInterval) return;
-
-                this.displayUpdateInterval = setInterval(() => {
-                    this.updateDisplay();
-                }, CONFIG.DISPLAY_UPDATE_INTERVAL);
-            },
-
-            stopDisplayUpdate() {
-                if (this.displayUpdateInterval) {
-                    clearInterval(this.displayUpdateInterval);
-                    this.displayUpdateInterval = null;
-                }
-            },
-
-            /**
-             * تحديث العرض فقط (لا تعديل على الصوت)
-             */
-            updateDisplay() {
-                if (this.state.currentMode === 'original' || !this.state.isReady) return;
-
-                const timeDisplay = document.getElementById('timeDisplay');
-                if (!timeDisplay) return;
-
-                const offset = this.state.audioOffset;
-                const sign = offset >= 0 ? '+' : '';
-                timeDisplay.textContent = `${sign}${offset.toFixed(2)} ثانية`;
-            },
-
-            /**
-             * بدء مزامنة شريط التقدم
-             */
-            startVideoSeekSync() {
-                if (this.seekUpdateInterval) return;
-
-                this.seekUpdateInterval = setInterval(() => {
-                    if (!this.state.mainPlayer || this.state.isSeeking) return;
-
-                    try {
-                        const duration = this.state.mainPlayer.getDuration();
-                        const current = this.state.mainPlayer.getCurrentTime();
-
-                        if (duration > 0) {
-                            const seek = document.getElementById('videoSeek');
-                            seek.max = duration;
-                            seek.value = current;
-
-                            document.getElementById('currentTime').textContent = Utils.formatTime(current);
-                            document.getElementById('totalTime').textContent = Utils.formatTime(duration);
-                        }
-                    } catch (e) {
-                        console.warn('Seek sync error:', e);
-                    }
-                }, CONFIG.SEEK_UPDATE_INTERVAL);
-            },
-
-            stopVideoSeekSync() {
-                if (this.seekUpdateInterval) {
-                    clearInterval(this.seekUpdateInterval);
-                    this.seekUpdateInterval = null;
-                }
-            },
-
-            /**
-             * تغيير الوضع
-             */
-            setMode(mode) {
-                if (mode === this.state.currentMode) return;
-
-                this.stopDisplayUpdate();
-
-                try {
-                    if (mode === 'original') {
-                        this.state.mainPlayer.unMute();
-                        
-                        Object.values(this.state.audioPlayers).forEach(player => {
-                            try {
-                                player.pauseVideo();
-                                player.mute();
-                            } catch (e) {}
-                        });
-                    } else {
-                        this.state.mainPlayer.mute();
-                        
-                        Object.entries(this.state.audioPlayers).forEach(([key, player]) => {
-                            try {
-                                if (key === mode) {
-                                    player.unMute();
-                                    
-                                    const mainTime = this.state.mainPlayer.getCurrentTime();
-                                    const targetTime = Math.max(0, mainTime + this.state.audioOffset);
-                                    player.seekTo(targetTime, true);
-                                    
-                                    if (this.state.mainPlayer.getPlayerState() === YT.PlayerState.PLAYING) {
-                                        player.playVideo();
-                                        this.startDisplayUpdate();
-                                    }
-                                } else {
-                                    player.pauseVideo();
-                                    player.mute();
-                                }
-                            } catch (e) {}
-                        });
-                    }
-
-                    this.state.currentMode = mode;
-                    console.log('Mode changed to:', mode);
-                } catch (e) {
-                    console.error('Error setting mode:', e);
-                }
-            },
-
-            /**
-             * تعديل الإزاحة
-             */
-            setOffset(offset) {
-                this.state.audioOffset = offset;
-                
-                if (this.state.currentMode !== 'original') {
-                    const audioPlayer = this.state.audioPlayers[this.state.currentMode];
-                    if (audioPlayer) {
-                        try {
-                            const mainTime = this.state.mainPlayer.getCurrentTime();
-                            const targetTime = Math.max(0, mainTime + offset);
-                            audioPlayer.seekTo(targetTime, true);
-                            
-                            Utils.playHaptic();
-                        } catch (e) {
-                            console.warn('Offset error:', e);
-                        }
-                    }
-                }
-
-                this.updateDisplay();
-            },
-
-            /**
-             * القفز إلى موضع معين
-             */
-            seekTo(time) {
-                if (!this.state.mainPlayer) return;
-
-                try {
-                    this.state.isSeeking = true;
-                    this.state.mainPlayer.seekTo(time, true);
-
-                    if (this.state.currentMode !== 'original') {
-                        const audioPlayer = this.state.audioPlayers[this.state.currentMode];
-                        if (audioPlayer) {
-                            const targetTime = Math.max(0, time + this.state.audioOffset);
-                            audioPlayer.seekTo(targetTime, true);
-                        }
-                    }
-
-                    setTimeout(() => {
-                        this.state.isSeeking = false;
-                    }, 100);
-                } catch (e) {
-                    console.warn('Seek error:', e);
-                    this.state.isSeeking = false;
-                }
-            },
-
-            /**
-             * تنظيف
-             */
-            cleanup() {
-                this.stopDisplayUpdate();
-                this.stopVideoSeekSync();
-                this.state.mainPlayer = null;
-                this.state.audioPlayers = {};
-                this.state.isReady = false;
-                this.state.currentMode = 'original';
-                this.state.audioOffset = 0;
-                this.state.isSeeking = false;
-            }
-        };
-
-        // ============================================
-        // APPLICATION STATE
-        // ============================================
-        const App = {
-            currentView: 'home',
-            currentSeries: null,
-            currentEpisode: null,
-            dubEnabled: false,
-            lastDubMode: localStorage.getItem('last_dub') || 'arabic',
-            dubSelectorVisible: false,
-            dubToggleLongPressTimer: null,
-
-            init() {
-                this.renderHome();
-                Comments.init();
-                this.setupDubToggle();
-                this.setupAudioSlider();
-                this.setupVideoSeek();
-            },
-
-            setupDubToggle() {
-                const btn = document.getElementById('dubToggle');
-                let isLongPress = false;
-
-                const handleDubToggle = () => {
-                    if (App.currentView !== 'video') return;
-                    App.toggleDub();
-                };
-
-                const handleDubMenu = () => {
-                    if (App.currentView !== 'video') return;
-                    App.toggleDubSelector();
-                };
-
-                btn.addEventListener('mousedown', () => {
-                    if (App.currentView !== 'video') return;
-                    isLongPress = false;
-                    App.dubToggleLongPressTimer = setTimeout(() => {
-                        isLongPress = true;
-                        handleDubMenu();
-                    }, CONFIG.LONG_PRESS_DURATION);
-                });
-
-                btn.addEventListener('mouseup', () => {
-                    if (App.dubToggleLongPressTimer) {
-                        clearTimeout(App.dubToggleLongPressTimer);
-                    }
-                    if (!isLongPress) {
-                        handleDubToggle();
-                    }
-                });
-
-                btn.addEventListener('touchstart', () => {
-                    if (App.currentView !== 'video') return;
-                    isLongPress = false;
-                    App.dubToggleLongPressTimer = setTimeout(() => {
-                        isLongPress = true;
-                        handleDubMenu();
-                    }, CONFIG.LONG_PRESS_DURATION);
-                });
-
-                btn.addEventListener('touchend', (e) => {
-                    if (App.dubToggleLongPressTimer) {
-                        clearTimeout(App.dubToggleLongPressTimer);
-                    }
-                    e.preventDefault();
-                    if (!isLongPress) {
-                        handleDubToggle();
-                    }
-                });
-
-                btn.addEventListener('contextmenu', (e) => e.preventDefault());
-            },
-
-            setupAudioSlider() {
-                const slider = document.getElementById('audioSlider');
-
-                slider.addEventListener('input', (e) => {
-                    const offset = Number(e.target.value);
-                    DubEngine.setOffset(offset);
-                });
-            },
-
-            setupVideoSeek() {
-                const seek = document.getElementById('videoSeek');
-
-                seek.addEventListener('mousedown', () => {
-                    DubEngine.state.isSeeking = true;
-                });
-
-                seek.addEventListener('touchstart', () => {
-                    DubEngine.state.isSeeking = true;
-                });
-
-                seek.addEventListener('input', (e) => {
-                    const time = Number(e.target.value);
-                    DubEngine.seekTo(time);
-                });
-
-                seek.addEventListener('mouseup', () => {
-                    DubEngine.state.isSeeking = false;
-                });
-
-                seek.addEventListener('touchend', () => {
-                    DubEngine.state.isSeeking = false;
-                });
-            },
-
-            toggleDub() {
-                Utils.playHaptic();
-                this.dubEnabled = !this.dubEnabled;
-
-                const btn = document.getElementById('dubToggle');
-                if (this.dubEnabled) {
-                    btn.classList.add('active');
-                    btn.querySelector('.icon').textContent = '🔊';
-                    DubEngine.setMode(this.lastDubMode);
-                } else {
-                    btn.classList.remove('active');
-                    btn.querySelector('.icon').textContent = '🔇';
-                    DubEngine.setMode('original');
-                }
-            },
-
-            toggleDubSelector() {
-                const selector = document.getElementById('dubSelector');
-                this.dubSelectorVisible = !this.dubSelectorVisible;
-
-                if (this.dubSelectorVisible) {
-                    selector.style.display = 'block';
-                    selector.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-                } else {
-                    selector.style.display = 'none';
-                }
-            },
-
-            renderHome() {
-                const lang = document.documentElement.getAttribute('data-lang');
-                const t = TRANSLATIONS[lang];
-
-                document.getElementById('libraryView').classList.remove('hidden');
-                document.getElementById('videoView').classList.add('hidden');
-                document.getElementById('backBtn').style.display = 'none';
-                document.getElementById('breadcrumbText').textContent = t.library;
-
-                const grid = document.getElementById('libraryGrid');
-                grid.innerHTML = LIBRARY.series.map(series => `
-                    <div class="library-item" onclick="App.viewSeries('${series.id}')">
-                        <div class="item-cover">
-                            ${series.emoji}
-                        </div>
-                        <div class="item-info">
-                            <div class="item-title">${Utils.sanitize(series.title)}</div>
-                            <div class="item-subtitle">${series.episodes.length} حلقة</div>
-                        </div>
-                    </div>
-                `).join('');
-
-                this.currentView = 'home';
-                this.dubSelectorVisible = false;
-                Comments.pauseAutoRefresh();
-                DubEngine.cleanup();
-            },
-
-            viewSeries(seriesId) {
-                const lang = document.documentElement.getAttribute('data-lang');
-                const t = TRANSLATIONS[lang];
-
-                this.currentSeries = LIBRARY.series.find(s => s.id === seriesId);
-                if (!this.currentSeries) return;
-
-                document.getElementById('libraryView').classList.remove('hidden');
-                document.getElementById('videoView').classList.add('hidden');
-                document.getElementById('backBtn').style.display = 'inline-flex';
-                document.getElementById('backBtn').textContent = t.back;
-                document.getElementById('libraryTitle').textContent = this.currentSeries.title;
-                document.getElementById('breadcrumbText').textContent = this.currentSeries.title;
-
-                const grid = document.getElementById('libraryGrid');
-                grid.innerHTML = this.currentSeries.episodes.map(ep => `
-                    <div class="library-item" onclick="App.playEpisode('${ep.id}')">
-                        <div class="item-cover episode">
-                            <span>▶</span>
-                        </div>
-                        <div class="item-info">
-                            <div class="item-title">${Utils.sanitize(ep.title)}</div>
-                            <div class="item-subtitle">${Utils.sanitize(ep.description)}</div>
-                        </div>
-                    </div>
-                `).join('');
-
-                this.currentView = 'series';
-                this.dubSelectorVisible = false;
-                Comments.pauseAutoRefresh();
-                DubEngine.cleanup();
-            },
-
-            async playEpisode(episodeId) {
-                const lang = document.documentElement.getAttribute('data-lang');
-                const t = TRANSLATIONS[lang];
-
-                if (!this.currentSeries) return;
-                this.currentEpisode = this.currentSeries.episodes.find(e => e.id === episodeId);
-                if (!this.currentEpisode) return;
-
-                document.getElementById('libraryView').classList.add('hidden');
-                document.getElementById('videoView').classList.remove('hidden');
-                document.getElementById('backBtn').style.display = 'inline-flex';
-                document.getElementById('backBtn').textContent = t.back;
-                document.getElementById('breadcrumbText').textContent = this.currentEpisode.title;
-
-                document.getElementById('videoTitle').textContent = this.currentEpisode.title;
-                document.getElementById('videoDescription').textContent = this.currentEpisode.description;
-
-                this.setupDubButtons();
-
-                const mainId = this.currentEpisode.versions.original.id;
-                await DubEngine.init(mainId, this.currentEpisode.versions);
-
-                // تأخير صغير للتأكد من تحضير المشغلات
-                setTimeout(() => {
-                    DubEngine.startVideoSeekSync();
-                }, 1000);
-
-                this.dubEnabled = false;
-                this.dubSelectorVisible = false;
-                document.getElementById('dubToggle').classList.remove('active');
-                document.getElementById('dubToggle').querySelector('.icon').textContent = '🔇';
-
-                const slider = document.getElementById('audioSlider');
-                slider.value = 0;
-                document.getElementById('timeDisplay').textContent = '+0.00 ثانية';
-
-                this.currentView = 'video';
-                Comments.load();
-            },
-
-            setupDubButtons() {
-                const lang = document.documentElement.getAttribute('data-lang');
-                const t = TRANSLATIONS[lang];
-                const versions = this.currentEpisode.versions;
-                const dubButtons = document.getElementById('dubButtons');
-                const dubSelector = document.getElementById('dubSelector');
-                const audioControls = document.getElementById('dubAudioControls');
-
-                if (!versions || Object.keys(versions).length <= 1) {
-                    dubSelector.style.display = 'none';
-                    return;
-                }
-
-                dubSelector.style.display = 'none';
-                audioControls.style.display = 'none';
-                this.dubSelectorVisible = false;
-                document.getElementById('dubTitle').textContent = t.dubTitle;
-                document.getElementById('audioLabel').textContent = t.audioLabel;
-
-                dubButtons.innerHTML = Object.entries(versions).map(([key, version]) => `
-                    <button 
-                        class="dub-btn ${key === 'original' ? 'active' : ''}" 
-                        onclick="App.selectDubVersion('${key}', this)"
-                    >
-                        <span class="dub-icon">${version.icon}</span>
-                        <span>${version.name}</span>
-                    </button>
-                `).join('');
-
-                this.updateStatusIndicator('original');
-            },
-
-            updateStatusIndicator(mode) {
-                const lang = document.documentElement.getAttribute('data-lang');
-                const t = TRANSLATIONS[lang];
-                const statusText = document.getElementById('statusText');
-                const statusDot = document.getElementById('statusDot');
-                const audioControls = document.getElementById('dubAudioControls');
-
-                statusText.textContent = t.statusMessages[mode] || t.statusMessages.original;
-
-                if (mode === 'original') {
-                    statusDot.classList.remove('active');
-                    audioControls.style.display = 'none';
-                } else {
-                    statusDot.classList.add('active');
-                    audioControls.style.display = 'flex';
-                }
-            },
-
-            selectDubVersion(versionKey, button) {
-                Utils.playHaptic();
-
-                document.querySelectorAll('.dub-btn').forEach(btn => {
-                    btn.classList.remove('active');
-                });
-                button.classList.add('active');
-
-                this.updateStatusIndicator(versionKey);
-
-                if (versionKey === 'original') {
-                    this.dubEnabled = false;
-                    document.getElementById('dubToggle').classList.remove('active');
-                    document.getElementById('dubToggle').querySelector('.icon').textContent = '🔇';
-                    DubEngine.setMode('original');
-                } else {
-                    this.lastDubMode = versionKey;
-                    localStorage.setItem('last_dub', versionKey);
-                    this.dubEnabled = true;
-                    document.getElementById('dubToggle').classList.add('active');
-                    document.getElementById('dubToggle').querySelector('.icon').textContent = '🔊';
-                    DubEngine.setMode(versionKey);
-                }
-            },
-
-            goHome() {
-                if (this.currentView === 'video') {
-                    this.viewSeries(this.currentSeries.id);
-                } else if (this.currentView === 'series') {
-                    this.renderHome();
-                }
-            }
-        };
-
-        // ============================================
-        // COMMENTS MANAGER
-        // ============================================
-        const Comments = {
-            userCommentId: localStorage.getItem('watch_vip_user_comment_id'),
-            autoRefreshInterval: null,
-            isRefreshing: false,
-            lastSubmitTime: 0,
-
-            async init() {
-                const form = document.getElementById('commentForm');
-                form.addEventListener('submit', e => {
-                    e.preventDefault();
-                    this.send();
-                });
-
-                await this.load();
-                this.startAutoRefresh();
-            },
-
-            startAutoRefresh() {
-                if (this.autoRefreshInterval) clearInterval(this.autoRefreshInterval);
-
-                this.autoRefreshInterval = setInterval(() => {
-                    if (App.currentView === 'video') {
-                        this.load();
-                    }
-                }, CONFIG.REFRESH_INTERVAL);
-            },
-
-            pauseAutoRefresh() {
-                const indicator = document.getElementById('updateIndicator');
-                if (indicator) {
-                    if (App.currentView === 'video') {
-                        indicator.classList.remove('paused');
-                    } else {
-                        indicator.classList.add('paused');
-                    }
-                }
-            },
-
-            async send() {
-                const lang = document.documentElement.getAttribute('data-lang');
-                const t = TRANSLATIONS[lang];
-                const now = Date.now();
-
-                if (now - this.lastSubmitTime < CONFIG.SUBMIT_COOLDOWN) {
-                    Utils.status(t.rateLimitError, 'error');
-                    return;
-                }
-
-                if (this.userCommentId) {
-                    Utils.status(t.pending, 'info');
-                    return;
-                }
-
-                const name = document.getElementById('commentName').value.trim();
-                const text = document.getElementById('commentText').value.trim();
-
-                if (!text) {
-                    Utils.status(t.empty, 'error');
-                    return;
-                }
-
-                const btn = document.getElementById('submitBtn');
-                btn.disabled = true;
-                btn.textContent = '⏳ ' + t.submitting;
-
-                try {
-                    const res = await API.submit(name || null, text);
-                    this.userCommentId = res.commentId;
-                    localStorage.setItem('watch_vip_user_comment_id', res.commentId);
-                    this.lastSubmitTime = now;
-                    Utils.status(t.success, 'success');
-                    Utils.playHaptic();
-                    document.getElementById('commentText').value = '';
-                    document.getElementById('commentName').value = '';
-                    await this.load();
-                } catch (e) {
-                    Utils.status(t.error, 'error');
-                } finally {
-                    btn.disabled = false;
-                    btn.textContent = t.submit;
-                }
-            },
-
-            async load() {
-                if (this.isRefreshing || App.currentView !== 'video') return;
-                this.isRefreshing = true;
-
-                try {
-                    const lang = document.documentElement.getAttribute('data-lang');
-                    const t = TRANSLATIONS[lang];
-                    const list = await API.comments();
-                    const box = document.getElementById('commentsListContainer');
-
-                    document.getElementById('commentsCount').textContent = t.commentCount(list.length);
-
-                    if (!list.length) {
-                        box.innerHTML = `<div class="no-comments">${t.noComments}</div>`;
-                        this.isRefreshing = false;
-                        return;
-                    }
-
-                    if (this.userCommentId && !list.some(c => c.commentId === this.userCommentId)) {
-                        localStorage.removeItem('watch_vip_user_comment_id');
-                        this.userCommentId = null;
-                    }
-
-                    list.sort((a,b)=>{
-                        if (a.commentId === this.userCommentId) return -1;
-                        if (b.commentId === this.userCommentId) return 1;
-                        return b.timestamp - a.timestamp;
-                    });
-
-                    box.innerHTML = `
-                        <div class="comments-list">
-                            ${list.map(c=>`
-                                <div class="comment-item ${c.commentId===this.userCommentId?'user-comment':''}"
-                                     data-id="${c.commentId}">
-                                    <div class="comment-header">
-                                        <div class="comment-author">
-                                            ${Utils.sanitize(c.displayName)}
-                                            ${c.verified ? `<svg class="verified-svg" viewBox="0 0 24 24" fill="#1da1f2">
-                                                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
-                                            </svg>` : ''}
-                                        </div>
-                                        <span class="comment-time">${Utils.timeAgo(c.timestamp)}</span>
-                                    </div>
-                                    <div class="comment-text">${Utils.sanitize(c.text)}</div>
-                                </div>
-                            `).join('')}
-                        </div>
-                    `;
-
-                    this.bindClicks();
-                } finally {
-                    this.isRefreshing = false;
-                }
-            },
-
-            bindClicks() {
-                const lang = document.documentElement.getAttribute('data-lang');
-                const t = TRANSLATIONS[lang];
-
-                document.querySelectorAll('.user-comment').forEach(el=>{
-                    let lastClick = 0;
-                    el.addEventListener('click', () => {
-                        const now = Date.now();
-                        if (now - lastClick < 300) {
-                            localStorage.removeItem('watch_vip_user_comment_id');
-                            this.userCommentId = null;
-                            Utils.status(t.canComment, 'success');
-                            Utils.playHaptic();
-                            this.load();
-                        }
-                        lastClick = now;
-                    });
-                });
-            }
-        };
-
-        // ============================================
-        // LANGUAGE MANAGEMENT
-        // ============================================
-        function applyLanguage(lang) {
-            const t = TRANSLATIONS[lang];
-            document.documentElement.setAttribute('data-lang', lang);
-            localStorage.setItem('site_lang', lang);
-
-            document.getElementById('libraryTitle').textContent = t.library;
-            document.getElementById('breadcrumbText').textContent = t.library;
-            document.getElementById('backBtn').textContent = t.back;
-            document.getElementById('commentsTitle').textContent = t.comments;
-            document.getElementById('labelName').textContent = t.labelName;
-            document.getElementById('hintName').textContent = t.hintName;
-            document.getElementById('labelComment').textContent = t.labelComment;
-            document.getElementById('commentName').placeholder = t.placeholderName;
-            document.getElementById('commentText').placeholder = t.placeholderComment;
-            document.getElementById('submitBtn').textContent = t.submit;
-            document.getElementById('loadingText').textContent = t.loading;
-            document.getElementById('dubTitle').textContent = t.dubTitle;
-            document.getElementById('dubToggle').title = t.dubHint;
-            document.getElementById('audioLabel').textContent = t.audioLabel;
-
-            const langButton = document.getElementById('langToggle');
-            const langLabels = {
-                ar: 'اللغة',
-                en: 'Lang',
-                fr: 'Langue',
-                ja: '言語'
-            };
-            langButton.textContent = langLabels[lang] || 'Lang';
-            langButton.title = t.langButtonLabel;
-
-            document.querySelectorAll('#langMenu button').forEach(btn => {
-                btn.classList.remove('active');
-                if (btn.dataset.lang === lang) {
-                    btn.classList.add('active');
-                }
+        const t = times[lang] || times.en;
+        if (m < 1) return t.now;
+        if (m < 60) return t.minutes(m);
+        const h = Math.floor(m / 60);
+        if (h < 24) return t.hours(h);
+        return t.days(Math.floor(h / 24));
+    },
+
+    clientId() {
+        let id = localStorage.getItem('watch_vip_client_id');
+        if (!id) {
+            id = Date.now().toString(36) + Math.random().toString(36).slice(2);
+            localStorage.setItem('watch_vip_client_id', id);
+        }
+        return id;
+    },
+
+    status(msg, type='info') {
+        const el = document.getElementById('statusMessage');
+        el.textContent = msg;
+        el.className = `status-message ${type} show`;
+        setTimeout(()=>el.classList.remove('show'), 4000);
+    },
+
+    playHaptic() {
+        if (navigator.vibrate) {
+            navigator.vibrate(30);
+        }
+    }
+};
+
+// ============================================
+// API
+// ============================================
+const API = {
+    async submit(name, text) {
+        try {
+            const r = await fetch(`${CONFIG.BACKEND_URL}/submit-comment`, {
+                method: 'POST',
+                headers: {'Content-Type':'application/json'},
+                body: JSON.stringify({
+                    name, text,
+                    clientId: Utils.clientId()
+                })
             });
+            if (!r.ok) throw new Error('Failed');
+            return r.json();
+        } catch (e) {
+            throw new Error('Connection error');
+        }
+    },
 
-            if (App.currentView === 'video' && App.currentEpisode) {
-                App.updateStatusIndicator(DubEngine.state.currentMode);
-                Comments.load();
+    async comments() {
+        try {
+            const r = await fetch(`${CONFIG.BACKEND_URL}/comments`);
+            return r.ok ? r.json() : [];
+        } catch {
+            return [];
+        }
+    }
+};
+
+// ============================================
+// DUB ENGINE - التحكم بالدبلجة فقط
+// ============================================
+const DubEngine = {
+    state: {
+        isReady: false,
+        currentMode: 'original',
+        mainPlayer: null,
+        audioPlayers: {},
+        userSeeking: false
+    },
+
+    audioTimeUpdateInterval: null,
+
+    async init(mainId, versions) {
+        this.cleanup();
+
+        const container = document.getElementById('videoContainer');
+        let html = `<iframe id="dub-main"
+            src="https://www.youtube.com/embed/${mainId}?enablejsapi=1&controls=1&modestbranding=1&rel=0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen></iframe>`;
+
+        Object.entries(versions).forEach(([key, version]) => {
+            if (key !== 'original') {
+                html += `<iframe id="dub-${key}"
+                    src="https://www.youtube.com/embed/${version.id}?enablejsapi=1&controls=0&modestbranding=1&rel=0"
+                    style="display:none"
+                    allow="autoplay; encrypted-media"></iframe>`;
             }
+        });
+
+        container.innerHTML = html;
+
+        this.state.currentMode = 'original';
+        this.state.isReady = false;
+        this.state.userSeeking = false;
+
+        if (YTReady) {
+            this.setupPlayersWhenReady();
+        }
+    },
+
+    setupPlayersWhenReady() {
+        if (!window.YT || !window.YT.Player) {
+            setTimeout(() => this.setupPlayersWhenReady(), 500);
+            return;
         }
 
-        const langToggle = document.getElementById('langToggle');
-        const langMenu = document.getElementById('langMenu');
-
-        langToggle.addEventListener('click', (e) => {
-            e.stopPropagation();
-            langMenu.classList.toggle('hidden');
-        });
-
-        langMenu.querySelectorAll('button').forEach(btn => {
-            btn.addEventListener('click', () => {
-                applyLanguage(btn.dataset.lang);
-                langMenu.classList.add('hidden');
-                Utils.playHaptic();
+        try {
+            this.state.mainPlayer = new YT.Player('dub-main', {
+                events: {
+                    'onReady': () => {
+                        this.state.isReady = true;
+                        console.log('Main player ready');
+                    },
+                    'onStateChange': (e) => this.onMainPlayerStateChange(e)
+                }
             });
+        } catch (e) {
+            console.error('Main player error:', e);
+        }
+
+        document.querySelectorAll('[id^="dub-"]').forEach(el => {
+            if (el.id === 'dub-main') return;
+            
+            const key = el.id.replace('dub-', '');
+            try {
+                this.state.audioPlayers[key] = new YT.Player(el.id, {
+                    events: {
+                        'onReady': () => {
+                            console.log(`Audio player ${key} ready`);
+                            this.updateAudioSeekbar();
+                        },
+                        'onStateChange': (e) => this.onAudioPlayerStateChange(e, key)
+                    }
+                });
+            } catch (e) {
+                console.error(`Audio player ${key} error:`, e);
+            }
+        });
+    },
+
+    onMainPlayerStateChange(event) {
+        if (this.state.currentMode === 'original') return;
+
+        const audioPlayer = this.state.audioPlayers[this.state.currentMode];
+        if (!audioPlayer) return;
+
+        try {
+            if (event.data === YT.PlayerState.PLAYING) {
+                const mainTime = this.state.mainPlayer.getCurrentTime();
+                audioPlayer.seekTo(mainTime, true);
+                audioPlayer.playVideo();
+                this.startAudioTimeUpdate();
+            } else if (event.data === YT.PlayerState.PAUSED) {
+                audioPlayer.pauseVideo();
+                this.stopAudioTimeUpdate();
+            } else if (event.data === YT.PlayerState.ENDED) {
+                audioPlayer.stopVideo();
+                this.stopAudioTimeUpdate();
+            }
+        } catch (e) {
+            console.warn('Player state change error:', e);
+        }
+    },
+
+    onAudioPlayerStateChange(event, key) {
+        if (key !== this.state.currentMode) return;
+
+        if (event.data === YT.PlayerState.PLAYING) {
+            this.startAudioTimeUpdate();
+        } else if (event.data === YT.PlayerState.PAUSED || event.data === YT.PlayerState.ENDED) {
+            this.stopAudioTimeUpdate();
+        }
+    },
+
+    startAudioTimeUpdate() {
+        if (this.audioTimeUpdateInterval) return;
+
+        this.audioTimeUpdateInterval = setInterval(() => {
+            if (!this.state.userSeeking) {
+                this.updateAudioSeekbar();
+            }
+        }, 200);
+    },
+
+    stopAudioTimeUpdate() {
+        if (this.audioTimeUpdateInterval) {
+            clearInterval(this.audioTimeUpdateInterval);
+            this.audioTimeUpdateInterval = null;
+        }
+    },
+
+    updateAudioSeekbar() {
+        if (this.state.currentMode === 'original') {
+            const seek = document.getElementById('videoSeek');
+            seek.style.display = 'none';
+            document.getElementById('currentTime').textContent = '00:00';
+            document.getElementById('totalTime').textContent = '00:00';
+            return;
+        }
+
+        const audioPlayer = this.state.audioPlayers[this.state.currentMode];
+        if (!audioPlayer) return;
+
+        try {
+            const duration = audioPlayer.getDuration();
+            const current = audioPlayer.getCurrentTime();
+
+            if (duration > 0) {
+                const seek = document.getElementById('videoSeek');
+                seek.style.display = 'block';
+                seek.max = duration;
+                seek.value = current;
+
+                document.getElementById('currentTime').textContent = Utils.formatTime(current);
+                document.getElementById('totalTime').textContent = Utils.formatTime(duration);
+            }
+        } catch (e) {
+            console.warn('Seekbar update error:', e);
+        }
+    },
+
+    setMode(mode) {
+        if (mode === this.state.currentMode) return;
+
+        this.stopAudioTimeUpdate();
+
+        try {
+            if (mode === 'original') {
+                this.state.mainPlayer.unMute();
+                
+                Object.values(this.state.audioPlayers).forEach(player => {
+                    try {
+                        player.pauseVideo();
+                        player.mute();
+                    } catch (e) {}
+                });
+
+                const seek = document.getElementById('videoSeek');
+                seek.style.display = 'none';
+            } else {
+                this.state.mainPlayer.mute();
+                
+                Object.entries(this.state.audioPlayers).forEach(([key, player]) => {
+                    try {
+                        if (key === mode) {
+                            player.unMute();
+                            
+                            const mainTime = this.state.mainPlayer.getCurrentTime();
+                            player.seekTo(mainTime, true);
+                            
+                            if (this.state.mainPlayer.getPlayerState() === YT.PlayerState.PLAYING) {
+                                player.playVideo();
+                                this.startAudioTimeUpdate();
+                            }
+                        } else {
+                            player.pauseVideo();
+                            player.mute();
+                        }
+                    } catch (e) {}
+                });
+
+                this.updateAudioSeekbar();
+            }
+
+            this.state.currentMode = mode;
+            console.log('Mode changed to:', mode);
+        } catch (e) {
+            console.error('Error setting mode:', e);
+        }
+    },
+
+    seekAudio(time) {
+        if (this.state.currentMode === 'original') return;
+
+        const audioPlayer = this.state.audioPlayers[this.state.currentMode];
+        if (!audioPlayer) return;
+
+        try {
+            audioPlayer.seekTo(time, true);
+        } catch (e) {
+            console.warn('Audio seek error:', e);
+        }
+    },
+
+    cleanup() {
+        this.stopAudioTimeUpdate();
+        this.state.mainPlayer = null;
+        this.state.audioPlayers = {};
+        this.state.isReady = false;
+        this.state.currentMode = 'original';
+        this.state.userSeeking = false;
+    }
+};
+
+// ============================================
+// APPLICATION STATE
+// ============================================
+const App = {
+    currentView: 'home',
+    currentSeries: null,
+    currentEpisode: null,
+    dubEnabled: false,
+    lastDubMode: localStorage.getItem('last_dub') || 'arabic',
+    dubSelectorVisible: false,
+    dubToggleLongPressTimer: null,
+
+    init() {
+        this.renderHome();
+        Comments.init();
+        this.setupDubToggle();
+        this.setupVideoSeek();
+    },
+
+    setupDubToggle() {
+        const btn = document.getElementById('dubToggle');
+        let isLongPress = false;
+
+        const handleDubToggle = () => {
+            if (App.currentView !== 'video') return;
+            App.toggleDub();
+        };
+
+        const handleDubMenu = () => {
+            if (App.currentView !== 'video') return;
+            App.toggleDubSelector();
+        };
+
+        btn.addEventListener('mousedown', () => {
+            if (App.currentView !== 'video') return;
+            isLongPress = false;
+            App.dubToggleLongPressTimer = setTimeout(() => {
+                isLongPress = true;
+                handleDubMenu();
+            }, CONFIG.LONG_PRESS_DURATION);
         });
 
-        document.addEventListener('click', (e) => {
-            if (!e.target.closest('#langToggle') && !e.target.closest('#langMenu')) {
-                langMenu.classList.add('hidden');
+        btn.addEventListener('mouseup', () => {
+            if (App.dubToggleLongPressTimer) {
+                clearTimeout(App.dubToggleLongPressTimer);
+            }
+            if (!isLongPress) {
+                handleDubToggle();
             }
         });
 
-        const savedLang = localStorage.getItem('site_lang') || 'ar';
-        applyLanguage(savedLang);
+        btn.addEventListener('touchstart', () => {
+            if (App.currentView !== 'video') return;
+            isLongPress = false;
+            App.dubToggleLongPressTimer = setTimeout(() => {
+                isLongPress = true;
+                handleDubMenu();
+            }, CONFIG.LONG_PRESS_DURATION);
+        });
 
-        document.addEventListener('DOMContentLoaded', ()=>App.init());
+        btn.addEventListener('touchend', (e) => {
+            if (App.dubToggleLongPressTimer) {
+                clearTimeout(App.dubToggleLongPressTimer);
+            }
+            e.preventDefault();
+            if (!isLongPress) {
+                handleDubToggle();
+            }
+        });
+
+        btn.addEventListener('contextmenu', (e) => e.preventDefault());
+    },
+
+    setupVideoSeek() {
+        const seek = document.getElementById('videoSeek');
+
+        seek.addEventListener('mousedown', () => {
+            DubEngine.state.userSeeking = true;
+        });
+
+        seek.addEventListener('touchstart', () => {
+            DubEngine.state.userSeeking = true;
+        });
+
+        seek.addEventListener('input', (e) => {
+            const time = Number(e.target.value);
+            DubEngine.seekAudio(time);
+            document.getElementById('currentTime').textContent = Utils.formatTime(time);
+        });
+
+        seek.addEventListener('mouseup', () => {
+            DubEngine.state.userSeeking = false;
+        });
+
+        seek.addEventListener('touchend', () => {
+            DubEngine.state.userSeeking = false;
+        });
+    },
+
+    toggleDub() {
+        Utils.playHaptic();
+        this.dubEnabled = !this.dubEnabled;
+
+        const btn = document.getElementById('dubToggle');
+        if (this.dubEnabled) {
+            btn.classList.add('active');
+            btn.querySelector('.icon').textContent = '🔊';
+            DubEngine.setMode(this.lastDubMode);
+        } else {
+            btn.classList.remove('active');
+            btn.querySelector('.icon').textContent = '🔇';
+            DubEngine.setMode('original');
+        }
+    },
+
+    toggleDubSelector() {
+        const selector = document.getElementById('dubSelector');
+        this.dubSelectorVisible = !this.dubSelectorVisible;
+
+        if (this.dubSelectorVisible) {
+            selector.style.display = 'block';
+            selector.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        } else {
+            selector.style.display = 'none';
+        }
+    },
+
+    renderHome() {
+        const lang = document.documentElement.getAttribute('data-lang');
+        const t = TRANSLATIONS[lang];
+
+        document.getElementById('libraryView').classList.remove('hidden');
+        document.getElementById('videoView').classList.add('hidden');
+        document.getElementById('backBtn').style.display = 'none';
+        document.getElementById('breadcrumbText').textContent = t.library;
+
+        const grid = document.getElementById('libraryGrid');
+        grid.innerHTML = LIBRARY.series.map(series => `
+            <div class="library-item" onclick="App.viewSeries('${series.id}')">
+                <div class="item-cover">
+                    ${series.emoji}
+                </div>
+                <div class="item-info">
+                    <div class="item-title">${Utils.sanitize(series.title)}</div>
+                    <div class="item-subtitle">${series.episodes.length} حلقة</div>
+                </div>
+            </div>
+        `).join('');
+
+        this.currentView = 'home';
+        this.dubSelectorVisible = false;
+        Comments.pauseAutoRefresh();
+        DubEngine.cleanup();
+    },
+
+    viewSeries(seriesId) {
+        const lang = document.documentElement.getAttribute('data-lang');
+        const t = TRANSLATIONS[lang];
+
+        this.currentSeries = LIBRARY.series.find(s => s.id === seriesId);
+        if (!this.currentSeries) return;
+
+        document.getElementById('libraryView').classList.remove('hidden');
+        document.getElementById('videoView').classList.add('hidden');
+        document.getElementById('backBtn').style.display = 'inline-flex';
+        document.getElementById('backBtn').textContent = t.back;
+        document.getElementById('libraryTitle').textContent = this.currentSeries.title;
+        document.getElementById('breadcrumbText').textContent = this.currentSeries.title;
+
+        const grid = document.getElementById('libraryGrid');
+        grid.innerHTML = this.currentSeries.episodes.map(ep => `
+            <div class="library-item" onclick="App.playEpisode('${ep.id}')">
+                <div class="item-cover episode">
+                    <span>▶</span>
+                </div>
+                <div class="item-info">
+                    <div class="item-title">${Utils.sanitize(ep.title)}</div>
+                    <div class="item-subtitle">${Utils.sanitize(ep.description)}</div>
+                </div>
+            </div>
+        `).join('');
+
+        this.currentView = 'series';
+        this.dubSelectorVisible = false;
+        Comments.pauseAutoRefresh();
+        DubEngine.cleanup();
+    },
+
+    async playEpisode(episodeId) {
+        const lang = document.documentElement.getAttribute('data-lang');
+        const t = TRANSLATIONS[lang];
+
+        if (!this.currentSeries) return;
+        this.currentEpisode = this.currentSeries.episodes.find(e => e.id === episodeId);
+        if (!this.currentEpisode) return;
+
+        document.getElementById('libraryView').classList.add('hidden');
+        document.getElementById('videoView').classList.remove('hidden');
+        document.getElementById('backBtn').style.display = 'inline-flex';
+        document.getElementById('backBtn').textContent = t.back;
+        document.getElementById('breadcrumbText').textContent = this.currentEpisode.title;
+
+        document.getElementById('videoTitle').textContent = this.currentEpisode.title;
+        document.getElementById('videoDescription').textContent = this.currentEpisode.description;
+
+        this.setupDubButtons();
+
+        const mainId = this.currentEpisode.versions.original.id;
+        await DubEngine.init(mainId, this.currentEpisode.versions);
+
+        this.dubEnabled = false;
+        this.dubSelectorVisible = false;
+        document.getElementById('dubToggle').classList.remove('active');
+        document.getElementById('dubToggle').querySelector('.icon').textContent = '🔇';
+
+        const seek = document.getElementById('videoSeek');
+        seek.style.display = 'none';
+        seek.value = 0;
+        document.getElementById('currentTime').textContent = '00:00';
+        document.getElementById('totalTime').textContent = '00:00';
+
+        this.currentView = 'video';
+        Comments.load();
+    },
+
+    setupDubButtons() {
+        const lang = document.documentElement.getAttribute('data-lang');
+        const t = TRANSLATIONS[lang];
+        const versions = this.currentEpisode.versions;
+        const dubButtons = document.getElementById('dubButtons');
+        const dubSelector = document.getElementById('dubSelector');
+
+        if (!versions || Object.keys(versions).length <= 1) {
+            dubSelector.style.display = 'none';
+            return;
+        }
+
+        dubSelector.style.display = 'none';
+        this.dubSelectorVisible = false;
+        document.getElementById('dubTitle').textContent = t.dubTitle;
+
+        dubButtons.innerHTML = Object.entries(versions).map(([key, version]) => `
+            <button 
+                class="dub-btn ${key === 'original' ? 'active' : ''}" 
+                onclick="App.selectDubVersion('${key}', this)"
+            >
+                <span class="dub-icon">${version.icon}</span>
+                <span>${version.name}</span>
+            </button>
+        `).join('');
+
+        this.updateStatusIndicator('original');
+    },
+
+    updateStatusIndicator(mode) {
+        const lang = document.documentElement.getAttribute('data-lang');
+        const t = TRANSLATIONS[lang];
+        const statusText = document.getElementById('statusText');
+        const statusDot = document.getElementById('statusDot');
+
+        statusText.textContent = t.statusMessages[mode] || t.statusMessages.original;
+
+        if (mode === 'original') {
+            statusDot.classList.remove('active');
+        } else {
+            statusDot.classList.add('active');
+        }
+    },
+
+    selectDubVersion(versionKey, button) {
+        Utils.playHaptic();
+
+        document.querySelectorAll('.dub-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        button.classList.add('active');
+
+        this.updateStatusIndicator(versionKey);
+
+        if (versionKey === 'original') {
+            this.dubEnabled = false;
+            document.getElementById('dubToggle').classList.remove('active');
+            document.getElementById('dubToggle').querySelector('.icon').textContent = '🔇';
+            DubEngine.setMode('original');
+        } else {
+            this.lastDubMode = versionKey;
+            localStorage.setItem('last_dub', versionKey);
+            this.dubEnabled = true;
+            document.getElementById('dubToggle').classList.add('active');
+            document.getElementById('dubToggle').querySelector('.icon').textContent = '🔊';
+            DubEngine.setMode(versionKey);
+        }
+    },
+
+    goHome() {
+        if (this.currentView === 'video') {
+            this.viewSeries(this.currentSeries.id);
+        } else if (this.currentView === 'series') {
+            this.renderHome();
+        }
+    }
+};
+
+// ============================================
+// COMMENTS MANAGER
+// ============================================
+const Comments = {
+    userCommentId: localStorage.getItem('watch_vip_user_comment_id'),
+    autoRefreshInterval: null,
+    isRefreshing: false,
+    lastSubmitTime: 0,
+
+    async init() {
+        const form = document.getElementById('commentForm');
+        form.addEventListener('submit', e => {
+            e.preventDefault();
+            this.send();
+        });
+
+        await this.load();
+        this.startAutoRefresh();
+    },
+
+    startAutoRefresh() {
+        if (this.autoRefreshInterval) clearInterval(this.autoRefreshInterval);
+
+        this.autoRefreshInterval = setInterval(() => {
+            if (App.currentView === 'video') {
+                this.load();
+            }
+        }, CONFIG.REFRESH_INTERVAL);
+    },
+
+    pauseAutoRefresh() {
+        const indicator = document.getElementById('updateIndicator');
+        if (indicator) {
+            if (App.currentView === 'video') {
+                indicator.classList.remove('paused');
+            } else {
+                indicator.classList.add('paused');
+            }
+        }
+    },
+
+    async send() {
+        const lang = document.documentElement.getAttribute('data-lang');
+        const t = TRANSLATIONS[lang];
+        const now = Date.now();
+
+        if (now - this.lastSubmitTime < CONFIG.SUBMIT_COOLDOWN) {
+            Utils.status(t.rateLimitError, 'error');
+            return;
+        }
+
+        if (this.userCommentId) {
+            Utils.status(t.pending, 'info');
+            return;
+        }
+
+        const name = document.getElementById('commentName').value.trim();
+        const text = document.getElementById('commentText').value.trim();
+
+        if (!text) {
+            Utils.status(t.empty, 'error');
+            return;
+        }
+
+        const btn = document.getElementById('submitBtn');
+        btn.disabled = true;
+        btn.textContent = '⏳ ' + t.submitting;
+
+        try {
+            const res = await API.submit(name || null, text);
+            this.userCommentId = res.commentId;
+            localStorage.setItem('watch_vip_user_comment_id', res.commentId);
+            this.lastSubmitTime = now;
+            Utils.status(t.success, 'success');
+            Utils.playHaptic();
+            document.getElementById('commentText').value = '';
+            document.getElementById('commentName').value = '';
+            await this.load();
+        } catch (e) {
+            Utils.status(t.error, 'error');
+        } finally {
+            btn.disabled = false;
+            btn.textContent = t.submit;
+        }
+    },
+
+    async load() {
+        if (this.isRefreshing || App.currentView !== 'video') return;
+        this.isRefreshing = true;
+
+        try {
+            const lang = document.documentElement.getAttribute('data-lang');
+            const t = TRANSLATIONS[lang];
+            const list = await API.comments();
+            const box = document.getElementById('commentsListContainer');
+
+            document.getElementById('commentsCount').textContent = t.commentCount(list.length);
+
+            if (!list.length) {
+                box.innerHTML = `<div class="no-comments">${t.noComments}</div>`;
+                this.isRefreshing = false;
+                return;
+            }
+
+            if (this.userCommentId && !list.some(c => c.commentId === this.userCommentId)) {
+                localStorage.removeItem('watch_vip_user_comment_id');
+                this.userCommentId = null;
+            }
+
+            list.sort((a,b)=>{
+                if (a.commentId === this.userCommentId) return -1;
+                if (b.commentId === this.userCommentId) return 1;
+                return b.timestamp - a.timestamp;
+            });
+
+            box.innerHTML = `
+                <div class="comments-list">
+                    ${list.map(c=>`
+                        <div class="comment-item ${c.commentId===this.userCommentId?'user-comment':''}"
+                             data-id="${c.commentId}">
+                            <div class="comment-header">
+                                <div class="comment-author">
+                                    ${Utils.sanitize(c.displayName)}
+                                    ${c.verified ? `<svg class="verified-svg" viewBox="0 0 24 24" fill="#1da1f2">
+                                        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+                                    </svg>` : ''}
+                                </div>
+                                <span class="comment-time">${Utils.timeAgo(c.timestamp)}</span>
+                            </div>
+                            <div class="comment-text">${Utils.sanitize(c.text)}</div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+
+            this.bindClicks();
+        } finally {
+            this.isRefreshing = false;
+        }
+    },
+
+    bindClicks() {
+        const lang = document.documentElement.getAttribute('data-lang');
+        const t = TRANSLATIONS[lang];
+
+        document.querySelectorAll('.user-comment').forEach(el=>{
+            let lastClick = 0;
+            el.addEventListener('click', () => {
+                const now = Date.now();
+                if (now - lastClick < 300) {
+                    localStorage.removeItem('watch_vip_user_comment_id');
+                    this.userCommentId = null;
+                    Utils.status(t.canComment, 'success');
+                    Utils.playHaptic();
+                    this.load();
+                }
+                lastClick = now;
+            });
+        });
+    }
+};
+
+// ============================================
+// LANGUAGE MANAGEMENT
+// ============================================
+function applyLanguage(lang) {
+    const t = TRANSLATIONS[lang];
+    document.documentElement.setAttribute('data-lang', lang);
+    localStorage.setItem('site_lang', lang);
+
+    document.getElementById('libraryTitle').textContent = t.library;
+    document.getElementById('breadcrumbText').textContent = t.library;
+    document.getElementById('backBtn').textContent = t.back;
+    document.getElementById('commentsTitle').textContent = t.comments;
+    document.getElementById('labelName').textContent = t.labelName;
+    document.getElementById('hintName').textContent = t.hintName;
+    document.getElementById('labelComment').textContent = t.labelComment;
+    document.getElementById('commentName').placeholder = t.placeholderName;
+    document.getElementById('commentText').placeholder = t.placeholderComment;
+    document.getElementById('submitBtn').textContent = t.submit;
+    document.getElementById('loadingText').textContent = t.loading;
+    document.getElementById('dubTitle').textContent = t.dubTitle;
+    document.getElementById('dubToggle').title = t.dubHint;
+
+    const langButton = document.getElementById('langToggle');
+    const langLabels = {
+        ar: 'اللغة',
+        en: 'Lang',
+        fr: 'Langue',
+        ja: '言語'
+    };
+    langButton.textContent = langLabels[lang] || 'Lang';
+    langButton.title = t.langButtonLabel;
+
+    document.querySelectorAll('#langMenu button').forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.dataset.lang === lang) {
+            btn.classList.add('active');
+        }
+    });
+
+    if (App.currentView === 'video' && App.currentEpisode) {
+        App.updateStatusIndicator(DubEngine.state.currentMode);
+        Comments.load();
+    }
+}
+
+const langToggle = document.getElementById('langToggle');
+const langMenu = document.getElementById('langMenu');
+
+langToggle.addEventListener('click', (e) => {
+    e.stopPropagation();
+    langMenu.classList.toggle('hidden');
+});
+
+langMenu.querySelectorAll('button').forEach(btn => {
+    btn.addEventListener('click', () => {
+        applyLanguage(btn.dataset.lang);
+        langMenu.classList.add('hidden');
+        Utils.playHaptic();
+    });
+});
+
+document.addEventListener('click', (e) => {
+    if (!e.target.closest('#langToggle') && !e.target.closest('#langMenu')) {
+        langMenu.classList.add('hidden');
+    }
+});
+
+const savedLang = localStorage.getItem('site_lang') || 'ar';
+applyLanguage(savedLang);
+
+document.addEventListener('DOMContentLoaded', ()=>App.init());
+
     </script>
 </body>
 </html>
