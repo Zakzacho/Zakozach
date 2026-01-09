@@ -218,6 +218,86 @@
             border: none;
         }
 
+        .video-seek-wrapper {
+            background: var(--secondary-color);
+            padding: 12px 20px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .time-display {
+            font-size: 0.85rem;
+            color: var(--verified-color);
+            font-weight: 600;
+            min-width: 80px;
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        #videoSeek {
+            flex: 1;
+            height: 6px;
+            border-radius: 3px;
+            background: var(--bg-dark);
+            outline: none;
+            -webkit-appearance: none;
+            appearance: none;
+            cursor: pointer;
+            transition: height 0.2s;
+        }
+
+        #videoSeek::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+            transition: all 0.2s;
+        }
+
+        #videoSeek::-webkit-slider-thumb:hover {
+            width: 20px;
+            height: 20px;
+            box-shadow: 0 0 15px rgba(255, 0, 0, 0.8);
+        }
+
+        #videoSeek::-moz-range-thumb {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+            transition: all 0.2s;
+        }
+
+        #videoSeek::-moz-range-thumb:hover {
+            width: 20px;
+            height: 20px;
+            box-shadow: 0 0 15px rgba(255, 0, 0, 0.8);
+        }
+
+        #videoSeek::-moz-range-track {
+            background: transparent;
+            border: none;
+        }
+
+        #videoSeek::-moz-range-progress {
+            background: var(--primary-color);
+            height: 6px;
+            border-radius: 3px;
+        }
+
+        #videoSeek:hover {
+            height: 8px;
+        }
+
         .quick-toggle {
             display: flex;
             align-items: center;
@@ -734,6 +814,20 @@
             .dub-time-display {
                 width: 100%;
             }
+
+            .video-seek-wrapper {
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+
+            #videoSeek {
+                width: 100%;
+            }
+
+            .time-display {
+                min-width: 100%;
+                text-align: center;
+            }
         }
 
         @keyframes fadeIn {
@@ -902,6 +996,21 @@
                     </div>
                 </div>
 
+                <div class="video-container" id="videoContainer"></div>
+
+                <div class="video-seek-wrapper">
+                    <span class="time-display" id="currentTime">00:00</span>
+                    <input
+                        type="range"
+                        id="videoSeek"
+                        min="0"
+                        value="0"
+                        step="0.1"
+                        title="تقدم الفيديو"
+                    >
+                    <span class="time-display" id="totalTime">00:00</span>
+                </div>
+
                 <div class="dub-selector" id="dubSelector" style="display: none;">
                     <h3 id="dubTitle">اختر نسخة العرض:</h3>
                     <div class="dub-buttons" id="dubButtons"></div>
@@ -925,8 +1034,6 @@
                         <div class="dub-time-display" id="timeDisplay">+0.00 ثانية</div>
                     </div>
                 </div>
-
-                <div class="video-container" id="videoContainer"></div>
 
                 <div class="video-info">
                     <h2 class="video-title" id="videoTitle">العنوان</h2>
@@ -993,7 +1100,8 @@
             REFRESH_INTERVAL: 10000,
             SUBMIT_COOLDOWN: 3000,
             LONG_PRESS_DURATION: 500,
-            DISPLAY_UPDATE_INTERVAL: 200
+            DISPLAY_UPDATE_INTERVAL: 200,
+            SEEK_UPDATE_INTERVAL: 500
         };
 
         // YouTube API
@@ -1191,6 +1299,14 @@
                 return d.innerHTML;
             },
 
+            formatTime(seconds) {
+                if (!seconds || isNaN(seconds)) return '00:00';
+                const total = Math.floor(seconds);
+                const mins = Math.floor(total / 60);
+                const secs = total % 60;
+                return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+            },
+
             timeAgo(ts) {
                 const diff = Date.now() - ts;
                 const m = Math.floor(diff / 60000);
@@ -1294,10 +1410,12 @@
                 currentMode: 'original',
                 mainPlayer: null,
                 audioPlayers: {},
-                audioOffset: 0 // الإزاحة بالثواني
+                audioOffset: 0,
+                isSeeking: false
             },
 
             displayUpdateInterval: null,
+            seekUpdateInterval: null,
 
             /**
              * تهيئة المحركات
@@ -1325,6 +1443,7 @@
                 this.state.currentMode = 'original';
                 this.state.isReady = false;
                 this.state.audioOffset = 0;
+                this.state.isSeeking = false;
 
                 if (YTReady) {
                     this.setupPlayersWhenReady();
@@ -1381,7 +1500,6 @@
 
                 try {
                     if (event.data === YT.PlayerState.PLAYING) {
-                        // حساب الموضع الصحيح مع الإزاحة
                         const mainTime = this.state.mainPlayer.getCurrentTime();
                         const targetTime = Math.max(0, mainTime + this.state.audioOffset);
                         
@@ -1433,6 +1551,40 @@
             },
 
             /**
+             * بدء مزامنة شريط التقدم
+             */
+            startVideoSeekSync() {
+                if (this.seekUpdateInterval) return;
+
+                this.seekUpdateInterval = setInterval(() => {
+                    if (!this.state.mainPlayer || this.state.isSeeking) return;
+
+                    try {
+                        const duration = this.state.mainPlayer.getDuration();
+                        const current = this.state.mainPlayer.getCurrentTime();
+
+                        if (duration > 0) {
+                            const seek = document.getElementById('videoSeek');
+                            seek.max = duration;
+                            seek.value = current;
+
+                            document.getElementById('currentTime').textContent = Utils.formatTime(current);
+                            document.getElementById('totalTime').textContent = Utils.formatTime(duration);
+                        }
+                    } catch (e) {
+                        console.warn('Seek sync error:', e);
+                    }
+                }, CONFIG.SEEK_UPDATE_INTERVAL);
+            },
+
+            stopVideoSeekSync() {
+                if (this.seekUpdateInterval) {
+                    clearInterval(this.seekUpdateInterval);
+                    this.seekUpdateInterval = null;
+                }
+            },
+
+            /**
              * تغيير الوضع
              */
             setMode(mode) {
@@ -1458,7 +1610,6 @@
                                 if (key === mode) {
                                     player.unMute();
                                     
-                                    // مزامنة أولية واحدة فقط
                                     const mainTime = this.state.mainPlayer.getCurrentTime();
                                     const targetTime = Math.max(0, mainTime + this.state.audioOffset);
                                     player.seekTo(targetTime, true);
@@ -1488,7 +1639,6 @@
             setOffset(offset) {
                 this.state.audioOffset = offset;
                 
-                // إعادة تطبيق الإزاحة الجديدة
                 if (this.state.currentMode !== 'original') {
                     const audioPlayer = this.state.audioPlayers[this.state.currentMode];
                     if (audioPlayer) {
@@ -1508,15 +1658,44 @@
             },
 
             /**
+             * القفز إلى موضع معين
+             */
+            seekTo(time) {
+                if (!this.state.mainPlayer) return;
+
+                try {
+                    this.state.isSeeking = true;
+                    this.state.mainPlayer.seekTo(time, true);
+
+                    if (this.state.currentMode !== 'original') {
+                        const audioPlayer = this.state.audioPlayers[this.state.currentMode];
+                        if (audioPlayer) {
+                            const targetTime = Math.max(0, time + this.state.audioOffset);
+                            audioPlayer.seekTo(targetTime, true);
+                        }
+                    }
+
+                    setTimeout(() => {
+                        this.state.isSeeking = false;
+                    }, 100);
+                } catch (e) {
+                    console.warn('Seek error:', e);
+                    this.state.isSeeking = false;
+                }
+            },
+
+            /**
              * تنظيف
              */
             cleanup() {
                 this.stopDisplayUpdate();
+                this.stopVideoSeekSync();
                 this.state.mainPlayer = null;
                 this.state.audioPlayers = {};
                 this.state.isReady = false;
                 this.state.currentMode = 'original';
                 this.state.audioOffset = 0;
+                this.state.isSeeking = false;
             }
         };
 
@@ -1537,6 +1716,7 @@
                 Comments.init();
                 this.setupDubToggle();
                 this.setupAudioSlider();
+                this.setupVideoSeek();
             },
 
             setupDubToggle() {
@@ -1599,6 +1779,31 @@
                 slider.addEventListener('input', (e) => {
                     const offset = Number(e.target.value);
                     DubEngine.setOffset(offset);
+                });
+            },
+
+            setupVideoSeek() {
+                const seek = document.getElementById('videoSeek');
+
+                seek.addEventListener('mousedown', () => {
+                    DubEngine.state.isSeeking = true;
+                });
+
+                seek.addEventListener('touchstart', () => {
+                    DubEngine.state.isSeeking = true;
+                });
+
+                seek.addEventListener('input', (e) => {
+                    const time = Number(e.target.value);
+                    DubEngine.seekTo(time);
+                });
+
+                seek.addEventListener('mouseup', () => {
+                    DubEngine.state.isSeeking = false;
+                });
+
+                seek.addEventListener('touchend', () => {
+                    DubEngine.state.isSeeking = false;
                 });
             },
 
@@ -1712,6 +1917,11 @@
 
                 const mainId = this.currentEpisode.versions.original.id;
                 await DubEngine.init(mainId, this.currentEpisode.versions);
+
+                // تأخير صغير للتأكد من تحضير المشغلات
+                setTimeout(() => {
+                    DubEngine.startVideoSeekSync();
+                }, 1000);
 
                 this.dubEnabled = false;
                 this.dubSelectorVisible = false;
