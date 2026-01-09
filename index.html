@@ -54,18 +54,12 @@
             min-height: 100vh;
         }
 
-        /* ===========================
-           حاوية رئيسية
-        =========================== */
         .container {
             max-width: 1200px;
             margin: 0 auto;
             padding: 20px;
         }
 
-        /* ===========================
-           شريط الملاحة
-        =========================== */
         .breadcrumb {
             display: flex;
             align-items: center;
@@ -96,9 +90,6 @@
             border-color: var(--primary-color);
         }
 
-        /* ===========================
-           عرض المكتبة (المجلدات والحلقات)
-        =========================== */
         .library-view {
             margin-bottom: 30px;
         }
@@ -179,9 +170,6 @@
             color: var(--text-secondary);
         }
 
-        /* ===========================
-           عرض الفيديو
-        =========================== */
         .video-section {
             background: var(--bg-light);
             border-radius: 12px;
@@ -230,9 +218,6 @@
             border: none;
         }
 
-        /* ===========================
-           نظام التحكم السريع بالدبلجة
-        =========================== */
         .quick-toggle {
             display: flex;
             align-items: center;
@@ -267,13 +252,6 @@
             box-shadow: 0 0 12px rgba(255, 0, 0, 0.6), inset 0 0 0 2px rgba(255,255,255,0.3);
         }
 
-        .sys-toggle .icon {
-            pointer-events: none;
-        }
-
-        /* ===========================
-           نظام الدبلجة
-        =========================== */
         .dub-selector {
             background: var(--secondary-color);
             padding: 20px;
@@ -367,8 +345,7 @@
             animation: pulse 1.5s ease-in-out infinite;
         }
 
-        /* نظام التحكم بالمزامنة */
-        .dub-sync-controls {
+        .dub-audio-controls {
             display: flex;
             gap: 15px;
             align-items: center;
@@ -379,14 +356,14 @@
             margin-bottom: 15px;
         }
 
-        .dub-sync-label {
+        .dub-audio-label {
             font-size: 0.9rem;
             color: var(--text-secondary);
             font-weight: 500;
             white-space: nowrap;
         }
 
-        #syncSlider {
+        #audioSlider {
             flex: 1;
             min-width: 200px;
             height: 6px;
@@ -398,7 +375,7 @@
             cursor: pointer;
         }
 
-        #syncSlider::-webkit-slider-thumb {
+        #audioSlider::-webkit-slider-thumb {
             -webkit-appearance: none;
             appearance: none;
             width: 18px;
@@ -410,13 +387,13 @@
             transition: all 0.2s;
         }
 
-        #syncSlider::-webkit-slider-thumb:hover {
+        #audioSlider::-webkit-slider-thumb:hover {
             width: 22px;
             height: 22px;
             box-shadow: 0 0 15px rgba(255, 0, 0, 0.8);
         }
 
-        #syncSlider::-moz-range-thumb {
+        #audioSlider::-moz-range-thumb {
             width: 18px;
             height: 18px;
             border-radius: 50%;
@@ -427,24 +404,24 @@
             transition: all 0.2s;
         }
 
-        #syncSlider::-moz-range-thumb:hover {
+        #audioSlider::-moz-range-thumb:hover {
             width: 22px;
             height: 22px;
             box-shadow: 0 0 15px rgba(255, 0, 0, 0.8);
         }
 
-        #syncSlider::-moz-range-track {
+        #audioSlider::-moz-range-track {
             background: transparent;
             border: none;
         }
 
-        #syncSlider::-moz-range-progress {
+        #audioSlider::-moz-range-progress {
             background: var(--primary-color);
             height: 6px;
             border-radius: 3px;
         }
 
-        .dub-offset-display {
+        .dub-time-display {
             background: var(--bg-dark);
             padding: 8px 16px;
             border-radius: 6px;
@@ -452,7 +429,7 @@
             font-size: 0.9rem;
             color: var(--verified-color);
             font-weight: 600;
-            min-width: 100px;
+            min-width: 120px;
             text-align: center;
             white-space: nowrap;
         }
@@ -472,9 +449,6 @@
             font-size: 0.95rem;
         }
 
-        /* ===========================
-           قسم التعليقات
-        =========================== */
         .comments-section {
             background: var(--bg-light);
             border-radius: 12px;
@@ -504,7 +478,6 @@
             color: var(--text-secondary);
         }
 
-        /* نموذج إضافة تعليق */
         .comment-form {
             margin-bottom: 30px;
             padding: 20px;
@@ -584,7 +557,6 @@
             cursor: not-allowed;
         }
 
-        /* رسائل الحالة */
         .status-message {
             padding: 12px 15px;
             border-radius: 6px;
@@ -615,7 +587,6 @@
             color: var(--verified-color);
         }
 
-        /* قائمة التعليقات */
         .comments-list {
             display: flex;
             flex-direction: column;
@@ -702,14 +673,10 @@
             color: var(--text-secondary);
         }
 
-        /* إخفاء العناصر */
         .hidden {
             display: none;
         }
 
-        /* ===========================
-           تصميم متجاوب
-        =========================== */
         @media (max-width: 768px) {
             .container {
                 padding: 15px;
@@ -756,22 +723,19 @@
                 justify-content: flex-start;
             }
 
-            .dub-sync-controls {
+            .dub-audio-controls {
                 flex-direction: column;
             }
 
-            #syncSlider {
+            #audioSlider {
                 min-width: 100%;
             }
 
-            .dub-offset-display {
+            .dub-time-display {
                 width: 100%;
             }
         }
 
-        /* ===========================
-           أنيميشن
-        =========================== */
         @keyframes fadeIn {
             from {
                 opacity: 0;
@@ -829,9 +793,6 @@
             opacity: 0.5;
         }
 
-        /* ===========================
-           زر تغيير اللغة
-        =========================== */
         #langToggle {
             position: fixed;
             right: 20px;
@@ -899,9 +860,6 @@
             font-weight: 700;
         }
 
-        /* ===========================
-           مؤشر التحميل
-        =========================== */
         .spinner {
             display: inline-block;
             width: 12px;
@@ -919,13 +877,11 @@
 </head>
 <body>
     <div class="container">
-        <!-- شريط الملاحة -->
         <div class="breadcrumb" id="breadcrumb">
             <button class="back-btn" id="backBtn" onclick="App.goHome()" style="display: none;"></button>
             <span id="breadcrumbText">المكتبة</span>
         </div>
 
-        <!-- عرض المكتبة -->
         <div id="libraryView" class="library-view">
             <div class="library-header">
                 <h1 id="libraryTitle">المسلسلات</h1>
@@ -933,7 +889,6 @@
             <div class="library-grid" id="libraryGrid"></div>
         </div>
 
-        <!-- عرض الفيديو -->
         <div id="videoView" class="hidden">
             <div class="video-section">
                 <div class="video-header">
@@ -947,44 +902,38 @@
                     </div>
                 </div>
 
-                <!-- نظام اختيار الدبلجة -->
                 <div class="dub-selector" id="dubSelector" style="display: none;">
                     <h3 id="dubTitle">اختر نسخة العرض:</h3>
                     <div class="dub-buttons" id="dubButtons"></div>
                     
-                    <!-- مؤشر حالة الدبلجة -->
                     <div class="dub-status-indicator" id="dubStatusIndicator">
                         <span class="dub-status-dot" id="statusDot"></span>
                         <span id="statusText">▶ النسخة الأصلية قيد التشغيل</span>
                     </div>
 
-                    <!-- نظام التحكم بالمزامنة -->
-                    <div class="dub-sync-controls" id="dubSyncControls" style="display: none;">
-                        <span class="dub-sync-label" id="syncLabel">مزامنة الدبلجة:</span>
+                    <div class="dub-audio-controls" id="dubAudioControls" style="display: none;">
+                        <span class="dub-audio-label" id="audioLabel">زمن الصوت:</span>
                         <input
                             type="range"
-                            id="syncSlider"
-                            min="-500"
-                            max="500"
+                            id="audioSlider"
+                            min="0"
+                            max="0"
                             value="0"
-                            step="10"
-                            title="اضبط فرق التزامن بالمللي ثانية"
+                            step="0.05"
+                            title="اضبط زمن صوت الدبلجة"
                         >
-                        <div class="dub-offset-display" id="offsetDisplay">0 ms</div>
+                        <div class="dub-time-display" id="timeDisplay">0:00 / 0:00</div>
                     </div>
                 </div>
 
-                <!-- حاوية الفيديو -->
                 <div class="video-container" id="videoContainer"></div>
 
-                <!-- معلومات الفيديو -->
                 <div class="video-info">
                     <h2 class="video-title" id="videoTitle">العنوان</h2>
                     <p class="video-description" id="videoDescription">الوصف</p>
                 </div>
             </div>
 
-            <!-- قسم التعليقات -->
             <div class="comments-section">
                 <div class="comments-header">
                     <h2>
@@ -994,10 +943,8 @@
                     <span class="comments-count" id="commentsCount">0 تعليق</span>
                 </div>
 
-                <!-- رسالة الحالة -->
                 <div class="status-message" id="statusMessage"></div>
 
-                <!-- نموذج إضافة تعليق -->
                 <div class="comment-form">
                     <form id="commentForm">
                         <div class="form-group">
@@ -1021,7 +968,6 @@
                     </form>
                 </div>
 
-                <!-- قائمة التعليقات -->
                 <div id="commentsListContainer">
                     <div class="loading" id="loadingText">جاري التحميل...</div>
                 </div>
@@ -1029,10 +975,8 @@
         </div>
     </div>
 
-    <!-- Language Toggle Button -->
     <div id="langToggle" title="تغيير اللغة"></div>
 
-    <!-- Language Menu -->
     <div id="langMenu" class="hidden">
         <button data-lang="ar">العربية</button>
         <button data-lang="en">English</button>
@@ -1041,23 +985,45 @@
     </div>
 
     <script>
+        // ============================================
+        // GLOBAL STATE & CONFIGURATION
+        // ============================================
         const CONFIG = {
             BACKEND_URL: 'https://site--watch-vip--j9hb6dlmp4qm.code.run',
             REFRESH_INTERVAL: 10000,
-            DOUBLE_CLICK_TIMEOUT: 500,
             SUBMIT_COOLDOWN: 3000,
             LONG_PRESS_DURATION: 500,
-            SYNC_INTERVAL: 100,
-            SYNC_THRESHOLD: 0.3
+            AUDIO_UPDATE_INTERVAL: 100,
+            SYNC_THRESHOLD: 0.2
         };
 
+        // YouTube API - تعريف عام مرة واحدة فقط
+        let YTReady = false;
+        window.onYouTubeIframeAPIReady = function() {
+            YTReady = true;
+            DubEngine.setupPlayersWhenReady();
+        };
+
+        // تحميل YouTube API مرة واحدة
+        (function loadYouTubeAPI() {
+            if (window.YT) {
+                YTReady = true;
+                return;
+            }
+            const tag = document.createElement('script');
+            tag.src = 'https://www.youtube.com/iframe_api';
+            document.head.appendChild(tag);
+        })();
+
+        // ============================================
+        // DATA
+        // ============================================
         const LIBRARY = {
             series: [
                 {
                     id: 'doraemon',
                     title: 'دورايمون',
                     emoji: '🤖',
-                    cover: 'https://images.justwatch.com/backdrop/53298157/s640/doraemon',
                     episodes: [
                         {
                             id: 'ep01',
@@ -1065,7 +1031,7 @@
                             description: 'الحلقة الأولى من المسلسل الشهير حيث يقدم دورايمون نفسه لنوبيتا',
                             versions: {
                                 original: {
-                                    name: 'النسخة الأصلية (يابانية)',
+                                    name: 'النسخة الأصلية',
                                     icon: '🎬',
                                     id: 'ZYycK1Paq4M'
                                 },
@@ -1073,11 +1039,6 @@
                                     name: 'دبلجة عربية',
                                     icon: '🔊',
                                     id: 'oBdv4JrvO6I'
-                                },
-                                japanese: {
-                                    name: 'النسخة اليابانية الأصلية',
-                                    icon: '🎌',
-                                    id: 'NtUwXhqBwSI'
                                 }
                             }
                         },
@@ -1087,61 +1048,9 @@
                             description: 'دورايمون يقدم آلته المميزة الآلة الزمنية لنوبيتا',
                             versions: {
                                 original: {
-                                    name: 'النسخة الأصلية (يابانية)',
+                                    name: 'النسخة الأصلية',
                                     icon: '🎬',
-                                    id: 'ZYycK1Paq4M'
-                                },
-                                arabic: {
-                                    name: 'دبلجة عربية',
-                                    icon: '🔊',
-                                    id: 'oBdv4JrvO6I'
-                                },
-                                japanese: {
-                                    name: 'النسخة اليابانية الأصلية',
-                                    icon: '🎌',
                                     id: 'NtUwXhqBwSI'
-                                }
-                            }
-                        },
-                        {
-                            id: 'ep03',
-                            title: 'الحلقة 03 - مغامرة جديدة',
-                            description: 'دورايمون ونوبيتا يذهبان في مغامرة إلى الماضي',
-                            versions: {
-                                original: {
-                                    name: 'النسخة الأصلية (يابانية)',
-                                    icon: '🎬',
-                                    id: 'ZYycK1Paq4M'
-                                },
-                                arabic: {
-                                    name: 'دبلجة عربية',
-                                    icon: '🔊',
-                                    id: 'oBdv4JrvO6I'
-                                },
-                                japanese: {
-                                    name: 'النسخة اليابانية الأصلية',
-                                    icon: '🎌',
-                                    id: 'NtUwXhqBwSI'
-                                }
-                            }
-                        }
-                    ]
-                },
-                {
-                    id: 'naruto',
-                    title: 'ناروتو',
-                    emoji: '🥷',
-                    cover: 'https://images.justwatch.com/backdrop/53298157/s640/naruto',
-                    episodes: [
-                        {
-                            id: 'naruto_ep01',
-                            title: 'الحلقة 01 - بداية الطريق',
-                            description: 'ناروتو يبدأ رحلته لتصبح نينجا قوياً',
-                            versions: {
-                                original: {
-                                    name: 'النسخة الأصلية (يابانية)',
-                                    icon: '🎬',
-                                    id: 'ZYycK1Paq4M'
                                 },
                                 arabic: {
                                     name: 'دبلجة عربية',
@@ -1179,7 +1088,11 @@
                 langButtonLabel: 'تغيير اللغة',
                 dubTitle: 'اختر نسخة العرض:',
                 dubHint: 'انقر للتبديل، اضغط طويلاً لعرض القائمة',
-                syncLabel: 'مزامنة الدبلجة:'
+                audioLabel: 'زمن الصوت:',
+                statusMessages: {
+                    original: '▶ النسخة الأصلية قيد التشغيل',
+                    arabic: '🔊 الدبلجة العربية مفعلة'
+                }
             },
             en: {
                 library: 'Series',
@@ -1204,7 +1117,11 @@
                 langButtonLabel: 'Change Language',
                 dubTitle: 'Choose Version:',
                 dubHint: 'Click to toggle, long press to show menu',
-                syncLabel: 'Dub Sync:'
+                audioLabel: 'Audio Time:',
+                statusMessages: {
+                    original: '▶ Original version is playing',
+                    arabic: '🔊 Arabic dub is enabled'
+                }
             },
             fr: {
                 library: 'Séries',
@@ -1229,7 +1146,11 @@
                 langButtonLabel: 'Changer la Langue',
                 dubTitle: 'Choisir la version:',
                 dubHint: 'Cliquez pour basculer, appuyez longuement pour le menu',
-                syncLabel: 'Sync Dub:'
+                audioLabel: 'Temps audio:',
+                statusMessages: {
+                    original: '▶ La version originale est en cours de lecture',
+                    arabic: '🔊 Le doublage arabe est activé'
+                }
             },
             ja: {
                 library: 'シリーズ',
@@ -1254,16 +1175,24 @@
                 langButtonLabel: '言語を変更',
                 dubTitle: 'バージョンを選択:',
                 dubHint: 'クリックして切り替え、長押ししてメニューを表示',
-                syncLabel: 'ダブシンク:'
+                audioLabel: 'オーディオ時間:',
+                statusMessages: {
+                    original: '▶ オリジナルバージョンが再生中',
+                    arabic: '🔊 アラビア語吹き替えが有効'
+                }
             }
         };
 
+        // ============================================
+        // UTILITIES
+        // ============================================
         const Utils = {
             sanitize(text) {
                 const d = document.createElement('div');
                 d.textContent = text;
                 return d.innerHTML;
             },
+
             timeAgo(ts) {
                 const diff = Date.now() - ts;
                 const m = Math.floor(diff / 60000);
@@ -1303,6 +1232,7 @@
                 if (h < 24) return t.hours(h);
                 return t.days(Math.floor(h / 24));
             },
+
             clientId() {
                 let id = localStorage.getItem('watch_vip_client_id');
                 if (!id) {
@@ -1311,19 +1241,30 @@
                 }
                 return id;
             },
+
             status(msg, type='info') {
                 const el = document.getElementById('statusMessage');
                 el.textContent = msg;
                 el.className = `status-message ${type} show`;
                 setTimeout(()=>el.classList.remove('show'), 4000);
             },
+
             playHaptic() {
                 if (navigator.vibrate) {
                     navigator.vibrate(30);
                 }
+            },
+
+            formatTime(seconds) {
+                const mins = Math.floor(seconds / 60);
+                const secs = Math.floor(seconds % 60);
+                return `${mins}:${secs.toString().padStart(2, '0')}`;
             }
         };
 
+        // ============================================
+        // API
+        // ============================================
         const API = {
             async submit(name, text) {
                 try {
@@ -1335,12 +1276,13 @@
                             clientId: Utils.clientId()
                         })
                     });
-                    if (!r.ok) throw new Error('فشل الإرسال');
+                    if (!r.ok) throw new Error('Failed');
                     return r.json();
                 } catch (e) {
-                    throw new Error('خطأ في الاتصال');
+                    throw new Error('Connection error');
                 }
             },
+
             async comments() {
                 try {
                     const r = await fetch(`${CONFIG.BACKEND_URL}/comments`);
@@ -1351,21 +1293,35 @@
             }
         };
 
+        // ============================================
+        // DUB ENGINE - تصميم معماري صحيح
+        // ============================================
         const DubEngine = {
-            mainFrame: null,
-            audioFrames: {},
-            currentMode: 'original',
-            audioOffsetSecs: 0,
-            syncInterval: null,
-            mainPlayer: null,
-            audioPlayers: {},
-            isReady: false,
+            // حالة النظام
+            state: {
+                isReady: false,
+                currentMode: 'original',
+                mainPlayer: null,
+                audioPlayers: {},
+                audioOffsets: {}, // تخزين الـ offset لكل دبلجة
+                durations: {},
+                mainDuration: 0
+            },
 
-            init(mainId, versions) {
+            // إدارة التحديث التلقائي
+            updateInterval: null,
+            isSliderBeingDragged: false,
+
+            /**
+             * الدالة الرئيسية لتهيئة المحركات
+             * تُستدعى مرة واحدة لكل حلقة
+             */
+            async init(mainId, versions) {
+                // تنظيف الحالة السابقة بالكامل
                 this.cleanup();
-                
+
+                // بناء HTML
                 const container = document.getElementById('videoContainer');
-                
                 let html = `<iframe id="dub-main"
                     src="https://www.youtube.com/embed/${mainId}?enablejsapi=1&controls=1&modestbranding=1&rel=0"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -1376,278 +1332,386 @@
                         html += `<iframe id="dub-${key}"
                             src="https://www.youtube.com/embed/${version.id}?enablejsapi=1&controls=0&modestbranding=1&rel=0"
                             style="display:none"
-                            allow="autoplay"></iframe>`;
+                            allow="autoplay; encrypted-media"></iframe>`;
                     }
                 });
 
                 container.innerHTML = html;
-                this.mainFrame = document.getElementById('dub-main');
-                
-                Object.keys(versions).forEach(key => {
-                    if (key !== 'original') {
-                        this.audioFrames[key] = document.getElementById(`dub-${key}`);
+
+                // إعادة تعيين الحالة
+                this.state.currentMode = 'original';
+                this.state.isReady = false;
+                this.state.audioOffsets = {};
+                this.state.durations = {};
+                this.state.mainDuration = 0;
+
+                // انتظر تحميل YouTube API
+                if (YTReady) {
+                    this.setupPlayersWhenReady();
+                } else {
+                    // سيتم استدعاء onYouTubeIframeAPIReady
+                    console.log('YouTube API loading...');
+                }
+            },
+
+            /**
+             * إعداد لاعبي YouTube عندما تكون الـ API جاهزة
+             */
+            setupPlayersWhenReady() {
+                if (!window.YT || !window.YT.Player) {
+                    console.warn('YouTube API not ready, retrying...');
+                    setTimeout(() => this.setupPlayersWhenReady(), 500);
+                    return;
+                }
+
+                // إنشاء لاعب الفيديو الرئيسي
+                try {
+                    this.state.mainPlayer = new YT.Player('dub-main', {
+                        events: {
+                            'onReady': (e) => this.onMainPlayerReady(e),
+                            'onStateChange': (e) => this.onMainPlayerStateChange(e)
+                        }
+                    });
+                } catch (e) {
+                    console.error('Main player error:', e);
+                }
+
+                // إنشاء لاعبي الدبلجة
+                document.querySelectorAll('[id^="dub-"]').forEach(el => {
+                    if (el.id === 'dub-main') return;
+                    
+                    const key = el.id.replace('dub-', '');
+                    try {
+                        this.state.audioPlayers[key] = new YT.Player(el.id, {
+                            events: {
+                                'onReady': (e) => this.onAudioPlayerReady(key, e)
+                            }
+                        });
+                    } catch (e) {
+                        console.error(`Audio player ${key} error:`, e);
                     }
                 });
 
-                this.currentMode = 'original';
-                this.audioOffsetSecs = 0;
-                this.isReady = false;
-                
-                this.initYouTubeAPI();
+                console.log('Players setup complete');
             },
 
-            initYouTubeAPI() {
-                if (!window.YT) {
-                    const tag = document.createElement('script');
-                    tag.src = 'https://www.youtube.com/iframe_api';
-                    const firstScriptTag = document.getElementsByTagName('script')[0];
-                    firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-                }
-
-                window.onYouTubeIframeAPIReady = () => {
-                    this.setupPlayers();
-                };
-
-                if (window.YT && window.YT.Player) {
-                    this.setupPlayers();
+            onMainPlayerReady(event) {
+                try {
+                    this.state.mainDuration = event.target.getDuration();
+                    this.state.isReady = true;
+                    console.log('Main player ready, duration:', this.state.mainDuration);
+                } catch (e) {
+                    console.error('Error getting duration:', e);
                 }
             },
 
-            setupPlayers() {
-                setTimeout(() => {
-                    this.mainPlayer = new YT.Player('dub-main', {
-                        events: {
-                            'onReady': () => this.onPlayerReady(),
-                            'onStateChange': (e) => this.onPlayerStateChange(e)
-                        }
-                    });
-
-                    Object.keys(this.audioFrames).forEach(key => {
-                        this.audioPlayers[key] = new YT.Player(`dub-${key}`, {
-                            events: {
-                                'onReady': () => {}
-                            }
-                        });
-                    });
-                }, 500);
+            onAudioPlayerReady(key, event) {
+                try {
+                    const duration = event.target.getDuration();
+                    this.state.durations[key] = duration;
+                    console.log(`Audio player ${key} ready, duration:`, duration);
+                } catch (e) {
+                    console.error(`Error getting ${key} duration:`, e);
+                }
             },
 
-            onPlayerReady() {
-                this.isReady = true;
-            },
+            onMainPlayerStateChange(event) {
+                if (this.state.currentMode === 'original') return;
 
-            onPlayerStateChange(event) {
-                if (this.currentMode === 'original') return;
-
-                const audioPlayer = this.audioPlayers[this.currentMode];
+                const audioPlayer = this.state.audioPlayers[this.state.currentMode];
                 if (!audioPlayer) return;
 
-                if (event.data === YT.PlayerState.PLAYING) {
-                    audioPlayer.playVideo();
-                    this.startSync();
-                } else if (event.data === YT.PlayerState.PAUSED) {
-                    audioPlayer.pauseVideo();
-                    this.stopSync();
-                } else if (event.data === YT.PlayerState.ENDED) {
-                    audioPlayer.stopVideo();
-                    this.stopSync();
+                try {
+                    if (event.data === YT.PlayerState.PLAYING) {
+                        audioPlayer.playVideo();
+                        this.startAudioSync();
+                    } else if (event.data === YT.PlayerState.PAUSED) {
+                        audioPlayer.pauseVideo();
+                        this.stopAudioSync();
+                    } else if (event.data === YT.PlayerState.ENDED) {
+                        audioPlayer.stopVideo();
+                        this.stopAudioSync();
+                    }
+                } catch (e) {
+                    console.warn('Player state change error:', e);
                 }
             },
 
-            startSync() {
-                if (this.syncInterval) return;
-                
-                this.syncInterval = setInterval(() => {
-                    this.syncAudioToVideo();
-                }, CONFIG.SYNC_INTERVAL);
+            /**
+             * بدء مزامنة الصوت
+             * تحدّث موضع الصوت كل 100ms
+             */
+            startAudioSync() {
+                if (this.updateInterval) return;
+
+                this.updateInterval = setInterval(() => {
+                    this.syncAudio();
+                }, CONFIG.AUDIO_UPDATE_INTERVAL);
             },
 
-            stopSync() {
-                if (this.syncInterval) {
-                    clearInterval(this.syncInterval);
-                    this.syncInterval = null;
+            /**
+             * إيقاف المزامنة
+             */
+            stopAudioSync() {
+                if (this.updateInterval) {
+                    clearInterval(this.updateInterval);
+                    this.updateInterval = null;
                 }
             },
 
-            syncAudioToVideo() {
-                if (!this.isReady || this.currentMode === 'original') return;
+            /**
+             * مزامنة الصوت مع الفيديو الرئيسي
+             * تحقق من الفرق وأعد الموضع إذا لزم الأمر
+             */
+            syncAudio() {
+                if (this.state.currentMode === 'original' || !this.state.isReady) return;
 
-                const audioPlayer = this.audioPlayers[this.currentMode];
-                if (!audioPlayer || !this.mainPlayer) return;
+                const audioPlayer = this.state.audioPlayers[this.state.currentMode];
+                if (!audioPlayer) return;
 
                 try {
-                    const videoTime = this.mainPlayer.getCurrentTime();
+                    const mainTime = this.state.mainPlayer.getCurrentTime();
                     const audioTime = audioPlayer.getCurrentTime();
-                    const targetTime = videoTime + this.audioOffsetSecs;
-                    const diff = Math.abs(audioTime - targetTime);
+                    const diff = Math.abs(mainTime - audioTime);
 
+                    // تحديث عرض الـ slider
+                    const slider = document.getElementById('audioSlider');
+                    if (!this.isSliderBeingDragged && slider) {
+                        slider.value = audioTime;
+                    }
+
+                    // تحديث عرض الوقت
+                    const timeDisplay = document.getElementById('timeDisplay');
+                    if (timeDisplay) {
+                        const maxDuration = this.state.durations[this.state.currentMode] || 0;
+                        timeDisplay.textContent = `${Utils.formatTime(audioTime)} / ${Utils.formatTime(maxDuration)}`;
+                    }
+
+                    // إعادة مزامنة إذا تجاوزت الفرق الحد الأدنى
                     if (diff > CONFIG.SYNC_THRESHOLD) {
-                        audioPlayer.seekTo(targetTime, true);
+                        console.log(`Syncing ${this.state.currentMode}: main=${mainTime}, audio=${audioTime}`);
+                        audioPlayer.seekTo(mainTime, true);
                     }
                 } catch (e) {
                     console.warn('Sync error:', e);
                 }
             },
 
+            /**
+             * تبديل نمط الدبلجة
+             * كتم صوت الرئيسي وفعّل الصوت الإضافي
+             */
             setMode(mode) {
-                this.stopSync();
-                
-                if (mode === 'original') {
-                    this.mainPlayer.unMute();
-                    Object.values(this.audioPlayers).forEach(player => {
-                        try {
-                            player.pauseVideo();
-                            player.mute();
-                        } catch (e) {}
-                    });
-                } else {
-                    this.mainPlayer.mute();
-                    
-                    Object.entries(this.audioPlayers).forEach(([key, player]) => {
-                        try {
-                            if (key === mode) {
-                                player.unMute();
-                                const videoTime = this.mainPlayer.getCurrentTime();
-                                player.seekTo(videoTime + this.audioOffsetSecs, true);
-                                
-                                if (this.mainPlayer.getPlayerState() === YT.PlayerState.PLAYING) {
-                                    player.playVideo();
-                                    this.startSync();
-                                }
-                            } else {
-                                player.pauseVideo();
-                                player.mute();
-                            }
-                        } catch (e) {}
-                    });
-                }
+                if (mode === this.state.currentMode) return;
 
-                this.currentMode = mode;
-            },
-
-            applySliderOffset(ms) {
-                Utils.playHaptic();
-                this.audioOffsetSecs = ms / 1000;
-                this.updateOffsetDisplay();
-
-                if (this.currentMode === 'original') return;
-
-                const audioPlayer = this.audioPlayers[this.currentMode];
-                if (!audioPlayer || !this.mainPlayer) return;
+                this.stopAudioSync();
 
                 try {
-                    const videoTime = this.mainPlayer.getCurrentTime();
-                    audioPlayer.seekTo(videoTime + this.audioOffsetSecs, true);
+                    if (mode === 'original') {
+                        // تشغيل الأصلي
+                        this.state.mainPlayer.unMute();
+                        
+                        // كتم جميع الدبلجات
+                        Object.entries(this.state.audioPlayers).forEach(([key, player]) => {
+                            try {
+                                player.pauseVideo();
+                                player.mute();
+                            } catch (e) {}
+                        });
+                    } else {
+                        // كتم الصوت الرئيسي
+                        this.state.mainPlayer.mute();
+                        
+                        // حدّد الدبلجة الحالية
+                        Object.entries(this.state.audioPlayers).forEach(([key, player]) => {
+                            try {
+                                if (key === mode) {
+                                    player.unMute();
+                                    
+                                    // مزامنة أولية قبل التشغيل
+                                    const mainTime = this.state.mainPlayer.getCurrentTime();
+                                    const maxAudioDuration = this.state.durations[key] || 0;
+                                    
+                                    // تأكد أن الوقت آمن
+                                    const safeTime = Math.min(mainTime, Math.max(0, maxAudioDuration - 1));
+                                    player.seekTo(safeTime, true);
+                                    
+                                    // تشغيل إذا كان الرئيسي مشغلاً
+                                    if (this.state.mainPlayer.getPlayerState() === YT.PlayerState.PLAYING) {
+                                        player.playVideo();
+                                        this.startAudioSync();
+                                    }
+                                } else {
+                                    player.pauseVideo();
+                                    player.mute();
+                                }
+                            } catch (e) {}
+                        });
+                    }
+
+                    this.state.currentMode = mode;
+                    console.log('Mode changed to:', mode);
+                } catch (e) {
+                    console.error('Error setting mode:', e);
+                }
+            },
+
+            /**
+             * البحث اليدوي للصوت
+             * استدعاه عند تحريك المستخدم للـ slider
+             */
+            seekAudio(time) {
+                if (this.state.currentMode === 'original') return;
+
+                const audioPlayer = this.state.audioPlayers[this.state.currentMode];
+                if (!audioPlayer) return;
+
+                try {
+                    const maxDuration = this.state.durations[this.state.currentMode] || 0;
+                    
+                    // تأكد أن الوقت آمن
+                    const safeTime = Math.min(time, Math.max(0, maxDuration));
+                    audioPlayer.seekTo(safeTime, true);
+
+                    Utils.playHaptic();
+                    console.log(`Seek to ${safeTime}s in ${this.state.currentMode}`);
                 } catch (e) {
                     console.warn('Seek error:', e);
                 }
             },
 
-            updateOffsetDisplay() {
-                const display = document.getElementById('offsetDisplay');
-                if (!display) return;
-
-                const ms = Math.round(this.audioOffsetSecs * 1000);
-                const sign = ms > 0 ? '+' : '';
-                display.textContent = `${sign}${ms} ms`;
-            },
-
+            /**
+             * تنظيف شامل
+             */
             cleanup() {
-                this.stopSync();
-                this.mainPlayer = null;
-                this.audioPlayers = {};
-                this.isReady = false;
+                this.stopAudioSync();
+                this.state.mainPlayer = null;
+                this.state.audioPlayers = {};
+                this.state.isReady = false;
+                this.state.currentMode = 'original';
+                this.state.audioOffsets = {};
+                this.state.durations = {};
+                this.state.mainDuration = 0;
             }
         };
 
+        // ============================================
+        // APPLICATION STATE
+        // ============================================
         const App = {
             currentView: 'home',
             currentSeries: null,
             currentEpisode: null,
             dubEnabled: false,
             lastDubMode: localStorage.getItem('last_dub') || 'arabic',
-            longPressTimer: null,
             dubSelectorVisible: false,
+            dubToggleLongPressTimer: null,
 
             init() {
                 this.renderHome();
                 Comments.init();
                 this.setupDubToggle();
-                this.setupSyncSlider();
+                this.setupAudioSlider();
             },
 
             setupDubToggle() {
                 const btn = document.getElementById('dubToggle');
                 let touchStartTime = 0;
                 let isLongPress = false;
-                
-                const handleLongPress = () => {
-                    if (App.currentView !== 'video') return;
-                    
-                    isLongPress = true;
-                    Utils.playHaptic();
-                    App.toggleDubSelector();
-                };
 
-                const handleClick = () => {
+                const handleDubToggle = () => {
                     if (App.currentView !== 'video') return;
-                    if (isLongPress) {
-                        isLongPress = false;
-                        return;
-                    }
-                    
                     App.toggleDub();
                 };
 
+                const handleDubMenu = () => {
+                    if (App.currentView !== 'video') return;
+                    App.toggleDubSelector();
+                };
+
+                // Mouse events
                 btn.addEventListener('mousedown', () => {
                     if (App.currentView !== 'video') return;
                     touchStartTime = Date.now();
-                    this.longPressTimer = setTimeout(handleLongPress, CONFIG.LONG_PRESS_DURATION);
+                    isLongPress = false;
+                    App.dubToggleLongPressTimer = setTimeout(() => {
+                        isLongPress = true;
+                        handleDubMenu();
+                    }, CONFIG.LONG_PRESS_DURATION);
                 });
 
                 btn.addEventListener('mouseup', () => {
-                    if (this.longPressTimer) clearTimeout(this.longPressTimer);
-                    if (Date.now() - touchStartTime < CONFIG.LONG_PRESS_DURATION) {
-                        handleClick();
+                    if (App.dubToggleLongPressTimer) {
+                        clearTimeout(App.dubToggleLongPressTimer);
+                    }
+                    if (!isLongPress) {
+                        handleDubToggle();
                     }
                 });
 
+                // Touch events
                 btn.addEventListener('touchstart', () => {
                     if (App.currentView !== 'video') return;
                     touchStartTime = Date.now();
                     isLongPress = false;
-                    this.longPressTimer = setTimeout(handleLongPress, CONFIG.LONG_PRESS_DURATION);
+                    App.dubToggleLongPressTimer = setTimeout(() => {
+                        isLongPress = true;
+                        handleDubMenu();
+                    }, CONFIG.LONG_PRESS_DURATION);
                 });
 
-                btn.addEventListener('touchend', () => {
-                    if (this.longPressTimer) clearTimeout(this.longPressTimer);
-                    if (Date.now() - touchStartTime < CONFIG.LONG_PRESS_DURATION && !isLongPress) {
-                        handleClick();
+                btn.addEventListener('touchend', (e) => {
+                    if (App.dubToggleLongPressTimer) {
+                        clearTimeout(App.dubToggleLongPressTimer);
                     }
-                    isLongPress = false;
+                    e.preventDefault();
+                    if (!isLongPress) {
+                        handleDubToggle();
+                    }
                 });
+
+                // Prevent context menu on long press
+                btn.addEventListener('contextmenu', (e) => e.preventDefault());
             },
 
-            setupSyncSlider() {
-                const slider = document.getElementById('syncSlider');
+            setupAudioSlider() {
+                const slider = document.getElementById('audioSlider');
+
+                ['mousedown', 'touchstart'].forEach(event => {
+                    slider.addEventListener(event, () => {
+                        DubEngine.isSliderBeingDragged = true;
+                        DubEngine.stopAudioSync();
+                    });
+                });
+
+                ['mouseup', 'touchend', 'touchcancel'].forEach(event => {
+                    slider.addEventListener(event, () => {
+                        DubEngine.isSliderBeingDragged = false;
+                        if (DubEngine.state.mainPlayer && 
+                            DubEngine.state.mainPlayer.getPlayerState() === YT.PlayerState.PLAYING) {
+                            DubEngine.startAudioSync();
+                        }
+                    });
+                });
+
                 slider.addEventListener('input', (e) => {
-                    const ms = Number(e.target.value);
-                    DubEngine.applySliderOffset(ms);
+                    const time = Number(e.target.value);
+                    DubEngine.seekAudio(time);
                 });
             },
 
             toggleDub() {
                 Utils.playHaptic();
-                
                 this.dubEnabled = !this.dubEnabled;
-                
+
+                const btn = document.getElementById('dubToggle');
                 if (this.dubEnabled) {
-                    document.getElementById('dubToggle').classList.add('active');
-                    document.getElementById('dubToggle').querySelector('.icon').textContent = '🔊';
+                    btn.classList.add('active');
+                    btn.querySelector('.icon').textContent = '🔊';
                     DubEngine.setMode(this.lastDubMode);
                 } else {
-                    document.getElementById('dubToggle').classList.remove('active');
-                    document.getElementById('dubToggle').querySelector('.icon').textContent = '🔇';
+                    btn.classList.remove('active');
+                    btn.querySelector('.icon').textContent = '🔇';
                     DubEngine.setMode('original');
                 }
             },
@@ -1655,7 +1719,7 @@
             toggleDubSelector() {
                 const selector = document.getElementById('dubSelector');
                 this.dubSelectorVisible = !this.dubSelectorVisible;
-                
+
                 if (this.dubSelectorVisible) {
                     selector.style.display = 'block';
                     selector.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
@@ -1722,9 +1786,10 @@
                 this.currentView = 'series';
                 this.dubSelectorVisible = false;
                 Comments.pauseAutoRefresh();
+                DubEngine.cleanup();
             },
 
-            playEpisode(episodeId) {
+            async playEpisode(episodeId) {
                 const lang = document.documentElement.getAttribute('data-lang');
                 const t = TRANSLATIONS[lang];
 
@@ -1732,6 +1797,7 @@
                 this.currentEpisode = this.currentSeries.episodes.find(e => e.id === episodeId);
                 if (!this.currentEpisode) return;
 
+                // تحديث الواجهة
                 document.getElementById('libraryView').classList.add('hidden');
                 document.getElementById('videoView').classList.remove('hidden');
                 document.getElementById('backBtn').style.display = 'inline-flex';
@@ -1741,24 +1807,26 @@
                 document.getElementById('videoTitle').textContent = this.currentEpisode.title;
                 document.getElementById('videoDescription').textContent = this.currentEpisode.description;
 
+                // إعداد الدبلجات
                 this.setupDubButtons();
 
+                // تهيئة محرك الدبلجة
                 const mainId = this.currentEpisode.versions.original.id;
-                DubEngine.init(mainId, this.currentEpisode.versions);
+                await DubEngine.init(mainId, this.currentEpisode.versions);
 
+                // إعادة تعيين الحالة
                 this.dubEnabled = false;
                 this.dubSelectorVisible = false;
                 document.getElementById('dubToggle').classList.remove('active');
                 document.getElementById('dubToggle').querySelector('.icon').textContent = '🔇';
 
-                // إعادة تعيين الشريط
-                const slider = document.getElementById('syncSlider');
+                // إعادة تعيين الـ slider
+                const slider = document.getElementById('audioSlider');
                 slider.value = 0;
-                DubEngine.audioOffsetSecs = 0;
-                DubEngine.updateOffsetDisplay();
+                slider.max = 0;
+                document.getElementById('timeDisplay').textContent = '0:00 / 0:00';
 
                 this.currentView = 'video';
-                Comments.pauseAutoRefresh();
                 Comments.load();
             },
 
@@ -1768,18 +1836,18 @@
                 const versions = this.currentEpisode.versions;
                 const dubButtons = document.getElementById('dubButtons');
                 const dubSelector = document.getElementById('dubSelector');
-                const syncControls = document.getElementById('dubSyncControls');
+                const audioControls = document.getElementById('dubAudioControls');
 
-                if (!versions || Object.keys(versions).length === 0) {
+                if (!versions || Object.keys(versions).length <= 1) {
                     dubSelector.style.display = 'none';
                     return;
                 }
 
                 dubSelector.style.display = 'none';
-                syncControls.style.display = 'none';
+                audioControls.style.display = 'none';
                 this.dubSelectorVisible = false;
                 document.getElementById('dubTitle').textContent = t.dubTitle;
-                document.getElementById('syncLabel').textContent = t.syncLabel;
+                document.getElementById('audioLabel').textContent = t.audioLabel;
 
                 dubButtons.innerHTML = Object.entries(versions).map(([key, version]) => `
                     <button 
@@ -1796,48 +1864,25 @@
 
             updateStatusIndicator(mode) {
                 const lang = document.documentElement.getAttribute('data-lang');
+                const t = TRANSLATIONS[lang];
                 const statusText = document.getElementById('statusText');
                 const statusDot = document.getElementById('statusDot');
-                const syncControls = document.getElementById('dubSyncControls');
-                
-                const statusMessages = {
-                    ar: {
-                        original: '▶ النسخة الأصلية قيد التشغيل',
-                        arabic: '🔊 الدبلجة العربية مفعلة',
-                        japanese: '🎌 الدبلجة اليابانية مفعلة'
-                    },
-                    en: {
-                        original: '▶ Original version is playing',
-                        arabic: '🔊 Arabic dub is enabled',
-                        japanese: '🎌 Japanese dub is enabled'
-                    },
-                    fr: {
-                        original: '▶ La version originale est en cours de lecture',
-                        arabic: '🔊 Le doublage arabe est activé',
-                        japanese: '🎌 Le doublage japonais est activé'
-                    },
-                    ja: {
-                        original: '▶ オリジナルバージョンが再生中',
-                        arabic: '🔊 アラビア語吹き替えが有効',
-                        japanese: '🎌 日本語吹き替えが有効'
-                    }
-                };
+                const audioControls = document.getElementById('dubAudioControls');
 
-                const messages = statusMessages[lang] || statusMessages.en;
-                statusText.textContent = messages[mode] || messages.original;
+                statusText.textContent = t.statusMessages[mode] || t.statusMessages.original;
 
                 if (mode === 'original') {
                     statusDot.classList.remove('active');
-                    syncControls.style.display = 'none';
+                    audioControls.style.display = 'none';
                 } else {
                     statusDot.classList.add('active');
-                    syncControls.style.display = 'flex';
+                    audioControls.style.display = 'flex';
                 }
             },
 
             selectDubVersion(versionKey, button) {
                 Utils.playHaptic();
-                
+
                 document.querySelectorAll('.dub-btn').forEach(btn => {
                     btn.classList.remove('active');
                 });
@@ -1869,6 +1914,9 @@
             }
         };
 
+        // ============================================
+        // COMMENTS MANAGER
+        // ============================================
         const Comments = {
             userCommentId: localStorage.getItem('watch_vip_user_comment_id'),
             autoRefreshInterval: null,
@@ -1888,7 +1936,7 @@
 
             startAutoRefresh() {
                 if (this.autoRefreshInterval) clearInterval(this.autoRefreshInterval);
-                
+
                 this.autoRefreshInterval = setInterval(() => {
                     if (App.currentView === 'video') {
                         this.load();
@@ -1924,7 +1972,7 @@
 
                 const name = document.getElementById('commentName').value.trim();
                 const text = document.getElementById('commentText').value.trim();
-                
+
                 if (!text) {
                     Utils.status(t.empty, 'error');
                     return;
@@ -1943,6 +1991,7 @@
                     Utils.playHaptic();
                     document.getElementById('commentText').value = '';
                     document.getElementById('commentName').value = '';
+                    await this.load();
                 } catch (e) {
                     Utils.status(t.error, 'error');
                 } finally {
@@ -1952,7 +2001,7 @@
             },
 
             async load() {
-                if (this.isRefreshing) return;
+                if (this.isRefreshing || App.currentView !== 'video') return;
                 this.isRefreshing = true;
 
                 try {
@@ -1969,7 +2018,7 @@
                         return;
                     }
 
-                    if (this.userCommentId && list.length > 0 && !list.some(c => c.commentId === this.userCommentId)) {
+                    if (this.userCommentId && !list.some(c => c.commentId === this.userCommentId)) {
                         localStorage.removeItem('watch_vip_user_comment_id');
                         this.userCommentId = null;
                     }
@@ -2011,27 +2060,31 @@
                 const t = TRANSLATIONS[lang];
 
                 document.querySelectorAll('.user-comment').forEach(el=>{
-                    let last = 0;
-                    el.onclick = () => {
+                    let lastClick = 0;
+                    el.addEventListener('click', () => {
                         const now = Date.now();
-                        if (now - last < CONFIG.DOUBLE_CLICK_TIMEOUT) {
+                        if (now - lastClick < CONFIG.DOUBLE_CLICK_TIMEOUT) {
                             localStorage.removeItem('watch_vip_user_comment_id');
                             this.userCommentId = null;
                             Utils.status(t.canComment, 'success');
                             Utils.playHaptic();
                             this.load();
                         }
-                        last = now;
-                    };
+                        lastClick = now;
+                    });
                 });
             }
         };
 
+        // ============================================
+        // LANGUAGE MANAGEMENT
+        // ============================================
         function applyLanguage(lang) {
             const t = TRANSLATIONS[lang];
             document.documentElement.setAttribute('data-lang', lang);
             localStorage.setItem('site_lang', lang);
 
+            // Update page text
             document.getElementById('libraryTitle').textContent = t.library;
             document.getElementById('breadcrumbText').textContent = t.library;
             document.getElementById('backBtn').textContent = t.back;
@@ -2045,8 +2098,8 @@
             document.getElementById('loadingText').textContent = t.loading;
             document.getElementById('dubTitle').textContent = t.dubTitle;
             document.getElementById('dubToggle').title = t.dubHint;
-            document.getElementById('syncLabel').textContent = t.syncLabel;
-            
+            document.getElementById('audioLabel').textContent = t.audioLabel;
+
             const langButton = document.getElementById('langToggle');
             const langLabels = {
                 ar: 'اللغة',
@@ -2064,25 +2117,27 @@
                 }
             });
 
-            if (App.currentView === 'video') {
+            if (App.currentView === 'video' && App.currentEpisode) {
+                App.updateStatusIndicator(DubEngine.state.currentMode);
                 Comments.load();
             }
         }
 
+        // Language toggle button
         const langToggle = document.getElementById('langToggle');
         const langMenu = document.getElementById('langMenu');
 
-        langToggle.onclick = (e) => {
+        langToggle.addEventListener('click', (e) => {
             e.stopPropagation();
             langMenu.classList.toggle('hidden');
-        };
+        });
 
         langMenu.querySelectorAll('button').forEach(btn => {
-            btn.onclick = () => {
+            btn.addEventListener('click', () => {
                 applyLanguage(btn.dataset.lang);
                 langMenu.classList.add('hidden');
                 Utils.playHaptic();
-            };
+            });
         });
 
         document.addEventListener('click', (e) => {
@@ -2091,6 +2146,7 @@
             }
         });
 
+        // Initialize
         const savedLang = localStorage.getItem('site_lang') || 'ar';
         applyLanguage(savedLang);
 
