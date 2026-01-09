@@ -912,17 +912,17 @@
                     </div>
 
                     <div class="dub-audio-controls" id="dubAudioControls" style="display: none;">
-                        <span class="dub-audio-label" id="audioLabel">زمن الصوت:</span>
+                        <span class="dub-audio-label" id="audioLabel">إزاحة الصوت:</span>
                         <input
                             type="range"
                             id="audioSlider"
-                            min="0"
-                            max="0"
+                            min="-10"
+                            max="10"
                             value="0"
                             step="0.05"
-                            title="اضبط زمن صوت الدبلجة"
+                            title="اضبط إزاحة الصوت (ثانية)"
                         >
-                        <div class="dub-time-display" id="timeDisplay">0:00 / 0:00</div>
+                        <div class="dub-time-display" id="timeDisplay">+0.00 ثانية</div>
                     </div>
                 </div>
 
@@ -993,18 +993,16 @@
             REFRESH_INTERVAL: 10000,
             SUBMIT_COOLDOWN: 3000,
             LONG_PRESS_DURATION: 500,
-            AUDIO_UPDATE_INTERVAL: 100,
-            SYNC_THRESHOLD: 0.2
+            DISPLAY_UPDATE_INTERVAL: 200
         };
 
-        // YouTube API - تعريف عام مرة واحدة فقط
+        // YouTube API
         let YTReady = false;
         window.onYouTubeIframeAPIReady = function() {
             YTReady = true;
             DubEngine.setupPlayersWhenReady();
         };
 
-        // تحميل YouTube API مرة واحدة
         (function loadYouTubeAPI() {
             if (window.YT) {
                 YTReady = true;
@@ -1088,7 +1086,7 @@
                 langButtonLabel: 'تغيير اللغة',
                 dubTitle: 'اختر نسخة العرض:',
                 dubHint: 'انقر للتبديل، اضغط طويلاً لعرض القائمة',
-                audioLabel: 'زمن الصوت:',
+                audioLabel: 'إزاحة الصوت:',
                 statusMessages: {
                     original: '▶ النسخة الأصلية قيد التشغيل',
                     arabic: '🔊 الدبلجة العربية مفعلة'
@@ -1117,7 +1115,7 @@
                 langButtonLabel: 'Change Language',
                 dubTitle: 'Choose Version:',
                 dubHint: 'Click to toggle, long press to show menu',
-                audioLabel: 'Audio Time:',
+                audioLabel: 'Audio Offset:',
                 statusMessages: {
                     original: '▶ Original version is playing',
                     arabic: '🔊 Arabic dub is enabled'
@@ -1146,7 +1144,7 @@
                 langButtonLabel: 'Changer la Langue',
                 dubTitle: 'Choisir la version:',
                 dubHint: 'Cliquez pour basculer, appuyez longuement pour le menu',
-                audioLabel: 'Temps audio:',
+                audioLabel: 'Décalage audio:',
                 statusMessages: {
                     original: '▶ La version originale est en cours de lecture',
                     arabic: '🔊 Le doublage arabe est activé'
@@ -1175,7 +1173,7 @@
                 langButtonLabel: '言語を変更',
                 dubTitle: 'バージョンを選択:',
                 dubHint: 'クリックして切り替え、長押ししてメニューを表示',
-                audioLabel: 'オーディオ時間:',
+                audioLabel: 'オーディオオフセット:',
                 statusMessages: {
                     original: '▶ オリジナルバージョンが再生中',
                     arabic: '🔊 アラビア語吹き替えが有効'
@@ -1253,12 +1251,6 @@
                 if (navigator.vibrate) {
                     navigator.vibrate(30);
                 }
-            },
-
-            formatTime(seconds) {
-                const mins = Math.floor(seconds / 60);
-                const secs = Math.floor(seconds % 60);
-                return `${mins}:${secs.toString().padStart(2, '0')}`;
             }
         };
 
@@ -1294,33 +1286,25 @@
         };
 
         // ============================================
-        // DUB ENGINE - تصميم معماري صحيح
+        // DUB ENGINE - نظام الإزاحة فقط
         // ============================================
         const DubEngine = {
-            // حالة النظام
             state: {
                 isReady: false,
                 currentMode: 'original',
                 mainPlayer: null,
                 audioPlayers: {},
-                audioOffsets: {}, // تخزين الـ offset لكل دبلجة
-                durations: {},
-                mainDuration: 0
+                audioOffset: 0 // الإزاحة بالثواني
             },
 
-            // إدارة التحديث التلقائي
-            updateInterval: null,
-            isSliderBeingDragged: false,
+            displayUpdateInterval: null,
 
             /**
-             * الدالة الرئيسية لتهيئة المحركات
-             * تُستدعى مرة واحدة لكل حلقة
+             * تهيئة المحركات
              */
             async init(mainId, versions) {
-                // تنظيف الحالة السابقة بالكامل
                 this.cleanup();
 
-                // بناء HTML
                 const container = document.getElementById('videoContainer');
                 let html = `<iframe id="dub-main"
                     src="https://www.youtube.com/embed/${mainId}?enablejsapi=1&controls=1&modestbranding=1&rel=0"
@@ -1338,37 +1322,31 @@
 
                 container.innerHTML = html;
 
-                // إعادة تعيين الحالة
                 this.state.currentMode = 'original';
                 this.state.isReady = false;
-                this.state.audioOffsets = {};
-                this.state.durations = {};
-                this.state.mainDuration = 0;
+                this.state.audioOffset = 0;
 
-                // انتظر تحميل YouTube API
                 if (YTReady) {
                     this.setupPlayersWhenReady();
-                } else {
-                    // سيتم استدعاء onYouTubeIframeAPIReady
-                    console.log('YouTube API loading...');
                 }
             },
 
             /**
-             * إعداد لاعبي YouTube عندما تكون الـ API جاهزة
+             * إعداد اللاعبين
              */
             setupPlayersWhenReady() {
                 if (!window.YT || !window.YT.Player) {
-                    console.warn('YouTube API not ready, retrying...');
                     setTimeout(() => this.setupPlayersWhenReady(), 500);
                     return;
                 }
 
-                // إنشاء لاعب الفيديو الرئيسي
                 try {
                     this.state.mainPlayer = new YT.Player('dub-main', {
                         events: {
-                            'onReady': (e) => this.onMainPlayerReady(e),
+                            'onReady': () => {
+                                this.state.isReady = true;
+                                console.log('Main player ready');
+                            },
                             'onStateChange': (e) => this.onMainPlayerStateChange(e)
                         }
                     });
@@ -1376,7 +1354,6 @@
                     console.error('Main player error:', e);
                 }
 
-                // إنشاء لاعبي الدبلجة
                 document.querySelectorAll('[id^="dub-"]').forEach(el => {
                     if (el.id === 'dub-main') return;
                     
@@ -1384,37 +1361,18 @@
                     try {
                         this.state.audioPlayers[key] = new YT.Player(el.id, {
                             events: {
-                                'onReady': (e) => this.onAudioPlayerReady(key, e)
+                                'onReady': () => console.log(`Audio player ${key} ready`)
                             }
                         });
                     } catch (e) {
                         console.error(`Audio player ${key} error:`, e);
                     }
                 });
-
-                console.log('Players setup complete');
             },
 
-            onMainPlayerReady(event) {
-                try {
-                    this.state.mainDuration = event.target.getDuration();
-                    this.state.isReady = true;
-                    console.log('Main player ready, duration:', this.state.mainDuration);
-                } catch (e) {
-                    console.error('Error getting duration:', e);
-                }
-            },
-
-            onAudioPlayerReady(key, event) {
-                try {
-                    const duration = event.target.getDuration();
-                    this.state.durations[key] = duration;
-                    console.log(`Audio player ${key} ready, duration:`, duration);
-                } catch (e) {
-                    console.error(`Error getting ${key} duration:`, e);
-                }
-            },
-
+            /**
+             * مراقبة حالة الفيديو الرئيسي
+             */
             onMainPlayerStateChange(event) {
                 if (this.state.currentMode === 'original') return;
 
@@ -1423,14 +1381,19 @@
 
                 try {
                     if (event.data === YT.PlayerState.PLAYING) {
+                        // حساب الموضع الصحيح مع الإزاحة
+                        const mainTime = this.state.mainPlayer.getCurrentTime();
+                        const targetTime = Math.max(0, mainTime + this.state.audioOffset);
+                        
+                        audioPlayer.seekTo(targetTime, true);
                         audioPlayer.playVideo();
-                        this.startAudioSync();
+                        this.startDisplayUpdate();
                     } else if (event.data === YT.PlayerState.PAUSED) {
                         audioPlayer.pauseVideo();
-                        this.stopAudioSync();
+                        this.stopDisplayUpdate();
                     } else if (event.data === YT.PlayerState.ENDED) {
                         audioPlayer.stopVideo();
-                        this.stopAudioSync();
+                        this.stopDisplayUpdate();
                     }
                 } catch (e) {
                     console.warn('Player state change error:', e);
@@ -1438,108 +1401,71 @@
             },
 
             /**
-             * بدء مزامنة الصوت
-             * تحدّث موضع الصوت كل 100ms
+             * تحديث العرض فقط (بدون seekTo)
              */
-            startAudioSync() {
-                if (this.updateInterval) return;
+            startDisplayUpdate() {
+                if (this.displayUpdateInterval) return;
 
-                this.updateInterval = setInterval(() => {
-                    this.syncAudio();
-                }, CONFIG.AUDIO_UPDATE_INTERVAL);
+                this.displayUpdateInterval = setInterval(() => {
+                    this.updateDisplay();
+                }, CONFIG.DISPLAY_UPDATE_INTERVAL);
             },
 
-            /**
-             * إيقاف المزامنة
-             */
-            stopAudioSync() {
-                if (this.updateInterval) {
-                    clearInterval(this.updateInterval);
-                    this.updateInterval = null;
+            stopDisplayUpdate() {
+                if (this.displayUpdateInterval) {
+                    clearInterval(this.displayUpdateInterval);
+                    this.displayUpdateInterval = null;
                 }
             },
 
             /**
-             * مزامنة الصوت مع الفيديو الرئيسي
-             * تحقق من الفرق وأعد الموضع إذا لزم الأمر
+             * تحديث العرض فقط (لا تعديل على الصوت)
              */
-            syncAudio() {
+            updateDisplay() {
                 if (this.state.currentMode === 'original' || !this.state.isReady) return;
 
-                const audioPlayer = this.state.audioPlayers[this.state.currentMode];
-                if (!audioPlayer) return;
+                const timeDisplay = document.getElementById('timeDisplay');
+                if (!timeDisplay) return;
 
-                try {
-                    const mainTime = this.state.mainPlayer.getCurrentTime();
-                    const audioTime = audioPlayer.getCurrentTime();
-                    const diff = Math.abs(mainTime - audioTime);
-
-                    // تحديث عرض الـ slider
-                    const slider = document.getElementById('audioSlider');
-                    if (!this.isSliderBeingDragged && slider) {
-                        slider.value = audioTime;
-                    }
-
-                    // تحديث عرض الوقت
-                    const timeDisplay = document.getElementById('timeDisplay');
-                    if (timeDisplay) {
-                        const maxDuration = this.state.durations[this.state.currentMode] || 0;
-                        timeDisplay.textContent = `${Utils.formatTime(audioTime)} / ${Utils.formatTime(maxDuration)}`;
-                    }
-
-                    // إعادة مزامنة إذا تجاوزت الفرق الحد الأدنى
-                    if (diff > CONFIG.SYNC_THRESHOLD) {
-                        console.log(`Syncing ${this.state.currentMode}: main=${mainTime}, audio=${audioTime}`);
-                        audioPlayer.seekTo(mainTime, true);
-                    }
-                } catch (e) {
-                    console.warn('Sync error:', e);
-                }
+                const offset = this.state.audioOffset;
+                const sign = offset >= 0 ? '+' : '';
+                timeDisplay.textContent = `${sign}${offset.toFixed(2)} ثانية`;
             },
 
             /**
-             * تبديل نمط الدبلجة
-             * كتم صوت الرئيسي وفعّل الصوت الإضافي
+             * تغيير الوضع
              */
             setMode(mode) {
                 if (mode === this.state.currentMode) return;
 
-                this.stopAudioSync();
+                this.stopDisplayUpdate();
 
                 try {
                     if (mode === 'original') {
-                        // تشغيل الأصلي
                         this.state.mainPlayer.unMute();
                         
-                        // كتم جميع الدبلجات
-                        Object.entries(this.state.audioPlayers).forEach(([key, player]) => {
+                        Object.values(this.state.audioPlayers).forEach(player => {
                             try {
                                 player.pauseVideo();
                                 player.mute();
                             } catch (e) {}
                         });
                     } else {
-                        // كتم الصوت الرئيسي
                         this.state.mainPlayer.mute();
                         
-                        // حدّد الدبلجة الحالية
                         Object.entries(this.state.audioPlayers).forEach(([key, player]) => {
                             try {
                                 if (key === mode) {
                                     player.unMute();
                                     
-                                    // مزامنة أولية قبل التشغيل
+                                    // مزامنة أولية واحدة فقط
                                     const mainTime = this.state.mainPlayer.getCurrentTime();
-                                    const maxAudioDuration = this.state.durations[key] || 0;
+                                    const targetTime = Math.max(0, mainTime + this.state.audioOffset);
+                                    player.seekTo(targetTime, true);
                                     
-                                    // تأكد أن الوقت آمن
-                                    const safeTime = Math.min(mainTime, Math.max(0, maxAudioDuration - 1));
-                                    player.seekTo(safeTime, true);
-                                    
-                                    // تشغيل إذا كان الرئيسي مشغلاً
                                     if (this.state.mainPlayer.getPlayerState() === YT.PlayerState.PLAYING) {
                                         player.playVideo();
-                                        this.startAudioSync();
+                                        this.startDisplayUpdate();
                                     }
                                 } else {
                                     player.pauseVideo();
@@ -1557,41 +1483,40 @@
             },
 
             /**
-             * البحث اليدوي للصوت
-             * استدعاه عند تحريك المستخدم للـ slider
+             * تعديل الإزاحة
              */
-            seekAudio(time) {
-                if (this.state.currentMode === 'original') return;
-
-                const audioPlayer = this.state.audioPlayers[this.state.currentMode];
-                if (!audioPlayer) return;
-
-                try {
-                    const maxDuration = this.state.durations[this.state.currentMode] || 0;
-                    
-                    // تأكد أن الوقت آمن
-                    const safeTime = Math.min(time, Math.max(0, maxDuration));
-                    audioPlayer.seekTo(safeTime, true);
-
-                    Utils.playHaptic();
-                    console.log(`Seek to ${safeTime}s in ${this.state.currentMode}`);
-                } catch (e) {
-                    console.warn('Seek error:', e);
+            setOffset(offset) {
+                this.state.audioOffset = offset;
+                
+                // إعادة تطبيق الإزاحة الجديدة
+                if (this.state.currentMode !== 'original') {
+                    const audioPlayer = this.state.audioPlayers[this.state.currentMode];
+                    if (audioPlayer) {
+                        try {
+                            const mainTime = this.state.mainPlayer.getCurrentTime();
+                            const targetTime = Math.max(0, mainTime + offset);
+                            audioPlayer.seekTo(targetTime, true);
+                            
+                            Utils.playHaptic();
+                        } catch (e) {
+                            console.warn('Offset error:', e);
+                        }
+                    }
                 }
+
+                this.updateDisplay();
             },
 
             /**
-             * تنظيف شامل
+             * تنظيف
              */
             cleanup() {
-                this.stopAudioSync();
+                this.stopDisplayUpdate();
                 this.state.mainPlayer = null;
                 this.state.audioPlayers = {};
                 this.state.isReady = false;
                 this.state.currentMode = 'original';
-                this.state.audioOffsets = {};
-                this.state.durations = {};
-                this.state.mainDuration = 0;
+                this.state.audioOffset = 0;
             }
         };
 
@@ -1616,7 +1541,6 @@
 
             setupDubToggle() {
                 const btn = document.getElementById('dubToggle');
-                let touchStartTime = 0;
                 let isLongPress = false;
 
                 const handleDubToggle = () => {
@@ -1629,10 +1553,8 @@
                     App.toggleDubSelector();
                 };
 
-                // Mouse events
                 btn.addEventListener('mousedown', () => {
                     if (App.currentView !== 'video') return;
-                    touchStartTime = Date.now();
                     isLongPress = false;
                     App.dubToggleLongPressTimer = setTimeout(() => {
                         isLongPress = true;
@@ -1649,10 +1571,8 @@
                     }
                 });
 
-                // Touch events
                 btn.addEventListener('touchstart', () => {
                     if (App.currentView !== 'video') return;
-                    touchStartTime = Date.now();
                     isLongPress = false;
                     App.dubToggleLongPressTimer = setTimeout(() => {
                         isLongPress = true;
@@ -1670,33 +1590,15 @@
                     }
                 });
 
-                // Prevent context menu on long press
                 btn.addEventListener('contextmenu', (e) => e.preventDefault());
             },
 
             setupAudioSlider() {
                 const slider = document.getElementById('audioSlider');
 
-                ['mousedown', 'touchstart'].forEach(event => {
-                    slider.addEventListener(event, () => {
-                        DubEngine.isSliderBeingDragged = true;
-                        DubEngine.stopAudioSync();
-                    });
-                });
-
-                ['mouseup', 'touchend', 'touchcancel'].forEach(event => {
-                    slider.addEventListener(event, () => {
-                        DubEngine.isSliderBeingDragged = false;
-                        if (DubEngine.state.mainPlayer && 
-                            DubEngine.state.mainPlayer.getPlayerState() === YT.PlayerState.PLAYING) {
-                            DubEngine.startAudioSync();
-                        }
-                    });
-                });
-
                 slider.addEventListener('input', (e) => {
-                    const time = Number(e.target.value);
-                    DubEngine.seekAudio(time);
+                    const offset = Number(e.target.value);
+                    DubEngine.setOffset(offset);
                 });
             },
 
@@ -1797,7 +1699,6 @@
                 this.currentEpisode = this.currentSeries.episodes.find(e => e.id === episodeId);
                 if (!this.currentEpisode) return;
 
-                // تحديث الواجهة
                 document.getElementById('libraryView').classList.add('hidden');
                 document.getElementById('videoView').classList.remove('hidden');
                 document.getElementById('backBtn').style.display = 'inline-flex';
@@ -1807,24 +1708,19 @@
                 document.getElementById('videoTitle').textContent = this.currentEpisode.title;
                 document.getElementById('videoDescription').textContent = this.currentEpisode.description;
 
-                // إعداد الدبلجات
                 this.setupDubButtons();
 
-                // تهيئة محرك الدبلجة
                 const mainId = this.currentEpisode.versions.original.id;
                 await DubEngine.init(mainId, this.currentEpisode.versions);
 
-                // إعادة تعيين الحالة
                 this.dubEnabled = false;
                 this.dubSelectorVisible = false;
                 document.getElementById('dubToggle').classList.remove('active');
                 document.getElementById('dubToggle').querySelector('.icon').textContent = '🔇';
 
-                // إعادة تعيين الـ slider
                 const slider = document.getElementById('audioSlider');
                 slider.value = 0;
-                slider.max = 0;
-                document.getElementById('timeDisplay').textContent = '0:00 / 0:00';
+                document.getElementById('timeDisplay').textContent = '+0.00 ثانية';
 
                 this.currentView = 'video';
                 Comments.load();
@@ -2063,7 +1959,7 @@
                     let lastClick = 0;
                     el.addEventListener('click', () => {
                         const now = Date.now();
-                        if (now - lastClick < CONFIG.DOUBLE_CLICK_TIMEOUT) {
+                        if (now - lastClick < 300) {
                             localStorage.removeItem('watch_vip_user_comment_id');
                             this.userCommentId = null;
                             Utils.status(t.canComment, 'success');
@@ -2084,7 +1980,6 @@
             document.documentElement.setAttribute('data-lang', lang);
             localStorage.setItem('site_lang', lang);
 
-            // Update page text
             document.getElementById('libraryTitle').textContent = t.library;
             document.getElementById('breadcrumbText').textContent = t.library;
             document.getElementById('backBtn').textContent = t.back;
@@ -2123,7 +2018,6 @@
             }
         }
 
-        // Language toggle button
         const langToggle = document.getElementById('langToggle');
         const langMenu = document.getElementById('langMenu');
 
@@ -2146,7 +2040,6 @@
             }
         });
 
-        // Initialize
         const savedLang = localStorage.getItem('site_lang') || 'ar';
         applyLanguage(savedLang);
 
