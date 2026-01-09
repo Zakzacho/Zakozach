@@ -1092,7 +1092,7 @@
     </div>
 
     <script>
-    // ============================================
+   // ============================================
 // GLOBAL STATE & CONFIGURATION
 // ============================================
 const CONFIG = {
@@ -1143,23 +1143,11 @@ const LIBRARY = {
                             name: 'دبلجة عربية',
                             icon: '🔊',
                             id: 'oBdv4JrvO6I'
-                        }
-                    }
-                },
-                {
-                    id: 'ep02',
-                    title: 'الحلقة 02 - الآلة الزمنية',
-                    description: 'دورايمون يقدم آلته المميزة الآلة الزمنية لنوبيتا',
-                    versions: {
-                        original: {
-                            name: 'النسخة الأصلية',
-                            icon: '🎬',
-                            id: 'NtUwXhqBwSI'
                         },
-                        arabic: {
-                            name: 'دبلجة عربية',
-                            icon: '🔊',
-                            id: 'oBdv4JrvO6I'
+                        japanese: {
+                            name: 'دبلجة يابانية',
+                            icon: '🎧',
+                            id: 'NtUwXhqBwSI'
                         }
                     }
                 }
@@ -1192,9 +1180,11 @@ const TRANSLATIONS = {
         langButtonLabel: 'تغيير اللغة',
         dubTitle: 'اختر نسخة العرض:',
         dubHint: 'انقر للتبديل، اضغط طويلاً لعرض القائمة',
+        episodeCount: (n) => `${n} حلقة`,
         statusMessages: {
             original: '▶ النسخة الأصلية قيد التشغيل',
-            arabic: '🔊 الدبلجة العربية مفعلة'
+            arabic: '🔊 الدبلجة العربية مفعلة',
+            japanese: '🎧 الدبلجة اليابانية مفعلة'
         }
     },
     en: {
@@ -1220,9 +1210,11 @@ const TRANSLATIONS = {
         langButtonLabel: 'Change Language',
         dubTitle: 'Choose Version:',
         dubHint: 'Click to toggle, long press to show menu',
+        episodeCount: (n) => `${n} episode${n !== 1 ? 's' : ''}`,
         statusMessages: {
             original: '▶ Original version is playing',
-            arabic: '🔊 Arabic dub is enabled'
+            arabic: '🔊 Arabic dub is enabled',
+            japanese: '🎧 Japanese dub is enabled'
         }
     },
     fr: {
@@ -1248,9 +1240,11 @@ const TRANSLATIONS = {
         langButtonLabel: 'Changer la Langue',
         dubTitle: 'Choisir la version:',
         dubHint: 'Cliquez pour basculer, appuyez longuement pour le menu',
+        episodeCount: (n) => `${n} épisode${n !== 1 ? 's' : ''}`,
         statusMessages: {
             original: '▶ La version originale est en cours de lecture',
-            arabic: '🔊 Le doublage arabe est activé'
+            arabic: '🔊 Le doublage arabe est activé',
+            japanese: '🎧 Le doublage japonais est activé'
         }
     },
     ja: {
@@ -1276,9 +1270,11 @@ const TRANSLATIONS = {
         langButtonLabel: '言語を変更',
         dubTitle: 'バージョンを選択:',
         dubHint: 'クリックして切り替え、長押ししてメニューを表示',
+        episodeCount: (n) => `${n}エピソード`,
         statusMessages: {
             original: '▶ オリジナルバージョンが再生中',
-            arabic: '🔊 アラビア語吹き替えが有効'
+            arabic: '🔊 アラビア語吹き替えが有効',
+            japanese: '🎧 日本語吹き替えが有効'
         }
     }
 };
@@ -1396,7 +1392,7 @@ const API = {
 };
 
 // ============================================
-// DUB ENGINE - التحكم بالدبلجة فقط
+// DUB ENGINE
 // ============================================
 const DubEngine = {
     state: {
@@ -1776,7 +1772,7 @@ const App = {
                 </div>
                 <div class="item-info">
                     <div class="item-title">${Utils.sanitize(series.title)}</div>
-                    <div class="item-subtitle">${series.episodes.length} حلقة</div>
+                    <div class="item-subtitle">${t.episodeCount(series.episodes.length)}</div>
                 </div>
             </div>
         `).join('');
