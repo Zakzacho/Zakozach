@@ -1127,7 +1127,7 @@ const LIBRARY = {
         {
             id: 'doraemon',
             title: 'دورايمون',
-            emoji: '🤖',
+            cover: 'covers/doraemon.jpg',
             episodes: [
                 {
                     id: 'ep01',
@@ -1768,8 +1768,8 @@ const App = {
         grid.innerHTML = LIBRARY.series.map(series => `
             <div class="library-item" onclick="App.viewSeries('${series.id}')">
                 <div class="item-cover">
-                    ${series.emoji}
-                </div>
+    <img src="${series.cover}" alt="${series.title}">
+</div>
                 <div class="item-info">
                     <div class="item-title">${Utils.sanitize(series.title)}</div>
                     <div class="item-subtitle">${t.episodeCount(series.episodes.length)}</div>
