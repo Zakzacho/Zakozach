@@ -1130,9 +1130,11 @@ const LIBRARY = {
             cover: 'covers/doraemon.jpg',
             episodes: [
                 {
-                    id: 'ep01',
-                    title: 'الحلقة 01 - بداية دورايمون',
-                    description: 'الحلقة الأولى من المسلسل الشهير حيث يقدم دورايمون نفسه لنوبيتا',
+    id: 'ep01',
+    title: 'الحلقة 01 - بداية دورايمون',
+    description: 'مدينة الأحلام – أرض نوبيتا',
+    cover: 'covers/ep01.jpg',
+    
                     versions: {
                         original: {
                             name: 'النسخة الأصلية',
@@ -1800,9 +1802,10 @@ const App = {
         const grid = document.getElementById('libraryGrid');
         grid.innerHTML = this.currentSeries.episodes.map(ep => `
             <div class="library-item" onclick="App.playEpisode('${ep.id}')">
-                <div class="item-cover episode">
-                    <span>▶</span>
-                </div>
+                <div class="item-cover episode"
+     style="background-image: url('${ep.cover}')">
+    <span class="play-icon">▶</span>
+</div>
                 <div class="item-info">
                     <div class="item-title">${Utils.sanitize(ep.title)}</div>
                     <div class="item-subtitle">${Utils.sanitize(ep.description)}</div>
