@@ -130,22 +130,21 @@
             box-shadow: var(--shadow);
         }
 
-        .item-cover {
-            width: 100%;
-            aspect-ratio: 16/9;
-            background: linear-gradient(135deg, #ff0000, #cc0000);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 3rem;
-            color: white;
-            position: relative;
-            overflow: hidden;
-        }
+       .item-cover {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    background-color: #000; /* بدل الأحمر */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+}
 
-        .item-cover.episode {
-            aspect-ratio: 2/1;
-        }
+.item-cover.episode {
+    background-size: cover;
+    background-position: 25% center;
+}
 
         .item-cover img {
             width: 100%;
