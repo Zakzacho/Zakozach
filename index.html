@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="منصة بث فيديو احترافية مع نظام دبلجة متعددة اللغات">
-    <title>Watch VIP - منصة البث</title>
+  <meta name="description" data-i18n-content="metaDescription">
+   <title data-i18n="appTitle"></title>
     
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet">
     
@@ -1007,29 +1007,46 @@
 </head>
 <body>
     <div class="container">
+
+        <!-- Breadcrumb -->
         <div class="breadcrumb" id="breadcrumb">
-            <button class="back-btn" id="backBtn" onclick="App.goHome()" style="display: none;"></button>
-            <span id="breadcrumbText">المكتبة</span>
+            <button
+                class="back-btn"
+                id="backBtn"
+                data-i18n="back"
+                onclick="App.goHome()"
+                style="display: none;">
+            </button>
+            <span id="breadcrumbText" data-i18n="library"></span>
         </div>
 
+        <!-- Library View -->
         <div id="libraryView" class="library-view">
             <div class="library-header">
-                <h1 id="libraryTitle">المسلسلات</h1>
+                <h1 id="libraryTitle" data-i18n="library"></h1>
             </div>
             <div class="library-grid" id="libraryGrid"></div>
         </div>
 
+        <!-- Video View -->
         <div id="videoView" class="hidden">
             <div class="video-section">
+
                 <div class="video-header">
                     <h1>
-                        <span id="appTitle">Watch VIP</span>
-                        <div id="dubLongPressHint" style="font-size:12px;color:#aaa;margin-top:4px;"></div>
+                        <span id="appTitle" data-i18n="appTitle"></span>
+                        <div id="dubLongPressHint" data-i18n="dubLongPressHint"
+                             style="font-size:12px;color:#aaa;margin-top:4px;">
+                        </div>
                     </h1>
+
                     <div class="video-controls">
                         <div class="quick-toggle">
-                            <button id="dubToggle" class="sys-toggle" title="الدبلجة">
-                                <span class="icon">🔇</span>
+                            <button
+                                id="dubToggle"
+                                class="sys-toggle"
+                                data-i18n-title="dubTitle">
+                                <span class="icon"></span>
                             </button>
                         </div>
                     </div>
@@ -1038,58 +1055,66 @@
                 <div class="video-container" id="videoContainer"></div>
 
                 <div class="video-seek-wrapper" id="seekWrapper">
-                    <div id="preDubNotice" class="dub-notice"></div>
+                    <div id="preDubNotice" class="dub-notice" data-i18n="preDubNotice"></div>
 
                     <div id="dubArrows" class="dub-arrows hidden">
-                        <button class="arrow-btn" id="back1">⏪</button>
-                        <span class="arrow-label" id="seekHint"></span>
-                        <button class="arrow-btn" id="forward1">⏩</button>
+                        <button class="arrow-btn" id="back1" data-i18n="iconBackward" aria-label="backward"></button>
+<button class="arrow-btn" id="forward1" data-i18n="iconForward" aria-label="forward"></button>
                     </div>
 
                     <div id="legacySeek" class="hidden">
                         <span class="time-display" id="currentTime">00:00</span>
-                        <input type="range" id="videoSeek" min="0" value="0" step="0.1" title="تقدم الفيديو">
+                        <input
+                            type="range"
+                            id="videoSeek"
+                            min="0"
+                            value="0"
+                            step="0.1">
                         <span class="time-display" id="totalTime">00:00</span>
                     </div>
                 </div>
 
                 <div class="dub-selector" id="dubSelector" style="display: none;">
-                    <h3 id="dubTitle">اختر نسخة العرض:</h3>
+                    <h3 id="dubTitle" data-i18n="dubTitle"></h3>
                     <div class="dub-buttons" id="dubButtons"></div>
-                    
+
                     <div class="dub-status-indicator" id="dubStatusIndicator">
                         <span class="dub-status-dot" id="statusDot"></span>
-                        <span id="statusText">▶ النسخة الأصلية قيد التشغيل</span>
+                        <span id="statusText"></span>
                     </div>
 
                     <div class="dub-audio-controls" id="dubAudioControls" style="display: none;">
-                        <span class="dub-audio-label" id="audioLabel">إزاحة الصوت:</span>
+                        <span class="dub-audio-label" id="audioLabel" data-i18n="audioLabel"></span>
                         <input
                             type="range"
                             id="audioSlider"
                             min="-10"
                             max="10"
                             value="0"
-                            step="0.05"
-                            title="اضبط إزاحة الصوت (ثانية)"
-                        >
-                        <div class="dub-time-display" id="timeDisplay">+0.00 ثانية</div>
+                            step="0.05">
+                        <div class="dub-time-display" id="timeDisplay">+0.00</div>
                     </div>
                 </div>
 
                 <div class="video-info">
-                    <h2 class="video-title" id="videoTitle">العنوان</h2>
-                    <p class="video-description" id="videoDescription">الوصف</p>
+                    <h2 class="video-title" id="videoTitle"></h2>
+                    <p class="video-description" id="videoDescription"></p>
                 </div>
             </div>
 
+            <!-- Comments -->
             <div class="comments-section">
                 <div class="comments-header">
                     <h2>
                         <span class="comments-update-indicator paused" id="updateIndicator"></span>
-                        <span id="commentsTitle">التعليقات</span>
+                        <span id="commentsTitle" data-i18n="comments"></span>
                     </h2>
-                    <span class="comments-count" id="commentsCount">0 تعليق</span>
+                    <span
+                        class="comments-count"
+                        id="commentsCount"
+                        data-i18n="commentCount"
+                        data-i18n-count="0">
+                    </span>
                 </div>
 
                 <div class="status-message" id="statusMessage"></div>
@@ -1097,42 +1122,50 @@
                 <div class="comment-form">
                     <form id="commentForm">
                         <div class="form-group">
-                            <label for="commentName" id="labelName">الاسم (اختياري)</label>
-                            <input 
-                                type="text" 
-                                id="commentName" 
+                            <label for="commentName" id="labelName" data-i18n="labelName"></label>
+                            <input
+                                type="text"
+                                id="commentName"
                                 maxlength="50"
-                            >
-                            <div class="form-hint" id="hintName">سيتم توليد اسم تلقائي إن لم تكتب</div>
+                                data-i18n-placeholder="placeholderName">
+                            <div class="form-hint" id="hintName" data-i18n="hintName"></div>
                         </div>
+
                         <div class="form-group">
-                            <label for="commentText" id="labelComment">التعليق *</label>
-                            <textarea 
-                                id="commentText" 
+                            <label for="commentText" id="labelComment" data-i18n="labelComment"></label>
+                            <textarea
+                                id="commentText"
                                 required
                                 maxlength="500"
-                            ></textarea>
+                                data-i18n-placeholder="placeholderComment">
+                            </textarea>
                         </div>
-                        <button type="submit" class="submit-btn" id="submitBtn">إرسال التعليق</button>
+
+                        <button
+                            type="submit"
+                            class="submit-btn"
+                            id="submitBtn"
+                            data-i18n="submit">
+                        </button>
                     </form>
                 </div>
 
                 <div id="commentsListContainer">
-                    <div class="loading" id="loadingText">جاري التحميل...</div>
+                    <div class="loading" id="loadingText" data-i18n="loading"></div>
                 </div>
             </div>
         </div>
     </div>
 
-    <div id="langToggle" title="تغيير اللغة"></div>
+    <!-- Language Switch -->
+    <div id="langToggle" data-i18n-title="langButtonLabel">🌐</div>
 
     <div id="langMenu" class="hidden">
-        <button data-lang="ar">العربية</button>
-        <button data-lang="en">English</button>
-        <button data-lang="fr">Français</button>
-        <button data-lang="ja">日本語</button>
+        <button data-lang="ar" data-i18n="langAr"></button>
+        <button data-lang="en" data-i18n="langEn"></button>
+        <button data-lang="fr" data-i18n="langFr"></button>
+        <button data-lang="ja" data-i18n="langJa"></button>
     </div>
-
     <script>
 // ============================================
 // GLOBAL STATE & CONFIGURATION
@@ -1209,6 +1242,7 @@ const i18nResources = {
             hoursAgo: 'منذ {{count}} ساعة',
             daysAgo: 'منذ {{count}} يوم',
             original: 'النسخة الأصلية',
+            metaDescription: 'دارنا لإختيار مقعدك المناسب',
             arabicDub: 'دبلجة عربية',
             japaneseDub: 'دبلجة يابانية',
             langAr: 'عربي',
@@ -1230,7 +1264,9 @@ const i18nResources = {
             iconArabicDub: '🔊',
             iconJapaneseDub: '🎧',
             iconBackArrow: '←',
-            iconVerified: '✓'
+            iconVerified: '✓',
+            iconBackward: "⏪",
+            iconForward: "⏩"
         }
     },
     en: {
@@ -1277,6 +1313,7 @@ const i18nResources = {
             hoursAgo: '{{count}}h ago',
             daysAgo: '{{count}}d ago',
             original: 'Original Version',
+            metaDescription: 'Our home for choosing the right seat',
             arabicDub: 'Arabic Dub',
             japaneseDub: 'Japanese Dub',
             langAr: 'عربي',
@@ -1298,8 +1335,10 @@ const i18nResources = {
             iconArabicDub: '🔊',
             iconJapaneseDub: '🎧',
             iconBackArrow: '←',
-            iconVerified: '✓'
-        }
+            iconVerified: '✓',
+            iconBackward: '⏪',
+            iconForward: '⏩'
+         }
     },
     fr: {
         translation: {
@@ -1345,6 +1384,7 @@ const i18nResources = {
             hoursAgo: 'il y a {{count}}h',
             daysAgo: 'il y a {{count}}j',
             original: 'Version Originale',
+            metaDescription: 'Notre site pour choisir le siège idéal',
             arabicDub: 'Doublage Arabe',
             japaneseDub: 'Doublage Japonais',
             langAr: 'عربي',
@@ -1366,7 +1406,9 @@ const i18nResources = {
             iconArabicDub: '🔊',
             iconJapaneseDub: '🎧',
             iconBackArrow: '←',
-            iconVerified: '✓'
+            iconVerified: '✓',
+            iconBackward: '⏪',
+            iconForward: '⏩'
         }
     },
     ja: {
@@ -1413,6 +1455,7 @@ const i18nResources = {
             hoursAgo: '{{count}}時間前',
             daysAgo: '{{count}}日前',
             original: 'オリジナルバージョン',
+            metaDescription: '適切な座席を選ぶためのホーム',
             arabicDub: 'アラビア語吹き替え',
             japaneseDub: '日本語吹き替え',
             langAr: 'عربي',
@@ -1434,7 +1477,9 @@ const i18nResources = {
             iconArabicDub: '🔊',
             iconJapaneseDub: '🎧',
             iconBackArrow: '←',
-            iconVerified: '✓'
+            iconVerified: '✓',
+            iconBackward: '⏪',
+            iconForward: '⏩'
         }
     }
 };
@@ -1500,7 +1545,17 @@ const LIBRARY = {
 const I18n = {
     translateElement(element) {
         const key = element.getAttribute('data-i18n');
-        if (!key) return;
+const contentKey = element.getAttribute('data-i18n-content');
+
+if (contentKey) {
+    if (!i18next.exists(contentKey)) {
+        console.error(`❌ Translation key not found: "${contentKey}"`);
+    } else {
+        element.setAttribute('content', i18next.t(contentKey));
+    }
+}
+
+if (!key) return;
 
         const count = element.getAttribute('data-i18n-count');
         const options = count ? { count: parseInt(count) } : {};
@@ -1512,13 +1567,24 @@ const I18n = {
             return;
         }
 
-        if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
-            if (element.placeholder !== undefined) {
-                element.placeholder = i18next.t(key, options);
-            }
-        } else {
-            element.textContent = i18next.t(key, options);
-        }
+        // النص الأساسي
+if (
+    element.tagName !== 'INPUT' &&
+    element.tagName !== 'TEXTAREA'
+) {
+    element.textContent = i18next.t(key, options);
+}
+
+// 🔥 ترجمة placeholder
+const placeholderKey = element.getAttribute('data-i18n-placeholder');
+if (placeholderKey) {
+    if (!i18next.exists(placeholderKey)) {
+        console.error(`❌ Translation key not found: "${placeholderKey}"`);
+        element.placeholder = `[MISSING: ${placeholderKey}]`;
+    } else {
+        element.placeholder = i18next.t(placeholderKey);
+    }
+}
 
         const titleKey = element.getAttribute('data-i18n-title');
         if (titleKey) {
@@ -1531,14 +1597,14 @@ const I18n = {
     },
 
     translatePage() {
-        document.querySelectorAll('[data-i18n]').forEach(el => {
-            this.translateElement(el);
-        });
+    document.querySelectorAll('[data-i18n], [data-i18n-content]').forEach(el => {
+        this.translateElement(el);
+    });
 
-        const lang = i18next.language;
-        document.documentElement.setAttribute('data-lang', lang);
-        document.documentElement.setAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr');
-    },
+    const lang = i18next.language;
+    document.documentElement.setAttribute('data-lang', lang);
+    document.documentElement.setAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr');
+},
 
     changeLanguage(lang) {
         i18next.changeLanguage(lang, (err) => {
@@ -1927,12 +1993,12 @@ const App = {
         const langMenu = document.getElementById('langMenu');
 
         langToggle.addEventListener('click', () => {
-            langMenu.classList.toggle('show');
+            langMenu.classList.toggle('hidden');
         });
 
         document.addEventListener('click', (e) => {
             if (!langToggle.contains(e.target) && !langMenu.contains(e.target)) {
-                langMenu.classList.remove('show');
+                langMenu.classList.add('hidden');
             }
         });
 
@@ -1940,7 +2006,7 @@ const App = {
             btn.addEventListener('click', () => {
                 const lang = btn.getAttribute('data-lang');
                 I18n.changeLanguage(lang);
-                langMenu.classList.remove('show');
+                langMenu.classList.add('hidden');
                 
                 langMenu.querySelectorAll('button').forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
@@ -2049,6 +2115,8 @@ const App = {
             preDubNotice.classList.add('hidden');
             legacySeek.classList.add('hidden');
             dubArrows.classList.remove('hidden');
+            
+            I18n.translatePage();
         }
 
         function hideDubControls() {
@@ -2056,6 +2124,7 @@ const App = {
             legacySeek.classList.add('hidden');
             preDubNotice.classList.remove('hidden');
         }
+       
 
         const originalToggleDub = App.toggleDub.bind(App);
         App.toggleDub = function () {
@@ -2366,15 +2435,16 @@ const Comments = {
     },
 
     pauseAutoRefresh() {
-        const indicator = document.getElementById('updateIndicator');
-        if (indicator) {
-            if (App.currentView === 'video') {
-                indicator.classList.remove('paused');
-            } else {
-                indicator.classList.add('paused');
-            }
-        }
-    },
+    if (this.autoRefreshInterval) {
+        clearInterval(this.autoRefreshInterval);
+        this.autoRefreshInterval = null;
+    }
+
+    const indicator = document.getElementById('updateIndicator');
+    if (indicator) {
+        indicator.classList.add('paused');
+    }
+},
 
     async send() {
         const now = Date.now();
@@ -2516,6 +2586,3 @@ document.addEventListener('DOMContentLoaded', () => {
     </script>
 </body>
 </html>
-
-
-
