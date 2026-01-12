@@ -714,6 +714,10 @@
             transform: scale(1.1);
         }
 
+        .arrow-btn:active {
+            transform: scale(0.95);
+        }
+
         .arrow-label {
             font-size: 0.8rem;
             color: var(--text-secondary);
@@ -800,7 +804,21 @@
             to { transform: rotate(360deg); }
         }
 
-        
+        .comments-update-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background: var(--primary-color);
+            border-radius: 50%;
+            margin-right: 8px;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        .comments-update-indicator.paused {
+            animation: none;
+            opacity: 0.5;
+        }
+
         @keyframes pulse {
             0%, 100% { opacity: 1; }
             50% { opacity: 0.5; }
@@ -989,7 +1007,6 @@
                     <div class="dub-buttons" id="dubButtons"></div>
 
                     <div class="dub-status-indicator" id="dubStatusIndicator">
-                        <span class="dub-status-dot" id="statusDot"></span>
                         <span id="statusText"></span>
                     </div>
                 </div>
@@ -1004,7 +1021,7 @@
             <div class="comments-section">
                 <div class="comments-header">
                     <h2>
-                       
+                        <span class="comments-update-indicator paused" id="updateIndicator"></span>
                         <span id="commentsTitle" data-i18n="comments"></span>
                     </h2>
                     <span
@@ -1076,7 +1093,8 @@ const CONFIG = {
     BACKEND_URL: 'https://site--watch-vip--j9hb6dlmp4qm.code.run',
     REFRESH_INTERVAL: 10000,
     SUBMIT_COOLDOWN: 3000,
-    LONG_PRESS_DURATION: 500
+    LONG_PRESS_DURATION: 500,
+    SEEK_STEP: 1
 };
 
 // YouTube API
@@ -1508,6 +1526,7 @@ const Utils = {
 
     status(msg, type='info') {
         const el = document.getElementById('statusMessage');
+        if (!el) return;
         el.textContent = msg;
         el.className = `status-message ${type} show`;
         setTimeout(()=>el.classList.remove('show'), 4000);
@@ -1568,6 +1587,8 @@ const DubEngine = {
         this.cleanup();
 
         const container = document.getElementById('videoContainer');
+        if (!container) return;
+
         let html = `<iframe id="dub-main"
             src="https://www.youtube.com/embed/${mainId}?enablejsapi=1&controls=1&modestbranding=1&rel=0"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -1600,15 +1621,18 @@ const DubEngine = {
         }
 
         try {
-            this.state.mainPlayer = new YT.Player('dub-main', {
-                events: {
-                    'onReady': () => {
-                        this.state.isReady = true;
-                        console.log('✅ Main player ready');
-                    },
-                    'onStateChange': (e) => this.onMainPlayerStateChange(e)
-                }
-            });
+            const mainEl = document.getElementById('dub-main');
+            if (mainEl) {
+                this.state.mainPlayer = new YT.Player('dub-main', {
+                    events: {
+                        'onReady': () => {
+                            this.state.isReady = true;
+                            console.log('✅ Main player ready');
+                        },
+                        'onStateChange': (e) => this.onMainPlayerStateChange(e)
+                    }
+                });
+            }
         } catch (e) {
             console.error('Main player error:', e);
         }
@@ -1665,9 +1689,13 @@ const DubEngine = {
     },
 
     syncAudioPlayer(audioPlayer) {
+        if (!audioPlayer || !this.state.mainPlayer) return;
+
         try {
             const mainTime = this.state.mainPlayer.getCurrentTime();
-            audioPlayer.seekTo(mainTime, true);
+            if (mainTime !== undefined && !isNaN(mainTime)) {
+                audioPlayer.seekTo(mainTime, true);
+            }
         } catch (e) {
             console.warn('Sync error:', e);
         }
@@ -1685,6 +1713,10 @@ const DubEngine = {
             try {
                 const mainTime = this.state.mainPlayer.getCurrentTime();
                 const audioTime = audioPlayer.getCurrentTime();
+                
+                if (mainTime === undefined || audioTime === undefined || 
+                    isNaN(mainTime) || isNaN(audioTime)) return;
+
                 const diff = Math.abs(mainTime - audioTime);
 
                 if (diff > 0.5) {
@@ -1728,7 +1760,8 @@ const DubEngine = {
                 }
             }
 
-            if (duration > 0 && !this.state.userSeeking) {
+            if (duration > 0 && !this.state.userSeeking && 
+                current !== undefined && !isNaN(current)) {
                 seek.max = duration;
                 seek.value = current;
                 currentTimeEl.textContent = Utils.formatTime(current);
@@ -1746,30 +1779,48 @@ const DubEngine = {
 
         try {
             if (mode === 'original') {
-                this.state.mainPlayer.unMute();
+                if (this.state.mainPlayer && typeof this.state.mainPlayer.unMute === 'function') {
+                    this.state.mainPlayer.unMute();
+                }
                 
                 Object.values(this.state.audioPlayers).forEach(player => {
                     try {
-                        player.pauseVideo();
-                        player.mute();
+                        if (player && typeof player.pauseVideo === 'function') {
+                            player.pauseVideo();
+                        }
+                        if (player && typeof player.mute === 'function') {
+                            player.mute();
+                        }
                     } catch (e) {}
                 });
             } else {
-                this.state.mainPlayer.mute();
+                if (this.state.mainPlayer && typeof this.state.mainPlayer.mute === 'function') {
+                    this.state.mainPlayer.mute();
+                }
                 
                 Object.entries(this.state.audioPlayers).forEach(([key, player]) => {
                     try {
+                        if (!player) return;
+
                         if (key === mode) {
-                            player.unMute();
+                            if (typeof player.unMute === 'function') {
+                                player.unMute();
+                            }
                             this.syncAudioPlayer(player);
                             
-                            if (this.state.mainPlayer.getPlayerState() === YT.PlayerState.PLAYING) {
+                            if (this.state.mainPlayer && 
+                                this.state.mainPlayer.getPlayerState() === YT.PlayerState.PLAYING &&
+                                typeof player.playVideo === 'function') {
                                 player.playVideo();
                                 this.startSync();
                             }
                         } else {
-                            player.pauseVideo();
-                            player.mute();
+                            if (typeof player.pauseVideo === 'function') {
+                                player.pauseVideo();
+                            }
+                            if (typeof player.mute === 'function') {
+                                player.mute();
+                            }
                         }
                     } catch (e) {}
                 });
@@ -1788,12 +1839,40 @@ const DubEngine = {
             ? this.state.mainPlayer 
             : this.state.audioPlayers[this.state.currentMode];
 
-        if (!audioPlayer) return;
+        if (!audioPlayer || typeof audioPlayer.seekTo !== 'function') return;
 
         try {
-            audioPlayer.seekTo(time, true);
+            if (time !== undefined && !isNaN(time) && time >= 0) {
+                audioPlayer.seekTo(time, true);
+            }
         } catch (e) {
             console.warn('Seek error:', e);
+        }
+    },
+
+    adjustTime(offset) {
+        const player = this.state.currentMode === 'original' 
+            ? this.state.mainPlayer 
+            : this.state.audioPlayers[this.state.currentMode];
+
+        if (!player || typeof player.getCurrentTime !== 'function' || 
+            typeof player.seekTo !== 'function') return;
+
+        try {
+            const currentTime = player.getCurrentTime();
+            if (currentTime === undefined || isNaN(currentTime)) return;
+
+            const newTime = Math.max(0, currentTime + offset);
+            player.seekTo(newTime, true);
+            
+            const seek = document.getElementById('videoSeek');
+            if (seek) {
+                seek.value = newTime;
+            }
+            
+            this.updateSeekbar();
+        } catch (e) {
+            console.warn('Adjust time error:', e);
         }
     },
 
@@ -1847,20 +1926,24 @@ const App = {
         const saved = sessionStorage.getItem('last_view');
 
         if (saved) {
-            const state = JSON.parse(saved);
+            try {
+                const state = JSON.parse(saved);
 
-            if (state.view === 'video') {
-                this.currentSeries = LIBRARY.series.find(s => s.id === state.seriesId);
-                if (this.currentSeries) {
-                    this.playEpisode(state.episodeId);
-                } else {
+                if (state.view === 'video') {
+                    this.currentSeries = LIBRARY.series.find(s => s.id === state.seriesId);
+                    if (this.currentSeries) {
+                        this.playEpisode(state.episodeId);
+                    } else {
+                        this.renderHome();
+                    }
+                } 
+                else if (state.view === 'series') {
+                    this.viewSeries(state.seriesId);
+                } 
+                else {
                     this.renderHome();
                 }
-            } 
-            else if (state.view === 'series') {
-                this.viewSeries(state.seriesId);
-            } 
-            else {
+            } catch (e) {
                 this.renderHome();
             }
         } else {
@@ -1871,6 +1954,8 @@ const App = {
     setupLanguageToggle() {
         const langToggle = document.getElementById('langToggle');
         const langMenu = document.getElementById('langMenu');
+
+        if (!langToggle || !langMenu) return;
 
         langToggle.addEventListener('click', () => {
             langMenu.classList.toggle('hidden');
@@ -1923,6 +2008,8 @@ const App = {
 
     setupDubToggle() {
         const btn = document.getElementById('dubToggle');
+        if (!btn) return;
+
         let isLongPress = false;
 
         const handleDubToggle = () => {
@@ -1953,7 +2040,7 @@ const App = {
             }
         });
 
-        btn.addEventListener('touchstart', () => {
+        btn.addEventListener('touchstart', (e) => {
             if (App.currentView !== 'video') return;
             isLongPress = false;
             App.dubToggleLongPressTimer = setTimeout(() => {
@@ -1977,6 +2064,7 @@ const App = {
 
     setupVideoSeek() {
         const seek = document.getElementById('videoSeek');
+        if (!seek) return;
 
         seek.addEventListener('mousedown', () => {
             DubEngine.state.userSeeking = true;
@@ -1988,8 +2076,13 @@ const App = {
 
         seek.addEventListener('input', (e) => {
             const time = Number(e.target.value);
-            DubEngine.seekAudio(time);
-            document.getElementById('currentTime').textContent = Utils.formatTime(time);
+            if (!isNaN(time) && time >= 0) {
+                DubEngine.seekAudio(time);
+                const currentTimeEl = document.getElementById('currentTime');
+                if (currentTimeEl) {
+                    currentTimeEl.textContent = Utils.formatTime(time);
+                }
+            }
         });
 
         seek.addEventListener('mouseup', () => {
@@ -2000,27 +2093,20 @@ const App = {
             DubEngine.state.userSeeking = false;
         });
 
-        document.getElementById('back1').onclick = () => {
-            const player = DubEngine.state.currentMode === 'original' 
-                ? DubEngine.state.mainPlayer 
-                : DubEngine.state.audioPlayers[DubEngine.state.currentMode];
-            if (player) {
-                try {
-                    player.seekTo(Math.max(0, player.getCurrentTime() - 1), true);
-                } catch (e) {}
-            }
-        };
+        const back1Btn = document.getElementById('back1');
+        const forward1Btn = document.getElementById('forward1');
 
-        document.getElementById('forward1').onclick = () => {
-            const player = DubEngine.state.currentMode === 'original' 
-                ? DubEngine.state.mainPlayer 
-                : DubEngine.state.audioPlayers[DubEngine.state.currentMode];
-            if (player) {
-                try {
-                    player.seekTo(player.getCurrentTime() + 1, true);
-                } catch (e) {}
-            }
-        };
+        if (back1Btn) {
+            back1Btn.onclick = () => {
+                DubEngine.adjustTime(-CONFIG.SEEK_STEP);
+            };
+        }
+
+        if (forward1Btn) {
+            forward1Btn.onclick = () => {
+                DubEngine.adjustTime(CONFIG.SEEK_STEP);
+            };
+        }
     },
 
     toggleDub() {
@@ -2028,32 +2114,34 @@ const App = {
         this.dubEnabled = !this.dubEnabled;
 
         const btn = document.getElementById('dubToggle');
-        const iconEl = btn.querySelector('.icon');
+        const iconEl = btn ? btn.querySelector('.icon') : null;
         const preDubNotice = document.getElementById('preDubNotice');
         const dubArrows = document.getElementById('dubArrows');
         const legacySeek = document.getElementById('legacySeek');
         
         if (this.dubEnabled) {
-            btn.classList.add('active');
-            iconEl.textContent = I18n.t('iconUnmuted');
+            if (btn) btn.classList.add('active');
+            if (iconEl) iconEl.textContent = I18n.t('iconUnmuted');
             DubEngine.setMode(this.lastDubMode);
             
-            preDubNotice.classList.add('hidden');
-            dubArrows.classList.remove('hidden');
-            legacySeek.classList.remove('hidden');
+            if (preDubNotice) preDubNotice.classList.add('hidden');
+            if (dubArrows) dubArrows.classList.remove('hidden');
+            if (legacySeek) legacySeek.classList.remove('hidden');
         } else {
-            btn.classList.remove('active');
-            iconEl.textContent = I18n.t('iconMuted');
+            if (btn) btn.classList.remove('active');
+            if (iconEl) iconEl.textContent = I18n.t('iconMuted');
             DubEngine.setMode('original');
             
-            dubArrows.classList.add('hidden');
-            legacySeek.classList.add('hidden');
-            preDubNotice.classList.remove('hidden');
+            if (dubArrows) dubArrows.classList.add('hidden');
+            if (legacySeek) legacySeek.classList.add('hidden');
+            if (preDubNotice) preDubNotice.classList.remove('hidden');
         }
     },
 
     toggleDubSelector() {
         const selector = document.getElementById('dubSelector');
+        if (!selector) return;
+
         this.dubSelectorVisible = !this.dubSelectorVisible;
 
         if (this.dubSelectorVisible) {
@@ -2065,26 +2153,34 @@ const App = {
     },
 
     renderHome() {
-        document.getElementById('libraryView').classList.remove('hidden');
-        document.getElementById('videoView').classList.add('hidden');
-        document.getElementById('backBtn').style.display = 'none';
+        const libraryView = document.getElementById('libraryView');
+        const videoView = document.getElementById('videoView');
+        const backBtn = document.getElementById('backBtn');
+
+        if (libraryView) libraryView.classList.remove('hidden');
+        if (videoView) videoView.classList.add('hidden');
+        if (backBtn) backBtn.style.display = 'none';
         
         const breadcrumb = document.getElementById('breadcrumbText');
-        breadcrumb.setAttribute('data-i18n', 'library');
-        I18n.translateElement(breadcrumb);
+        if (breadcrumb) {
+            breadcrumb.setAttribute('data-i18n', 'library');
+            I18n.translateElement(breadcrumb);
+        }
 
         const grid = document.getElementById('libraryGrid');
-        grid.innerHTML = LIBRARY.series.map(series => `
-            <div class="library-item" onclick="App.viewSeries('${series.id}')">
-                <div class="item-cover">
-                    <img src="${series.cover}" alt="${I18n.t(series.titleKey)}">
+        if (grid) {
+            grid.innerHTML = LIBRARY.series.map(series => `
+                <div class="library-item" onclick="App.viewSeries('${series.id}')">
+                    <div class="item-cover">
+                        <img src="${series.cover}" alt="${I18n.t(series.titleKey)}">
+                    </div>
+                    <div class="item-info">
+                        <div class="item-title">${Utils.sanitize(I18n.t(series.titleKey))}</div>
+                        <div class="item-subtitle">${I18n.t('episodeCount', {count: series.episodes.length})}</div>
+                    </div>
                 </div>
-                <div class="item-info">
-                    <div class="item-title">${Utils.sanitize(I18n.t(series.titleKey))}</div>
-                    <div class="item-subtitle">${I18n.t('episodeCount', {count: series.episodes.length})}</div>
-                </div>
-            </div>
-        `).join('');
+            `).join('');
+        }
 
         this.currentView = 'home';
         this.dubSelectorVisible = false;
@@ -2099,32 +2195,45 @@ const App = {
         this.currentSeries = LIBRARY.series.find(s => s.id === seriesId);
         if (!this.currentSeries) return;
 
-        document.getElementById('libraryView').classList.remove('hidden');
-        document.getElementById('videoView').classList.add('hidden');
-        document.getElementById('backBtn').style.display = 'inline-flex';
-        
+        const libraryView = document.getElementById('libraryView');
+        const videoView = document.getElementById('videoView');
         const backBtn = document.getElementById('backBtn');
-        backBtn.setAttribute('data-i18n', 'back');
-        I18n.translateElement(backBtn);
+
+        if (libraryView) libraryView.classList.remove('hidden');
+        if (videoView) videoView.classList.add('hidden');
+        if (backBtn) {
+            backBtn.style.display = 'inline-flex';
+            backBtn.setAttribute('data-i18n', 'back');
+            I18n.translateElement(backBtn);
+        }
         
-        document.getElementById('libraryTitle').textContent = I18n.t(this.currentSeries.titleKey);
-        document.getElementById('breadcrumbText').textContent = I18n.t(this.currentSeries.titleKey);
+        const libraryTitle = document.getElementById('libraryTitle');
+        const breadcrumbText = document.getElementById('breadcrumbText');
+
+        if (libraryTitle) {
+            libraryTitle.textContent = I18n.t(this.currentSeries.titleKey);
+        }
+        if (breadcrumbText) {
+            breadcrumbText.textContent = I18n.t(this.currentSeries.titleKey);
+        }
 
         const grid = document.getElementById('libraryGrid');
-        grid.innerHTML = this.currentSeries.episodes.map(ep => {
-            const playIcon = I18n.t('iconPlay');
-            return `
-                <div class="library-item" onclick="App.playEpisode('${ep.id}')">
-                    <div class="item-cover episode" style="background-image: url('${ep.cover}')">
-                        <span class="play-icon">${playIcon}</span>
+        if (grid) {
+            grid.innerHTML = this.currentSeries.episodes.map(ep => {
+                const playIcon = I18n.t('iconPlay');
+                return `
+                    <div class="library-item" onclick="App.playEpisode('${ep.id}')">
+                        <div class="item-cover episode" style="background-image: url('${ep.cover}')">
+                            <span class="play-icon">${playIcon}</span>
+                        </div>
+                        <div class="item-info">
+                            <div class="item-title">${Utils.sanitize(I18n.t(ep.titleKey))}</div>
+                            <div class="item-subtitle">${Utils.sanitize(I18n.t(ep.descriptionKey))}</div>
+                        </div>
                     </div>
-                    <div class="item-info">
-                        <div class="item-title">${Utils.sanitize(I18n.t(ep.titleKey))}</div>
-                        <div class="item-subtitle">${Utils.sanitize(I18n.t(ep.descriptionKey))}</div>
-                    </div>
-                </div>
-            `;
-        }).join('');
+                `;
+            }).join('');
+        }
 
         this.currentView = 'series';
         this.dubSelectorVisible = false;
@@ -2144,17 +2253,31 @@ const App = {
         this.currentEpisode = this.currentSeries.episodes.find(e => e.id === episodeId);
         if (!this.currentEpisode) return;
 
-        document.getElementById('libraryView').classList.add('hidden');
-        document.getElementById('videoView').classList.remove('hidden');
-        document.getElementById('backBtn').style.display = 'inline-flex';
-        
+        const libraryView = document.getElementById('libraryView');
+        const videoView = document.getElementById('videoView');
         const backBtn = document.getElementById('backBtn');
-        backBtn.setAttribute('data-i18n', 'back');
-        I18n.translateElement(backBtn);
+
+        if (libraryView) libraryView.classList.add('hidden');
+        if (videoView) videoView.classList.remove('hidden');
+        if (backBtn) {
+            backBtn.style.display = 'inline-flex';
+            backBtn.setAttribute('data-i18n', 'back');
+            I18n.translateElement(backBtn);
+        }
         
-        document.getElementById('breadcrumbText').textContent = I18n.t(this.currentEpisode.titleKey);
-        document.getElementById('videoTitle').textContent = I18n.t(this.currentEpisode.titleKey);
-        document.getElementById('videoDescription').textContent = I18n.t(this.currentEpisode.descriptionKey);
+        const breadcrumbText = document.getElementById('breadcrumbText');
+        const videoTitle = document.getElementById('videoTitle');
+        const videoDescription = document.getElementById('videoDescription');
+
+        if (breadcrumbText) {
+            breadcrumbText.textContent = I18n.t(this.currentEpisode.titleKey);
+        }
+        if (videoTitle) {
+            videoTitle.textContent = I18n.t(this.currentEpisode.titleKey);
+        }
+        if (videoDescription) {
+            videoDescription.textContent = I18n.t(this.currentEpisode.descriptionKey);
+        }
 
         this.setupDubButtons();
 
@@ -2163,18 +2286,33 @@ const App = {
 
         this.dubEnabled = false;
         this.dubSelectorVisible = false;
+        
         const dubToggleBtn = document.getElementById('dubToggle');
-        dubToggleBtn.classList.remove('active');
-        dubToggleBtn.querySelector('.icon').textContent = I18n.t('iconMuted');
+        if (dubToggleBtn) {
+            dubToggleBtn.classList.remove('active');
+            const iconEl = dubToggleBtn.querySelector('.icon');
+            if (iconEl) {
+                iconEl.textContent = I18n.t('iconMuted');
+            }
+        }
 
         const seek = document.getElementById('videoSeek');
-        seek.value = 0;
-        document.getElementById('currentTime').textContent = '00:00';
-        document.getElementById('totalTime').textContent = '00:00';
+        if (seek) {
+            seek.value = 0;
+        }
+        
+        const currentTime = document.getElementById('currentTime');
+        const totalTime = document.getElementById('totalTime');
+        if (currentTime) currentTime.textContent = '00:00';
+        if (totalTime) totalTime.textContent = '00:00';
 
-        document.getElementById('preDubNotice').classList.remove('hidden');
-        document.getElementById('dubArrows').classList.add('hidden');
-        document.getElementById('legacySeek').classList.add('hidden');
+        const preDubNotice = document.getElementById('preDubNotice');
+        const dubArrows = document.getElementById('dubArrows');
+        const legacySeek = document.getElementById('legacySeek');
+
+        if (preDubNotice) preDubNotice.classList.remove('hidden');
+        if (dubArrows) dubArrows.classList.add('hidden');
+        if (legacySeek) legacySeek.classList.add('hidden');
 
         this.currentView = 'video';
         Comments.load();
@@ -2192,6 +2330,8 @@ const App = {
         const versions = this.currentEpisode.versions;
         const dubButtons = document.getElementById('dubButtons');
         const dubSelector = document.getElementById('dubSelector');
+
+        if (!dubButtons || !dubSelector) return;
 
         if (!versions || Object.keys(versions).length <= 1) {
             dubSelector.style.display = 'none';
@@ -2221,7 +2361,7 @@ const App = {
 
     updateStatusIndicator(mode) {
         const statusText = document.getElementById('statusText');
-        const statusDot = document.getElementById('statusDot');
+        if (!statusText) return;
         
         const statusKeys = {
             original: 'statusOriginal',
@@ -2235,16 +2375,10 @@ const App = {
             japanese: 'statusIconJapanese'
         };
 
-        const statusIcon = I18n.t(iconKeys[mode]);
-        const statusMessage = I18n.t(statusKeys[mode]);
+        const statusIcon = I18n.t(iconKeys[mode] || iconKeys.original);
+        const statusMessage = I18n.t(statusKeys[mode] || statusKeys.original);
         
         statusText.textContent = `${statusIcon} ${statusMessage}`;
-
-        if (mode === 'original') {
-            statusDot.classList.remove('active');
-        } else {
-            statusDot.classList.add('active');
-        }
     },
 
     selectDubVersion(versionKey, button) {
@@ -2257,31 +2391,32 @@ const App = {
 
         this.updateStatusIndicator(versionKey);
 
-        const iconEl = document.getElementById('dubToggle').querySelector('.icon');
+        const dubToggle = document.getElementById('dubToggle');
+        const iconEl = dubToggle ? dubToggle.querySelector('.icon') : null;
         const preDubNotice = document.getElementById('preDubNotice');
         const dubArrows = document.getElementById('dubArrows');
         const legacySeek = document.getElementById('legacySeek');
 
         if (versionKey === 'original') {
             this.dubEnabled = false;
-            document.getElementById('dubToggle').classList.remove('active');
-            iconEl.textContent = I18n.t('iconMuted');
+            if (dubToggle) dubToggle.classList.remove('active');
+            if (iconEl) iconEl.textContent = I18n.t('iconMuted');
             DubEngine.setMode('original');
             
-            dubArrows.classList.add('hidden');
-            legacySeek.classList.add('hidden');
-            preDubNotice.classList.remove('hidden');
+            if (dubArrows) dubArrows.classList.add('hidden');
+            if (legacySeek) legacySeek.classList.add('hidden');
+            if (preDubNotice) preDubNotice.classList.remove('hidden');
         } else {
             this.lastDubMode = versionKey;
             localStorage.setItem('last_dub', versionKey);
             this.dubEnabled = true;
-            document.getElementById('dubToggle').classList.add('active');
-            iconEl.textContent = I18n.t('iconUnmuted');
+            if (dubToggle) dubToggle.classList.add('active');
+            if (iconEl) iconEl.textContent = I18n.t('iconUnmuted');
             DubEngine.setMode(versionKey);
             
-            preDubNotice.classList.add('hidden');
-            dubArrows.classList.remove('hidden');
-            legacySeek.classList.remove('hidden');
+            if (preDubNotice) preDubNotice.classList.add('hidden');
+            if (dubArrows) dubArrows.classList.remove('hidden');
+            if (legacySeek) legacySeek.classList.remove('hidden');
         }
     },
 
@@ -2305,10 +2440,12 @@ const Comments = {
 
     async init() {
         const form = document.getElementById('commentForm');
-        form.addEventListener('submit', e => {
-            e.preventDefault();
-            this.send();
-        });
+        if (form) {
+            form.addEventListener('submit', e => {
+                e.preventDefault();
+                this.send();
+            });
+        }
 
         this.startAutoRefresh();
     },
@@ -2316,7 +2453,10 @@ const Comments = {
     startAutoRefresh() {
         if (this.autoRefreshInterval) clearInterval(this.autoRefreshInterval);
 
-        
+        const indicator = document.getElementById('updateIndicator');
+        if (indicator) {
+            indicator.classList.remove('paused');
+        }
 
         this.autoRefreshInterval = setInterval(() => {
             if (App.currentView === 'video') {
@@ -2326,13 +2466,16 @@ const Comments = {
     },
 
     pauseAutoRefresh() {
-    if (this.autoRefreshInterval) {
-        clearInterval(this.autoRefreshInterval);
-        this.autoRefreshInterval = null;
-    }
-},
+        if (this.autoRefreshInterval) {
+            clearInterval(this.autoRefreshInterval);
+            this.autoRefreshInterval = null;
+        }
 
-        
+        const indicator = document.getElementById('updateIndicator');
+        if (indicator) {
+            indicator.classList.add('paused');
+        }
+    },
 
     async send() {
         const now = Date.now();
@@ -2347,8 +2490,13 @@ const Comments = {
             return;
         }
 
-        const name = document.getElementById('commentName').value.trim();
-        const text = document.getElementById('commentText').value.trim();
+        const nameEl = document.getElementById('commentName');
+        const textEl = document.getElementById('commentText');
+
+        if (!nameEl || !textEl) return;
+
+        const name = nameEl.value.trim();
+        const text = textEl.value.trim();
 
         if (!text) {
             Utils.status(I18n.t('empty'), 'error');
@@ -2356,6 +2504,8 @@ const Comments = {
         }
 
         const btn = document.getElementById('submitBtn');
+        if (!btn) return;
+
         btn.disabled = true;
         
         const loadingIcon = I18n.t('iconLoading');
@@ -2373,8 +2523,8 @@ const Comments = {
             Utils.status(`${successText} ${successIcon}`, 'success');
             Utils.playHaptic();
             
-            document.getElementById('commentText').value = '';
-            document.getElementById('commentName').value = '';
+            textEl.value = '';
+            nameEl.value = '';
             await this.load();
         } catch (e) {
             Utils.status(I18n.t('error'), 'error');
@@ -2392,11 +2542,17 @@ const Comments = {
         try {
             const list = await API.comments();
             const box = document.getElementById('commentsListContainer');
+            if (!box) {
+                this.isRefreshing = false;
+                return;
+            }
 
             const countEl = document.getElementById('commentsCount');
-            countEl.setAttribute('data-i18n', 'commentCount');
-            countEl.setAttribute('data-i18n-count', list.length);
-            I18n.translateElement(countEl);
+            if (countEl) {
+                countEl.setAttribute('data-i18n', 'commentCount');
+                countEl.setAttribute('data-i18n-count', list.length);
+                I18n.translateElement(countEl);
+            }
 
             if (!list.length) {
                 box.innerHTML = `<div class="no-comments" data-i18n="noComments">${I18n.t('noComments')}</div>`;
