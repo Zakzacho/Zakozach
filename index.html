@@ -2207,9 +2207,6 @@ function applyLanguage(lang) {
 
     // تحديث النصوص الأساسية
     document.getElementById('libraryTitle').textContent = t.library;
-    document.getElementById('breadcrumbText').textContent = t.library;
-    document.getElementById('backBtn').textContent = t.back;
-    document.getElementById('commentsTitle').textContent = t.comments;
     document.getElementById('labelName').textContent = t.labelName;
     document.getElementById('hintName').textContent = t.hintName;
     document.getElementById('labelComment').textContent = t.labelComment;
@@ -2219,13 +2216,12 @@ function applyLanguage(lang) {
     document.getElementById('loadingText').textContent = t.loading;
     document.getElementById('dubTitle').textContent = t.dubTitle;
     document.getElementById('dubToggle').title = t.dubHint;
-
-    // تحديث النصوص الجديدة المضافة
     document.getElementById('appTitle').textContent = t.appTitle;
     document.getElementById('dubLongPressHint').textContent = t.dubLongPressHint;
     document.getElementById('preDubNotice').textContent = t.preDubNotice;
     document.getElementById('seekHint').textContent = t.seekHint;
     document.getElementById('audioLabel').textContent = t.audioLabel;
+    document.getElementById('commentsTitle').textContent = t.comments;
 
     const langButton = document.getElementById('langToggle');
     const langLabels = {
@@ -2244,8 +2240,71 @@ function applyLanguage(lang) {
         }
     });
 
-    if (App.currentView === 'video' && App.currentEpisode) {
-        App.updateStatusIndicator(DubEngine.state.currentMode);
+    // إعادة عرض المحتوى الحالي بناءً على الحالة
+    if (App.currentView === 'home') {
+        document.getElementById('breadcrumbText').textContent = t.library;
+        document.getElementById('backBtn').textContent = t.back;
+        
+        // إعادة رسم المكتبة الرئيسية
+        const grid = document.getElementById('libraryGrid');
+        grid.innerHTML = LIBRARY.series.map(series => `
+            <div class="library-item" onclick="App.viewSeries('${series.id}')">
+                <div class="item-cover">
+                    <img src="${series.cover}" alt="${series.title}">
+                </div>
+                <div class="item-info">
+                    <div class="item-title">${Utils.sanitize(series.title)}</div>
+                    <div class="item-subtitle">${t.episodeCount(series.episodes.length)}</div>
+                </div>
+            </div>
+        `).join('');
+    } 
+    else if (App.currentView === 'series' && App.currentSeries) {
+        document.getElementById('breadcrumbText').textContent = App.currentSeries.title;
+        document.getElementById('backBtn').textContent = t.back;
+        
+        // إعادة رسم قائمة الحلقات
+        const grid = document.getElementById('libraryGrid');
+        grid.innerHTML = App.currentSeries.episodes.map(ep => `
+            <div class="library-item" onclick="App.playEpisode('${ep.id}')">
+                <div class="item-cover episode" style="background-image: url('${ep.cover}')">
+                    <span class="play-icon">▶</span>
+                </div>
+                <div class="item-info">
+                    <div class="item-title">${Utils.sanitize(ep.title)}</div>
+                    <div class="item-subtitle">${Utils.sanitize(ep.description)}</div>
+                </div>
+            </div>
+        `).join('');
+    }
+    else if (App.currentView === 'video' && App.currentEpisode) {
+        document.getElementById('breadcrumbText').textContent = App.currentEpisode.title;
+        document.getElementById('backBtn').textContent = t.back;
+        
+        // تحديث أزرار الدبلجة
+        const versions = App.currentEpisode.versions;
+        const dubButtons = document.getElementById('dubButtons');
+        const currentMode = DubEngine.state.currentMode;
+        
+        dubButtons.innerHTML = Object.entries(versions).map(([key, version]) => `
+            <button 
+                class="dub-btn ${key === currentMode ? 'active' : ''}" 
+                onclick="App.selectDubVersion('${key}', this)"
+            >
+                <span class="dub-icon">${version.icon}</span>
+                <span>${version.name}</span>
+            </button>
+        `).join('');
+        
+        // تحديث مؤشر الحالة
+        App.updateStatusIndicator(currentMode);
+        
+        // تحديث عداد التعليقات
+        const commentsContainer = document.getElementById('commentsListContainer');
+        const currentCommentCount = commentsContainer.querySelectorAll('.comment-item').length;
+        document.getElementById('commentsCount').textContent = t.commentCount(currentCommentCount);
+        
+        // إعادة تحميل التعليقات لتحديث الأوقات
         Comments.load();
     }
 }
@@ -2276,6 +2335,10 @@ const savedLang = localStorage.getItem('site_lang') || 'ar';
 applyLanguage(savedLang);
 
 document.addEventListener('DOMContentLoaded', ()=>App.init());
+
     </script>
 </body>
 </html>
+
+
+
