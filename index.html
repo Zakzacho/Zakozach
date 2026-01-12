@@ -1704,12 +1704,29 @@ const App = {
     dubToggleLongPressTimer: null,
 
     init() {
-        this.renderHome();
-        Comments.init();
-        this.setupDubToggle();
-        this.setupVideoSeek();
-    },
+    const saved = sessionStorage.getItem('last_view');
 
+    if (saved) {
+        const state = JSON.parse(saved);
+
+        if (state.view === 'video') {
+            this.currentSeries = LIBRARY.series.find(s => s.id === state.seriesId);
+            this.playEpisode(state.episodeId);
+        } 
+        else if (state.view === 'series') {
+            this.viewSeries(state.seriesId);
+        } 
+        else {
+            this.renderHome();
+        }
+    } else {
+        this.renderHome();
+    }
+
+    Comments.init();
+    this.setupDubToggle();
+    this.setupVideoSeek();
+},
     setupDubToggle() {
         const btn = document.getElementById('dubToggle');
         let isLongPress = false;
@@ -1911,9 +1928,14 @@ const App = {
         `).join('');
 
         this.currentView = 'series';
-        this.dubSelectorVisible = false;
-        Comments.pauseAutoRefresh();
-        DubEngine.cleanup();
+this.dubSelectorVisible = false;
+Comments.pauseAutoRefresh();
+DubEngine.cleanup();
+
+sessionStorage.setItem('last_view', JSON.stringify({
+    view: 'series',
+    seriesId
+}));
     },
 
     async playEpisode(episodeId) {
@@ -1954,7 +1976,13 @@ const App = {
         document.getElementById('legacySeek').classList.add('hidden');
 
         this.currentView = 'video';
-        Comments.load();
+Comments.load();
+
+sessionStorage.setItem('last_view', JSON.stringify({
+    view: 'video',
+    seriesId: this.currentSeries.id,
+    episodeId
+}));
     },
 
     setupDubButtons() {
@@ -2045,15 +2073,14 @@ const Comments = {
     lastSubmitTime: 0,
 
     async init() {
-        const form = document.getElementById('commentForm');
-        form.addEventListener('submit', e => {
-            e.preventDefault();
-            this.send();
-        });
+    const form = document.getElementById('commentForm');
+    form.addEventListener('submit', e => {
+        e.preventDefault();
+        this.send();
+    });
 
-        await this.load();
-        this.startAutoRefresh();
-    },
+    this.startAutoRefresh();
+},
 
     startAutoRefresh() {
         if (this.autoRefreshInterval) clearInterval(this.autoRefreshInterval);
@@ -2335,7 +2362,6 @@ const savedLang = localStorage.getItem('site_lang') || 'ar';
 applyLanguage(savedLang);
 
 document.addEventListener('DOMContentLoaded', ()=>App.init());
-
     </script>
 </body>
 </html>
