@@ -1,1139 +1,3 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl" data-lang="ar">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="منصة بث فيديو احترافية مع نظام دبلجة متعددة اللغات">
-    <title>Watch VIP - منصة البث</title>
-    
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
-    <style>
-        /* ===========================
-           إعادة تعيين وتنسيقات عامة
-        =========================== */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        :root {
-            --primary-color: #ff0000;
-            --secondary-color: #282828;
-            --bg-dark: #0f0f0f;
-            --bg-light: #1f1f1f;
-            --text-primary: #ffffff;
-            --text-secondary: #aaaaaa;
-            --border-color: #303030;
-            --success-color: #00ff00;
-            --verified-color: #1da1f2;
-            --shadow: 0 2px 10px rgba(0,0,0,0.3);
-        }
-
-        html[data-lang="ar"] body {
-            font-family: 'Cairo', sans-serif;
-            direction: rtl;
-        }
-
-        html[data-lang="en"] body,
-        html[data-lang="fr"] body {
-            font-family: 'Inter', sans-serif;
-            direction: ltr;
-        }
-
-        html[data-lang="ja"] body {
-            font-family: 'Noto Sans JP', sans-serif;
-            direction: ltr;
-        }
-
-        body {
-            background-color: var(--bg-dark);
-            color: var(--text-primary);
-            line-height: 1.6;
-            min-height: 100vh;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
-        .breadcrumb {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 20px;
-            padding: 10px 15px;
-            background: var(--bg-light);
-            border-radius: 6px;
-            font-size: 0.9rem;
-        }
-
-        .breadcrumb button {
-            background: var(--secondary-color);
-            border: 1px solid var(--border-color);
-            color: var(--verified-color);
-            cursor: pointer;
-            text-decoration: none;
-            padding: 8px 15px;
-            border-radius: 6px;
-            transition: all 0.3s;
-            font-size: 0.9rem;
-            font-family: inherit;
-        }
-
-        .breadcrumb button:hover {
-            background: var(--primary-color);
-            color: var(--text-primary);
-            border-color: var(--primary-color);
-        }
-
-        .library-view {
-            margin-bottom: 30px;
-        }
-
-        .library-header {
-            padding: 15px 20px;
-            background: var(--secondary-color);
-            border-radius: 12px 12px 0 0;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .library-header h1 {
-            font-size: 1.5rem;
-            font-weight: 600;
-        }
-
-        .library-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 20px;
-            padding: 20px;
-            background: var(--bg-light);
-            border-radius: 0 0 12px 12px;
-        }
-
-        .library-item {
-            cursor: pointer;
-            transition: all 0.3s;
-            border-radius: 8px;
-            overflow: hidden;
-            background: var(--secondary-color);
-            border: 2px solid transparent;
-        }
-
-        .library-item:hover {
-            border-color: var(--primary-color);
-            transform: translateY(-5px);
-            box-shadow: var(--shadow);
-        }
-
-        .item-cover {
-            width: 100%;
-            aspect-ratio: 16 / 9;
-            background-color: #000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .item-cover.episode {
-            background-size: cover;
-            background-position: 25% center;
-        }
-
-        .item-cover img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .item-info {
-            padding: 15px;
-        }
-
-        .item-title {
-            font-weight: 600;
-            margin-bottom: 8px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-
-        .item-subtitle {
-            font-size: 0.85rem;
-            color: var(--text-secondary);
-        }
-
-        .video-section {
-            background: var(--bg-light);
-            border-radius: 12px;
-            overflow: hidden;
-            margin-bottom: 30px;
-            box-shadow: var(--shadow);
-        }
-
-        .video-header {
-            padding: 15px 20px;
-            background: var(--secondary-color);
-            border-bottom: 1px solid var(--border-color);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 15px;
-        }
-
-        .video-header h1 {
-            font-size: 1.5rem;
-            font-weight: 600;
-            flex: 1;
-        }
-
-        .video-controls {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .video-container {
-            position: relative;
-            padding-bottom: 56.25%;
-            height: 0;
-            overflow: hidden;
-            background: #000;
-        }
-
-        .video-container iframe {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            border: none;
-        }
-
-        .video-seek-wrapper {
-            background: var(--secondary-color);
-            padding: 12px 20px;
-            border-bottom: 1px solid var(--border-color);
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .time-display {
-            font-size: 0.85rem;
-            color: var(--verified-color);
-            font-weight: 600;
-            min-width: 80px;
-            text-align: center;
-            white-space: nowrap;
-        }
-
-        #videoSeek {
-            flex: 1;
-            height: 6px;
-            border-radius: 3px;
-            background: var(--bg-dark);
-            outline: none;
-            -webkit-appearance: none;
-            appearance: none;
-            cursor: pointer;
-            transition: height 0.2s;
-        }
-
-        #videoSeek::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 16px;
-            height: 16px;
-            border-radius: 50%;
-            background: var(--primary-color);
-            cursor: pointer;
-            box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
-            transition: all 0.2s;
-        }
-
-        #videoSeek::-webkit-slider-thumb:hover {
-            width: 20px;
-            height: 20px;
-            box-shadow: 0 0 15px rgba(255, 0, 0, 0.8);
-        }
-
-        #videoSeek::-moz-range-thumb {
-            width: 16px;
-            height: 16px;
-            border-radius: 50%;
-            background: var(--primary-color);
-            cursor: pointer;
-            border: none;
-            box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
-            transition: all 0.2s;
-        }
-
-        #videoSeek::-moz-range-thumb:hover {
-            width: 20px;
-            height: 20px;
-            box-shadow: 0 0 15px rgba(255, 0, 0, 0.8);
-        }
-
-        #videoSeek::-moz-range-track {
-            background: transparent;
-            border: none;
-        }
-
-        #videoSeek::-moz-range-progress {
-            background: var(--primary-color);
-            height: 6px;
-            border-radius: 3px;
-        }
-
-        #videoSeek:hover {
-            height: 8px;
-        }
-
-        .quick-toggle {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .sys-toggle {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            border: none;
-            background: #2a2a2a;
-            color: #aaa;
-            font-size: 20px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.25s ease;
-            box-shadow: inset 0 0 0 2px #333;
-            font-family: inherit;
-            user-select: none;
-        }
-
-        .sys-toggle:hover {
-            background: #333;
-        }
-
-        .sys-toggle.active {
-            background: var(--primary-color);
-            color: #fff;
-            box-shadow: 0 0 12px rgba(255, 0, 0, 0.6), inset 0 0 0 2px rgba(255,255,255,0.3);
-        }
-
-        .dub-selector {
-            background: var(--secondary-color);
-            padding: 20px;
-            border-bottom: 1px solid var(--border-color);
-            margin-bottom: 0;
-            animation: slideDown 0.3s ease-out;
-        }
-
-        @keyframes slideDown {
-            from {
-                opacity: 0;
-                max-height: 0;
-                overflow: hidden;
-            }
-            to {
-                opacity: 1;
-                max-height: 500px;
-            }
-        }
-
-        .dub-selector h3 {
-            margin-bottom: 12px;
-            font-size: 0.95rem;
-            color: var(--text-secondary);
-            font-weight: 500;
-        }
-
-        .dub-buttons {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            margin-bottom: 15px;
-        }
-
-        .dub-btn {
-            padding: 10px 18px;
-            background: var(--bg-dark);
-            border: 2px solid var(--border-color);
-            color: var(--text-primary);
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            font-weight: 500;
-            transition: all 0.3s;
-            font-family: inherit;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .dub-btn:hover {
-            border-color: var(--text-secondary);
-            background: var(--bg-light);
-        }
-
-        .dub-btn.active {
-            border-color: var(--primary-color);
-            background: var(--primary-color);
-            color: var(--text-primary);
-            font-weight: 600;
-            box-shadow: 0 0 15px rgba(255, 0, 0, 0.3);
-        }
-
-        .dub-icon {
-            font-size: 1.1rem;
-        }
-
-        .dub-status-indicator {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 12px 15px;
-            background: rgba(255, 0, 0, 0.1);
-            border-radius: 6px;
-            margin-bottom: 15px;
-            font-size: 0.9rem;
-            color: #ff0000;
-            border: 1px solid rgba(255, 0, 0, 0.2);
-        }
-
-        .dub-status-dot {
-            display: inline-block;
-            width: 8px;
-            height: 8px;
-            background: #aaa;
-            border-radius: 50%;
-        }
-
-        .dub-status-dot.active {
-            background: var(--success-color);
-            animation: pulse 1.5s ease-in-out infinite;
-        }
-
-        .dub-audio-controls {
-            display: flex;
-            gap: 15px;
-            align-items: center;
-            flex-wrap: wrap;
-            padding: 15px;
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 6px;
-            margin-bottom: 15px;
-        }
-
-        .dub-audio-label {
-            font-size: 0.9rem;
-            color: var(--text-secondary);
-            font-weight: 500;
-            white-space: nowrap;
-        }
-
-        #audioSlider {
-            flex: 1;
-            min-width: 200px;
-            height: 6px;
-            border-radius: 3px;
-            background: var(--bg-dark);
-            outline: none;
-            -webkit-appearance: none;
-            appearance: none;
-            cursor: pointer;
-        }
-
-        #audioSlider::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 18px;
-            height: 18px;
-            border-radius: 50%;
-            background: var(--primary-color);
-            cursor: pointer;
-            box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
-            transition: all 0.2s;
-        }
-
-        #audioSlider::-webkit-slider-thumb:hover {
-            width: 22px;
-            height: 22px;
-            box-shadow: 0 0 15px rgba(255, 0, 0, 0.8);
-        }
-
-        #audioSlider::-moz-range-thumb {
-            width: 18px;
-            height: 18px;
-            border-radius: 50%;
-            background: var(--primary-color);
-            cursor: pointer;
-            border: none;
-            box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
-            transition: all 0.2s;
-        }
-
-        #audioSlider::-moz-range-thumb:hover {
-            width: 22px;
-            height: 22px;
-            box-shadow: 0 0 15px rgba(255, 0, 0, 0.8);
-        }
-
-        #audioSlider::-moz-range-track {
-            background: transparent;
-            border: none;
-        }
-
-        #audioSlider::-moz-range-progress {
-            background: var(--primary-color);
-            height: 6px;
-            border-radius: 3px;
-        }
-
-        .dub-time-display {
-            background: var(--bg-dark);
-            padding: 8px 16px;
-            border-radius: 6px;
-            border: 1px solid var(--border-color);
-            font-size: 0.9rem;
-            color: var(--verified-color);
-            font-weight: 600;
-            min-width: 120px;
-            text-align: center;
-            white-space: nowrap;
-        }
-
-        .video-info {
-            padding: 20px;
-        }
-
-        .video-title {
-            font-size: 1.3rem;
-            margin-bottom: 10px;
-            font-weight: 600;
-        }
-
-        .video-description {
-            color: var(--text-secondary);
-            font-size: 0.95rem;
-        }
-
-        .comments-section {
-            background: var(--bg-light);
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: var(--shadow);
-        }
-
-        .comments-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .comments-header h2 {
-            font-size: 1.4rem;
-            font-weight: 600;
-        }
-
-        .comments-count {
-            background: var(--secondary-color);
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 0.9rem;
-            color: var(--text-secondary);
-        }
-
-        .comment-form {
-            margin-bottom: 30px;
-            padding: 20px;
-            background: var(--secondary-color);
-            border-radius: 8px;
-        }
-
-        .form-group {
-            margin-bottom: 15px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            color: var(--text-secondary);
-            font-size: 0.9rem;
-            font-weight: 500;
-        }
-
-        .form-group input,
-        .form-group textarea {
-            width: 100%;
-            padding: 12px 15px;
-            background: var(--bg-dark);
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            color: var(--text-primary);
-            font-size: 0.95rem;
-            font-family: inherit;
-            transition: border-color 0.3s;
-        }
-
-        .form-group input::placeholder,
-        .form-group textarea::placeholder {
-            color: var(--text-secondary);
-        }
-
-        .form-group input:focus,
-        .form-group textarea:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            background: var(--bg-dark);
-        }
-
-        .form-group textarea {
-            resize: vertical;
-            min-height: 100px;
-        }
-
-        .form-hint {
-            font-size: 0.85rem;
-            color: var(--text-secondary);
-            margin-top: 5px;
-        }
-
-        .submit-btn {
-            width: 100%;
-            padding: 12px;
-            background: var(--primary-color);
-            color: var(--text-primary);
-            border: 1px solid var(--primary-color);
-            border-radius: 6px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-family: inherit;
-        }
-
-        .submit-btn:hover:not(:disabled) {
-            background: #cc0000;
-            border-color: #cc0000;
-        }
-
-        .submit-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .status-message {
-            padding: 12px 15px;
-            border-radius: 6px;
-            margin-bottom: 15px;
-            font-size: 0.9rem;
-            display: none;
-        }
-
-        .status-message.show {
-            display: block;
-        }
-
-        .status-message.success {
-            background: rgba(0, 255, 0, 0.1);
-            border: 1px solid var(--success-color);
-            color: var(--success-color);
-        }
-
-        .status-message.error {
-            background: rgba(255, 0, 0, 0.1);
-            border: 1px solid var(--primary-color);
-            color: var(--primary-color);
-        }
-
-        .status-message.info {
-            background: rgba(29, 161, 242, 0.1);
-            border: 1px solid var(--verified-color);
-            color: var(--verified-color);
-        }
-
-        .comments-list {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        .comment-item {
-            background: var(--secondary-color);
-            padding: 15px;
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
-            transition: all 0.3s;
-            cursor: pointer;
-        }
-
-        .comment-item:hover {
-            border-color: var(--text-secondary);
-        }
-
-        .comment-item.user-comment {
-            border: 2px solid var(--primary-color);
-            background: rgba(255, 0, 0, 0.05);
-        }
-
-        .comment-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 10px;
-        }
-
-        .comment-author {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-weight: 600;
-            font-size: 0.95rem;
-        }
-
-        .verified-badge {
-            display: inline-flex;
-            align-items: center;
-            color: var(--verified-color);
-        }
-
-        .verified-svg {
-            width: 14px;
-            height: 14px;
-            margin-inline-start: 4px;
-        }
-
-        .comment-time {
-            color: var(--text-secondary);
-            font-size: 0.85rem;
-        }
-
-        .comment-text {
-            color: var(--text-primary);
-            line-height: 1.6;
-            word-wrap: break-word;
-        }
-
-        .comment-actions {
-            margin-top: 10px;
-            padding-top: 10px;
-            border-top: 1px solid var(--border-color);
-            font-size: 0.85rem;
-            color: var(--text-secondary);
-        }
-
-        .click-count {
-            font-weight: 500;
-        }
-
-        .no-comments {
-            text-align: center;
-            padding: 40px 20px;
-            color: var(--text-secondary);
-        }
-
-        .loading {
-            text-align: center;
-            padding: 20px;
-            color: var(--text-secondary);
-        }
-
-        .hidden {
-            display: none !important;
-        }
-
-        @media (max-width: 768px) {
-            .container {
-                padding: 15px;
-            }
-
-            .library-grid {
-                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-                gap: 15px;
-            }
-
-            .video-header {
-                flex-direction: column;
-                gap: 10px;
-                align-items: flex-start;
-            }
-
-            .video-header h1 {
-                font-size: 1.2rem;
-            }
-
-            .video-title {
-                font-size: 1.1rem;
-            }
-
-            .comments-header h2 {
-                font-size: 1.2rem;
-            }
-
-            .comment-form {
-                padding: 15px;
-            }
-
-            .dub-buttons {
-                flex-direction: column;
-            }
-
-            .dub-btn {
-                width: 100%;
-                justify-content: center;
-            }
-
-            .video-controls {
-                width: 100%;
-                justify-content: flex-start;
-            }
-
-            .dub-audio-controls {
-                flex-direction: column;
-            }
-
-            #audioSlider {
-                min-width: 100%;
-            }
-
-            .dub-time-display {
-                width: 100%;
-            }
-
-            .video-seek-wrapper {
-                flex-wrap: wrap;
-                gap: 8px;
-            }
-
-            #videoSeek {
-                width: 100%;
-            }
-
-            .time-display {
-                min-width: 100%;
-                text-align: center;
-            }
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-
-        .library-item, .comment-item {
-            animation: fadeIn 0.3s ease-out;
-        }
-
-        .back-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            background: var(--secondary-color);
-            color: var(--verified-color);
-            border: 1px solid var(--border-color);
-            padding: 8px 15px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            transition: all 0.3s;
-            font-family: inherit;
-            font-weight: 500;
-        }
-
-        .back-btn:hover {
-            background: var(--primary-color);
-            color: var(--text-primary);
-            border-color: var(--primary-color);
-        }
-
-        .comments-update-indicator {
-            display: inline-block;
-            width: 8px;
-            height: 8px;
-            background: var(--primary-color);
-            border-radius: 50%;
-            margin-right: 8px;
-            animation: pulse 1.5s ease-in-out infinite;
-        }
-
-        .comments-update-indicator.paused {
-            animation: none;
-            opacity: 0.5;
-        }
-
-        #langToggle {
-            position: fixed;
-            right: 20px;
-            bottom: 20px;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background: var(--primary-color);
-            color: var(--text-primary);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            z-index: 9999;
-            font-size: 0.7rem;
-            font-weight: 600;
-            border: 2px solid var(--text-primary);
-            transition: all 0.3s;
-            box-shadow: var(--shadow);
-            text-align: center;
-            padding: 5px;
-        }
-
-        #langToggle:hover {
-            transform: scale(1.1);
-            background: #cc0000;
-        }
-
-        #langMenu {
-            position: fixed;
-            right: 20px;
-            bottom: 80px;
-            background: var(--bg-light);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            overflow: hidden;
-            z-index: 9999;
-            box-shadow: var(--shadow);
-            min-width: 140px;
-        }
-
-        #langMenu button {
-            display: block;
-            width: 100%;
-            padding: 12px 16px;
-            background: var(--secondary-color);
-            border: none;
-            color: var(--text-primary);
-            cursor: pointer;
-            text-align: center;
-            transition: all 0.3s;
-            font-size: 0.9rem;
-            font-family: inherit;
-            font-weight: 500;
-        }
-
-        #langMenu button:hover {
-            background: var(--primary-color);
-            color: var(--text-primary);
-        }
-
-        #langMenu button.active {
-            background: var(--primary-color);
-            color: var(--text-primary);
-            font-weight: 700;
-        }
-
-        .spinner {
-            display: inline-block;
-            width: 12px;
-            height: 12px;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            border-top: 2px solid var(--primary-color);
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        .dub-notice {
-            font-size: 0.85rem;
-            color: var(--text-secondary);
-            text-align: center;
-            padding: 10px 14px;
-            line-height: 1.5;
-        }
-
-        .dub-arrows {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 16px;
-        }
-
-        .arrow-btn {
-            width: 52px;
-            height: 52px;
-            border-radius: 50%;
-            background: #1f1f1f;
-            border: 1px solid #333;
-            color: #fff;
-            font-size: 20px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .arrow-btn:hover {
-            background: var(--primary-color);
-            transform: scale(1.1);
-        }
-
-        .arrow-label {
-            font-size: 0.8rem;
-            color: var(--text-secondary);
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div class="breadcrumb" id="breadcrumb">
-            <button class="back-btn" id="backBtn" onclick="App.goHome()" style="display: none;"></button>
-            <span id="breadcrumbText">المكتبة</span>
-        </div>
-
-        <div id="libraryView" class="library-view">
-            <div class="library-header">
-                <h1 id="libraryTitle">المسلسلات</h1>
-            </div>
-            <div class="library-grid" id="libraryGrid"></div>
-        </div>
-
-        <div id="videoView" class="hidden">
-            <div class="video-section">
-                <div class="video-header">
-                    <h1>
-                        <span id="appTitle">Watch VIP</span>
-                        <div id="dubLongPressHint" style="font-size:12px;color:#aaa;margin-top:4px;"></div>
-                    </h1>
-                    <div class="video-controls">
-                        <div class="quick-toggle">
-                            <button id="dubToggle" class="sys-toggle" title="الدبلجة">
-                                <span class="icon">🔇</span>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="video-container" id="videoContainer"></div>
-
-                <div class="video-seek-wrapper" id="seekWrapper">
-                    <div id="preDubNotice" class="dub-notice"></div>
-
-                    <div id="dubArrows" class="dub-arrows hidden">
-                        <button class="arrow-btn" id="back1">⏪</button>
-                        <span class="arrow-label" id="seekHint"></span>
-                        <button class="arrow-btn" id="forward1">⏩</button>
-                    </div>
-
-                    <div id="legacySeek" class="hidden">
-                        <span class="time-display" id="currentTime">00:00</span>
-                        <input type="range" id="videoSeek" min="0" value="0" step="0.1" title="تقدم الفيديو">
-                        <span class="time-display" id="totalTime">00:00</span>
-                    </div>
-                </div>
-
-                <div class="dub-selector" id="dubSelector" style="display: none;">
-                    <h3 id="dubTitle">اختر نسخة العرض:</h3>
-                    <div class="dub-buttons" id="dubButtons"></div>
-                    
-                    <div class="dub-status-indicator" id="dubStatusIndicator">
-                        <span class="dub-status-dot" id="statusDot"></span>
-                        <span id="statusText">▶ النسخة الأصلية قيد التشغيل</span>
-                    </div>
-
-                    <div class="dub-audio-controls" id="dubAudioControls" style="display: none;">
-                        <span class="dub-audio-label" id="audioLabel">إزاحة الصوت:</span>
-                        <input
-                            type="range"
-                            id="audioSlider"
-                            min="-10"
-                            max="10"
-                            value="0"
-                            step="0.05"
-                            title="اضبط إزاحة الصوت (ثانية)"
-                        >
-                        <div class="dub-time-display" id="timeDisplay">+0.00 ثانية</div>
-                    </div>
-                </div>
-
-                <div class="video-info">
-                    <h2 class="video-title" id="videoTitle">العنوان</h2>
-                    <p class="video-description" id="videoDescription">الوصف</p>
-                </div>
-            </div>
-
-            <div class="comments-section">
-                <div class="comments-header">
-                    <h2>
-                        <span class="comments-update-indicator paused" id="updateIndicator"></span>
-                        <span id="commentsTitle">التعليقات</span>
-                    </h2>
-                    <span class="comments-count" id="commentsCount">0 تعليق</span>
-                </div>
-
-                <div class="status-message" id="statusMessage"></div>
-
-                <div class="comment-form">
-                    <form id="commentForm">
-                        <div class="form-group">
-                            <label for="commentName" id="labelName">الاسم (اختياري)</label>
-                            <input 
-                                type="text" 
-                                id="commentName" 
-                                maxlength="50"
-                            >
-                            <div class="form-hint" id="hintName">سيتم توليد اسم تلقائي إن لم تكتب</div>
-                        </div>
-                        <div class="form-group">
-                            <label for="commentText" id="labelComment">التعليق *</label>
-                            <textarea 
-                                id="commentText" 
-                                required
-                                maxlength="500"
-                            ></textarea>
-                        </div>
-                        <button type="submit" class="submit-btn" id="submitBtn">إرسال التعليق</button>
-                    </form>
-                </div>
-
-                <div id="commentsListContainer">
-                    <div class="loading" id="loadingText">جاري التحميل...</div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div id="langToggle" title="تغيير اللغة"></div>
-
-    <div id="langMenu" class="hidden">
-        <button data-lang="ar">العربية</button>
-        <button data-lang="en">English</button>
-        <button data-lang="fr">Français</button>
-        <button data-lang="ja">日本語</button>
-    </div>
-
-    <script>
 // ============================================
 // GLOBAL STATE & CONFIGURATION
 // ============================================
@@ -1168,7 +32,7 @@ const i18nResources = {
     ar: {
         translation: {
             library: 'المسلسلات',
-            back: '← الرجوع',
+            back: 'الرجوع',
             comments: 'التعليقات',
             commentCount: 'تعليق',
             commentCount_plural: 'تعليق',
@@ -1178,12 +42,13 @@ const i18nResources = {
             placeholderName: 'اترك فارغاً للتوليد التلقائي',
             placeholderComment: 'شارك رأيك...',
             submit: 'إرسال التعليق',
-            submitting: 'جاري الإرسال...',
+            submitting: 'جاري الإرسال',
             noComments: 'لا توجد تعليقات حتى الآن',
-            loading: 'جاري التحميل...',
+            loading: 'جاري التحميل',
             pending: 'لديك تعليق قيد المراجعة',
             empty: 'أكمل كتابة التعليق',
-            success: 'تم إرسال تعليقك بنجاح ✓',
+            success: 'تم إرسال تعليقك بنجاح',
+            successIcon: '✓',
             error: 'حدث خطأ في الإرسال',
             canComment: 'يمكنك التعليق مجدداً',
             rateLimitError: 'الرجاء الانتظار قليلاً قبل الإرسال',
@@ -1192,9 +57,12 @@ const i18nResources = {
             dubHint: 'انقر للتبديل، اضغط طويلاً لعرض القائمة',
             episodeCount: 'حلقة',
             episodeCount_plural: 'حلقة',
-            statusOriginal: '▶ النسخة الأصلية قيد التشغيل',
-            statusArabic: '🔊 الدبلجة العربية مفعلة',
-            statusJapanese: '🎧 الدبلجة اليابانية مفعلة',
+            statusOriginal: 'النسخة الأصلية قيد التشغيل',
+            statusArabic: 'الدبلجة العربية مفعلة',
+            statusJapanese: 'الدبلجة اليابانية مفعلة',
+            statusIconOriginal: '▶',
+            statusIconDub: '🔊',
+            statusIconJapanese: '🎧',
             appTitle: 'Watch VIP',
             dubLongPressHint: 'اضغط مطوّلًا على زر الدبلجة لاختيار الدبلجة المناسبة',
             preDubNotice: 'قد تكون أجزاء من الحلقة غير مدبلجة، يُفضّل ترك الحلقة تسير طبيعيًا بعد نجاح المزامنة.',
@@ -1211,10 +79,22 @@ const i18nResources = {
             langEn: 'English',
             langFr: 'Français',
             langJa: '日本語',
-            // Series and Episodes
+            
+            // محتوى المكتبة
             'series.doraemon.title': 'دورايمون',
-            'series.doraemon.ep01.title': 'الحلقة 01 - بداية دورايمون',
-            'series.doraemon.ep01.description': 'مدينة الأحلام – أرض نوبيتا'
+            'series.doraemon.episode.ep01.title': 'الحلقة 01 - بداية دورايمون',
+            'series.doraemon.episode.ep01.description': 'مدينة الأحلام – أرض نوبيتا',
+            
+            // أيقونات ورموز
+            iconPlay: '▶',
+            iconMuted: '🔇',
+            iconUnmuted: '🔊',
+            iconLoading: '⏳',
+            iconOriginal: '🎬',
+            iconArabicDub: '🔊',
+            iconJapaneseDub: '🎧',
+            iconBackArrow: '←',
+            iconVerified: '✓'
         }
     },
     en: {
@@ -1230,12 +110,13 @@ const i18nResources = {
             placeholderName: 'Leave blank for auto-generation',
             placeholderComment: 'Share your thoughts...',
             submit: 'Post Comment',
-            submitting: 'Posting...',
+            submitting: 'Posting',
             noComments: 'No comments yet',
-            loading: 'Loading...',
+            loading: 'Loading',
             pending: 'Your comment is under review',
             empty: 'Please write a comment',
-            success: 'Comment posted successfully ✓',
+            success: 'Comment posted successfully',
+            successIcon: '✓',
             error: 'Failed to send comment',
             canComment: 'You can comment again',
             rateLimitError: 'Please wait a moment before posting',
@@ -1244,9 +125,12 @@ const i18nResources = {
             dubHint: 'Click to toggle, long press to show menu',
             episodeCount: 'episode',
             episodeCount_plural: 'episodes',
-            statusOriginal: '▶ Original version is playing',
-            statusArabic: '🔊 Arabic dub is enabled',
-            statusJapanese: '🎧 Japanese dub is enabled',
+            statusOriginal: 'Original version is playing',
+            statusArabic: 'Arabic dub is enabled',
+            statusJapanese: 'Japanese dub is enabled',
+            statusIconOriginal: '▶',
+            statusIconDub: '🔊',
+            statusIconJapanese: '🎧',
             appTitle: 'Watch VIP',
             dubLongPressHint: 'Long press the dub button to select the appropriate dubbing',
             preDubNotice: 'Some parts of the episode may not be dubbed. It is recommended to let the episode play naturally after successful synchronization.',
@@ -1263,10 +147,22 @@ const i18nResources = {
             langEn: 'English',
             langFr: 'Français',
             langJa: '日本語',
-            // Series and Episodes
+            
+            // Library content
             'series.doraemon.title': 'Doraemon',
-            'series.doraemon.ep01.title': 'Episode 01 - Doraemon\'s Beginning',
-            'series.doraemon.ep01.description': 'Dream City - Nobita\'s Land'
+            'series.doraemon.episode.ep01.title': 'Episode 01 - The Beginning of Doraemon',
+            'series.doraemon.episode.ep01.description': 'Dream City - Nobita\'s Land',
+            
+            // Icons and symbols
+            iconPlay: '▶',
+            iconMuted: '🔇',
+            iconUnmuted: '🔊',
+            iconLoading: '⏳',
+            iconOriginal: '🎬',
+            iconArabicDub: '🔊',
+            iconJapaneseDub: '🎧',
+            iconBackArrow: '←',
+            iconVerified: '✓'
         }
     },
     fr: {
@@ -1282,12 +178,13 @@ const i18nResources = {
             placeholderName: 'Laisser vide pour la génération automatique',
             placeholderComment: 'Partagez vos pensées...',
             submit: 'Publier le commentaire',
-            submitting: 'Publication...',
+            submitting: 'Publication',
             noComments: 'Pas encore de commentaires',
-            loading: 'Chargement...',
+            loading: 'Chargement',
             pending: 'Votre commentaire est en attente d\'approbation',
             empty: 'Veuillez écrire un commentaire',
-            success: 'Commentaire publié avec succès ✓',
+            success: 'Commentaire publié avec succès',
+            successIcon: '✓',
             error: 'Erreur lors de l\'envoi',
             canComment: 'Vous pouvez commenter à nouveau',
             rateLimitError: 'Veuillez attendre un moment avant de publier',
@@ -1296,9 +193,12 @@ const i18nResources = {
             dubHint: 'Cliquez pour basculer, appuyez longuement pour le menu',
             episodeCount: 'épisode',
             episodeCount_plural: 'épisodes',
-            statusOriginal: '▶ La version originale est en cours de lecture',
-            statusArabic: '🔊 Le doublage arabe est activé',
-            statusJapanese: '🎧 Le doublage japonais est activé',
+            statusOriginal: 'La version originale est en cours de lecture',
+            statusArabic: 'Le doublage arabe est activé',
+            statusJapanese: 'Le doublage japonais est activé',
+            statusIconOriginal: '▶',
+            statusIconDub: '🔊',
+            statusIconJapanese: '🎧',
             appTitle: 'Watch VIP',
             dubLongPressHint: 'Appuyez longuement sur le bouton de doublage pour sélectionner le doublage approprié',
             preDubNotice: 'Certaines parties de l\'épisode peuvent ne pas être doublées. Il est recommandé de laisser l\'épisode se jouer naturellement après une synchronisation réussie.',
@@ -1315,10 +215,22 @@ const i18nResources = {
             langEn: 'English',
             langFr: 'Français',
             langJa: '日本語',
-            // Series and Episodes
+            
+            // Library content
             'series.doraemon.title': 'Doraemon',
-            'series.doraemon.ep01.title': 'Épisode 01 - Le Début de Doraemon',
-            'series.doraemon.ep01.description': 'Ville des Rêves - Terre de Nobita'
+            'series.doraemon.episode.ep01.title': 'Épisode 01 - Le Début de Doraemon',
+            'series.doraemon.episode.ep01.description': 'Ville des Rêves - Terre de Nobita',
+            
+            // Icons and symbols
+            iconPlay: '▶',
+            iconMuted: '🔇',
+            iconUnmuted: '🔊',
+            iconLoading: '⏳',
+            iconOriginal: '🎬',
+            iconArabicDub: '🔊',
+            iconJapaneseDub: '🎧',
+            iconBackArrow: '←',
+            iconVerified: '✓'
         }
     },
     ja: {
@@ -1334,12 +246,13 @@ const i18nResources = {
             placeholderName: '自動生成のため空白のままにしてください',
             placeholderComment: 'あなたの考えを共有してください...',
             submit: 'コメントを投稿',
-            submitting: '投稿中...',
+            submitting: '投稿中',
             noComments: 'まだコメントがありません',
-            loading: '読み込み中...',
+            loading: '読み込み中',
             pending: 'コメントは審査中です',
             empty: 'コメントを入力してください',
-            success: 'コメントが正常に投稿されました ✓',
+            success: 'コメントが正常に投稿されました',
+            successIcon: '✓',
             error: '送信に失敗しました',
             canComment: 'もう一度コメントできます',
             rateLimitError: '投稿する前にお待ちください',
@@ -1348,9 +261,12 @@ const i18nResources = {
             dubHint: 'クリックして切り替え、長押ししてメニューを表示',
             episodeCount: 'エピソード',
             episodeCount_plural: 'エピソード',
-            statusOriginal: '▶ オリジナルバージョンが再生中',
-            statusArabic: '🔊 アラビア語吹き替えが有効',
-            statusJapanese: '🎧 日本語吹き替えが有効',
+            statusOriginal: 'オリジナルバージョンが再生中',
+            statusArabic: 'アラビア語吹き替えが有効',
+            statusJapanese: '日本語吹き替えが有効',
+            statusIconOriginal: '▶',
+            statusIconDub: '🔊',
+            statusIconJapanese: '🎧',
             appTitle: 'Watch VIP',
             dubLongPressHint: '吹き替えボタンを長押しして適切な吹き替えを選択してください',
             preDubNotice: 'エピソードの一部が吹き替えされていない可能性があります。同期に成功した後は、エピソードを自然に再生することをお勧めします。',
@@ -1367,10 +283,22 @@ const i18nResources = {
             langEn: 'English',
             langFr: 'Français',
             langJa: '日本語',
-            // Series and Episodes
+            
+            // Library content
             'series.doraemon.title': 'ドラえもん',
-            'series.doraemon.ep01.title': 'エピソード01 - ドラえもんの始まり',
-            'series.doraemon.ep01.description': 'ドリームシティ - のび太の土地'
+            'series.doraemon.episode.ep01.title': 'エピソード01 - ドラえもんの始まり',
+            'series.doraemon.episode.ep01.description': 'ドリームシティ - のび太の国',
+            
+            // Icons and symbols
+            iconPlay: '▶',
+            iconMuted: '🔇',
+            iconUnmuted: '🔊',
+            iconLoading: '⏳',
+            iconOriginal: '🎬',
+            iconArabicDub: '🔊',
+            iconJapaneseDub: '🎧',
+            iconBackArrow: '←',
+            iconVerified: '✓'
         }
     }
 };
@@ -1380,10 +308,15 @@ const i18next = window.i18next;
 
 i18next.init({
     lng: localStorage.getItem('site_lang') || 'ar',
-    fallbackLng: 'en',
+    fallbackLng: false, // ✅ إزالة الـ fallback
     resources: i18nResources,
     interpolation: {
         escapeValue: false
+    },
+    // ✅ إضافة معالج للمفاتيح الناقصة
+    parseMissingKeyHandler: (key) => {
+        console.error(`❌ MISSING TRANSLATION KEY: "${key}"`);
+        return `[MISSING: ${key}]`;
     }
 });
 
@@ -1394,28 +327,28 @@ const LIBRARY = {
     series: [
         {
             id: 'doraemon',
-            titleKey: 'series.doraemon.title',
+            titleKey: 'series.doraemon.title', // ✅ مفتاح بدلاً من نص
             cover: 'covers/doraemon.jpg',
             episodes: [
                 {
                     id: 'ep01',
-                    titleKey: 'series.doraemon.ep01.title',
-                    descriptionKey: 'series.doraemon.ep01.description',
+                    titleKey: 'series.doraemon.episode.ep01.title', // ✅ مفتاح بدلاً من نص
+                    descriptionKey: 'series.doraemon.episode.ep01.description', // ✅ مفتاح بدلاً من نص
                     cover: 'covers/ep01.jpg',
                     versions: {
                         original: {
-                            name: 'original',
-                            icon: '🎬',
+                            nameKey: 'original', // ✅ مفتاح
+                            iconKey: 'iconOriginal', // ✅ مفتاح للأيقونة
                             id: 'ZYycK1Paq4M'
                         },
                         arabic: {
-                            name: 'arabicDub',
-                            icon: '🔊',
+                            nameKey: 'arabicDub', // ✅ مفتاح
+                            iconKey: 'iconArabicDub', // ✅ مفتاح للأيقونة
                             id: 'B_Ha4vu-qc8'
                         },
                         japanese: {
-                            name: 'japaneseDub',
-                            icon: '🎧',
+                            nameKey: 'japaneseDub', // ✅ مفتاح
+                            iconKey: 'iconJapaneseDub', // ✅ مفتاح للأيقونة
                             id: 'xYJpOiuPohQ'
                         }
                     }
@@ -1436,8 +369,15 @@ const I18n = {
         const count = element.getAttribute('data-i18n-count');
         const options = count ? { count: parseInt(count) } : {};
 
+        // ✅ التحقق من وجود الترجمة
+        if (!i18next.exists(key)) {
+            console.error(`❌ Translation key not found: "${key}"`);
+            element.textContent = `[MISSING: ${key}]`;
+            return;
+        }
+
         if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
-            if (element.placeholder) {
+            if (element.placeholder !== undefined) {
                 element.placeholder = i18next.t(key, options);
             }
         } else {
@@ -1446,7 +386,11 @@ const I18n = {
 
         const titleKey = element.getAttribute('data-i18n-title');
         if (titleKey) {
-            element.title = i18next.t(titleKey);
+            if (!i18next.exists(titleKey)) {
+                console.error(`❌ Translation key not found: "${titleKey}"`);
+            } else {
+                element.title = i18next.t(titleKey);
+            }
         }
     },
 
@@ -1472,17 +416,13 @@ const I18n = {
         });
     },
 
+    // ✅ دالة آمنة للترجمة مع التحقق
     t(key, options = {}) {
-        return i18next.t(key, options);
-    },
-
-    validateTranslation(key) {
-        const translation = i18next.t(key);
-        if (translation === key) {
-            console.error(`Translation missing for key: ${key}`);
-            return false;
+        if (!i18next.exists(key)) {
+            console.error(`❌ Translation key not found: "${key}"`);
+            return `[MISSING: ${key}]`;
         }
-        return true;
+        return i18next.t(key, options);
     }
 };
 
@@ -2008,13 +948,17 @@ const App = {
         this.dubEnabled = !this.dubEnabled;
 
         const btn = document.getElementById('dubToggle');
+        const iconEl = btn.querySelector('.icon');
+        
         if (this.dubEnabled) {
             btn.classList.add('active');
-            btn.querySelector('.icon').textContent = '🔊';
+            // ✅ استخدام مفتاح الترجمة للأيقونة
+            iconEl.textContent = I18n.t('iconUnmuted');
             DubEngine.setMode(this.lastDubMode);
         } else {
             btn.classList.remove('active');
-            btn.querySelector('.icon').textContent = '🔇';
+            // ✅ استخدام مفتاح الترجمة للأيقونة
+            iconEl.textContent = I18n.t('iconMuted');
             DubEngine.setMode('original');
         }
     },
@@ -2041,23 +985,17 @@ const App = {
         I18n.translateElement(breadcrumb);
 
         const grid = document.getElementById('libraryGrid');
-        grid.innerHTML = LIBRARY.series.map(series => {
-            I18n.validateTranslation(series.titleKey);
-            const title = I18n.t(series.titleKey);
-            const episodesText = I18n.t('episodeCount', {count: series.episodes.length});
-            
-            return `
-                <div class="library-item" onclick="App.viewSeries('${series.id}')">
-                    <div class="item-cover">
-                        <img src="${series.cover}" alt="${Utils.sanitize(title)}">
-                    </div>
-                    <div class="item-info">
-                        <div class="item-title">${Utils.sanitize(title)}</div>
-                        <div class="item-subtitle">${episodesText}</div>
-                    </div>
+        grid.innerHTML = LIBRARY.series.map(series => `
+            <div class="library-item" onclick="App.viewSeries('${series.id}')">
+                <div class="item-cover">
+                    <img src="${series.cover}" alt="${I18n.t(series.titleKey)}">
                 </div>
-            `;
-        }).join('');
+                <div class="item-info">
+                    <div class="item-title">${Utils.sanitize(I18n.t(series.titleKey))}</div>
+                    <div class="item-subtitle" data-i18n="episodeCount" data-i18n-count="${series.episodes.length}">${I18n.t('episodeCount', {count: series.episodes.length})}</div>
+                </div>
+            </div>
+        `).join('');
 
         this.currentView = 'home';
         this.dubSelectorVisible = false;
@@ -2072,9 +1010,6 @@ const App = {
         this.currentSeries = LIBRARY.series.find(s => s.id === seriesId);
         if (!this.currentSeries) return;
 
-        I18n.validateTranslation(this.currentSeries.titleKey);
-        const seriesTitle = I18n.t(this.currentSeries.titleKey);
-
         document.getElementById('libraryView').classList.remove('hidden');
         document.getElementById('videoView').classList.add('hidden');
         document.getElementById('backBtn').style.display = 'inline-flex';
@@ -2083,25 +1018,21 @@ const App = {
         backBtn.setAttribute('data-i18n', 'back');
         I18n.translateElement(backBtn);
         
-        document.getElementById('libraryTitle').textContent = seriesTitle;
-        document.getElementById('breadcrumbText').textContent = seriesTitle;
+        // ✅ استخدام مفتاح الترجمة
+        document.getElementById('libraryTitle').textContent = I18n.t(this.currentSeries.titleKey);
+        document.getElementById('breadcrumbText').textContent = I18n.t(this.currentSeries.titleKey);
 
         const grid = document.getElementById('libraryGrid');
         grid.innerHTML = this.currentSeries.episodes.map(ep => {
-            I18n.validateTranslation(ep.titleKey);
-            I18n.validateTranslation(ep.descriptionKey);
-            
-            const title = I18n.t(ep.titleKey);
-            const description = I18n.t(ep.descriptionKey);
-            
+            const playIcon = I18n.t('iconPlay');
             return `
                 <div class="library-item" onclick="App.playEpisode('${ep.id}')">
                     <div class="item-cover episode" style="background-image: url('${ep.cover}')">
-                        <span class="play-icon">▶</span>
+                        <span class="play-icon" data-icon="iconPlay">${playIcon}</span>
                     </div>
                     <div class="item-info">
-                        <div class="item-title">${Utils.sanitize(title)}</div>
-                        <div class="item-subtitle">${Utils.sanitize(description)}</div>
+                        <div class="item-title">${Utils.sanitize(I18n.t(ep.titleKey))}</div>
+                        <div class="item-subtitle">${Utils.sanitize(I18n.t(ep.descriptionKey))}</div>
                     </div>
                 </div>
             `;
@@ -2125,12 +1056,6 @@ const App = {
         this.currentEpisode = this.currentSeries.episodes.find(e => e.id === episodeId);
         if (!this.currentEpisode) return;
 
-        I18n.validateTranslation(this.currentEpisode.titleKey);
-        I18n.validateTranslation(this.currentEpisode.descriptionKey);
-
-        const episodeTitle = I18n.t(this.currentEpisode.titleKey);
-        const episodeDescription = I18n.t(this.currentEpisode.descriptionKey);
-
         document.getElementById('libraryView').classList.add('hidden');
         document.getElementById('videoView').classList.remove('hidden');
         document.getElementById('backBtn').style.display = 'inline-flex';
@@ -2139,9 +1064,10 @@ const App = {
         backBtn.setAttribute('data-i18n', 'back');
         I18n.translateElement(backBtn);
         
-        document.getElementById('breadcrumbText').textContent = episodeTitle;
-        document.getElementById('videoTitle').textContent = episodeTitle;
-        document.getElementById('videoDescription').textContent = episodeDescription;
+        // ✅ استخدام مفتاح الترجمة
+        document.getElementById('breadcrumbText').textContent = I18n.t(this.currentEpisode.titleKey);
+        document.getElementById('videoTitle').textContent = I18n.t(this.currentEpisode.titleKey);
+        document.getElementById('videoDescription').textContent = I18n.t(this.currentEpisode.descriptionKey);
 
         this.setupDubButtons();
 
@@ -2150,8 +1076,9 @@ const App = {
 
         this.dubEnabled = false;
         this.dubSelectorVisible = false;
-        document.getElementById('dubToggle').classList.remove('active');
-        document.getElementById('dubToggle').querySelector('.icon').textContent = '🔇';
+        const dubToggleBtn = document.getElementById('dubToggle');
+        dubToggleBtn.classList.remove('active');
+        dubToggleBtn.querySelector('.icon').textContent = I18n.t('iconMuted');
 
         const seek = document.getElementById('videoSeek');
         seek.style.display = 'none';
@@ -2189,16 +1116,18 @@ const App = {
         this.dubSelectorVisible = false;
 
         dubButtons.innerHTML = Object.entries(versions).map(([key, version]) => {
-            I18n.validateTranslation(version.name);
-            const versionName = I18n.t(version.name);
+            // ✅ الحصول على الأيقونة من الترجمة
+            const icon = I18n.t(version.iconKey);
+            const name = I18n.t(version.nameKey);
             
             return `
                 <button 
                     class="dub-btn ${key === 'original' ? 'active' : ''}" 
                     onclick="App.selectDubVersion('${key}', this)"
+                    data-version-key="${version.nameKey}"
                 >
-                    <span class="dub-icon">${version.icon}</span>
-                    <span>${versionName}</span>
+                    <span class="dub-icon">${icon}</span>
+                    <span>${name}</span>
                 </button>
             `;
         }).join('');
@@ -2216,8 +1145,17 @@ const App = {
             japanese: 'statusJapanese'
         };
 
-        I18n.validateTranslation(statusKeys[mode]);
-        statusText.textContent = I18n.t(statusKeys[mode]);
+        const iconKeys = {
+            original: 'statusIconOriginal',
+            arabic: 'statusIconDub',
+            japanese: 'statusIconJapanese'
+        };
+
+        // ✅ الحصول على الأيقونة والنص من الترجمة
+        const statusIcon = I18n.t(iconKeys[mode]);
+        const statusMessage = I18n.t(statusKeys[mode]);
+        
+        statusText.textContent = `${statusIcon} ${statusMessage}`;
 
         if (mode === 'original') {
             statusDot.classList.remove('active');
@@ -2236,17 +1174,19 @@ const App = {
 
         this.updateStatusIndicator(versionKey);
 
+        const iconEl = document.getElementById('dubToggle').querySelector('.icon');
+
         if (versionKey === 'original') {
             this.dubEnabled = false;
             document.getElementById('dubToggle').classList.remove('active');
-            document.getElementById('dubToggle').querySelector('.icon').textContent = '🔇';
+            iconEl.textContent = I18n.t('iconMuted');
             DubEngine.setMode('original');
         } else {
             this.lastDubMode = versionKey;
             localStorage.setItem('last_dub', versionKey);
             this.dubEnabled = true;
             document.getElementById('dubToggle').classList.add('active');
-            document.getElementById('dubToggle').querySelector('.icon').textContent = '🔊';
+            iconEl.textContent = I18n.t('iconUnmuted');
             DubEngine.setMode(versionKey);
         }
     },
@@ -2323,15 +1263,24 @@ const Comments = {
 
         const btn = document.getElementById('submitBtn');
         btn.disabled = true;
-        btn.textContent = '⏳ ' + I18n.t('submitting');
+        
+        // ✅ استخدام الأيقونة والنص من الترجمة
+        const loadingIcon = I18n.t('iconLoading');
+        const submittingText = I18n.t('submitting');
+        btn.textContent = `${loadingIcon} ${submittingText}`;
 
         try {
             const res = await API.submit(name || null, text);
             this.userCommentId = res.commentId;
             localStorage.setItem('watch_vip_user_comment_id', res.commentId);
             this.lastSubmitTime = now;
-            Utils.status(I18n.t('success'), 'success');
+            
+            // ✅ استخدام الأيقونة والنص من الترجمة
+            const successIcon = I18n.t('successIcon');
+            const successText = I18n.t('success');
+            Utils.status(`${successText} ${successIcon}`, 'success');
             Utils.playHaptic();
+            
             document.getElementById('commentText').value = '';
             document.getElementById('commentName').value = '';
             await this.load();
@@ -2339,7 +1288,8 @@ const Comments = {
             Utils.status(I18n.t('error'), 'error');
         } finally {
             btn.disabled = false;
-            btn.textContent = I18n.t('submit');
+            btn.setAttribute('data-i18n', 'submit');
+            I18n.translateElement(btn);
         }
     },
 
@@ -2352,10 +1302,12 @@ const Comments = {
             const box = document.getElementById('commentsListContainer');
 
             const countEl = document.getElementById('commentsCount');
-            countEl.textContent = I18n.t('commentCount', { count: list.length });
+            countEl.setAttribute('data-i18n', 'commentCount');
+            countEl.setAttribute('data-i18n-count', list.length);
+            I18n.translateElement(countEl);
 
             if (!list.length) {
-                box.innerHTML = `<div class="no-comments">${I18n.t('noComments')}</div>`;
+                box.innerHTML = `<div class="no-comments" data-i18n="noComments">${I18n.t('noComments')}</div>`;
                 this.isRefreshing = false;
                 return;
             }
@@ -2371,6 +1323,9 @@ const Comments = {
                 return b.timestamp - a.timestamp;
             });
 
+            // ✅ الحصول على أيقونة التحقق من الترجمة
+            const verifiedIcon = I18n.t('iconVerified');
+
             box.innerHTML = `
                 <div class="comments-list">
                     ${list.map(c=>`
@@ -2379,7 +1334,7 @@ const Comments = {
                             <div class="comment-header">
                                 <div class="comment-author">
                                     ${Utils.sanitize(c.displayName)}
-                                    ${c.verified ? `<svg class="verified-svg" viewBox="0 0 24 24" fill="#1da1f2">
+                                    ${c.verified ? `<svg class="verified-svg" viewBox="0 0 24 24" fill="#1da1f2" aria-label="${verifiedIcon}">
                                         <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
                                     </svg>` : ''}
                                 </div>
@@ -2421,10 +1376,3 @@ const Comments = {
 document.addEventListener('DOMContentLoaded', () => {
     App.init();
 });
-
-    </script>
-</body>
-</html>
-
-
-
