@@ -1162,33 +1162,259 @@ window.onYouTubeIframeAPIReady = function() {
 })();
 
 // ============================================
+// i18next CONFIGURATION
+// ============================================
+const i18nResources = {
+    ar: {
+        translation: {
+            library: 'المسلسلات',
+            back: '← الرجوع',
+            comments: 'التعليقات',
+            commentCount: 'تعليق',
+            commentCount_plural: 'تعليق',
+            labelName: 'الاسم (اختياري)',
+            hintName: 'سيتم توليد اسم تلقائي إن لم تكتب',
+            labelComment: 'التعليق *',
+            placeholderName: 'اترك فارغاً للتوليد التلقائي',
+            placeholderComment: 'شارك رأيك...',
+            submit: 'إرسال التعليق',
+            submitting: 'جاري الإرسال...',
+            noComments: 'لا توجد تعليقات حتى الآن',
+            loading: 'جاري التحميل...',
+            pending: 'لديك تعليق قيد المراجعة',
+            empty: 'أكمل كتابة التعليق',
+            success: 'تم إرسال تعليقك بنجاح ✓',
+            error: 'حدث خطأ في الإرسال',
+            canComment: 'يمكنك التعليق مجدداً',
+            rateLimitError: 'الرجاء الانتظار قليلاً قبل الإرسال',
+            langButtonLabel: 'تغيير اللغة',
+            dubTitle: 'اختر نسخة العرض:',
+            dubHint: 'انقر للتبديل، اضغط طويلاً لعرض القائمة',
+            episodeCount: 'حلقة',
+            episodeCount_plural: 'حلقة',
+            statusOriginal: '▶ النسخة الأصلية قيد التشغيل',
+            statusArabic: '🔊 الدبلجة العربية مفعلة',
+            statusJapanese: '🎧 الدبلجة اليابانية مفعلة',
+            appTitle: 'Watch VIP',
+            dubLongPressHint: 'اضغط مطوّلًا على زر الدبلجة لاختيار الدبلجة المناسبة',
+            preDubNotice: 'قد تكون أجزاء من الحلقة غير مدبلجة، يُفضّل ترك الحلقة تسير طبيعيًا بعد نجاح المزامنة.',
+            seekHint: '± 1 ثانية',
+            audioLabel: 'إزاحة الصوت:',
+            justNow: 'للتو',
+            minutesAgo: 'منذ {{count}} دقيقة',
+            hoursAgo: 'منذ {{count}} ساعة',
+            daysAgo: 'منذ {{count}} يوم',
+            original: 'النسخة الأصلية',
+            arabicDub: 'دبلجة عربية',
+            japaneseDub: 'دبلجة يابانية',
+            langAr: 'عربي',
+            langEn: 'English',
+            langFr: 'Français',
+            langJa: '日本語',
+            // Series and Episodes
+            'series.doraemon.title': 'دورايمون',
+            'series.doraemon.ep01.title': 'الحلقة 01 - بداية دورايمون',
+            'series.doraemon.ep01.description': 'مدينة الأحلام – أرض نوبيتا'
+        }
+    },
+    en: {
+        translation: {
+            library: 'Series',
+            back: 'Back',
+            comments: 'Comments',
+            commentCount: 'comment',
+            commentCount_plural: 'comments',
+            labelName: 'Name (Optional)',
+            hintName: 'An automatic name will be generated if left blank',
+            labelComment: 'Comment *',
+            placeholderName: 'Leave blank for auto-generation',
+            placeholderComment: 'Share your thoughts...',
+            submit: 'Post Comment',
+            submitting: 'Posting...',
+            noComments: 'No comments yet',
+            loading: 'Loading...',
+            pending: 'Your comment is under review',
+            empty: 'Please write a comment',
+            success: 'Comment posted successfully ✓',
+            error: 'Failed to send comment',
+            canComment: 'You can comment again',
+            rateLimitError: 'Please wait a moment before posting',
+            langButtonLabel: 'Change Language',
+            dubTitle: 'Choose Version:',
+            dubHint: 'Click to toggle, long press to show menu',
+            episodeCount: 'episode',
+            episodeCount_plural: 'episodes',
+            statusOriginal: '▶ Original version is playing',
+            statusArabic: '🔊 Arabic dub is enabled',
+            statusJapanese: '🎧 Japanese dub is enabled',
+            appTitle: 'Watch VIP',
+            dubLongPressHint: 'Long press the dub button to select the appropriate dubbing',
+            preDubNotice: 'Some parts of the episode may not be dubbed. It is recommended to let the episode play naturally after successful synchronization.',
+            seekHint: '± 1 second',
+            audioLabel: 'Audio Offset:',
+            justNow: 'just now',
+            minutesAgo: '{{count}}m ago',
+            hoursAgo: '{{count}}h ago',
+            daysAgo: '{{count}}d ago',
+            original: 'Original Version',
+            arabicDub: 'Arabic Dub',
+            japaneseDub: 'Japanese Dub',
+            langAr: 'عربي',
+            langEn: 'English',
+            langFr: 'Français',
+            langJa: '日本語',
+            // Series and Episodes
+            'series.doraemon.title': 'Doraemon',
+            'series.doraemon.ep01.title': 'Episode 01 - Doraemon\'s Beginning',
+            'series.doraemon.ep01.description': 'Dream City - Nobita\'s Land'
+        }
+    },
+    fr: {
+        translation: {
+            library: 'Séries',
+            back: 'Retour',
+            comments: 'Commentaires',
+            commentCount: 'commentaire',
+            commentCount_plural: 'commentaires',
+            labelName: 'Nom (Optionnel)',
+            hintName: 'Un nom automatique sera généré si laissé vide',
+            labelComment: 'Commentaire *',
+            placeholderName: 'Laisser vide pour la génération automatique',
+            placeholderComment: 'Partagez vos pensées...',
+            submit: 'Publier le commentaire',
+            submitting: 'Publication...',
+            noComments: 'Pas encore de commentaires',
+            loading: 'Chargement...',
+            pending: 'Votre commentaire est en attente d\'approbation',
+            empty: 'Veuillez écrire un commentaire',
+            success: 'Commentaire publié avec succès ✓',
+            error: 'Erreur lors de l\'envoi',
+            canComment: 'Vous pouvez commenter à nouveau',
+            rateLimitError: 'Veuillez attendre un moment avant de publier',
+            langButtonLabel: 'Changer la Langue',
+            dubTitle: 'Choisir la version:',
+            dubHint: 'Cliquez pour basculer, appuyez longuement pour le menu',
+            episodeCount: 'épisode',
+            episodeCount_plural: 'épisodes',
+            statusOriginal: '▶ La version originale est en cours de lecture',
+            statusArabic: '🔊 Le doublage arabe est activé',
+            statusJapanese: '🎧 Le doublage japonais est activé',
+            appTitle: 'Watch VIP',
+            dubLongPressHint: 'Appuyez longuement sur le bouton de doublage pour sélectionner le doublage approprié',
+            preDubNotice: 'Certaines parties de l\'épisode peuvent ne pas être doublées. Il est recommandé de laisser l\'épisode se jouer naturellement après une synchronisation réussie.',
+            seekHint: '± 1 seconde',
+            audioLabel: 'Décalage audio:',
+            justNow: 'à l\'instant',
+            minutesAgo: 'il y a {{count}}m',
+            hoursAgo: 'il y a {{count}}h',
+            daysAgo: 'il y a {{count}}j',
+            original: 'Version Originale',
+            arabicDub: 'Doublage Arabe',
+            japaneseDub: 'Doublage Japonais',
+            langAr: 'عربي',
+            langEn: 'English',
+            langFr: 'Français',
+            langJa: '日本語',
+            // Series and Episodes
+            'series.doraemon.title': 'Doraemon',
+            'series.doraemon.ep01.title': 'Épisode 01 - Le Début de Doraemon',
+            'series.doraemon.ep01.description': 'Ville des Rêves - Terre de Nobita'
+        }
+    },
+    ja: {
+        translation: {
+            library: 'シリーズ',
+            back: '戻る',
+            comments: 'コメント',
+            commentCount: 'コメント',
+            commentCount_plural: 'コメント',
+            labelName: '名前 (オプション)',
+            hintName: '空白のままにするとランダムに生成されます',
+            labelComment: 'コメント *',
+            placeholderName: '自動生成のため空白のままにしてください',
+            placeholderComment: 'あなたの考えを共有してください...',
+            submit: 'コメントを投稿',
+            submitting: '投稿中...',
+            noComments: 'まだコメントがありません',
+            loading: '読み込み中...',
+            pending: 'コメントは審査中です',
+            empty: 'コメントを入力してください',
+            success: 'コメントが正常に投稿されました ✓',
+            error: '送信に失敗しました',
+            canComment: 'もう一度コメントできます',
+            rateLimitError: '投稿する前にお待ちください',
+            langButtonLabel: '言語を変更',
+            dubTitle: 'バージョンを選択:',
+            dubHint: 'クリックして切り替え、長押ししてメニューを表示',
+            episodeCount: 'エピソード',
+            episodeCount_plural: 'エピソード',
+            statusOriginal: '▶ オリジナルバージョンが再生中',
+            statusArabic: '🔊 アラビア語吹き替えが有効',
+            statusJapanese: '🎧 日本語吹き替えが有効',
+            appTitle: 'Watch VIP',
+            dubLongPressHint: '吹き替えボタンを長押しして適切な吹き替えを選択してください',
+            preDubNotice: 'エピソードの一部が吹き替えされていない可能性があります。同期に成功した後は、エピソードを自然に再生することをお勧めします。',
+            seekHint: '± 1 秒',
+            audioLabel: 'オーディオオフセット:',
+            justNow: '今',
+            minutesAgo: '{{count}}分前',
+            hoursAgo: '{{count}}時間前',
+            daysAgo: '{{count}}日前',
+            original: 'オリジナルバージョン',
+            arabicDub: 'アラビア語吹き替え',
+            japaneseDub: '日本語吹き替え',
+            langAr: 'عربي',
+            langEn: 'English',
+            langFr: 'Français',
+            langJa: '日本語',
+            // Series and Episodes
+            'series.doraemon.title': 'ドラえもん',
+            'series.doraemon.ep01.title': 'エピソード01 - ドラえもんの始まり',
+            'series.doraemon.ep01.description': 'ドリームシティ - のび太の土地'
+        }
+    }
+};
+
+// Initialize i18next
+const i18next = window.i18next;
+
+i18next.init({
+    lng: localStorage.getItem('site_lang') || 'ar',
+    fallbackLng: 'en',
+    resources: i18nResources,
+    interpolation: {
+        escapeValue: false
+    }
+});
+
+// ============================================
 // DATA
 // ============================================
 const LIBRARY = {
     series: [
         {
             id: 'doraemon',
-            title: 'دورايمون',
+            titleKey: 'series.doraemon.title',
             cover: 'covers/doraemon.jpg',
             episodes: [
                 {
                     id: 'ep01',
-                    title: 'الحلقة 01 - بداية دورايمون',
-                    description: 'مدينة الأحلام – أرض نوبيتا',
+                    titleKey: 'series.doraemon.ep01.title',
+                    descriptionKey: 'series.doraemon.ep01.description',
                     cover: 'covers/ep01.jpg',
                     versions: {
                         original: {
-                            name: 'النسخة الأصلية',
+                            name: 'original',
                             icon: '🎬',
                             id: 'ZYycK1Paq4M'
                         },
                         arabic: {
-                            name: 'دبلجة عربية',
+                            name: 'arabicDub',
                             icon: '🔊',
                             id: 'B_Ha4vu-qc8'
                         },
                         japanese: {
-                            name: 'دبلجة يابانية',
+                            name: 'japaneseDub',
                             icon: '🎧',
                             id: 'xYJpOiuPohQ'
                         }
@@ -1199,146 +1425,64 @@ const LIBRARY = {
     ]
 };
 
-const TRANSLATIONS = {
-    ar: {
-        library: 'المسلسلات',
-        back: '← الرجوع',
-        comments: 'التعليقات',
-        commentCount: (n) => `${n} تعليق`,
-        labelName: 'الاسم (اختياري)',
-        hintName: 'سيتم توليد اسم تلقائي إن لم تكتب',
-        labelComment: 'التعليق *',
-        placeholderName: 'اترك فارغاً للتوليد التلقائي',
-        placeholderComment: 'شارك رأيك...',
-        submit: 'إرسال التعليق',
-        submitting: 'جاري الإرسال...',
-        noComments: 'لا توجد تعليقات حتى الآن',
-        loading: 'جاري التحميل...',
-        pending: 'لديك تعليق قيد المراجعة',
-        empty: 'أكمل كتابة التعليق',
-        success: 'تم إرسال تعليقك بنجاح ✓',
-        error: 'حدث خطأ في الإرسال',
-        canComment: 'يمكنك التعليق مجدداً',
-        rateLimitError: 'الرجاء الانتظار قليلاً قبل الإرسال',
-        langButtonLabel: 'تغيير اللغة',
-        dubTitle: 'اختر نسخة العرض:',
-        dubHint: 'انقر للتبديل، اضغط طويلاً لعرض القائمة',
-        episodeCount: (n) => `${n} حلقة`,
-        statusMessages: {
-            original: '▶ النسخة الأصلية قيد التشغيل',
-            arabic: '🔊 الدبلجة العربية مفعلة',
-            japanese: '🎧 الدبلجة اليابانية مفعلة'
-        },
-        appTitle: 'Watch VIP',
-        dubLongPressHint: 'اضغط مطوّلًا على زر الدبلجة لاختيار الدبلجة المناسبة',
-        preDubNotice: 'قد تكون أجزاء من الحلقة غير مدبلجة، يُفضّل ترك الحلقة تسير طبيعيًا بعد نجاح المزامنة.',
-        seekHint: '± 1 ثانية',
-        audioLabel: 'إزاحة الصوت:'
+// ============================================
+// i18n UTILITIES
+// ============================================
+const I18n = {
+    translateElement(element) {
+        const key = element.getAttribute('data-i18n');
+        if (!key) return;
+
+        const count = element.getAttribute('data-i18n-count');
+        const options = count ? { count: parseInt(count) } : {};
+
+        if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
+            if (element.placeholder) {
+                element.placeholder = i18next.t(key, options);
+            }
+        } else {
+            element.textContent = i18next.t(key, options);
+        }
+
+        const titleKey = element.getAttribute('data-i18n-title');
+        if (titleKey) {
+            element.title = i18next.t(titleKey);
+        }
     },
-    en: {
-        library: 'Series',
-        back: 'Back',
-        comments: 'Comments',
-        commentCount: (n) => `${n} comment${n !== 1 ? 's' : ''}`,
-        labelName: 'Name (Optional)',
-        hintName: 'An automatic name will be generated if left blank',
-        labelComment: 'Comment *',
-        placeholderName: 'Leave blank for auto-generation',
-        placeholderComment: 'Share your thoughts...',
-        submit: 'Post Comment',
-        submitting: 'Posting...',
-        noComments: 'No comments yet',
-        loading: 'Loading...',
-        pending: 'Your comment is under review',
-        empty: 'Please write a comment',
-        success: 'Comment posted successfully ✓',
-        error: 'Failed to send comment',
-        canComment: 'You can comment again',
-        rateLimitError: 'Please wait a moment before posting',
-        langButtonLabel: 'Change Language',
-        dubTitle: 'Choose Version:',
-        dubHint: 'Click to toggle, long press to show menu',
-        episodeCount: (n) => `${n} episode${n !== 1 ? 's' : ''}`,
-        statusMessages: {
-            original: '▶ Original version is playing',
-            arabic: '🔊 Arabic dub is enabled',
-            japanese: '🎧 Japanese dub is enabled'
-        },
-        appTitle: 'Watch VIP',
-        dubLongPressHint: 'Long press the dub button to select the appropriate dubbing',
-        preDubNotice: 'Some parts of the episode may not be dubbed. It is recommended to let the episode play naturally after successful synchronization.',
-        seekHint: '± 1 second',
-        audioLabel: 'Audio Offset:'
+
+    translatePage() {
+        document.querySelectorAll('[data-i18n]').forEach(el => {
+            this.translateElement(el);
+        });
+
+        const lang = i18next.language;
+        document.documentElement.setAttribute('data-lang', lang);
+        document.documentElement.setAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr');
     },
-    fr: {
-        library: 'Séries',
-        back: 'Retour',
-        comments: 'Commentaires',
-        commentCount: (n) => `${n} commentaire${n !== 1 ? 's' : ''}`,
-        labelName: 'Nom (Optionnel)',
-        hintName: 'Un nom automatique sera généré si laissé vide',
-        labelComment: 'Commentaire *',
-        placeholderName: 'Laisser vide pour la génération automatique',
-        placeholderComment: 'Partagez vos pensées...',
-        submit: 'Publier le commentaire',
-        submitting: 'Publication...',
-        noComments: 'Pas encore de commentaires',
-        loading: 'Chargement...',
-        pending: 'Votre commentaire est en attente d\'approbation',
-        empty: 'Veuillez écrire un commentaire',
-        success: 'Commentaire publié avec succès ✓',
-        error: 'Erreur lors de l\'envoi',
-        canComment: 'Vous pouvez commenter à nouveau',
-        rateLimitError: 'Veuillez attendre un moment avant de publier',
-        langButtonLabel: 'Changer la Langue',
-        dubTitle: 'Choisir la version:',
-        dubHint: 'Cliquez pour basculer, appuyez longuement pour le menu',
-        episodeCount: (n) => `${n} épisode${n !== 1 ? 's' : ''}`,
-        statusMessages: {
-            original: '▶ La version originale est en cours de lecture',
-            arabic: '🔊 Le doublage arabe est activé',
-            japanese: '🎧 Le doublage japonais est activé'
-        },
-        appTitle: 'Watch VIP',
-        dubLongPressHint: 'Appuyez longuement sur le bouton de doublage pour sélectionner le doublage approprié',
-        preDubNotice: 'Certaines parties de l\'épisode peuvent ne pas être doublées. Il est recommandé de laisser l\'épisode se jouer naturellement après une synchronisation réussie.',
-        seekHint: '± 1 seconde',
-        audioLabel: 'Décalage audio:'
+
+    changeLanguage(lang) {
+        i18next.changeLanguage(lang, (err) => {
+            if (err) {
+                console.error('Language change error:', err);
+                return;
+            }
+            localStorage.setItem('site_lang', lang);
+            this.translatePage();
+            App.refreshCurrentView();
+        });
     },
-    ja: {
-        library: 'シリーズ',
-        back: '戻る',
-        comments: 'コメント',
-        commentCount: (n) => `${n}件のコメント`,
-        labelName: '名前 (オプション)',
-        hintName: '空白のままにするとランダムに生成されます',
-        labelComment: 'コメント *',
-        placeholderName: '自動生成のため空白のままにしてください',
-        placeholderComment: 'あなたの考えを共有してください...',
-        submit: 'コメントを投稿',
-        submitting: '投稿中...',
-        noComments: 'まだコメントがありません',
-        loading: '読み込み中...',
-        pending: 'コメントは審査中です',
-        empty: 'コメントを入力してください',
-        success: 'コメントが正常に投稿されました ✓',
-        error: '送信に失敗しました',
-        canComment: 'もう一度コメントできます',
-        rateLimitError: '投稿する前にお待ちください',
-        langButtonLabel: '言語を変更',
-        dubTitle: 'バージョンを選択:',
-        dubHint: 'クリックして切り替え、長押ししてメニューを表示',
-        episodeCount: (n) => `${n}エピソード`,
-        statusMessages: {
-            original: '▶ オリジナルバージョンが再生中',
-            arabic: '🔊 アラビア語吹き替えが有効',
-            japanese: '🎧 日本語吹き替えが有効'
-        },
-        appTitle: 'Watch VIP',
-        dubLongPressHint: '吹き替えボタンを長押しして適切な吹き替えを選択してください',
-        preDubNotice: 'エピソードの一部が吹き替えされていない可能性があります。同期に成功した後は、エピソードを自然に再生することをお勧めします。',
-        seekHint: '± 1 秒',
-        audioLabel: 'オーディオオフセット:'
+
+    t(key, options = {}) {
+        return i18next.t(key, options);
+    },
+
+    validateTranslation(key) {
+        const translation = i18next.t(key);
+        if (translation === key) {
+            console.error(`Translation missing for key: ${key}`);
+            return false;
+        }
+        return true;
     }
 };
 
@@ -1363,41 +1507,12 @@ const Utils = {
     timeAgo(ts) {
         const diff = Date.now() - ts;
         const m = Math.floor(diff / 60000);
-        const lang = document.documentElement.getAttribute('data-lang');
-        
-        const times = {
-            ar: {
-                now: 'للتو',
-                minutes: (n) => `منذ ${n} دقيقة`,
-                hours: (n) => `منذ ${n} ساعة`,
-                days: (n) => `منذ ${n} يوم`
-            },
-            en: {
-                now: 'just now',
-                minutes: (n) => `${n}m ago`,
-                hours: (n) => `${n}h ago`,
-                days: (n) => `${n}d ago`
-            },
-            fr: {
-                now: 'à l\'instant',
-                minutes: (n) => `il y a ${n}m`,
-                hours: (n) => `il y a ${n}h`,
-                days: (n) => `il y a ${n}j`
-            },
-            ja: {
-                now: '今',
-                minutes: (n) => `${n}分前`,
-                hours: (n) => `${n}時間前`,
-                days: (n) => `${n}日前`
-            }
-        };
 
-        const t = times[lang] || times.en;
-        if (m < 1) return t.now;
-        if (m < 60) return t.minutes(m);
+        if (m < 1) return I18n.t('justNow');
+        if (m < 60) return I18n.t('minutesAgo', { count: m });
         const h = Math.floor(m / 60);
-        if (h < 24) return t.hours(h);
-        return t.days(Math.floor(h / 24));
+        if (h < 24) return I18n.t('hoursAgo', { count: h });
+        return I18n.t('daysAgo', { count: Math.floor(h / 24) });
     },
 
     clientId() {
@@ -1704,29 +1819,73 @@ const App = {
     dubToggleLongPressTimer: null,
 
     init() {
-    const saved = sessionStorage.getItem('last_view');
+        I18n.translatePage();
+        
+        const saved = sessionStorage.getItem('last_view');
 
-    if (saved) {
-        const state = JSON.parse(saved);
+        if (saved) {
+            const state = JSON.parse(saved);
 
-        if (state.view === 'video') {
-            this.currentSeries = LIBRARY.series.find(s => s.id === state.seriesId);
-            this.playEpisode(state.episodeId);
-        } 
-        else if (state.view === 'series') {
-            this.viewSeries(state.seriesId);
-        } 
-        else {
+            if (state.view === 'video') {
+                this.currentSeries = LIBRARY.series.find(s => s.id === state.seriesId);
+                this.playEpisode(state.episodeId);
+            } 
+            else if (state.view === 'series') {
+                this.viewSeries(state.seriesId);
+            } 
+            else {
+                this.renderHome();
+            }
+        } else {
             this.renderHome();
         }
-    } else {
-        this.renderHome();
-    }
 
-    Comments.init();
-    this.setupDubToggle();
-    this.setupVideoSeek();
-},
+        Comments.init();
+        this.setupDubToggle();
+        this.setupVideoSeek();
+        this.setupLanguageToggle();
+    },
+
+    setupLanguageToggle() {
+        const langToggle = document.getElementById('langToggle');
+        const langMenu = document.getElementById('langMenu');
+
+        langToggle.addEventListener('click', () => {
+            langMenu.classList.toggle('show');
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!langToggle.contains(e.target) && !langMenu.contains(e.target)) {
+                langMenu.classList.remove('show');
+            }
+        });
+
+        langMenu.querySelectorAll('button').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const lang = btn.getAttribute('data-lang');
+                I18n.changeLanguage(lang);
+                langMenu.classList.remove('show');
+                
+                langMenu.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+            });
+        });
+    },
+
+    refreshCurrentView() {
+        if (this.currentView === 'home') {
+            this.renderHome();
+        }
+        else if (this.currentView === 'series' && this.currentSeries) {
+            this.viewSeries(this.currentSeries.id);
+        }
+        else if (this.currentView === 'video' && this.currentEpisode) {
+            this.playEpisode(this.currentEpisode.id);
+        }
+        
+        I18n.translatePage();
+    },
+
     setupDubToggle() {
         const btn = document.getElementById('dubToggle');
         let isLongPress = false;
@@ -1873,90 +2032,116 @@ const App = {
     },
 
     renderHome() {
-    const lang = document.documentElement.getAttribute('data-lang');
-    const t = TRANSLATIONS[lang];
+        document.getElementById('libraryView').classList.remove('hidden');
+        document.getElementById('videoView').classList.add('hidden');
+        document.getElementById('backBtn').style.display = 'none';
+        
+        const breadcrumb = document.getElementById('breadcrumbText');
+        breadcrumb.setAttribute('data-i18n', 'library');
+        I18n.translateElement(breadcrumb);
 
-    document.getElementById('libraryView').classList.remove('hidden');
-    document.getElementById('videoView').classList.add('hidden');
-    document.getElementById('backBtn').style.display = 'none';
-    document.getElementById('breadcrumbText').textContent = t.library;
+        const grid = document.getElementById('libraryGrid');
+        grid.innerHTML = LIBRARY.series.map(series => {
+            I18n.validateTranslation(series.titleKey);
+            const title = I18n.t(series.titleKey);
+            const episodesText = I18n.t('episodeCount', {count: series.episodes.length});
+            
+            return `
+                <div class="library-item" onclick="App.viewSeries('${series.id}')">
+                    <div class="item-cover">
+                        <img src="${series.cover}" alt="${Utils.sanitize(title)}">
+                    </div>
+                    <div class="item-info">
+                        <div class="item-title">${Utils.sanitize(title)}</div>
+                        <div class="item-subtitle">${episodesText}</div>
+                    </div>
+                </div>
+            `;
+        }).join('');
 
-    const grid = document.getElementById('libraryGrid');
-    grid.innerHTML = LIBRARY.series.map(series => `
-        <div class="library-item" onclick="App.viewSeries('${series.id}')">
-            <div class="item-cover">
-                <img src="${series.cover}" alt="${series.title}">
-            </div>
-            <div class="item-info">
-                <div class="item-title">${Utils.sanitize(series.title)}</div>
-                <div class="item-subtitle">${t.episodeCount(series.episodes.length)}</div>
-            </div>
-        </div>
-    `).join('');
+        this.currentView = 'home';
+        this.dubSelectorVisible = false;
+        Comments.pauseAutoRefresh();
+        DubEngine.cleanup();
 
-    this.currentView = 'home';
-    this.dubSelectorVisible = false;
-    Comments.pauseAutoRefresh();
-    DubEngine.cleanup();
-
-    
-    sessionStorage.removeItem('last_view');
-},
+        sessionStorage.removeItem('last_view');
+        I18n.translatePage();
+    },
 
     viewSeries(seriesId) {
-        const lang = document.documentElement.getAttribute('data-lang');
-        const t = TRANSLATIONS[lang];
-
         this.currentSeries = LIBRARY.series.find(s => s.id === seriesId);
         if (!this.currentSeries) return;
+
+        I18n.validateTranslation(this.currentSeries.titleKey);
+        const seriesTitle = I18n.t(this.currentSeries.titleKey);
 
         document.getElementById('libraryView').classList.remove('hidden');
         document.getElementById('videoView').classList.add('hidden');
         document.getElementById('backBtn').style.display = 'inline-flex';
-        document.getElementById('backBtn').textContent = t.back;
-        document.getElementById('libraryTitle').textContent = this.currentSeries.title;
-        document.getElementById('breadcrumbText').textContent = this.currentSeries.title;
+        
+        const backBtn = document.getElementById('backBtn');
+        backBtn.setAttribute('data-i18n', 'back');
+        I18n.translateElement(backBtn);
+        
+        document.getElementById('libraryTitle').textContent = seriesTitle;
+        document.getElementById('breadcrumbText').textContent = seriesTitle;
 
         const grid = document.getElementById('libraryGrid');
-        grid.innerHTML = this.currentSeries.episodes.map(ep => `
-            <div class="library-item" onclick="App.playEpisode('${ep.id}')">
-                <div class="item-cover episode" style="background-image: url('${ep.cover}')">
-                    <span class="play-icon">▶</span>
+        grid.innerHTML = this.currentSeries.episodes.map(ep => {
+            I18n.validateTranslation(ep.titleKey);
+            I18n.validateTranslation(ep.descriptionKey);
+            
+            const title = I18n.t(ep.titleKey);
+            const description = I18n.t(ep.descriptionKey);
+            
+            return `
+                <div class="library-item" onclick="App.playEpisode('${ep.id}')">
+                    <div class="item-cover episode" style="background-image: url('${ep.cover}')">
+                        <span class="play-icon">▶</span>
+                    </div>
+                    <div class="item-info">
+                        <div class="item-title">${Utils.sanitize(title)}</div>
+                        <div class="item-subtitle">${Utils.sanitize(description)}</div>
+                    </div>
                 </div>
-                <div class="item-info">
-                    <div class="item-title">${Utils.sanitize(ep.title)}</div>
-                    <div class="item-subtitle">${Utils.sanitize(ep.description)}</div>
-                </div>
-            </div>
-        `).join('');
+            `;
+        }).join('');
 
         this.currentView = 'series';
-this.dubSelectorVisible = false;
-Comments.pauseAutoRefresh();
-DubEngine.cleanup();
+        this.dubSelectorVisible = false;
+        Comments.pauseAutoRefresh();
+        DubEngine.cleanup();
 
-sessionStorage.setItem('last_view', JSON.stringify({
-    view: 'series',
-    seriesId
-}));
+        sessionStorage.setItem('last_view', JSON.stringify({
+            view: 'series',
+            seriesId
+        }));
+        
+        I18n.translatePage();
     },
 
     async playEpisode(episodeId) {
-        const lang = document.documentElement.getAttribute('data-lang');
-        const t = TRANSLATIONS[lang];
-
         if (!this.currentSeries) return;
         this.currentEpisode = this.currentSeries.episodes.find(e => e.id === episodeId);
         if (!this.currentEpisode) return;
 
+        I18n.validateTranslation(this.currentEpisode.titleKey);
+        I18n.validateTranslation(this.currentEpisode.descriptionKey);
+
+        const episodeTitle = I18n.t(this.currentEpisode.titleKey);
+        const episodeDescription = I18n.t(this.currentEpisode.descriptionKey);
+
         document.getElementById('libraryView').classList.add('hidden');
         document.getElementById('videoView').classList.remove('hidden');
         document.getElementById('backBtn').style.display = 'inline-flex';
-        document.getElementById('backBtn').textContent = t.back;
-        document.getElementById('breadcrumbText').textContent = this.currentEpisode.title;
-
-        document.getElementById('videoTitle').textContent = this.currentEpisode.title;
-        document.getElementById('videoDescription').textContent = this.currentEpisode.description;
+        
+        const backBtn = document.getElementById('backBtn');
+        backBtn.setAttribute('data-i18n', 'back');
+        I18n.translateElement(backBtn);
+        
+        document.getElementById('breadcrumbText').textContent = episodeTitle;
+        document.getElementById('videoTitle').textContent = episodeTitle;
+        document.getElementById('videoDescription').textContent = episodeDescription;
 
         this.setupDubButtons();
 
@@ -1979,18 +2164,18 @@ sessionStorage.setItem('last_view', JSON.stringify({
         document.getElementById('legacySeek').classList.add('hidden');
 
         this.currentView = 'video';
-Comments.load();
+        Comments.load();
 
-sessionStorage.setItem('last_view', JSON.stringify({
-    view: 'video',
-    seriesId: this.currentSeries.id,
-    episodeId
-}));
+        sessionStorage.setItem('last_view', JSON.stringify({
+            view: 'video',
+            seriesId: this.currentSeries.id,
+            episodeId
+        }));
+        
+        I18n.translatePage();
     },
 
     setupDubButtons() {
-        const lang = document.documentElement.getAttribute('data-lang');
-        const t = TRANSLATIONS[lang];
         const versions = this.currentEpisode.versions;
         const dubButtons = document.getElementById('dubButtons');
         const dubSelector = document.getElementById('dubSelector');
@@ -2002,28 +2187,37 @@ sessionStorage.setItem('last_view', JSON.stringify({
 
         dubSelector.style.display = 'none';
         this.dubSelectorVisible = false;
-        document.getElementById('dubTitle').textContent = t.dubTitle;
 
-        dubButtons.innerHTML = Object.entries(versions).map(([key, version]) => `
-            <button 
-                class="dub-btn ${key === 'original' ? 'active' : ''}" 
-                onclick="App.selectDubVersion('${key}', this)"
-            >
-                <span class="dub-icon">${version.icon}</span>
-                <span>${version.name}</span>
-            </button>
-        `).join('');
+        dubButtons.innerHTML = Object.entries(versions).map(([key, version]) => {
+            I18n.validateTranslation(version.name);
+            const versionName = I18n.t(version.name);
+            
+            return `
+                <button 
+                    class="dub-btn ${key === 'original' ? 'active' : ''}" 
+                    onclick="App.selectDubVersion('${key}', this)"
+                >
+                    <span class="dub-icon">${version.icon}</span>
+                    <span>${versionName}</span>
+                </button>
+            `;
+        }).join('');
 
         this.updateStatusIndicator('original');
     },
 
     updateStatusIndicator(mode) {
-        const lang = document.documentElement.getAttribute('data-lang');
-        const t = TRANSLATIONS[lang];
         const statusText = document.getElementById('statusText');
         const statusDot = document.getElementById('statusDot');
+        
+        const statusKeys = {
+            original: 'statusOriginal',
+            arabic: 'statusArabic',
+            japanese: 'statusJapanese'
+        };
 
-        statusText.textContent = t.statusMessages[mode] || t.statusMessages.original;
+        I18n.validateTranslation(statusKeys[mode]);
+        statusText.textContent = I18n.t(statusKeys[mode]);
 
         if (mode === 'original') {
             statusDot.classList.remove('active');
@@ -2076,14 +2270,14 @@ const Comments = {
     lastSubmitTime: 0,
 
     async init() {
-    const form = document.getElementById('commentForm');
-    form.addEventListener('submit', e => {
-        e.preventDefault();
-        this.send();
-    });
+        const form = document.getElementById('commentForm');
+        form.addEventListener('submit', e => {
+            e.preventDefault();
+            this.send();
+        });
 
-    this.startAutoRefresh();
-},
+        this.startAutoRefresh();
+    },
 
     startAutoRefresh() {
         if (this.autoRefreshInterval) clearInterval(this.autoRefreshInterval);
@@ -2107,17 +2301,15 @@ const Comments = {
     },
 
     async send() {
-        const lang = document.documentElement.getAttribute('data-lang');
-        const t = TRANSLATIONS[lang];
         const now = Date.now();
 
         if (now - this.lastSubmitTime < CONFIG.SUBMIT_COOLDOWN) {
-            Utils.status(t.rateLimitError, 'error');
+            Utils.status(I18n.t('rateLimitError'), 'error');
             return;
         }
 
         if (this.userCommentId) {
-            Utils.status(t.pending, 'info');
+            Utils.status(I18n.t('pending'), 'info');
             return;
         }
 
@@ -2125,29 +2317,29 @@ const Comments = {
         const text = document.getElementById('commentText').value.trim();
 
         if (!text) {
-            Utils.status(t.empty, 'error');
+            Utils.status(I18n.t('empty'), 'error');
             return;
         }
 
         const btn = document.getElementById('submitBtn');
         btn.disabled = true;
-        btn.textContent = '⏳ ' + t.submitting;
+        btn.textContent = '⏳ ' + I18n.t('submitting');
 
         try {
             const res = await API.submit(name || null, text);
             this.userCommentId = res.commentId;
             localStorage.setItem('watch_vip_user_comment_id', res.commentId);
             this.lastSubmitTime = now;
-            Utils.status(t.success, 'success');
+            Utils.status(I18n.t('success'), 'success');
             Utils.playHaptic();
             document.getElementById('commentText').value = '';
             document.getElementById('commentName').value = '';
             await this.load();
         } catch (e) {
-            Utils.status(t.error, 'error');
+            Utils.status(I18n.t('error'), 'error');
         } finally {
             btn.disabled = false;
-            btn.textContent = t.submit;
+            btn.textContent = I18n.t('submit');
         }
     },
 
@@ -2156,15 +2348,14 @@ const Comments = {
         this.isRefreshing = true;
 
         try {
-            const lang = document.documentElement.getAttribute('data-lang');
-            const t = TRANSLATIONS[lang];
             const list = await API.comments();
             const box = document.getElementById('commentsListContainer');
 
-            document.getElementById('commentsCount').textContent = t.commentCount(list.length);
+            const countEl = document.getElementById('commentsCount');
+            countEl.textContent = I18n.t('commentCount', { count: list.length });
 
             if (!list.length) {
-                box.innerHTML = `<div class="no-comments">${t.noComments}</div>`;
+                box.innerHTML = `<div class="no-comments">${I18n.t('noComments')}</div>`;
                 this.isRefreshing = false;
                 return;
             }
@@ -2207,9 +2398,6 @@ const Comments = {
     },
 
     bindClicks() {
-        const lang = document.documentElement.getAttribute('data-lang');
-        const t = TRANSLATIONS[lang];
-
         document.querySelectorAll('.user-comment').forEach(el=>{
             let lastClick = 0;
             el.addEventListener('click', () => {
@@ -2217,7 +2405,7 @@ const Comments = {
                 if (now - lastClick < 300) {
                     localStorage.removeItem('watch_vip_user_comment_id');
                     this.userCommentId = null;
-                    Utils.status(t.canComment, 'success');
+                    Utils.status(I18n.t('canComment'), 'success');
                     Utils.playHaptic();
                     this.load();
                 }
@@ -2228,143 +2416,12 @@ const Comments = {
 };
 
 // ============================================
-// LANGUAGE MANAGEMENT
+// INITIALIZATION
 // ============================================
-function applyLanguage(lang) {
-    const t = TRANSLATIONS[lang];
-    document.documentElement.setAttribute('data-lang', lang);
-    localStorage.setItem('site_lang', lang);
-
-    // تحديث النصوص الأساسية
-    document.getElementById('libraryTitle').textContent = t.library;
-    document.getElementById('labelName').textContent = t.labelName;
-    document.getElementById('hintName').textContent = t.hintName;
-    document.getElementById('labelComment').textContent = t.labelComment;
-    document.getElementById('commentName').placeholder = t.placeholderName;
-    document.getElementById('commentText').placeholder = t.placeholderComment;
-    document.getElementById('submitBtn').textContent = t.submit;
-    document.getElementById('loadingText').textContent = t.loading;
-    document.getElementById('dubTitle').textContent = t.dubTitle;
-    document.getElementById('dubToggle').title = t.dubHint;
-    document.getElementById('appTitle').textContent = t.appTitle;
-    document.getElementById('dubLongPressHint').textContent = t.dubLongPressHint;
-    document.getElementById('preDubNotice').textContent = t.preDubNotice;
-    document.getElementById('seekHint').textContent = t.seekHint;
-    document.getElementById('audioLabel').textContent = t.audioLabel;
-    document.getElementById('commentsTitle').textContent = t.comments;
-
-    const langButton = document.getElementById('langToggle');
-    const langLabels = {
-        ar: 'اللغة',
-        en: 'Lang',
-        fr: 'Langue',
-        ja: '言語'
-    };
-    langButton.textContent = langLabels[lang] || 'Lang';
-    langButton.title = t.langButtonLabel;
-
-    document.querySelectorAll('#langMenu button').forEach(btn => {
-        btn.classList.remove('active');
-        if (btn.dataset.lang === lang) {
-            btn.classList.add('active');
-        }
-    });
-
-    // إعادة عرض المحتوى الحالي بناءً على الحالة
-    if (App.currentView === 'home') {
-        document.getElementById('breadcrumbText').textContent = t.library;
-        document.getElementById('backBtn').textContent = t.back;
-        
-        // إعادة رسم المكتبة الرئيسية
-        const grid = document.getElementById('libraryGrid');
-        grid.innerHTML = LIBRARY.series.map(series => `
-            <div class="library-item" onclick="App.viewSeries('${series.id}')">
-                <div class="item-cover">
-                    <img src="${series.cover}" alt="${series.title}">
-                </div>
-                <div class="item-info">
-                    <div class="item-title">${Utils.sanitize(series.title)}</div>
-                    <div class="item-subtitle">${t.episodeCount(series.episodes.length)}</div>
-                </div>
-            </div>
-        `).join('');
-    } 
-    else if (App.currentView === 'series' && App.currentSeries) {
-        document.getElementById('breadcrumbText').textContent = App.currentSeries.title;
-        document.getElementById('backBtn').textContent = t.back;
-        
-        // إعادة رسم قائمة الحلقات
-        const grid = document.getElementById('libraryGrid');
-        grid.innerHTML = App.currentSeries.episodes.map(ep => `
-            <div class="library-item" onclick="App.playEpisode('${ep.id}')">
-                <div class="item-cover episode" style="background-image: url('${ep.cover}')">
-                    <span class="play-icon">▶</span>
-                </div>
-                <div class="item-info">
-                    <div class="item-title">${Utils.sanitize(ep.title)}</div>
-                    <div class="item-subtitle">${Utils.sanitize(ep.description)}</div>
-                </div>
-            </div>
-        `).join('');
-    }
-    else if (App.currentView === 'video' && App.currentEpisode) {
-        document.getElementById('breadcrumbText').textContent = App.currentEpisode.title;
-        document.getElementById('backBtn').textContent = t.back;
-        
-        // تحديث أزرار الدبلجة
-        const versions = App.currentEpisode.versions;
-        const dubButtons = document.getElementById('dubButtons');
-        const currentMode = DubEngine.state.currentMode;
-        
-        dubButtons.innerHTML = Object.entries(versions).map(([key, version]) => `
-            <button 
-                class="dub-btn ${key === currentMode ? 'active' : ''}" 
-                onclick="App.selectDubVersion('${key}', this)"
-            >
-                <span class="dub-icon">${version.icon}</span>
-                <span>${version.name}</span>
-            </button>
-        `).join('');
-        
-        // تحديث مؤشر الحالة
-        App.updateStatusIndicator(currentMode);
-        
-        // تحديث عداد التعليقات
-        const commentsContainer = document.getElementById('commentsListContainer');
-        const currentCommentCount = commentsContainer.querySelectorAll('.comment-item').length;
-        document.getElementById('commentsCount').textContent = t.commentCount(currentCommentCount);
-        
-        // إعادة تحميل التعليقات لتحديث الأوقات
-        Comments.load();
-    }
-}
-
-const langToggle = document.getElementById('langToggle');
-const langMenu = document.getElementById('langMenu');
-
-langToggle.addEventListener('click', (e) => {
-    e.stopPropagation();
-    langMenu.classList.toggle('hidden');
+document.addEventListener('DOMContentLoaded', () => {
+    App.init();
 });
 
-langMenu.querySelectorAll('button').forEach(btn => {
-    btn.addEventListener('click', () => {
-        applyLanguage(btn.dataset.lang);
-        langMenu.classList.add('hidden');
-        Utils.playHaptic();
-    });
-});
-
-document.addEventListener('click', (e) => {
-    if (!e.target.closest('#langToggle') && !e.target.closest('#langMenu')) {
-        langMenu.classList.add('hidden');
-    }
-});
-
-const savedLang = localStorage.getItem('site_lang') || 'ar';
-applyLanguage(savedLang);
-
-document.addEventListener('DOMContentLoaded', ()=>App.init());
     </script>
 </body>
 </html>
