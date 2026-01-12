@@ -800,21 +800,7 @@
             to { transform: rotate(360deg); }
         }
 
-        .comments-update-indicator {
-            display: inline-block;
-            width: 8px;
-            height: 8px;
-            background: var(--primary-color);
-            border-radius: 50%;
-            margin-right: 8px;
-            animation: pulse 1.5s ease-in-out infinite;
-        }
-
-        .comments-update-indicator.paused {
-            animation: none;
-            opacity: 0.5;
-        }
-
+        
         @keyframes pulse {
             0%, 100% { opacity: 1; }
             50% { opacity: 0.5; }
@@ -1018,7 +1004,7 @@
             <div class="comments-section">
                 <div class="comments-header">
                     <h2>
-                        <span class="comments-update-indicator paused" id="updateIndicator"></span>
+                       
                         <span id="commentsTitle" data-i18n="comments"></span>
                     </h2>
                     <span
@@ -2330,10 +2316,7 @@ const Comments = {
     startAutoRefresh() {
         if (this.autoRefreshInterval) clearInterval(this.autoRefreshInterval);
 
-        const indicator = document.getElementById('updateIndicator');
-        if (indicator) {
-            indicator.classList.remove('paused');
-        }
+        
 
         this.autoRefreshInterval = setInterval(() => {
             if (App.currentView === 'video') {
@@ -2348,11 +2331,7 @@ const Comments = {
             this.autoRefreshInterval = null;
         }
 
-        const indicator = document.getElementById('updateIndicator');
-        if (indicator) {
-            indicator.classList.add('paused');
-        }
-    },
+        
 
     async send() {
         const now = Date.now();
