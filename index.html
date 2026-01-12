@@ -130,21 +130,21 @@
             box-shadow: var(--shadow);
         }
 
-       .item-cover {
-    width: 100%;
-    aspect-ratio: 16 / 9;
-    background-color: #000; /* بدل الأحمر */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    overflow: hidden;
-}
+        .item-cover {
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            background-color: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
 
-.item-cover.episode {
-    background-size: cover;
-    background-position: 25% center;
-}
+        .item-cover.episode {
+            background-size: cover;
+            background-position: 25% center;
+        }
 
         .item-cover img {
             width: 100%;
@@ -753,7 +753,7 @@
         }
 
         .hidden {
-            display: none;
+            display: none !important;
         }
 
         @media (max-width: 768px) {
@@ -966,6 +966,43 @@
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
+
+        .dub-notice {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            text-align: center;
+            padding: 10px 14px;
+            line-height: 1.5;
+        }
+
+        .dub-arrows {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .arrow-btn {
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            background: #1f1f1f;
+            border: 1px solid #333;
+            color: #fff;
+            font-size: 20px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .arrow-btn:hover {
+            background: var(--primary-color);
+            transform: scale(1.1);
+        }
+
+        .arrow-label {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
     </style>
 </head>
 <body>
@@ -985,7 +1022,10 @@
         <div id="videoView" class="hidden">
             <div class="video-section">
                 <div class="video-header">
-                    <h1>Watch VIP</h1>
+                    <h1>
+                        <span id="appTitle">Watch VIP</span>
+                        <div id="dubLongPressHint" style="font-size:12px;color:#aaa;margin-top:4px;"></div>
+                    </h1>
                     <div class="video-controls">
                         <div class="quick-toggle">
                             <button id="dubToggle" class="sys-toggle" title="الدبلجة">
@@ -997,17 +1037,20 @@
 
                 <div class="video-container" id="videoContainer"></div>
 
-                <div class="video-seek-wrapper">
-                    <span class="time-display" id="currentTime">00:00</span>
-                    <input
-                        type="range"
-                        id="videoSeek"
-                        min="0"
-                        value="0"
-                        step="0.1"
-                        title="تقدم الفيديو"
-                    >
-                    <span class="time-display" id="totalTime">00:00</span>
+                <div class="video-seek-wrapper" id="seekWrapper">
+                    <div id="preDubNotice" class="dub-notice"></div>
+
+                    <div id="dubArrows" class="dub-arrows hidden">
+                        <button class="arrow-btn" id="back1">⏪</button>
+                        <span class="arrow-label" id="seekHint"></span>
+                        <button class="arrow-btn" id="forward1">⏩</button>
+                    </div>
+
+                    <div id="legacySeek" class="hidden">
+                        <span class="time-display" id="currentTime">00:00</span>
+                        <input type="range" id="videoSeek" min="0" value="0" step="0.1" title="تقدم الفيديو">
+                        <span class="time-display" id="totalTime">00:00</span>
+                    </div>
                 </div>
 
                 <div class="dub-selector" id="dubSelector" style="display: none;">
@@ -1091,7 +1134,7 @@
     </div>
 
     <script>
-   // ============================================
+// ============================================
 // GLOBAL STATE & CONFIGURATION
 // ============================================
 const CONFIG = {
@@ -1129,11 +1172,10 @@ const LIBRARY = {
             cover: 'covers/doraemon.jpg',
             episodes: [
                 {
-    id: 'ep01',
-    title: 'الحلقة 01 - بداية دورايمون',
-    description: 'مدينة الأحلام – أرض نوبيتا',
-    cover: 'covers/ep01.jpg',
-    
+                    id: 'ep01',
+                    title: 'الحلقة 01 - بداية دورايمون',
+                    description: 'مدينة الأحلام – أرض نوبيتا',
+                    cover: 'covers/ep01.jpg',
                     versions: {
                         original: {
                             name: 'النسخة الأصلية',
@@ -1186,7 +1228,12 @@ const TRANSLATIONS = {
             original: '▶ النسخة الأصلية قيد التشغيل',
             arabic: '🔊 الدبلجة العربية مفعلة',
             japanese: '🎧 الدبلجة اليابانية مفعلة'
-        }
+        },
+        appTitle: 'Watch VIP',
+        dubLongPressHint: 'اضغط مطوّلًا على زر الدبلجة لاختيار الدبلجة المناسبة',
+        preDubNotice: 'قد تكون أجزاء من الحلقة غير مدبلجة، يُفضّل ترك الحلقة تسير طبيعيًا بعد نجاح المزامنة.',
+        seekHint: '± 1 ثانية',
+        audioLabel: 'إزاحة الصوت:'
     },
     en: {
         library: 'Series',
@@ -1216,7 +1263,12 @@ const TRANSLATIONS = {
             original: '▶ Original version is playing',
             arabic: '🔊 Arabic dub is enabled',
             japanese: '🎧 Japanese dub is enabled'
-        }
+        },
+        appTitle: 'Watch VIP',
+        dubLongPressHint: 'Long press the dub button to select the appropriate dubbing',
+        preDubNotice: 'Some parts of the episode may not be dubbed. It is recommended to let the episode play naturally after successful synchronization.',
+        seekHint: '± 1 second',
+        audioLabel: 'Audio Offset:'
     },
     fr: {
         library: 'Séries',
@@ -1246,7 +1298,12 @@ const TRANSLATIONS = {
             original: '▶ La version originale est en cours de lecture',
             arabic: '🔊 Le doublage arabe est activé',
             japanese: '🎧 Le doublage japonais est activé'
-        }
+        },
+        appTitle: 'Watch VIP',
+        dubLongPressHint: 'Appuyez longuement sur le bouton de doublage pour sélectionner le doublage approprié',
+        preDubNotice: 'Certaines parties de l\'épisode peuvent ne pas être doublées. Il est recommandé de laisser l\'épisode se jouer naturellement après une synchronisation réussie.',
+        seekHint: '± 1 seconde',
+        audioLabel: 'Décalage audio:'
     },
     ja: {
         library: 'シリーズ',
@@ -1276,7 +1333,12 @@ const TRANSLATIONS = {
             original: '▶ オリジナルバージョンが再生中',
             arabic: '🔊 アラビア語吹き替えが有効',
             japanese: '🎧 日本語吹き替えが有効'
-        }
+        },
+        appTitle: 'Watch VIP',
+        dubLongPressHint: '吹き替えボタンを長押しして適切な吹き替えを選択してください',
+        preDubNotice: 'エピソードの一部が吹き替えされていない可能性があります。同期に成功した後は、エピソードを自然に再生することをお勧めします。',
+        seekHint: '± 1 秒',
+        audioLabel: 'オーディオオフセット:'
     }
 };
 
@@ -1726,6 +1788,43 @@ const App = {
         seek.addEventListener('touchend', () => {
             DubEngine.state.userSeeking = false;
         });
+
+        const preDubNotice = document.getElementById('preDubNotice');
+        const dubArrows = document.getElementById('dubArrows');
+        const legacySeek = document.getElementById('legacySeek');
+
+        function showDubControls() {
+            preDubNotice.classList.add('hidden');
+            legacySeek.classList.add('hidden');
+            dubArrows.classList.remove('hidden');
+        }
+
+        function hideDubControls() {
+            dubArrows.classList.add('hidden');
+            legacySeek.classList.add('hidden');
+            preDubNotice.classList.remove('hidden');
+        }
+
+        const originalToggleDub = App.toggleDub.bind(App);
+        App.toggleDub = function () {
+            originalToggleDub();
+
+            if (this.dubEnabled) {
+                showDubControls();
+            } else {
+                hideDubControls();
+            }
+        };
+
+        document.getElementById('back1').onclick = () => {
+            const p = DubEngine.state.audioPlayers[DubEngine.state.currentMode];
+            if (p) p.seekTo(Math.max(0, p.getCurrentTime() - 1), true);
+        };
+
+        document.getElementById('forward1').onclick = () => {
+            const p = DubEngine.state.audioPlayers[DubEngine.state.currentMode];
+            if (p) p.seekTo(p.getCurrentTime() + 1, true);
+        };
     },
 
     toggleDub() {
@@ -1769,8 +1868,8 @@ const App = {
         grid.innerHTML = LIBRARY.series.map(series => `
             <div class="library-item" onclick="App.viewSeries('${series.id}')">
                 <div class="item-cover">
-    <img src="${series.cover}" alt="${series.title}">
-</div>
+                    <img src="${series.cover}" alt="${series.title}">
+                </div>
                 <div class="item-info">
                     <div class="item-title">${Utils.sanitize(series.title)}</div>
                     <div class="item-subtitle">${t.episodeCount(series.episodes.length)}</div>
@@ -1801,10 +1900,9 @@ const App = {
         const grid = document.getElementById('libraryGrid');
         grid.innerHTML = this.currentSeries.episodes.map(ep => `
             <div class="library-item" onclick="App.playEpisode('${ep.id}')">
-                <div class="item-cover episode"
-     style="background-image: url('${ep.cover}')">
-    <span class="play-icon">▶</span>
-</div>
+                <div class="item-cover episode" style="background-image: url('${ep.cover}')">
+                    <span class="play-icon">▶</span>
+                </div>
                 <div class="item-info">
                     <div class="item-title">${Utils.sanitize(ep.title)}</div>
                     <div class="item-subtitle">${Utils.sanitize(ep.description)}</div>
@@ -1850,6 +1948,10 @@ const App = {
         seek.value = 0;
         document.getElementById('currentTime').textContent = '00:00';
         document.getElementById('totalTime').textContent = '00:00';
+
+        document.getElementById('preDubNotice').classList.remove('hidden');
+        document.getElementById('dubArrows').classList.add('hidden');
+        document.getElementById('legacySeek').classList.add('hidden');
 
         this.currentView = 'video';
         Comments.load();
@@ -2103,6 +2205,7 @@ function applyLanguage(lang) {
     document.documentElement.setAttribute('data-lang', lang);
     localStorage.setItem('site_lang', lang);
 
+    // تحديث النصوص الأساسية
     document.getElementById('libraryTitle').textContent = t.library;
     document.getElementById('breadcrumbText').textContent = t.library;
     document.getElementById('backBtn').textContent = t.back;
@@ -2116,6 +2219,13 @@ function applyLanguage(lang) {
     document.getElementById('loadingText').textContent = t.loading;
     document.getElementById('dubTitle').textContent = t.dubTitle;
     document.getElementById('dubToggle').title = t.dubHint;
+
+    // تحديث النصوص الجديدة المضافة
+    document.getElementById('appTitle').textContent = t.appTitle;
+    document.getElementById('dubLongPressHint').textContent = t.dubLongPressHint;
+    document.getElementById('preDubNotice').textContent = t.preDubNotice;
+    document.getElementById('seekHint').textContent = t.seekHint;
+    document.getElementById('audioLabel').textContent = t.audioLabel;
 
     const langButton = document.getElementById('langToggle');
     const langLabels = {
@@ -2166,7 +2276,6 @@ const savedLang = localStorage.getItem('site_lang') || 'ar';
 applyLanguage(savedLang);
 
 document.addEventListener('DOMContentLoaded', ()=>App.init());
-
     </script>
 </body>
 </html>
