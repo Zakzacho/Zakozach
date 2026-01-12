@@ -1873,32 +1873,35 @@ const App = {
     },
 
     renderHome() {
-        const lang = document.documentElement.getAttribute('data-lang');
-        const t = TRANSLATIONS[lang];
+    const lang = document.documentElement.getAttribute('data-lang');
+    const t = TRANSLATIONS[lang];
 
-        document.getElementById('libraryView').classList.remove('hidden');
-        document.getElementById('videoView').classList.add('hidden');
-        document.getElementById('backBtn').style.display = 'none';
-        document.getElementById('breadcrumbText').textContent = t.library;
+    document.getElementById('libraryView').classList.remove('hidden');
+    document.getElementById('videoView').classList.add('hidden');
+    document.getElementById('backBtn').style.display = 'none';
+    document.getElementById('breadcrumbText').textContent = t.library;
 
-        const grid = document.getElementById('libraryGrid');
-        grid.innerHTML = LIBRARY.series.map(series => `
-            <div class="library-item" onclick="App.viewSeries('${series.id}')">
-                <div class="item-cover">
-                    <img src="${series.cover}" alt="${series.title}">
-                </div>
-                <div class="item-info">
-                    <div class="item-title">${Utils.sanitize(series.title)}</div>
-                    <div class="item-subtitle">${t.episodeCount(series.episodes.length)}</div>
-                </div>
+    const grid = document.getElementById('libraryGrid');
+    grid.innerHTML = LIBRARY.series.map(series => `
+        <div class="library-item" onclick="App.viewSeries('${series.id}')">
+            <div class="item-cover">
+                <img src="${series.cover}" alt="${series.title}">
             </div>
-        `).join('');
+            <div class="item-info">
+                <div class="item-title">${Utils.sanitize(series.title)}</div>
+                <div class="item-subtitle">${t.episodeCount(series.episodes.length)}</div>
+            </div>
+        </div>
+    `).join('');
 
-        this.currentView = 'home';
-        this.dubSelectorVisible = false;
-        Comments.pauseAutoRefresh();
-        DubEngine.cleanup();
-    },
+    this.currentView = 'home';
+    this.dubSelectorVisible = false;
+    Comments.pauseAutoRefresh();
+    DubEngine.cleanup();
+
+    
+    sessionStorage.removeItem('last_view');
+},
 
     viewSeries(seriesId) {
         const lang = document.documentElement.getAttribute('data-lang');
