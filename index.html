@@ -945,14 +945,14 @@
                         <!-- Backward Controls -->
                         <div class="control-btn-group">
                             <button class="control-btn control-btn-small" onclick="DubEngine.adjustTime(-1.5)" aria-label="backward 1.5s">
-                                ⏪
+                                ◄
                             </button>
                             <span class="btn-label">1.5s</span>
                         </div>
 
                         <div class="control-btn-group">
                             <button class="control-btn" onclick="DubEngine.adjustTime(-1)" aria-label="backward 1s">
-                                ⏪
+                                ◄
                             </button>
                             <span class="btn-label">1s</span>
                         </div>
@@ -960,14 +960,14 @@
                         <!-- Forward Controls -->
                         <div class="control-btn-group">
                             <button class="control-btn" onclick="DubEngine.adjustTime(1)" aria-label="forward 1s">
-                                ⏩
+                                ►
                             </button>
                             <span class="btn-label">1s</span>
                         </div>
 
                         <div class="control-btn-group">
                             <button class="control-btn control-btn-small" onclick="DubEngine.adjustTime(1.5)" aria-label="forward 1.5s">
-                                ⏩
+                                ►
                             </button>
                             <span class="btn-label">1.5s</span>
                         </div>
@@ -1073,7 +1073,7 @@ const CONFIG = {
 let YTReady = false;
 window.onYouTubeIframeAPIReady = function() {
     YTReady = true;
-    console.log('✅ YouTube API Ready');
+    console.log('YouTube API Ready');
     DubEngine.setupPlayersWhenReady();
 };
 
@@ -1114,7 +1114,7 @@ const i18nResources = {
             statusJapanese: 'الدبلجة اليابانية مفعلة',
             statusIconOriginal: '▶',
             statusIconDub: '🔊',
-            statusIconJapanese: '🎧',
+            statusIconJapanese: '⌁⌁',
             appTitle: 'Watch VIP',
             dubLongPressHint: 'اضغط مطوّلًا على زر الدبلجة لاختيار الدبلجة المناسبة',
             preDubNotice: 'استخدم أزرار التحكم لضبط التوقيت يدوياً حسب الحاجة',
@@ -1131,16 +1131,16 @@ const i18nResources = {
             langFr: 'Français',
             langJa: '日本語',
             iconPlay: '▶',
-            iconMuted: '🔇',
+            iconMuted: '∅🔊',
             iconUnmuted: '🔊',
-            iconLoading: '⏳',
-            iconOriginal: '🎬',
+            iconLoading: '⧗',
+            iconOriginal: '▶',
             iconArabicDub: '🔊',
-            iconJapaneseDub: '🎧',
+            iconJapaneseDub: '⌁⌁',
             iconBackArrow: '←',
             iconVerified: '✓',
-            iconBackward: '⏪',
-            iconForward: '⏩',
+            iconBackward: '◄ ',
+            iconForward: '►',
             'series.doraemon.title': 'دورايمون',
             'series.doraemon.episode.ep01.title': 'الحلقة 01 - بداية دورايمون',
             'series.doraemon.episode.ep01.description': 'مدينة الأحلام – أرض نوبيتا'
@@ -1179,7 +1179,7 @@ const i18nResources = {
             statusJapanese: 'Japanese dub is enabled',
             statusIconOriginal: '▶',
             statusIconDub: '🔊',
-            statusIconJapanese: '🎧',
+            statusIconJapanese: '⌁⌁',
             appTitle: 'Watch VIP',
             dubLongPressHint: 'Long press the dub button to select the appropriate dubbing',
             preDubNotice: 'Use the control buttons to manually adjust timing as needed',
@@ -1196,16 +1196,16 @@ const i18nResources = {
             langFr: 'Français',
             langJa: '日本語',
             iconPlay: '▶',
-            iconMuted: '🔇',
+            iconMuted: '∅🔊',
             iconUnmuted: '🔊',
-            iconLoading: '⏳',
-            iconOriginal: '🎬',
+            iconLoading: '⧗',
+            iconOriginal: '▶',
             iconArabicDub: '🔊',
-            iconJapaneseDub: '🎧',
+            iconJapaneseDub: '⌁⌁',
             iconBackArrow: '←',
             iconVerified: '✓',
-            iconBackward: '⏪',
-            iconForward: '⏩',
+            iconBackward: '◄',
+            iconForward: '►',
             'series.doraemon.title': 'Doraemon',
             'series.doraemon.episode.ep01.title': 'Episode 01 - The Beginning of Doraemon',
             'series.doraemon.episode.ep01.description': 'Dream City - Nobita\'s Land'
@@ -1244,7 +1244,7 @@ const i18nResources = {
             statusJapanese: 'Le doublage japonais est activé',
             statusIconOriginal: '▶',
             statusIconDub: '🔊',
-            statusIconJapanese: '🎧',
+            statusIconJapanese: '⌁⌁',
             appTitle: 'Watch VIP',
             dubLongPressHint: 'Appuyez longuement sur le bouton de doublage pour sélectionner le doublage approprié',
             preDubNotice: 'Utilisez les boutons de contrôle pour ajuster manuellement le timing selon les besoins',
@@ -1261,16 +1261,16 @@ const i18nResources = {
             langFr: 'Français',
             langJa: '日本語',
             iconPlay: '▶',
-            iconMuted: '🔇',
+            iconMuted: '∅🔊',
             iconUnmuted: '🔊',
-            iconLoading: '⏳',
-            iconOriginal: '🎬',
+            iconLoading: '⧗',
+            iconOriginal: '▶',
             iconArabicDub: '🔊',
-            iconJapaneseDub: '🎧',
+            iconJapaneseDub: '⌁⌁',
             iconBackArrow: '←',
             iconVerified: '✓',
-            iconBackward: '⏪',
-            iconForward: '⏩',
+            iconBackward: '◄',
+            iconForward: '►',
             'series.doraemon.title': 'Doraemon',
             'series.doraemon.episode.ep01.title': 'Épisode 01 - Le Début de Doraemon',
             'series.doraemon.episode.ep01.description': 'Ville des Rêves - Terre de Nobita'
@@ -1309,7 +1309,7 @@ const i18nResources = {
             statusJapanese: '日本語吹き替えが有効',
             statusIconOriginal: '▶',
             statusIconDub: '🔊',
-            statusIconJapanese: '🎧',
+            statusIconJapanese: '⌁⌁',
             appTitle: 'Watch VIP',
             dubLongPressHint: '吹き替えボタンを長押しして適切な吹き替えを選択してください',
             preDubNotice: '必要に応じてコントロールボタンを使用して手動でタイミングを調整してください',
@@ -1326,16 +1326,16 @@ const i18nResources = {
             langFr: 'Français',
             langJa: '日本語',
             iconPlay: '▶',
-            iconMuted: '🔇',
+            iconMuted: '∅🔊',
             iconUnmuted: '🔊',
-            iconLoading: '⏳',
-            iconOriginal: '🎬',
+            iconLoading: '⧗',
+            iconOriginal: '▶',
             iconArabicDub: '🔊',
-            iconJapaneseDub: '🎧',
+            iconJapaneseDub: '⌁⌁',
             iconBackArrow: '←',
             iconVerified: '✓',
-            iconBackward: '⏪',
-            iconForward: '⏩',
+            iconBackward: '◄',
+            iconForward: '►',
             'series.doraemon.title': 'ドラえもん',
             'series.doraemon.episode.ep01.title': 'エピソード01 - ドラえもんの始まり',
             'series.doraemon.episode.ep01.description': 'ドリームシティ - のび太の国'
