@@ -308,15 +308,20 @@
             position: relative;
         }
 
-        .control-btn:hover {
+        .control-btn:hover:not(:disabled) {
             background: var(--primary-color);
             border-color: var(--primary-color);
             transform: scale(1.1);
             box-shadow: 0 0 15px rgba(255, 0, 0, 0.5);
         }
 
-        .control-btn:active {
+        .control-btn:active:not(:disabled) {
             transform: scale(0.95);
+        }
+
+        .control-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
         }
 
         .control-btn-small {
@@ -327,7 +332,7 @@
             border: 2px solid #282828;
         }
 
-        .control-btn-small:hover {
+        .control-btn-small:hover:not(:disabled) {
             background: #cc0000;
             border-color: #cc0000;
         }
@@ -1522,7 +1527,7 @@ const API = {
 };
 
 // ============================================
-// DUB ENGINE
+// DUB ENGINE - محرك الدبلجة المحسّن
 // ============================================
 const DubEngine = {
     state: {
@@ -1577,6 +1582,7 @@ const DubEngine = {
                         'onReady': () => {
                             this.state.isReady = true;
                             console.log('✅ Main player ready');
+                            this.updateControlButtons();
                         },
                         'onStateChange': (e) => this.onMainPlayerStateChange(e)
                     }
@@ -1595,6 +1601,7 @@ const DubEngine = {
                     events: {
                         'onReady': () => {
                             console.log(`✅ Audio player ${key} ready`);
+                            this.updateControlButtons();
                         }
                     }
                 });
@@ -1730,60 +1737,81 @@ const DubEngine = {
             }
 
             this.state.currentMode = mode;
+            this.updateControlButtons();
             console.log('✅ Mode changed to:', mode);
         } catch (e) {
             console.error('Error setting mode:', e);
         }
     },
 
+    /**
+     * تعديل الوقت - يؤثر فقط على فيديو الدبلجة المخفي
+     * @param {number} offset - الإزاحة بالثواني (موجبة للأمام، سالبة للخلف)
+     */
     adjustTime(offset) {
-        // الحصول على المشغل الصحيح بناءً على الوضع الحالي
-        let targetPlayer;
-        
+        // التحقق من أننا في وضع الدبلجة وليس الأصلي
         if (this.state.currentMode === 'original') {
-            targetPlayer = this.state.mainPlayer;
-        } else {
-            targetPlayer = this.state.audioPlayers[this.state.currentMode];
+            console.warn('⚠️ Cannot adjust time in original mode');
+            return;
         }
 
-        if (!targetPlayer || typeof targetPlayer.seekTo !== 'function') {
-            console.warn('No valid player for time adjustment');
+        // الحصول على مشغل الدبلجة الحالي
+        const audioPlayer = this.state.audioPlayers[this.state.currentMode];
+        
+        if (!audioPlayer || typeof audioPlayer.seekTo !== 'function') {
+            console.warn('⚠️ No valid audio player for time adjustment');
             return;
         }
 
         try {
-            const currentTime = targetPlayer.getCurrentTime();
+            const currentTime = audioPlayer.getCurrentTime();
             
             if (currentTime === undefined || isNaN(currentTime)) {
-                console.warn('Invalid current time');
+                console.warn('⚠️ Invalid current time from audio player');
                 return;
             }
 
+            // حساب الوقت الجديد (مع التأكد من عدم النزول تحت الصفر)
             const newTime = Math.max(0, currentTime + offset);
             
-            console.log(`⏱️ Adjusting time: ${currentTime.toFixed(2)}s → ${newTime.toFixed(2)}s (${offset > 0 ? '+' : ''}${offset}s)`);
+            console.log(`⏱️ Adjusting AUDIO time: ${currentTime.toFixed(2)}s → ${newTime.toFixed(2)}s (${offset > 0 ? '+' : ''}${offset}s)`);
             
-            targetPlayer.seekTo(newTime, true);
+            // تطبيق التغيير على فيديو الدبلجة فقط
+            audioPlayer.seekTo(newTime, true);
             
-            // إذا كنا في وضع الدبلجة، نحتاج إلى مزامنة المشغل الرئيسي أيضاً
-            if (this.state.currentMode !== 'original' && this.state.mainPlayer) {
-                this.state.mainPlayer.seekTo(newTime, true);
-                
-                // إعادة بدء المزامنة بعد التعديل
-                this.stopSync();
-                setTimeout(() => {
-                    if (this.state.currentMode !== 'original') {
-                        this.startSync();
-                    }
-                }, 100);
-            }
+            // إعادة المزامنة بعد التعديل
+            this.stopSync();
+            setTimeout(() => {
+                if (this.state.currentMode !== 'original') {
+                    this.startSync();
+                }
+            }, 100);
             
             // تأثير اهتزازي للتأكيد
             Utils.playHaptic();
             
         } catch (e) {
-            console.error('Error adjusting time:', e);
+            console.error('❌ Error adjusting audio time:', e);
         }
+    },
+
+    /**
+     * تحديث حالة أزرار التحكم
+     */
+    updateControlButtons() {
+        const controlButtons = document.querySelectorAll('#dubControls .control-btn');
+        const isAudioPlayerReady = this.state.currentMode !== 'original' && 
+                                   this.state.audioPlayers[this.state.currentMode];
+
+        controlButtons.forEach(btn => {
+            if (isAudioPlayerReady && this.state.isReady) {
+                btn.disabled = false;
+                btn.style.opacity = '1';
+            } else {
+                btn.disabled = true;
+                btn.style.opacity = '0.3';
+            }
+        });
     },
 
     cleanup() {
