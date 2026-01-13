@@ -716,7 +716,7 @@
             justify-content: center;
             cursor: pointer;
             z-index: 9999;
-            font-size: 0.7rem;
+            font-size: 1.2rem;
             font-weight: 600;
             border: 2px solid var(--text-primary);
             transition: all 0.3s;
@@ -930,7 +930,7 @@
                                 id="dubToggle"
                                 class="sys-toggle"
                                 data-i18n-title="dubTitle">
-                                <span class="icon"></span>
+                                <span class="icon">X</span>
                             </button>
                         </div>
                     </div>
@@ -945,14 +945,14 @@
                         <!-- Backward Controls -->
                         <div class="control-btn-group">
                             <button class="control-btn control-btn-small" onclick="DubEngine.adjustTime(-1.5)" aria-label="backward 1.5s">
-                                ◄
+                                &lt;
                             </button>
                             <span class="btn-label">1.5s</span>
                         </div>
 
                         <div class="control-btn-group">
                             <button class="control-btn" onclick="DubEngine.adjustTime(-1)" aria-label="backward 1s">
-                                ◄
+                                &lt;
                             </button>
                             <span class="btn-label">1s</span>
                         </div>
@@ -960,14 +960,14 @@
                         <!-- Forward Controls -->
                         <div class="control-btn-group">
                             <button class="control-btn" onclick="DubEngine.adjustTime(1)" aria-label="forward 1s">
-                                ►
+                                &gt;
                             </button>
                             <span class="btn-label">1s</span>
                         </div>
 
                         <div class="control-btn-group">
                             <button class="control-btn control-btn-small" onclick="DubEngine.adjustTime(1.5)" aria-label="forward 1.5s">
-                                ►
+                                &gt;
                             </button>
                             <span class="btn-label">1.5s</span>
                         </div>
@@ -1100,7 +1100,6 @@ const i18nResources = {
             pending: 'لديك تعليق قيد المراجعة',
             empty: 'أكمل كتابة التعليق',
             success: 'تم إرسال تعليقك بنجاح',
-            successIcon: '✓',
             error: 'حدث خطأ في الإرسال',
             canComment: 'يمكنك التعليق مجدداً',
             rateLimitError: 'الرجاء الانتظار قليلاً قبل الإرسال',
@@ -1112,9 +1111,6 @@ const i18nResources = {
             statusOriginal: 'النسخة الأصلية قيد التشغيل',
             statusArabic: 'الدبلجة العربية مفعلة',
             statusJapanese: 'الدبلجة اليابانية مفعلة',
-            statusIconOriginal: '▶',
-            statusIconDub: '🔊',
-            statusIconJapanese: '⌁⌁',
             appTitle: 'Watch VIP',
             dubLongPressHint: 'اضغط مطوّلًا على زر الدبلجة لاختيار الدبلجة المناسبة',
             preDubNotice: 'استخدم أزرار التحكم لضبط التوقيت يدوياً حسب الحاجة',
@@ -1130,17 +1126,6 @@ const i18nResources = {
             langEn: 'English',
             langFr: 'Français',
             langJa: '日本語',
-            iconPlay: '▶',
-            iconMuted: '∅🔊',
-            iconUnmuted: '🔊',
-            iconLoading: '⧗',
-            iconOriginal: '▶',
-            iconArabicDub: '🔊',
-            iconJapaneseDub: '⌁⌁',
-            iconBackArrow: '←',
-            iconVerified: '✓',
-            iconBackward: '◄ ',
-            iconForward: '►',
             'series.doraemon.title': 'دورايمون',
             'series.doraemon.episode.ep01.title': 'الحلقة 01 - بداية دورايمون',
             'series.doraemon.episode.ep01.description': 'مدينة الأحلام – أرض نوبيتا'
@@ -1165,7 +1150,6 @@ const i18nResources = {
             pending: 'Your comment is under review',
             empty: 'Please write a comment',
             success: 'Comment posted successfully',
-            successIcon: '✓',
             error: 'Failed to send comment',
             canComment: 'You can comment again',
             rateLimitError: 'Please wait a moment before posting',
@@ -1177,9 +1161,6 @@ const i18nResources = {
             statusOriginal: 'Original version is playing',
             statusArabic: 'Arabic dub is enabled',
             statusJapanese: 'Japanese dub is enabled',
-            statusIconOriginal: '▶',
-            statusIconDub: '🔊',
-            statusIconJapanese: '⌁⌁',
             appTitle: 'Watch VIP',
             dubLongPressHint: 'Long press the dub button to select the appropriate dubbing',
             preDubNotice: 'Use the control buttons to manually adjust timing as needed',
@@ -1195,17 +1176,6 @@ const i18nResources = {
             langEn: 'English',
             langFr: 'Français',
             langJa: '日本語',
-            iconPlay: '▶',
-            iconMuted: '∅🔊',
-            iconUnmuted: '🔊',
-            iconLoading: '⧗',
-            iconOriginal: '▶',
-            iconArabicDub: '🔊',
-            iconJapaneseDub: '⌁⌁',
-            iconBackArrow: '←',
-            iconVerified: '✓',
-            iconBackward: '◄',
-            iconForward: '►',
             'series.doraemon.title': 'Doraemon',
             'series.doraemon.episode.ep01.title': 'Episode 01 - The Beginning of Doraemon',
             'series.doraemon.episode.ep01.description': 'Dream City - Nobita\'s Land'
@@ -1230,7 +1200,6 @@ const i18nResources = {
             pending: 'Votre commentaire est en attente d\'approbation',
             empty: 'Veuillez écrire un commentaire',
             success: 'Commentaire publié avec succès',
-            successIcon: '✓',
             error: 'Erreur lors de l\'envoi',
             canComment: 'Vous pouvez commenter à nouveau',
             rateLimitError: 'Veuillez attendre un moment avant de publier',
@@ -1242,9 +1211,6 @@ const i18nResources = {
             statusOriginal: 'La version originale est en cours de lecture',
             statusArabic: 'Le doublage arabe est activé',
             statusJapanese: 'Le doublage japonais est activé',
-            statusIconOriginal: '▶',
-            statusIconDub: '🔊',
-            statusIconJapanese: '⌁⌁',
             appTitle: 'Watch VIP',
             dubLongPressHint: 'Appuyez longuement sur le bouton de doublage pour sélectionner le doublage approprié',
             preDubNotice: 'Utilisez les boutons de contrôle pour ajuster manuellement le timing selon les besoins',
@@ -1260,17 +1226,6 @@ const i18nResources = {
             langEn: 'English',
             langFr: 'Français',
             langJa: '日本語',
-            iconPlay: '▶',
-            iconMuted: '∅🔊',
-            iconUnmuted: '🔊',
-            iconLoading: '⧗',
-            iconOriginal: '▶',
-            iconArabicDub: '🔊',
-            iconJapaneseDub: '⌁⌁',
-            iconBackArrow: '←',
-            iconVerified: '✓',
-            iconBackward: '◄',
-            iconForward: '►',
             'series.doraemon.title': 'Doraemon',
             'series.doraemon.episode.ep01.title': 'Épisode 01 - Le Début de Doraemon',
             'series.doraemon.episode.ep01.description': 'Ville des Rêves - Terre de Nobita'
@@ -1295,7 +1250,6 @@ const i18nResources = {
             pending: 'コメントは審査中です',
             empty: 'コメントを入力してください',
             success: 'コメントが正常に投稿されました',
-            successIcon: '✓',
             error: '送信に失敗しました',
             canComment: 'もう一度コメントできます',
             rateLimitError: '投稿する前にお待ちください',
@@ -1307,9 +1261,6 @@ const i18nResources = {
             statusOriginal: 'オリジナルバージョンが再生中',
             statusArabic: 'アラビア語吹き替えが有効',
             statusJapanese: '日本語吹き替えが有効',
-            statusIconOriginal: '▶',
-            statusIconDub: '🔊',
-            statusIconJapanese: '⌁⌁',
             appTitle: 'Watch VIP',
             dubLongPressHint: '吹き替えボタンを長押しして適切な吹き替えを選択してください',
             preDubNotice: '必要に応じてコントロールボタンを使用して手動でタイミングを調整してください',
@@ -1325,17 +1276,6 @@ const i18nResources = {
             langEn: 'English',
             langFr: 'Français',
             langJa: '日本語',
-            iconPlay: '▶',
-            iconMuted: '∅🔊',
-            iconUnmuted: '🔊',
-            iconLoading: '⧗',
-            iconOriginal: '▶',
-            iconArabicDub: '🔊',
-            iconJapaneseDub: '⌁⌁',
-            iconBackArrow: '←',
-            iconVerified: '✓',
-            iconBackward: '◄',
-            iconForward: '►',
             'series.doraemon.title': 'ドラえもん',
             'series.doraemon.episode.ep01.title': 'エピソード01 - ドラえもんの始まり',
             'series.doraemon.episode.ep01.description': 'ドリームシティ - のび太の国'
@@ -1361,17 +1301,17 @@ const LIBRARY = {
                     versions: {
                         original: {
                             nameKey: 'original',
-                            iconKey: 'iconOriginal',
+                            icon: '&#9658;',
                             id: 'ZYycK1Paq4M'
                         },
                         arabic: {
                             nameKey: 'arabicDub',
-                            iconKey: 'iconArabicDub',
+                            icon: '&#128266;',
                             id: 'B_Ha4vu-qc8'
                         },
                         japanese: {
                             nameKey: 'japaneseDub',
-                            iconKey: 'iconJapaneseDub',
+                            icon: '&#12289;&#12289;',
                             id: 'xYJpOiuPohQ'
                         }
                     }
@@ -1400,7 +1340,7 @@ const I18n = {
         const options = count ? { count: parseInt(count) } : {};
 
         if (!i18next.exists(key)) {
-            console.error(`❌ Translation key not found: "${key}"`);
+            console.error(`Translation key not found: "${key}"`);
             return;
         }
 
@@ -1443,7 +1383,7 @@ const I18n = {
 
     t(key, options = {}) {
         if (!i18next.exists(key)) {
-            console.error(`❌ Translation key not found: "${key}"`);
+            console.error(`Translation key not found: "${key}"`);
             return key;
         }
         return i18next.t(key, options);
@@ -1527,7 +1467,7 @@ const API = {
 };
 
 // ============================================
-// DUB ENGINE - محرك الدبلجة (يدوي فقط)
+// DUB ENGINE
 // ============================================
 const DubEngine = {
     state: {
@@ -1580,7 +1520,7 @@ const DubEngine = {
                     events: {
                         'onReady': () => {
                             this.state.isReady = true;
-                            console.log('✅ Main player ready');
+                            console.log('Main player ready');
                             this.updateControlButtons();
                         }
                     }
@@ -1598,7 +1538,7 @@ const DubEngine = {
                 this.state.audioPlayers[key] = new YT.Player(el.id, {
                     events: {
                         'onReady': () => {
-                            console.log(`✅ Audio player ${key} ready`);
+                            console.log(`Audio player ${key} ready`);
                             this.updateControlButtons();
                         }
                     }
@@ -1642,7 +1582,6 @@ const DubEngine = {
                                 player.unMute();
                             }
                             
-                            // مزامنة أولية عند التبديل
                             if (this.state.mainPlayer && typeof this.state.mainPlayer.getCurrentTime === 'function') {
                                 const mainTime = this.state.mainPlayer.getCurrentTime();
                                 if (typeof player.seekTo === 'function') {
@@ -1672,26 +1611,22 @@ const DubEngine = {
 
             this.state.currentMode = mode;
             this.updateControlButtons();
-            console.log('✅ Mode changed to:', mode);
+            console.log('Mode changed to:', mode);
         } catch (e) {
             console.error('Error setting mode:', e);
         }
     },
 
-    /**
-     * تعديل الوقت يدوياً فقط - بدون أي مزامنة تلقائية
-     * @param {number} offset - الإزاحة بالثواني
-     */
     adjustTime(offset) {
         if (this.state.currentMode === 'original') {
-            console.warn('⚠️ Cannot adjust time in original mode');
+            console.warn('Cannot adjust time in original mode');
             return;
         }
 
         const audioPlayer = this.state.audioPlayers[this.state.currentMode];
         
         if (!audioPlayer || typeof audioPlayer.seekTo !== 'function' || typeof audioPlayer.getCurrentTime !== 'function') {
-            console.warn('⚠️ No valid audio player for time adjustment');
+            console.warn('No valid audio player for time adjustment');
             return;
         }
 
@@ -1699,20 +1634,20 @@ const DubEngine = {
             const currentTime = audioPlayer.getCurrentTime();
             
             if (currentTime === undefined || isNaN(currentTime)) {
-                console.warn('⚠️ Invalid current time from audio player');
+                console.warn('Invalid current time from audio player');
                 return;
             }
 
             const newTime = Math.max(0, currentTime + offset);
             
-            console.log(`⏱️ Manual adjustment: ${currentTime.toFixed(2)}s → ${newTime.toFixed(2)}s (${offset > 0 ? '+' : ''}${offset}s)`);
+            console.log(`Manual adjustment: ${currentTime.toFixed(2)}s -> ${newTime.toFixed(2)}s (${offset > 0 ? '+' : ''}${offset}s)`);
             
             audioPlayer.seekTo(newTime, true);
             
             Utils.playHaptic();
             
         } catch (e) {
-            console.error('❌ Error adjusting audio time:', e);
+            console.error('Error adjusting audio time:', e);
         }
     },
 
@@ -1926,14 +1861,14 @@ const App = {
         
         if (this.dubEnabled) {
             if (btn) btn.classList.add('active');
-            if (iconEl) iconEl.textContent = I18n.t('iconUnmuted');
+            if (iconEl) iconEl.innerHTML = '&#128266;';
             DubEngine.setMode(this.lastDubMode);
             
             if (preDubNotice) preDubNotice.classList.add('hidden');
             if (dubControls) dubControls.classList.remove('hidden');
         } else {
             if (btn) btn.classList.remove('active');
-            if (iconEl) iconEl.textContent = I18n.t('iconMuted');
+            if (iconEl) iconEl.textContent = 'X';
             DubEngine.setMode('original');
             
             if (dubControls) dubControls.classList.add('hidden');
@@ -2023,11 +1958,10 @@ const App = {
         const grid = document.getElementById('libraryGrid');
         if (grid) {
             grid.innerHTML = this.currentSeries.episodes.map(ep => {
-                const playIcon = I18n.t('iconPlay');
                 return `
                     <div class="library-item" onclick="App.playEpisode('${ep.id}')">
                         <div class="item-cover episode" style="background-image: url('${ep.cover}')">
-                            <span class="play-icon">${playIcon}</span>
+                            <span class="play-icon">&#9658;</span>
                         </div>
                         <div class="item-info">
                             <div class="item-title">${Utils.sanitize(I18n.t(ep.titleKey))}</div>
@@ -2095,7 +2029,7 @@ const App = {
             dubToggleBtn.classList.remove('active');
             const iconEl = dubToggleBtn.querySelector('.icon');
             if (iconEl) {
-                iconEl.textContent = I18n.t('iconMuted');
+                iconEl.textContent = 'X';
             }
         }
 
@@ -2133,7 +2067,7 @@ const App = {
         this.dubSelectorVisible = false;
 
         dubButtons.innerHTML = Object.entries(versions).map(([key, version]) => {
-            const icon = I18n.t(version.iconKey);
+            const icon = version.icon;
             const name = I18n.t(version.nameKey);
             
             return `
@@ -2160,16 +2094,16 @@ const App = {
             japanese: 'statusJapanese'
         };
 
-        const iconKeys = {
-            original: 'statusIconOriginal',
-            arabic: 'statusIconDub',
-            japanese: 'statusIconJapanese'
+        const icons = {
+            original: '&#9658;',
+            arabic: '&#128266;',
+            japanese: '&#12289;&#12289;'
         };
 
-        const statusIcon = I18n.t(iconKeys[mode] || iconKeys.original);
+        const statusIcon = icons[mode] || icons.original;
         const statusMessage = I18n.t(statusKeys[mode] || statusKeys.original);
         
-        statusText.textContent = `${statusIcon} ${statusMessage}`;
+        statusText.innerHTML = `${statusIcon} ${statusMessage}`;
     },
 
     selectDubVersion(versionKey, button) {
@@ -2190,7 +2124,7 @@ const App = {
         if (versionKey === 'original') {
             this.dubEnabled = false;
             if (dubToggle) dubToggle.classList.remove('active');
-            if (iconEl) iconEl.textContent = I18n.t('iconMuted');
+            if (iconEl) iconEl.textContent = 'X';
             DubEngine.setMode('original');
             
             if (dubControls) dubControls.classList.add('hidden');
@@ -2200,7 +2134,7 @@ const App = {
             localStorage.setItem('last_dub', versionKey);
             this.dubEnabled = true;
             if (dubToggle) dubToggle.classList.add('active');
-            if (iconEl) iconEl.textContent = I18n.t('iconUnmuted');
+            if (iconEl) iconEl.innerHTML = '&#128266;';
             DubEngine.setMode(versionKey);
             
             if (preDubNotice) preDubNotice.classList.add('hidden');
@@ -2295,10 +2229,7 @@ const Comments = {
         if (!btn) return;
 
         btn.disabled = true;
-        
-        const loadingIcon = I18n.t('iconLoading');
-        const submittingText = I18n.t('submitting');
-        btn.textContent = `${loadingIcon} ${submittingText}`;
+        btn.textContent = I18n.t('submitting');
 
         try {
             const res = await API.submit(name || null, text);
@@ -2306,9 +2237,7 @@ const Comments = {
             localStorage.setItem('watch_vip_user_comment_id', res.commentId);
             this.lastSubmitTime = now;
             
-            const successIcon = I18n.t('successIcon');
-            const successText = I18n.t('success');
-            Utils.status(`${successText} ${successIcon}`, 'success');
+            Utils.status(I18n.t('success'), 'success');
             Utils.playHaptic();
             
             textEl.value = '';
@@ -2359,8 +2288,6 @@ const Comments = {
                 return b.timestamp - a.timestamp;
             });
 
-            const verifiedIcon = I18n.t('iconVerified');
-
             box.innerHTML = `
                 <div class="comments-list">
                     ${list.map(c=>`
@@ -2369,7 +2296,7 @@ const Comments = {
                             <div class="comment-header">
                                 <div class="comment-author">
                                     ${Utils.sanitize(c.displayName)}
-                                    ${c.verified ? `<svg class="verified-svg" viewBox="0 0 24 24" fill="#1da1f2" aria-label="${verifiedIcon}">
+                                    ${c.verified ? `<svg class="verified-svg" viewBox="0 0 24 24" fill="#1da1f2">
                                         <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
                                     </svg>` : ''}
                                 </div>
