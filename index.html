@@ -1066,13 +1066,7 @@ const CONFIG = {
     REFRESH_INTERVAL: 10000,
     SUBMIT_COOLDOWN: 3000,
     LONG_PRESS_DURATION: 500,
-    SEEK_STEP: 1,
-    // تحسينات جديدة للمزامنة
-    SYNC_INTERVAL_NORMAL: 1000,      // مزامنة عادية كل ثانية
-    SYNC_INTERVAL_ACTIVE: 2000,      // مزامنة أبطأ بعد الاستقرار
-    SYNC_THRESHOLD: 0.3,              // عتبة الفرق المسموح (ثواني)
-    MANUAL_ADJUST_COOLDOWN: 2000,    // فترة انتظار بعد التعديل اليدوي
-    SEEK_AHEAD: true                 // استخدام تحميل مسبق للفيديو
+    SEEK_STEP: 1
 };
 
 // YouTube API
@@ -1123,7 +1117,7 @@ const i18nResources = {
             statusIconJapanese: '🎧',
             appTitle: 'Watch VIP',
             dubLongPressHint: 'اضغط مطوّلًا على زر الدبلجة لاختيار الدبلجة المناسبة',
-            preDubNotice: 'قد تكون أجزاء من الحلقة غير مدبلجة، يُفضّل ترك الحلقة تسير طبيعيًا بعد نجاح المزامنة.',
+            preDubNotice: 'استخدم أزرار التحكم لضبط التوقيت يدوياً حسب الحاجة',
             justNow: 'للتو',
             minutesAgo: 'منذ {{count}} دقيقة',
             hoursAgo: 'منذ {{count}} ساعة',
@@ -1188,7 +1182,7 @@ const i18nResources = {
             statusIconJapanese: '🎧',
             appTitle: 'Watch VIP',
             dubLongPressHint: 'Long press the dub button to select the appropriate dubbing',
-            preDubNotice: 'Some parts of the episode may not be dubbed. It is recommended to let the episode play naturally after successful synchronization.',
+            preDubNotice: 'Use the control buttons to manually adjust timing as needed',
             justNow: 'just now',
             minutesAgo: '{{count}}m ago',
             hoursAgo: '{{count}}h ago',
@@ -1253,7 +1247,7 @@ const i18nResources = {
             statusIconJapanese: '🎧',
             appTitle: 'Watch VIP',
             dubLongPressHint: 'Appuyez longuement sur le bouton de doublage pour sélectionner le doublage approprié',
-            preDubNotice: 'Certaines parties de l\'épisode peuvent ne pas être doublées. Il est recommandé de laisser l\'épisode se jouer naturellement après une synchronisation réussie.',
+            preDubNotice: 'Utilisez les boutons de contrôle pour ajuster manuellement le timing selon les besoins',
             justNow: 'à l\'instant',
             minutesAgo: 'il y a {{count}}m',
             hoursAgo: 'il y a {{count}}h',
@@ -1318,7 +1312,7 @@ const i18nResources = {
             statusIconJapanese: '🎧',
             appTitle: 'Watch VIP',
             dubLongPressHint: '吹き替えボタンを長押しして適切な吹き替えを選択してください',
-            preDubNotice: 'エピソードの一部が吹き替えされていない可能性があります。同期に成功した後は、エピソードを自然に再生することをお勧めします。',
+            preDubNotice: '必要に応じてコントロールボタンを使用して手動でタイミングを調整してください',
             justNow: '今',
             minutesAgo: '{{count}}分前',
             hoursAgo: '{{count}}時間前',
@@ -1533,19 +1527,14 @@ const API = {
 };
 
 // ============================================
-// DUB ENGINE - محرك الدبلجة المحسّن
+// DUB ENGINE - محرك الدبلجة (يدوي فقط)
 // ============================================
 const DubEngine = {
     state: {
         isReady: false,
         currentMode: 'original',
         mainPlayer: null,
-        audioPlayers: {},
-        syncInterval: null,
-        manualAdjustTimeout: null,
-        isManualAdjusting: false,
-        lastSyncTime: 0,
-        syncCheckCount: 0
+        audioPlayers: {}
     },
 
     async init(mainId, versions) {
@@ -1572,7 +1561,6 @@ const DubEngine = {
 
         this.state.currentMode = 'original';
         this.state.isReady = false;
-        this.state.syncCheckCount = 0;
 
         if (YTReady) {
             this.setupPlayersWhenReady();
@@ -1594,8 +1582,7 @@ const DubEngine = {
                             this.state.isReady = true;
                             console.log('✅ Main player ready');
                             this.updateControlButtons();
-                        },
-                        'onStateChange': (e) => this.onMainPlayerStateChange(e)
+                        }
                     }
                 });
             }
@@ -1613,8 +1600,7 @@ const DubEngine = {
                         'onReady': () => {
                             console.log(`✅ Audio player ${key} ready`);
                             this.updateControlButtons();
-                        },
-                        'onStateChange': (e) => this.onAudioPlayerStateChange(e, key)
+                        }
                     }
                 });
             } catch (e) {
@@ -1623,181 +1609,8 @@ const DubEngine = {
         });
     },
 
-    onMainPlayerStateChange(event) {
-        if (this.state.currentMode === 'original') return;
-
-        const audioPlayer = this.state.audioPlayers[this.state.currentMode];
-        if (!audioPlayer) return;
-
-        try {
-            if (event.data === YT.PlayerState.PLAYING) {
-                // عند بدء التشغيل
-                if (!this.state.isManualAdjusting) {
-                    this.syncAudioPlayer(audioPlayer);
-                    setTimeout(() => {
-                        if (audioPlayer.getPlayerState && audioPlayer.getPlayerState() !== YT.PlayerState.PLAYING) {
-                            audioPlayer.playVideo();
-                        }
-                    }, 100);
-                }
-                this.startSync();
-            } else if (event.data === YT.PlayerState.PAUSED) {
-                // عند الإيقاف المؤقت
-                if (!this.state.isManualAdjusting) {
-                    audioPlayer.pauseVideo();
-                }
-                this.stopSync();
-            } else if (event.data === YT.PlayerState.ENDED) {
-                audioPlayer.stopVideo();
-                this.stopSync();
-            } else if (event.data === YT.PlayerState.BUFFERING) {
-                // خلال التحميل - نوقف المزامنة مؤقتاً
-                this.pauseSyncTemporarily();
-            }
-        } catch (e) {
-            console.warn('Player state change error:', e);
-        }
-    },
-
-    onAudioPlayerStateChange(event, key) {
-        // معالجة حالات مشغل الصوت
-        if (this.state.currentMode !== key) return;
-
-        if (event.data === YT.PlayerState.BUFFERING && !this.state.isManualAdjusting) {
-            console.log('🔄 Audio buffering, pausing sync temporarily');
-            this.pauseSyncTemporarily();
-        }
-    },
-
-    /**
-     * مزامنة ذكية مع تحميل مسبق
-     */
-    syncAudioPlayer(audioPlayer, forceSync = false) {
-        if (!audioPlayer || !this.state.mainPlayer) return;
-
-        try {
-            const mainTime = this.state.mainPlayer.getCurrentTime();
-            if (mainTime === undefined || isNaN(mainTime)) return;
-
-            const audioTime = audioPlayer.getCurrentTime ? audioPlayer.getCurrentTime() : 0;
-            const diff = Math.abs(mainTime - audioTime);
-
-            // مزامنة فقط إذا كان الفرق كبيراً أو إجباري
-            if (forceSync || diff > CONFIG.SYNC_THRESHOLD) {
-                console.log(`🔄 Syncing audio: ${audioTime.toFixed(2)}s → ${mainTime.toFixed(2)}s (diff: ${diff.toFixed(2)}s)`);
-                audioPlayer.seekTo(mainTime, CONFIG.SEEK_AHEAD);
-                this.state.lastSyncTime = Date.now();
-                this.state.syncCheckCount = 0;
-            }
-        } catch (e) {
-            console.warn('Sync error:', e);
-        }
-    },
-
-    /**
-     * بدء المزامنة التلقائية مع تكيف ذكي
-     */
-    startSync() {
-        this.stopSync();
-        
-        const syncFunction = () => {
-            if (this.state.currentMode === 'original' || this.state.isManualAdjusting) return;
-
-            const audioPlayer = this.state.audioPlayers[this.state.currentMode];
-            if (!audioPlayer || !this.state.mainPlayer) return;
-
-            try {
-                const mainTime = this.state.mainPlayer.getCurrentTime();
-                const audioTime = audioPlayer.getCurrentTime();
-                
-                if (mainTime === undefined || audioTime === undefined || 
-                    isNaN(mainTime) || isNaN(audioTime)) return;
-
-                const diff = Math.abs(mainTime - audioTime);
-
-                // إذا كان الفرق كبير، نزامن
-                if (diff > CONFIG.SYNC_THRESHOLD) {
-                    console.log(`🔄 Auto re-syncing: diff = ${diff.toFixed(2)}s`);
-                    audioPlayer.seekTo(mainTime, CONFIG.SEEK_AHEAD);
-                    this.state.syncCheckCount = 0;
-                } else {
-                    // إذا كان متزامناً جيداً، نزيد العداد
-                    this.state.syncCheckCount++;
-                }
-
-                // بعد 5 فحوصات ناجحة، نقلل تردد المزامنة
-                if (this.state.syncCheckCount > 5) {
-                    this.adjustSyncInterval(CONFIG.SYNC_INTERVAL_ACTIVE);
-                }
-            } catch (e) {
-                console.warn('Sync interval error:', e);
-            }
-        };
-
-        // بدء بتردد عادي
-        this.state.syncInterval = setInterval(syncFunction, CONFIG.SYNC_INTERVAL_NORMAL);
-    },
-
-    /**
-     * تعديل تردد المزامنة
-     */
-    adjustSyncInterval(newInterval) {
-        if (this.state.syncInterval) {
-            clearInterval(this.state.syncInterval);
-            const syncFunction = () => {
-                if (this.state.currentMode === 'original' || this.state.isManualAdjusting) return;
-                const audioPlayer = this.state.audioPlayers[this.state.currentMode];
-                if (!audioPlayer || !this.state.mainPlayer) return;
-
-                try {
-                    const mainTime = this.state.mainPlayer.getCurrentTime();
-                    const audioTime = audioPlayer.getCurrentTime();
-                    
-                    if (mainTime === undefined || audioTime === undefined || 
-                        isNaN(mainTime) || isNaN(audioTime)) return;
-
-                    const diff = Math.abs(mainTime - audioTime);
-
-                    if (diff > CONFIG.SYNC_THRESHOLD) {
-                        console.log(`🔄 Re-syncing after drift: diff = ${diff.toFixed(2)}s`);
-                        audioPlayer.seekTo(mainTime, CONFIG.SEEK_AHEAD);
-                        // العودة للتردد العادي
-                        this.state.syncCheckCount = 0;
-                        this.adjustSyncInterval(CONFIG.SYNC_INTERVAL_NORMAL);
-                    }
-                } catch (e) {
-                    console.warn('Sync error:', e);
-                }
-            };
-
-            this.state.syncInterval = setInterval(syncFunction, newInterval);
-            console.log(`⚙️ Sync interval adjusted to ${newInterval}ms`);
-        }
-    },
-
-    /**
-     * إيقاف المزامنة مؤقتاً (للتحميل مثلاً)
-     */
-    pauseSyncTemporarily() {
-        this.stopSync();
-        setTimeout(() => {
-            if (this.state.currentMode !== 'original' && !this.state.isManualAdjusting) {
-                this.startSync();
-            }
-        }, 1000);
-    },
-
-    stopSync() {
-        if (this.state.syncInterval) {
-            clearInterval(this.state.syncInterval);
-            this.state.syncInterval = null;
-        }
-    },
-
     setMode(mode) {
         if (mode === this.state.currentMode) return;
-
-        this.stopSync();
 
         try {
             if (mode === 'original') {
@@ -1829,16 +1642,20 @@ const DubEngine = {
                                 player.unMute();
                             }
                             
-                            // مزامنة أولية قوية
-                            this.syncAudioPlayer(player, true);
+                            // مزامنة أولية عند التبديل
+                            if (this.state.mainPlayer && typeof this.state.mainPlayer.getCurrentTime === 'function') {
+                                const mainTime = this.state.mainPlayer.getCurrentTime();
+                                if (typeof player.seekTo === 'function') {
+                                    player.seekTo(mainTime, true);
+                                }
+                            }
                             
-                            // بدء التشغيل بعد التأكد من المزامنة
                             setTimeout(() => {
                                 if (this.state.mainPlayer && 
+                                    this.state.mainPlayer.getPlayerState && 
                                     this.state.mainPlayer.getPlayerState() === YT.PlayerState.PLAYING &&
                                     typeof player.playVideo === 'function') {
                                     player.playVideo();
-                                    this.startSync();
                                 }
                             }, 200);
                         } else {
@@ -1854,7 +1671,6 @@ const DubEngine = {
             }
 
             this.state.currentMode = mode;
-            this.state.syncCheckCount = 0;
             this.updateControlButtons();
             console.log('✅ Mode changed to:', mode);
         } catch (e) {
@@ -1863,7 +1679,7 @@ const DubEngine = {
     },
 
     /**
-     * تعديل الوقت بشكل محسّن - لا تقطع ولا تأخير
+     * تعديل الوقت يدوياً فقط - بدون أي مزامنة تلقائية
      * @param {number} offset - الإزاحة بالثواني
      */
     adjustTime(offset) {
@@ -1874,28 +1690,16 @@ const DubEngine = {
 
         const audioPlayer = this.state.audioPlayers[this.state.currentMode];
         
-        if (!audioPlayer || typeof audioPlayer.seekTo !== 'function') {
+        if (!audioPlayer || typeof audioPlayer.seekTo !== 'function' || typeof audioPlayer.getCurrentTime !== 'function') {
             console.warn('⚠️ No valid audio player for time adjustment');
             return;
         }
 
         try {
-            // إشارة بأننا في وضع التعديل اليدوي
-            this.state.isManualAdjusting = true;
-            
-            // إيقاف المزامنة التلقائية مؤقتاً
-            this.stopSync();
-
-            // إلغاء أي timeout سابق
-            if (this.state.manualAdjustTimeout) {
-                clearTimeout(this.state.manualAdjustTimeout);
-            }
-
             const currentTime = audioPlayer.getCurrentTime();
             
             if (currentTime === undefined || isNaN(currentTime)) {
                 console.warn('⚠️ Invalid current time from audio player');
-                this.state.isManualAdjusting = false;
                 return;
             }
 
@@ -1903,33 +1707,12 @@ const DubEngine = {
             
             console.log(`⏱️ Manual adjustment: ${currentTime.toFixed(2)}s → ${newTime.toFixed(2)}s (${offset > 0 ? '+' : ''}${offset}s)`);
             
-            // تطبيق التغيير مع تحميل مسبق
             audioPlayer.seekTo(newTime, true);
             
-            // تأثير اهتزازي
             Utils.playHaptic();
-            
-            // انتظار فترة قبل إعادة تفعيل المزامنة التلقائية
-            this.state.manualAdjustTimeout = setTimeout(() => {
-                this.state.isManualAdjusting = false;
-                
-                // إعادة تشغيل المزامنة التلقائية إذا كان الفيديو الرئيسي يعمل
-                if (this.state.mainPlayer && 
-                    this.state.mainPlayer.getPlayerState() === YT.PlayerState.PLAYING) {
-                    
-                    // مزامنة خفيفة مرة واحدة
-                    setTimeout(() => {
-                        this.syncAudioPlayer(audioPlayer);
-                        this.startSync();
-                    }, 300);
-                }
-                
-                console.log('✅ Manual adjustment cooldown finished');
-            }, CONFIG.MANUAL_ADJUST_COOLDOWN);
             
         } catch (e) {
             console.error('❌ Error adjusting audio time:', e);
-            this.state.isManualAdjusting = false;
         }
     },
 
@@ -1950,18 +1733,10 @@ const DubEngine = {
     },
 
     cleanup() {
-        this.stopSync();
-        
-        if (this.state.manualAdjustTimeout) {
-            clearTimeout(this.state.manualAdjustTimeout);
-        }
-        
         this.state.mainPlayer = null;
         this.state.audioPlayers = {};
         this.state.isReady = false;
         this.state.currentMode = 'original';
-        this.state.isManualAdjusting = false;
-        this.state.syncCheckCount = 0;
     }
 };
 
