@@ -818,131 +818,119 @@
             animation: fadeIn 0.3s ease-out;
         }
 
-        /* ===========================
-           نوافذ سياسة الخصوصية
-        =========================== */
-        .privacy-windows-container {
-            position: fixed;
-            right: 0;
-            top: 0;
-            height: 100vh;
-            pointer-events: none;
-            z-index: 8888;
-            overflow: hidden;
+        /* Privacy Policy Styles */
+        .privacy-view {
+            margin-bottom: 30px;
         }
 
-        .privacy-window {
-            position: absolute;
-            width: 300px;
-            max-height: 400px;
+        .privacy-header {
+            padding: 25px 20px;
+            background: linear-gradient(135deg, var(--secondary-color) 0%, #1a1a1a 100%);
+            border-radius: 12px 12px 0 0;
+            border-bottom: 2px solid var(--primary-color);
+            margin-bottom: 20px;
+        }
+
+        .privacy-header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+            color: var(--primary-color);
+        }
+
+        .privacy-header .last-updated {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .privacy-content {
             background: var(--bg-light);
-            border: 2px solid var(--border-color);
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
-            pointer-events: all;
-            opacity: 0;
-            transform: translateY(100px) translateX(50px) scale(0.8);
-            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            display: flex;
-            flex-direction: column;
+            padding: 30px;
+            border-radius: 0 0 12px 12px;
+            box-shadow: var(--shadow);
         }
 
-        .privacy-window.visible {
-            opacity: 1;
-            transform: translateY(0) translateX(0) scale(1);
-        }
-
-        .privacy-window-header {
-            padding: 15px;
-            background: var(--secondary-color);
+        .privacy-section {
+            margin-bottom: 35px;
+            padding-bottom: 25px;
             border-bottom: 1px solid var(--border-color);
+        }
+
+        .privacy-section:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .privacy-section h2 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: var(--primary-color);
             display: flex;
-            justify-content: space-between;
             align-items: center;
             gap: 10px;
         }
 
-        .privacy-window-title {
-            font-size: 0.9rem;
-            font-weight: 600;
-            color: var(--text-primary);
-            flex: 1;
-            word-break: break-word;
-        }
-
-        .privacy-window-close {
-            width: 30px;
-            height: 30px;
-            border: none;
-            background: rgba(255, 0, 0, 0.2);
-            color: var(--primary-color);
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 18px;
-            transition: all 0.2s;
-            flex-shrink: 0;
-        }
-
-        .privacy-window-close:hover {
+        .privacy-section h2::before {
+            content: '';
+            width: 4px;
+            height: 25px;
             background: var(--primary-color);
-            color: white;
+            border-radius: 2px;
         }
 
-        .privacy-window-content {
-            padding: 15px;
-            overflow-y: auto;
-            flex: 1;
-            font-size: 0.85rem;
-            color: var(--text-secondary);
-            line-height: 1.5;
-        }
-
-        .privacy-window-content h3 {
+        .privacy-section p {
             color: var(--text-primary);
-            font-size: 0.9rem;
-            margin: 10px 0 8px 0;
-            font-weight: 600;
+            margin-bottom: 12px;
+            line-height: 1.8;
         }
 
-        .privacy-window-content p {
-            margin-bottom: 8px;
+        .privacy-section ul {
+            list-style: none;
+            margin: 15px 0;
+            padding: 0;
         }
 
-        .privacy-window-content ul {
-            margin-left: 15px;
-            margin-bottom: 8px;
-        }
-
-        .privacy-window-content li {
-            margin-bottom: 4px;
-        }
-
-        /* تنسيق شريط التمرير */
-        .privacy-window-content::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        .privacy-window-content::-webkit-scrollbar-track {
-            background: var(--bg-dark);
-        }
-
-        .privacy-window-content::-webkit-scrollbar-thumb {
-            background: var(--border-color);
-            border-radius: 3px;
-        }
-
-        .privacy-window-content::-webkit-scrollbar-thumb:hover {
-            background: var(--primary-color);
-        }
-
-        .privacy-window-footer {
+        .privacy-section li {
+            color: var(--text-primary);
+            margin-bottom: 10px;
             padding: 10px 15px;
-            background: var(--secondary-color);
-            border-top: 1px solid var(--border-color);
-            font-size: 0.75rem;
-            color: var(--text-secondary);
-            text-align: center;
+            background: rgba(255, 0, 0, 0.05);
+            border-right: 3px solid var(--primary-color);
+            border-radius: 4px;
+            line-height: 1.6;
+        }
+
+        .privacy-section li::before {
+            content: '✓ ';
+            color: var(--success-color);
+            font-weight: bold;
+            margin-right: 8px;
+        }
+
+        .privacy-highlight {
+            background: rgba(255, 0, 0, 0.1);
+            border-left: 4px solid var(--primary-color);
+            padding: 15px;
+            border-radius: 6px;
+            margin: 20px 0;
+            color: var(--text-primary);
+        }
+
+        .privacy-highlight strong {
+            color: var(--primary-color);
+        }
+
+        .privacy-link {
+            color: var(--verified-color);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .privacy-link:hover {
+            color: var(--primary-color);
+            text-decoration: underline;
         }
 
         @media (max-width: 768px) {
@@ -1014,18 +1002,24 @@
                 font-size: 14px;
             }
 
-            .privacy-window {
-                width: 280px;
-                max-height: 350px;
+            .privacy-header {
+                padding: 20px;
             }
 
-            .privacy-windows-container {
-                right: -20px;
+            .privacy-header h1 {
+                font-size: 1.5rem;
             }
 
-            .privacy-window {
-                width: 250px;
-                max-height: 300px;
+            .privacy-content {
+                padding: 20px;
+            }
+
+            .privacy-section h2 {
+                font-size: 1.2rem;
+            }
+
+            .privacy-section li {
+                padding: 8px 12px;
             }
         }
     </style>
@@ -1060,6 +1054,17 @@
                 <h1 id="libraryTitle" data-i18n="library"></h1>
             </div>
             <div class="library-grid" id="libraryGrid"></div>
+        </div>
+
+        <!-- Privacy Policy View -->
+        <div id="privacyView" class="privacy-view hidden">
+            <div class="privacy-header">
+                <h1 id="privacyTitle" data-i18n="privacyTitle"></h1>
+                <div class="last-updated" id="privacyDate" data-i18n="privacyLastUpdate"></div>
+            </div>
+            <div class="privacy-content">
+                <div id="privacyContent"></div>
+            </div>
         </div>
 
         <!-- Video View -->
@@ -1194,9 +1199,6 @@
         </div>
     </div>
 
-    <!-- نوافذ سياسة الخصوصية -->
-    <div class="privacy-windows-container" id="privacyWindowsContainer"></div>
-
     <!-- Language Switch -->
     <div id="langToggle" data-i18n-title="langButtonLabel">🌐</div>
 
@@ -1205,6 +1207,7 @@
         <button data-lang="en" data-i18n="langEn"></button>
         <button data-lang="fr" data-i18n="langFr"></button>
         <button data-lang="ja" data-i18n="langJa"></button>
+        <button onclick="App.viewPrivacy()" style="border-top: 1px solid var(--border-color);" data-i18n="privacyMenu"></button>
     </div>
 
     <script src="https://www.youtube.com/iframe_api"></script>
@@ -1279,6 +1282,9 @@ const i18nResources = {
             langEn: 'English',
             langFr: 'Français',
             langJa: '日本語',
+            privacyTitle: 'سياسة الخصوصية',
+            privacyLastUpdate: 'آخر تحديث: 15 جانفي 2026',
+            privacyMenu: 'سياسة الخصوصية',
             'series.doraemon.title': 'دورايمون',
             'series.doraemon.episode.ep01.title': 'الحلقة 01 - بداية دورايمون',
             'series.doraemon.episode.ep01.description': 'مدينة الأحلام – أرض نوبيتا'
@@ -1329,6 +1335,9 @@ const i18nResources = {
             langEn: 'English',
             langFr: 'Français',
             langJa: '日本語',
+            privacyTitle: 'Privacy Policy',
+            privacyLastUpdate: 'Last Updated: January 15, 2026',
+            privacyMenu: 'Privacy Policy',
             'series.doraemon.title': 'Doraemon',
             'series.doraemon.episode.ep01.title': 'Episode 01 - The Beginning of Doraemon',
             'series.doraemon.episode.ep01.description': 'Dream City - Nobita\'s Land'
@@ -1379,6 +1388,9 @@ const i18nResources = {
             langEn: 'English',
             langFr: 'Français',
             langJa: '日本語',
+            privacyTitle: 'Politique de Confidentialité',
+            privacyLastUpdate: 'Dernière mise à jour: 15 janvier 2026',
+            privacyMenu: 'Politique de Confidentialité',
             'series.doraemon.title': 'Doraemon',
             'series.doraemon.episode.ep01.title': 'Épisode 01 - Le Début de Doraemon',
             'series.doraemon.episode.ep01.description': 'Ville des Rêves - Terre de Nobita'
@@ -1429,11 +1441,238 @@ const i18nResources = {
             langEn: 'English',
             langFr: 'Français',
             langJa: '日本語',
+            privacyTitle: 'プライバシーポリシー',
+            privacyLastUpdate: '最終更新: 2026年1月15日',
+            privacyMenu: 'プライバシーポリシー',
             'series.doraemon.title': 'ドラえもん',
             'series.doraemon.episode.ep01.title': 'エピソード01 - ドラえもんの始まり',
             'series.doraemon.episode.ep01.description': 'ドリームシティ - のび太の国'
         }
     }
+};
+
+// Privacy Policy Content
+const PRIVACY_CONTENT = {
+    ar: [
+        {
+            title: '1. المعلومات التي نقوم بجمعها',
+            items: [
+                'نوع المتصفح وإصداره',
+                'نظام التشغيل المستخدم',
+                'الصفحات التي يتم تصفحها داخل الموقع',
+                'مدة الزيارة ومصدر الدخول إلى الموقع'
+            ],
+            description: 'تُستخدم هذه المعلومات لأغراض إحصائية فقط، وتحسين أداء الموقع وتجربة المستخدم، ولا يتم استخدامها للتعرّف على هوية الزائر الشخصية.'
+        },
+        {
+            title: '2. ملفات تعريف الارتباط (Cookies)',
+            items: [
+                'تحسين تجربة المستخدم العامة',
+                'حفظ تفضيلات المستخدم (مثل اللغة المختارة)',
+                'تحليل أداء الموقع والإحصائيات',
+                'عرض الإعلانات بطريقة مناسبة وشخصية'
+            ],
+            description: 'يمكن للمستخدم تعطيل ملفات تعريف الارتباط من خلال إعدادات المتصفح الخاص به، مع العلم أن بعض خصائص الموقع قد لا تعمل بالشكل الأمثل بعد ذلك.'
+        },
+        {
+            title: '3. Google AdSense والإعلانات',
+            description: 'يستخدم موقع darnafull.com خدمة Google AdSense لعرض الإعلانات. تقوم Google باستخدام ملفات تعريف الارتباط (مثل ملف DART cookie) لعرض إعلانات تتناسب مع اهتمامات المستخدم. يمكن للمستخدمين تعطيل استخدام ملف تعريف الارتباط DART من خلال زيارة <a href="https://policies.google.com/technologies/ads" class="privacy-link">صفحة سياسة الخصوصية الخاصة بإعلانات Google</a>'
+        },
+        {
+            title: '4. محتوى الفيديو من YouTube',
+            description: 'يعتمد موقع darnafull.com على تضمين مقاطع فيديو من منصة YouTube باستخدام المشغل الرسمي (iframe)، ولا يقوم الموقع باستضافة أو إعادة رفع أي محتوى مرئي على خوادمه الخاصة. جميع حقوق الفيديوهات تعود لأصحابها الأصليين ومنصة YouTube، ويخضع استخدام هذه المقاطع لسياسة الخصوصية وشروط الاستخدام الخاصة بـ YouTube.'
+        },
+        {
+            title: '5. التعليقات والتفاعل',
+            items: [
+                'قد يتم تخزين محتوى التعليق ووقت الإرسال لأغراض العرض والتنظيم',
+                'لا نطلب أي معلومات شخصية حساسة أو خطرة',
+                'الهدف من التعليقات هو التفاعل الإيجابي وأرشفة الآراء فقط',
+                'نحتفظ بالحق في حذف أي تعليق مخالف للأدب العام'
+            ]
+        },
+        {
+            title: '6. حماية الأطفال',
+            description: 'يهدف موقع darnafull.com إلى تقديم محتوى ترفيهي مناسب للعائلة، يركّز على إحياء ذكريات الطفولة بطريقة محترمة وآمنة، ولا يستهدف جمع أي بيانات شخصية من الأطفال بشكل متعمّد.'
+        },
+        {
+            title: '7. الروابط الخارجية',
+            description: 'قد يحتوي موقع darnafull.com على روابط لمواقع خارجية (مثل YouTube). نحن غير مسؤولين عن محتوى أو سياسات الخصوصية الخاصة بتلك المواقع، وننصح المستخدمين بمراجعة سياسات الخصوصية الخاصة بها.'
+        },
+        {
+            title: '8. الموافقة على سياسة الخصوصية',
+            description: 'باستخدامك لموقع darnafull.com، فإنك توافق على سياسة الخصوصية هذه وتوافق على جميع بنودها.'
+        },
+        {
+            title: '9. التعديلات على سياسة الخصوصية',
+            description: 'نحتفظ بالحق في تعديل أو تحديث سياسة الخصوصية هذه في أي وقت. سيتم نشر أي تعديل في هذه الصفحة مع تحديث تاريخ المراجعة.'
+        }
+    ],
+    en: [
+        {
+            title: '1. Information We Collect',
+            items: [
+                'Browser type and version',
+                'Operating system',
+                'Pages browsed on the website',
+                'Visit duration and referral source'
+            ],
+            description: 'This information is used for statistical purposes only and to improve website performance and user experience. It is not used to identify visitors personally.'
+        },
+        {
+            title: '2. Cookies (Website Tracking Files)',
+            items: [
+                'Improve overall user experience',
+                'Save user preferences (such as selected language)',
+                'Analyze website performance and statistics',
+                'Display appropriate and personalized advertisements'
+            ],
+            description: 'Users can disable cookies through their browser settings, although some website features may not work optimally afterward.'
+        },
+        {
+            title: '3. Google AdSense and Advertisements',
+            description: 'The website darnafull.com uses Google AdSense to display advertisements. Google uses cookies (such as DART cookie) to show advertisements tailored to user interests. Users can disable the DART cookie through <a href="https://policies.google.com/technologies/ads" class="privacy-link">Google\'s advertising privacy policy page</a>'
+        },
+        {
+            title: '4. YouTube Video Content',
+            description: 'The website darnafull.com embeds videos from YouTube using the official player (iframe) and does not host or upload any content on its own servers. All video rights belong to their original owners and YouTube. Use of these videos is subject to YouTube\'s privacy policy and terms of service.'
+        },
+        {
+            title: '5. Comments and Interaction',
+            items: [
+                'Comment content and submission time may be stored for display and organization',
+                'We do not request any sensitive or dangerous personal information',
+                'Comments are for positive interaction and opinion archiving only',
+                'We reserve the right to delete any comments violating community standards'
+            ]
+        },
+        {
+            title: '6. Child Protection',
+            description: 'The website darnafull.com aims to provide family-friendly entertainment content, focusing on reviving childhood memories in a respectful and safe manner. We do not intentionally collect personal data from children.'
+        },
+        {
+            title: '7. External Links',
+            description: 'The website darnafull.com may contain links to external sites (such as YouTube). We are not responsible for the content or privacy policies of these sites. We recommend users review their privacy policies.'
+        },
+        {
+            title: '8. Consent to Privacy Policy',
+            description: 'By using darnafull.com, you agree to this privacy policy and all its terms.'
+        },
+        {
+            title: '9. Changes to Privacy Policy',
+            description: 'We reserve the right to modify or update this privacy policy at any time. Any changes will be posted on this page with an updated revision date.'
+        }
+    ],
+    fr: [
+        {
+            title: '1. Informations que nous collectons',
+            items: [
+                'Type et version du navigateur',
+                'Système d\'exploitation utilisé',
+                'Pages consultées sur le site',
+                'Durée de la visite et source de référence'
+            ],
+            description: 'Ces informations sont utilisées à des fins statistiques uniquement et pour améliorer les performances du site et l\'expérience utilisateur. Elles ne sont pas utilisées pour identifier les visiteurs personnellement.'
+        },
+        {
+            title: '2. Cookies (Fichiers de suivi du site)',
+            items: [
+                'Améliorer l\'expérience utilisateur globale',
+                'Enregistrer les préférences utilisateur (comme la langue sélectionnée)',
+                'Analyser les performances du site et les statistiques',
+                'Afficher des publicités appropriées et personnalisées'
+            ],
+            description: 'Les utilisateurs peuvent désactiver les cookies via les paramètres de leur navigateur, bien que certaines fonctionnalités du site pourraient ne pas fonctionner correctement.'
+        },
+        {
+            title: '3. Google AdSense et Publicités',
+            description: 'Le site darnafull.com utilise Google AdSense pour afficher des publicités. Google utilise des cookies (comme le cookie DART) pour afficher des publicités adaptées aux intérêts de l\'utilisateur. Les utilisateurs peuvent désactiver le cookie DART via <a href="https://policies.google.com/technologies/ads" class="privacy-link">la page de politique de confidentialité des publicités Google</a>'
+        },
+        {
+            title: '4. Contenu vidéo YouTube',
+            description: 'Le site darnafull.com intègre des vidéos de YouTube en utilisant le lecteur officiel (iframe) et n\'héberge pas de contenu sur ses propres serveurs. Tous les droits des vidéos appartiennent à leurs propriétaires d\'origine et à YouTube. L\'utilisation de ces vidéos est soumise à la politique de confidentialité et aux conditions d\'utilisation de YouTube.'
+        },
+        {
+            title: '5. Commentaires et Interactions',
+            items: [
+                'Le contenu des commentaires et l\'heure d\'envoi peuvent être stockés à des fins d\'affichage et d\'organisation',
+                'Nous ne demandons aucune information personnelle sensible ou dangereuse',
+                'Les commentaires sont destinés à l\'interaction positive et à l\'archivage des opinions',
+                'Nous nous réservons le droit de supprimer tout commentaire violant les normes communautaires'
+            ]
+        },
+        {
+            title: '6. Protection des Enfants',
+            description: 'Le site darnafull.com vise à fournir un contenu divertissant adapté aux familles, en mettant l\'accent sur la revitalisation des souvenirs d\'enfance de manière respectueuse et sûre. Nous ne collectons pas intentionnellement de données personnelles auprès des enfants.'
+        },
+        {
+            title: '7. Liens Externes',
+            description: 'Le site darnafull.com peut contenir des liens vers des sites externes (comme YouTube). Nous ne sommes pas responsables du contenu ou des politiques de confidentialité de ces sites. Nous recommandons aux utilisateurs de consulter leurs politiques de confidentialité.'
+        },
+        {
+            title: '8. Consentement à la Politique de Confidentialité',
+            description: 'En utilisant darnafull.com, vous acceptez cette politique de confidentialité et tous ses termes.'
+        },
+        {
+            title: '9. Modifications de la Politique de Confidentialité',
+            description: 'Nous nous réservons le droit de modifier ou de mettre à jour cette politique de confidentialité à tout moment. Tout changement sera affiché sur cette page avec une date de révision mise à jour.'
+        }
+    ],
+    ja: [
+        {
+            title: '1. 収集する情報',
+            items: [
+                'ブラウザの種類とバージョン',
+                '使用されているオペレーティングシステム',
+                'ウェブサイト内で閲覧されるページ',
+                '訪問期間とリファラル情報'
+            ],
+            description: 'この情報は統計目的のみに使用され、ウェブサイトのパフォーマンスとユーザー体験を改善するために使用されます。訪問者を個人的に特定するために使用されることはありません。'
+        },
+        {
+            title: '2. Cookie（ウェブサイト追跡ファイル）',
+            items: [
+                'ユーザー体験全般の改善',
+                'ユーザー設定の保存（選択された言語など）',
+                'ウェブサイトのパフォーマンスと統計の分析',
+                '適切でカスタマイズされた広告の表示'
+            ],
+            description: 'ユーザーはブラウザ設定からCookieを無効にできますが、その後、ウェブサイトのいくつかの機能が最適に機能しないことがあります。'
+        },
+        {
+            title: '3. Google AdSenseと広告',
+            description: 'ウェブサイトdarnafull.comはGoogle AdSenseを使用して広告を表示しています。Googleはクッキー（DARTクッキーなど）を使用して、ユーザーの興味に合わせた広告を表示します。ユーザーは<a href="https://policies.google.com/technologies/ads" class="privacy-link">Googleの広告プライバシーポリシーページ</a>を通じてDARTクッキーを無効にできます'
+        },
+        {
+            title: '4. YouTubeビデオコンテンツ',
+            description: 'ウェブサイトdarnafull.comはYouTubeからビデオを公式プレーヤー（iframe）を使用して埋め込み、独自のサーバーでコンテンツをホストしていません。すべてのビデオ権は元の所有者とYouTubeに属します。これらのビデオの使用はYouTubeのプライバシーポリシーと利用規約の対象です。'
+        },
+        {
+            title: '5. コメントと相互作用',
+            items: [
+                'コメント内容と送信時間は表示と管理の目的で保存される場合があります',
+                '機密情報や危険な個人情報は要求しません',
+                'コメントはポジティブなやり取りと意見アーカイブ目的のみです',
+                'コミュニティ基準に違反するコメント削除の権利を保有しています'
+            ]
+        },
+        {
+            title: '6. 児童保護',
+            description: 'ウェブサイトdarnafull.comは、家族向けのエンターテインメントコンテンツを提供し、尊重と安全な方法で幼少期の思い出を復活させることを目指しています。児童から個人データを意図的に収集していません。'
+        },
+        {
+            title: '7. 外部リンク',
+            description: 'ウェブサイトdarnafull.comは、外部サイト（YouTubeなど）へのリンクを含む場合があります。これらのサイトのコンテンツまたはプライバシーポリシーについては責任を負いません。ユーザーはそれらのプライバシーポリシーを確認することをお勧めします。'
+        },
+        {
+            title: '8. プライバシーポリシーへの同意',
+            description: 'darnafull.comを使用することにより、このプライバシーポリシーとそのすべての条件に同意することになります。'
+        },
+        {
+            title: '9. プライバシーポリシーの変更',
+            description: 'このプライバシーポリシーをいつでも変更または更新する権利を保有しています。すべての変更はこのページに投稿され、改訂日が更新されます。'
+        }
+    ]
 };
 
 // ============================================
@@ -1473,80 +1712,6 @@ const LIBRARY = {
         }
     ]
 };
-
-// بيانات سياسة الخصوصية
-const PRIVACY_DATA = [
-    {
-        titleKey: 'privacy.title1',
-        title: 'كيف تستخدم Google المعلومات',
-        sections: [
-            {
-                heading: 'استخدام ملفات تعريف الارتباط',
-                content: 'تساعد ملفات تعريف الارتباط في جعل الإعلانات أكثر فعالية. بدون ملفات تعريف الارتباط، يصعب على المعلن الوصول إلى جمهوره أو معرفة عدد الإعلانات التي تم عرضها وعدد النقرات التي تلقاها.'
-            },
-            {
-                heading: 'الشركاء والإعلانات',
-                content: 'تعمل العديد من المواقع مثل مواقع الأخبار والمدونات مع Google لعرض الإعلانات. نحن قد نستخدم ملفات تعريف الارتباط لعدة أغراض مثل منع رؤيتك للإعلان ذاته مراراً وتكراراً.'
-            }
-        ]
-    },
-    {
-        titleKey: 'privacy.title2',
-        title: 'معلومات الموقع',
-        sections: [
-            {
-                heading: 'استخدام الموقع الجغرافي',
-                content: 'قد تتلقى منتجات Google أو تستنتج معلومات الموقع من مصادر متنوعة. على سبيل المثال، قد نستخدم عنوان IP لتحديد موقعك العام.'
-            },
-            {
-                heading: 'تطبيقات الجوال',
-                content: 'قد نتلقى موقعك بدقة من جهازك المحمول، أو قد نستدل على موقعك من طلبات البحث الخاصة بك.'
-            }
-        ]
-    },
-    {
-        titleKey: 'privacy.title3',
-        title: 'أرقام بطاقات الائتمان',
-        sections: [
-            {
-                heading: 'حماية المدفوعات',
-                content: 'نستخدم أرقام بطاقات الائتمان للمدفوعات فقط ولا نحتفظ بها على خوادمنا بعد معالجة المعاملة.'
-            },
-            {
-                heading: 'الأمان',
-                content: 'جميع المعاملات مشفرة باستخدام تقنيات الأمان الحديثة لضمان سلامة بيانات المستخدم.'
-            }
-        ]
-    },
-    {
-        titleKey: 'privacy.title4',
-        title: 'سياسة الحفاظ على البيانات',
-        sections: [
-            {
-                heading: 'مدة الاحتفاظ',
-                content: 'نحتفظ ببيانات السجل لفترات مختلفة لأسباب مهمة. وإذا ظلت النسخة قيد الاستخدام الفعلي'
-            },
-            {
-                heading: 'حذف البيانات',
-                content: 'نقوم بحذف أجزاء من عنوان IP بعد 9 أشهر ومعلومات الكوكيز بعد 18 شهراً.'
-            }
-        ]
-    },
-    {
-        titleKey: 'privacy.title5',
-        title: 'التحكم في الإعلانات',
-        sections: [
-            {
-                heading: 'إعدادات الإعلانات',
-                content: 'يمكنك استخدام إعدادات الإعلانات لإدارة الإعلانات التي تراها وإيقاف تشغيل الإعلانات الموصى بها.'
-            },
-            {
-                heading: 'اختيارات المستهلك',
-                content: 'يمكنك أيضاً إدارة ملفات تعريف الارتباط الخاصة بالعديد من الشركات من خلال أدوات الاختيار التي تم إنشاؤها بموجب برامج التنظيم الذاتي.'
-            }
-        ]
-    }
-];
 
 // ============================================
 // i18n UTILITIES
@@ -1690,113 +1855,6 @@ const API = {
         } catch {
             return [];
         }
-    }
-};
-
-// ============================================
-// نظام النوافذ - Privacy Windows System
-// ============================================
-const PrivacyWindows = {
-    windows: [],
-    scrollListener: null,
-    lastScrollY: 0,
-
-    init() {
-        this.createWindows();
-        this.startScrollListener();
-    },
-
-    createWindows() {
-        const container = document.getElementById('privacyWindowsContainer');
-        if (!container) return;
-
-        container.innerHTML = '';
-        const isArabic = i18next.language === 'ar';
-        const baseRight = isArabic ? 20 : 'auto';
-        const baseLeft = isArabic ? 'auto' : 20;
-
-        PRIVACY_DATA.forEach((data, index) => {
-            const windowEl = document.createElement('div');
-            windowEl.className = 'privacy-window';
-            windowEl.style.right = baseRight;
-            windowEl.style.left = baseLeft;
-            windowEl.style.bottom = `${index * 80 + 100}px`;
-            windowEl.id = `privacy-window-${index}`;
-
-            const header = document.createElement('div');
-            header.className = 'privacy-window-header';
-            header.innerHTML = `
-                <div class="privacy-window-title">${data.title}</div>
-                <button class="privacy-window-close" onclick="PrivacyWindows.closeWindow(${index})">&times;</button>
-            `;
-
-            const content = document.createElement('div');
-            content.className = 'privacy-window-content';
-            content.innerHTML = data.sections.map(section => `
-                <h3>${section.heading}</h3>
-                <p>${section.content}</p>
-            `).join('');
-
-            const footer = document.createElement('div');
-            footer.className = 'privacy-window-footer';
-            footer.textContent = `${index + 1} / ${PRIVACY_DATA.length}`;
-
-            windowEl.appendChild(header);
-            windowEl.appendChild(content);
-            windowEl.appendChild(footer);
-
-            container.appendChild(windowEl);
-            this.windows.push({
-                element: windowEl,
-                index: index,
-                visible: false
-            });
-        });
-    },
-
-    startScrollListener() {
-        if (this.scrollListener) {
-            window.removeEventListener('scroll', this.scrollListener);
-        }
-
-        this.scrollListener = () => {
-            this.lastScrollY = window.scrollY;
-            this.updateWindowsVisibility();
-        };
-
-        window.addEventListener('scroll', this.scrollListener, { passive: true });
-    },
-
-    updateWindowsVisibility() {
-        const windowHeight = window.innerHeight;
-        const triggerPoint = windowHeight * 0.7;
-
-        this.windows.forEach((w, index) => {
-            const shouldShow = this.lastScrollY > 100 + (index * 50);
-
-            if (shouldShow && !w.visible) {
-                setTimeout(() => {
-                    w.element.classList.add('visible');
-                    w.visible = true;
-                }, index * 200);
-            } else if (!shouldShow && w.visible) {
-                w.element.classList.remove('visible');
-                w.visible = false;
-            }
-        });
-    },
-
-    closeWindow(index) {
-        const window = this.windows[index];
-        if (window) {
-            window.element.classList.remove('visible');
-            window.visible = false;
-        }
-    },
-
-    reset() {
-        this.createWindows();
-        this.updateWindowsVisibility();
     }
 };
 
@@ -2033,12 +2091,10 @@ const App = {
             }).then(() => {
                 I18n.translatePage();
                 this.restoreState();
-                PrivacyWindows.init();
             });
         } else {
             I18n.translatePage();
             this.restoreState();
-            PrivacyWindows.init();
         }
 
         Comments.init();
@@ -2091,16 +2147,14 @@ const App = {
             }
         });
 
-        langMenu.querySelectorAll('button').forEach(btn => {
+        langMenu.querySelectorAll('button[data-lang]').forEach(btn => {
             btn.addEventListener('click', () => {
                 const lang = btn.getAttribute('data-lang');
                 I18n.changeLanguage(lang);
                 langMenu.classList.add('hidden');
                 
-                langMenu.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+                langMenu.querySelectorAll('button[data-lang]').forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
-
-                PrivacyWindows.reset();
             });
         });
 
@@ -2127,6 +2181,9 @@ const App = {
                     }, 1000);
                 }
             });
+        }
+        else if (this.currentView === 'privacy') {
+            this.viewPrivacy();
         }
         
         I18n.translatePage();
@@ -2231,10 +2288,12 @@ const App = {
     renderHome() {
         const libraryView = document.getElementById('libraryView');
         const videoView = document.getElementById('videoView');
+        const privacyView = document.getElementById('privacyView');
         const backBtn = document.getElementById('backBtn');
 
         if (libraryView) libraryView.classList.remove('hidden');
         if (videoView) videoView.classList.add('hidden');
+        if (privacyView) privacyView.classList.add('hidden');
         if (backBtn) backBtn.style.display = 'none';
         
         const breadcrumb = document.getElementById('breadcrumbText');
@@ -2273,10 +2332,12 @@ const App = {
 
         const libraryView = document.getElementById('libraryView');
         const videoView = document.getElementById('videoView');
+        const privacyView = document.getElementById('privacyView');
         const backBtn = document.getElementById('backBtn');
 
         if (libraryView) libraryView.classList.remove('hidden');
         if (videoView) videoView.classList.add('hidden');
+        if (privacyView) privacyView.classList.add('hidden');
         if (backBtn) {
             backBtn.style.display = 'inline-flex';
             backBtn.setAttribute('data-i18n', 'back');
@@ -2330,10 +2391,12 @@ const App = {
 
         const libraryView = document.getElementById('libraryView');
         const videoView = document.getElementById('videoView');
+        const privacyView = document.getElementById('privacyView');
         const backBtn = document.getElementById('backBtn');
 
         if (libraryView) libraryView.classList.add('hidden');
         if (videoView) videoView.classList.remove('hidden');
+        if (privacyView) privacyView.classList.add('hidden');
         if (backBtn) {
             backBtn.style.display = 'inline-flex';
             backBtn.setAttribute('data-i18n', 'back');
@@ -2386,6 +2449,53 @@ const App = {
             episodeId
         }));
         
+        I18n.translatePage();
+    },
+
+    viewPrivacy() {
+        const libraryView = document.getElementById('libraryView');
+        const videoView = document.getElementById('videoView');
+        const privacyView = document.getElementById('privacyView');
+        const backBtn = document.getElementById('backBtn');
+
+        if (libraryView) libraryView.classList.add('hidden');
+        if (videoView) videoView.classList.add('hidden');
+        if (privacyView) privacyView.classList.remove('hidden');
+        if (backBtn) {
+            backBtn.style.display = 'inline-flex';
+            backBtn.setAttribute('data-i18n', 'back');
+            I18n.translateElement(backBtn);
+        }
+
+        const breadcrumbText = document.getElementById('breadcrumbText');
+        if (breadcrumbText) {
+            breadcrumbText.setAttribute('data-i18n', 'privacyTitle');
+            I18n.translateElement(breadcrumbText);
+        }
+
+        const privacyContent = document.getElementById('privacyContent');
+        const lang = i18next.language;
+        const content = PRIVACY_CONTENT[lang] || PRIVACY_CONTENT.ar;
+
+        if (privacyContent) {
+            privacyContent.innerHTML = content.map((section, idx) => `
+                <div class="privacy-section">
+                    <h2>${section.title}</h2>
+                    ${section.description ? `<p>${section.description}</p>` : ''}
+                    ${section.items ? `
+                        <ul>
+                            ${section.items.map(item => `<li>${item}</li>`).join('')}
+                        </ul>
+                    ` : ''}
+                </div>
+            `).join('');
+        }
+
+        this.currentView = 'privacy';
+        Comments.pauseAutoRefresh();
+        DubEngine.cleanup();
+
+        sessionStorage.removeItem('last_view');
         I18n.translatePage();
     },
 
@@ -2484,6 +2594,8 @@ const App = {
         if (this.currentView === 'video') {
             this.viewSeries(this.currentSeries.id);
         } else if (this.currentView === 'series') {
+            this.renderHome();
+        } else if (this.currentView === 'privacy') {
             this.renderHome();
         }
     }
