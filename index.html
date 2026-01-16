@@ -3,12 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="منصة دراما عائلية آمنة لمشاهدة المسلسلات الكلاسيكية مع نسخ مدبلجة متعددة.">
-    <meta name="author" content="Watch VIP">
-    <meta name="theme-color" content="#ff0000">
+    <meta name="description" data-i18n-content="metaDescription">
     <title data-i18n="appTitle"></title>
     
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-9RXK5ZKJD6"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-9RXK5ZKJD6', {
+            'anonymize_ip': true,
+            'allow_ad_personalization_signals': false
+        });
+    </script>
     
     <style>
         /* ===========================
@@ -604,6 +614,7 @@
             border-radius: 8px;
             border: 1px solid var(--border-color);
             transition: all 0.3s;
+            cursor: pointer;
         }
 
         .comment-item:hover {
@@ -615,13 +626,9 @@
             background: rgba(255, 0, 0, 0.05);
         }
 
-        .comment-item.user-comment::before {
-            content: '(صاحب الموقع) ';
-            color: var(--primary-color);
-            font-weight: 600;
-            font-size: 0.8rem;
-            display: block;
-            margin-bottom: 8px;
+        .comment-item.admin-comment {
+            border: 2px solid var(--verified-color);
+            background: rgba(29, 161, 242, 0.05);
         }
 
         .comment-header {
@@ -637,6 +644,21 @@
             gap: 8px;
             font-weight: 600;
             font-size: 0.95rem;
+        }
+
+        .admin-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
         }
 
         .verified-badge {
@@ -828,223 +850,170 @@
             animation: fadeIn 0.3s ease-out;
         }
 
-        /* Privacy Policy Styles */
-        .privacy-view {
+        /* Footer Styles */
+        .site-footer {
+            background: var(--bg-light);
+            border-top: 1px solid var(--border-color);
+            margin-top: 60px;
+            padding: 40px 20px 20px;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
             margin-bottom: 30px;
         }
 
-        .privacy-header {
-            padding: 25px 20px;
-            background: linear-gradient(135deg, var(--secondary-color) 0%, #1a1a1a 100%);
-            border-radius: 12px 12px 0 0;
-            border-bottom: 2px solid var(--primary-color);
-            margin-bottom: 20px;
+        .footer-section h3 {
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            color: var(--text-primary);
         }
 
-        .privacy-header h1 {
-            font-size: 2rem;
-            font-weight: 700;
-            margin-bottom: 5px;
-            color: var(--primary-color);
-        }
-
-        .privacy-header .last-updated {
+        .footer-section p,
+        .footer-section a {
             color: var(--text-secondary);
             font-size: 0.9rem;
-        }
-
-        .privacy-content {
-            background: var(--bg-light);
-            padding: 30px;
-            border-radius: 0 0 12px 12px;
-            box-shadow: var(--shadow);
-        }
-
-        .privacy-section {
-            margin-bottom: 35px;
-            padding-bottom: 25px;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .privacy-section:last-child {
-            border-bottom: none;
-            margin-bottom: 0;
-            padding-bottom: 0;
-        }
-
-        .privacy-section h2 {
-            font-size: 1.4rem;
-            font-weight: 600;
-            margin-bottom: 15px;
-            color: var(--primary-color);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .privacy-section h2::before {
-            content: '';
-            width: 4px;
-            height: 25px;
-            background: var(--primary-color);
-            border-radius: 2px;
-        }
-
-        .privacy-section p {
-            color: var(--text-primary);
-            margin-bottom: 12px;
             line-height: 1.8;
         }
 
-        .privacy-section ul {
-            list-style: none;
-            margin: 15px 0;
-            padding: 0;
+        .footer-section a {
+            text-decoration: none;
+            transition: color 0.3s;
+            display: block;
+            margin-bottom: 8px;
         }
 
-        .privacy-section li {
-            color: var(--text-primary);
-            margin-bottom: 10px;
-            padding: 10px 15px;
-            background: rgba(255, 0, 0, 0.05);
-            border-right: 3px solid var(--primary-color);
-            border-radius: 4px;
-            line-height: 1.6;
-        }
-
-        .privacy-section li::before {
-            content: '✓ ';
-            color: var(--success-color);
-            font-weight: bold;
-            margin-right: 8px;
-        }
-
-        .privacy-highlight {
-            background: rgba(255, 0, 0, 0.1);
-            border-left: 4px solid var(--primary-color);
-            padding: 15px;
-            border-radius: 6px;
-            margin: 20px 0;
-            color: var(--text-primary);
-        }
-
-        .privacy-highlight strong {
+        .footer-section a:hover {
             color: var(--primary-color);
         }
 
-        .privacy-link {
+        .footer-bottom {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .modal-content {
+            background: var(--bg-light);
+            border-radius: 12px;
+            max-width: 800px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-header {
+            padding: 20px 25px;
+            background: var(--secondary-color);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1;
+        }
+
+        .modal-header h2 {
+            font-size: 1.4rem;
+            font-weight: 600;
+        }
+
+        .modal-close {
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1.8rem;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.3s;
+        }
+
+        .modal-close:hover {
+            background: var(--primary-color);
+            color: var(--text-primary);
+        }
+
+        .modal-body {
+            padding: 25px;
+        }
+
+        .modal-body h3 {
+            font-size: 1.2rem;
+            margin-top: 25px;
+            margin-bottom: 15px;
+            color: var(--text-primary);
+        }
+
+        .modal-body h3:first-child {
+            margin-top: 0;
+        }
+
+        .modal-body p,
+        .modal-body ul {
+            color: var(--text-secondary);
+            line-height: 1.8;
+            margin-bottom: 15px;
+        }
+
+        .modal-body ul {
+            padding-inline-start: 25px;
+        }
+
+        .modal-body li {
+            margin-bottom: 10px;
+        }
+
+        .modal-body strong {
+            color: var(--text-primary);
+        }
+
+        .modal-body a {
             color: var(--verified-color);
             text-decoration: none;
             transition: color 0.3s;
         }
 
-        .privacy-link:hover {
-            color: var(--primary-color);
-            text-decoration: underline;
-        }
-
-        /* Terms of Service Styles */
-        .terms-view {
-            margin-bottom: 30px;
-        }
-
-        .terms-header {
-            padding: 25px 20px;
-            background: linear-gradient(135deg, var(--secondary-color) 0%, #1a1a1a 100%);
-            border-radius: 12px 12px 0 0;
-            border-bottom: 2px solid var(--primary-color);
-            margin-bottom: 20px;
-        }
-
-        .terms-header h1 {
-            font-size: 2rem;
-            font-weight: 700;
-            margin-bottom: 5px;
+        .modal-body a:hover {
             color: var(--primary-color);
         }
 
-        .terms-header .last-updated {
-            color: var(--text-secondary);
-            font-size: 0.9rem;
-        }
-
-        .terms-content {
-            background: var(--bg-light);
-            padding: 30px;
-            border-radius: 0 0 12px 12px;
-            box-shadow: var(--shadow);
-        }
-
-        .terms-section {
-            margin-bottom: 35px;
-            padding-bottom: 25px;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .terms-section:last-child {
-            border-bottom: none;
-            margin-bottom: 0;
-            padding-bottom: 0;
-        }
-
-        .terms-section h2 {
-            font-size: 1.4rem;
-            font-weight: 600;
-            margin-bottom: 15px;
-            color: var(--primary-color);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .terms-section h2::before {
-            content: '';
-            width: 4px;
-            height: 25px;
-            background: var(--primary-color);
-            border-radius: 2px;
-        }
-
-        .terms-section p {
-            color: var(--text-primary);
-            margin-bottom: 12px;
-            line-height: 1.8;
-        }
-
-        .terms-section ul {
-            list-style: none;
-            margin: 15px 0;
-            padding: 0;
-        }
-
-        .terms-section li {
-            color: var(--text-primary);
-            margin-bottom: 10px;
-            padding: 10px 15px;
-            background: rgba(255, 0, 0, 0.05);
-            border-right: 3px solid var(--primary-color);
-            border-radius: 4px;
-            line-height: 1.6;
-        }
-
-        .terms-section li::before {
-            content: '• ';
-            color: var(--primary-color);
-            font-weight: bold;
-            margin-right: 8px;
-        }
-
-        .terms-highlight {
+        .highlight-box {
             background: rgba(255, 0, 0, 0.1);
-            border-left: 4px solid var(--primary-color);
+            border: 1px solid rgba(255, 0, 0, 0.2);
+            border-radius: 8px;
             padding: 15px;
-            border-radius: 6px;
             margin: 20px 0;
-            color: var(--text-primary);
-        }
-
-        .terms-highlight strong {
-            color: var(--primary-color);
         }
 
         @media (max-width: 768px) {
@@ -1116,55 +1085,24 @@
                 font-size: 14px;
             }
 
-            .privacy-header {
+            .footer-content {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .modal-content {
+                max-height: 95vh;
+            }
+
+            .modal-header {
+                padding: 15px 20px;
+            }
+
+            .modal-body {
                 padding: 20px;
-            }
-
-            .privacy-header h1 {
-                font-size: 1.5rem;
-            }
-
-            .privacy-content {
-                padding: 20px;
-            }
-
-            .privacy-section h2 {
-                font-size: 1.2rem;
-            }
-
-            .privacy-section li {
-                padding: 8px 12px;
-            }
-
-            .terms-header {
-                padding: 20px;
-            }
-
-            .terms-header h1 {
-                font-size: 1.5rem;
-            }
-
-            .terms-content {
-                padding: 20px;
-            }
-
-            .terms-section h2 {
-                font-size: 1.2rem;
-            }
-
-            .terms-section li {
-                padding: 8px 12px;
             }
         }
     </style>
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-9RXK5ZKJD6"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
-        gtag('config', 'G-9RXK5ZKJD6');
-    </script>
 </head>
 <body>
     <div class="container">
@@ -1187,28 +1125,6 @@
                 <h1 id="libraryTitle" data-i18n="library"></h1>
             </div>
             <div class="library-grid" id="libraryGrid"></div>
-        </div>
-
-        <!-- Privacy Policy View -->
-        <div id="privacyView" class="privacy-view hidden">
-            <div class="privacy-header">
-                <h1 id="privacyTitle" data-i18n="privacyTitle"></h1>
-                <div class="last-updated" id="privacyDate" data-i18n="privacyLastUpdate"></div>
-            </div>
-            <div class="privacy-content">
-                <div id="privacyContent"></div>
-            </div>
-        </div>
-
-        <!-- Terms of Service View -->
-        <div id="termsView" class="terms-view hidden">
-            <div class="terms-header">
-                <h1 id="termsTitle" data-i18n="termsTitle"></h1>
-                <div class="last-updated" id="termsDate" data-i18n="termsLastUpdate"></div>
-            </div>
-            <div class="terms-content">
-                <div id="termsContent"></div>
-            </div>
         </div>
 
         <!-- Video View -->
@@ -1343,6 +1259,28 @@
         </div>
     </div>
 
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3 data-i18n="footerAbout"></h3>
+                <p data-i18n="footerAboutText"></p>
+            </div>
+            <div class="footer-section">
+                <h3 data-i18n="footerLinks"></h3>
+                <a href="#" onclick="Modal.showPrivacy(); return false;" data-i18n="privacyPolicy"></a>
+                <a href="#" onclick="Modal.showTerms(); return false;" data-i18n="termsOfService"></a>
+            </div>
+            <div class="footer-section">
+                <h3 data-i18n="footerContact"></h3>
+                <p data-i18n="footerContactText"></p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 <span data-i18n="appTitle"></span>. <span data-i18n="footerRights"></span></p>
+        </div>
+    </footer>
+
     <!-- Language Switch -->
     <div id="langToggle" data-i18n-title="langButtonLabel">🌐</div>
 
@@ -1351,9 +1289,10 @@
         <button data-lang="en" data-i18n="langEn"></button>
         <button data-lang="fr" data-i18n="langFr"></button>
         <button data-lang="ja" data-i18n="langJa"></button>
-        <button onclick="App.viewPrivacy()" style="border-top: 1px solid var(--border-color);" data-i18n="privacyMenu"></button>
-        <button onclick="App.viewTerms()" data-i18n="termsMenu"></button>
     </div>
+
+    <!-- Modal Container -->
+    <div id="modalContainer"></div>
 
     <script src="https://www.youtube.com/iframe_api"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/i18next/23.7.6/i18next.min.js"></script>
@@ -1367,7 +1306,8 @@ const CONFIG = {
     REFRESH_INTERVAL: 10000,
     SUBMIT_COOLDOWN: 3000,
     LONG_PRESS_DURATION: 500,
-    SEEK_STEP: 1
+    SEEK_STEP: 1,
+    ADMIN_CLIENT_ID: 'admin_vip_2026'
 };
 
 // YouTube API
@@ -1420,22 +1360,25 @@ const i18nResources = {
             hoursAgo: 'منذ {{count}} ساعة',
             daysAgo: 'منذ {{count}} يوم',
             original: 'النسخة الأصلية',
-            metaDescription: 'منصة دراما عائلية آمنة لمشاهدة المسلسلات الكلاسيكية مع نسخ مدبلجة متعددة.',
+            metaDescription: 'منصة مشاهدة المسلسلات مع دبلجة متعددة اللغات',
             arabicDub: 'دبلجة عربية',
             japaneseDub: 'دبلجة يابانية',
             langAr: 'عربي',
             langEn: 'English',
             langFr: 'Français',
             langJa: '日本語',
-            privacyTitle: 'سياسة الخصوصية',
-            privacyLastUpdate: 'آخر تحديث: 15 جانفي 2026',
-            privacyMenu: 'سياسة الخصوصية',
-            termsTitle: 'شروط الاستخدام',
-            termsLastUpdate: 'آخر تحديث: 15 جانفي 2026',
-            termsMenu: 'شروط الاستخدام',
             'series.doraemon.title': 'دورايمون',
             'series.doraemon.episode.ep01.title': 'الحلقة 01 - بداية دورايمون',
-            'series.doraemon.episode.ep01.description': 'مدينة الأحلام – أرض نوبيتا'
+            'series.doraemon.episode.ep01.description': 'مدينة الأحلام – أرض نوبيتا',
+            footerAbout: 'عن الموقع',
+            footerAboutText: 'منصة Watch VIP توفر لك أفضل تجربة مشاهدة للمسلسلات مع إمكانية الدبلجة المتعددة.',
+            footerLinks: 'روابط مهمة',
+            footerContact: 'تواصل معنا',
+            footerContactText: 'للاستفسارات والدعم الفني، تواصل معنا عبر البريد الإلكتروني.',
+            footerRights: 'جميع الحقوق محفوظة',
+            privacyPolicy: 'سياسة الخصوصية',
+            termsOfService: 'شروط الاستخدام',
+            adminBadge: 'المسؤول'
         }
     },
     en: {
@@ -1476,22 +1419,25 @@ const i18nResources = {
             hoursAgo: '{{count}}h ago',
             daysAgo: '{{count}}d ago',
             original: 'Original Version',
-            metaDescription: 'Safe family entertainment platform for watching classic series with multiple dubbed versions.',
+            metaDescription: 'Watch series with multi-language dubbing',
             arabicDub: 'Arabic Dub',
             japaneseDub: 'Japanese Dub',
             langAr: 'عربي',
             langEn: 'English',
             langFr: 'Français',
             langJa: '日本語',
-            privacyTitle: 'Privacy Policy',
-            privacyLastUpdate: 'Last Updated: January 15, 2026',
-            privacyMenu: 'Privacy Policy',
-            termsTitle: 'Terms of Service',
-            termsLastUpdate: 'Last Updated: January 15, 2026',
-            termsMenu: 'Terms of Service',
             'series.doraemon.title': 'Doraemon',
             'series.doraemon.episode.ep01.title': 'Episode 01 - The Beginning of Doraemon',
-            'series.doraemon.episode.ep01.description': 'Dream City - Nobita\'s Land'
+            'series.doraemon.episode.ep01.description': 'Dream City - Nobita\'s Land',
+            footerAbout: 'About',
+            footerAboutText: 'Watch VIP provides the best series watching experience with multi-language dubbing.',
+            footerLinks: 'Important Links',
+            footerContact: 'Contact Us',
+            footerContactText: 'For inquiries and technical support, contact us via email.',
+            footerRights: 'All Rights Reserved',
+            privacyPolicy: 'Privacy Policy',
+            termsOfService: 'Terms of Service',
+            adminBadge: 'Admin'
         }
     },
     fr: {
@@ -1532,22 +1478,25 @@ const i18nResources = {
             hoursAgo: 'il y a {{count}}h',
             daysAgo: 'il y a {{count}}j',
             original: 'Version Originale',
-            metaDescription: 'Plateforme de divertissement familiale sûre pour regarder des séries classiques avec plusieurs versions doublées.',
+            metaDescription: 'Regardez des séries avec doublage multilingue',
             arabicDub: 'Doublage Arabe',
             japaneseDub: 'Doublage Japonais',
             langAr: 'عربي',
             langEn: 'English',
             langFr: 'Français',
             langJa: '日本語',
-            privacyTitle: 'Politique de Confidentialité',
-            privacyLastUpdate: 'Dernière mise à jour: 15 janvier 2026',
-            privacyMenu: 'Politique de Confidentialité',
-            termsTitle: 'Conditions d\'utilisation',
-            termsLastUpdate: 'Dernière mise à jour: 15 janvier 2026',
-            termsMenu: 'Conditions d\'utilisation',
             'series.doraemon.title': 'Doraemon',
             'series.doraemon.episode.ep01.title': 'Épisode 01 - Le Début de Doraemon',
-            'series.doraemon.episode.ep01.description': 'Ville des Rêves - Terre de Nobita'
+            'series.doraemon.episode.ep01.description': 'Ville des Rêves - Terre de Nobita',
+            footerAbout: 'À propos',
+            footerAboutText: 'Watch VIP offre la meilleure expérience de visionnage de séries avec doublage multilingue.',
+            footerLinks: 'Liens Importants',
+            footerContact: 'Nous Contacter',
+            footerContactText: 'Pour toute question ou support technique, contactez-nous par email.',
+            footerRights: 'Tous Droits Réservés',
+            privacyPolicy: 'Politique de Confidentialité',
+            termsOfService: 'Conditions d\'Utilisation',
+            adminBadge: 'Administrateur'
         }
     },
     ja: {
@@ -1588,476 +1537,27 @@ const i18nResources = {
             hoursAgo: '{{count}}時間前',
             daysAgo: '{{count}}日前',
             original: 'オリジナルバージョン',
-            metaDescription: '複数のダブバージョンで古典シリーズを視聴するための安全なファミリーエンターテインメントプラットフォーム。',
+            metaDescription: '多言語吹き替えでシリーズを視聴',
             arabicDub: 'アラビア語吹き替え',
             japaneseDub: '日本語吹き替え',
             langAr: 'عربي',
             langEn: 'English',
             langFr: 'Français',
             langJa: '日本語',
-            privacyTitle: 'プライバシーポリシー',
-            privacyLastUpdate: '最終更新: 2026年1月15日',
-            privacyMenu: 'プライバシーポリシー',
-            termsTitle: '利用規約',
-            termsLastUpdate: '最終更新: 2026年1月15日',
-            termsMenu: '利用規約',
             'series.doraemon.title': 'ドラえもん',
             'series.doraemon.episode.ep01.title': 'エピソード01 - ドラえもんの始まり',
-            'series.doraemon.episode.ep01.description': 'ドリームシティ - のび太の国'
+            'series.doraemon.episode.ep01.description': 'ドリームシティ - のび太の国',
+            footerAbout: '概要',
+            footerAboutText: 'Watch VIPは多言語吹き替えで最高のシリーズ視聴体験を提供します。',
+            footerLinks: '重要なリンク',
+            footerContact: 'お問い合わせ',
+            footerContactText: 'お問い合わせや技術サポートは、メールでお願いします。',
+            footerRights: '全著作権所有',
+            privacyPolicy: 'プライバシーポリシー',
+            termsOfService: '利用規約',
+            adminBadge: '管理者'
         }
     }
-};
-
-// Privacy Policy Content
-const PRIVACY_CONTENT = {
-    ar: [
-        {
-            title: '1. المعلومات التي نقوم بجمعها',
-            items: [
-                'نوع المتصفح وإصداره',
-                'نظام التشغيل المستخدم',
-                'الصفحات التي يتم تصفحها داخل الموقع',
-                'مدة الزيارة ومصدر الدخول إلى الموقع'
-            ],
-            description: 'تُستخدم هذه المعلومات لأغراض إحصائية فقط، وتحسين أداء الموقع وتجربة المستخدم، ولا يتم استخدامها للتعرّف على هوية الزائر الشخصية.'
-        },
-        {
-            title: '2. ملفات تعريف الارتباط (Cookies)',
-            items: [
-                'تحسين تجربة المستخدم العامة',
-                'حفظ تفضيلات المستخدم (مثل اللغة المختارة)',
-                'تحليل أداء الموقع والإحصائيات',
-                'عرض الإعلانات بطريقة مناسبة وشخصية'
-            ],
-            description: 'يمكن للمستخدم تعطيل ملفات تعريف الارتباط من خلال إعدادات المتصفح الخاص به، مع العلم أن بعض خصائص الموقع قد لا تعمل بالشكل الأمثل بعد ذلك.'
-        },
-        {
-            title: '3. موجّه العائلة والمحتوى الآمن (COPPA Compliance)',
-            description: 'موقع Watch VIP موجّه للعائلة ولا يستهدف الأطفال بشكل مباشر. لا نقوم بجمع بيانات شخصية معرّفة من الأطفال دون موافقة آبائهم. نحترم حقوق الأطفال على الإنترنت ونلتزم بسياسات COPPA والقوانين الدولية المتعلقة بحماية الأطفال في المجال الرقمي.'
-        },
-        {
-            title: '4. Google AdSense والإعلانات',
-            description: 'يستخدم موقع Watch VIP خدمة Google AdSense لعرض الإعلانات. تقوم Google باستخدام ملفات تعريف الارتباط (مثل ملف DART cookie) لعرض إعلانات تتناسب مع اهتمامات المستخدم. يمكن للمستخدمين تعطيل استخدام ملف تعريف الارتباط DART من خلال زيارة <a href="https://policies.google.com/technologies/ads" class="privacy-link" target="_blank">صفحة سياسة الخصوصية الخاصة بإعلانات Google</a>. الإعلانات المعروضة تخضع بالكامل لسياسات Google وتُدار وفقاً لمعايير عدم استهداف الأطفال.'
-        },
-        {
-            title: '5. محتوى الفيديو من YouTube',
-            description: 'يعتمد موقع Watch VIP على تضمين مقاطع فيديو من منصة YouTube باستخدام المشغل الرسمي (iframe)، ولا يقوم الموقع باستضافة أو إعادة رفع أي محتوى مرئي على خوادمه الخاصة. جميع حقوق الفيديوهات تعود لأصحابها الأصليين ومنصة YouTube، ويخضع استخدام هذه المقاطع لسياسة الخصوصية وشروط الاستخدام الخاصة بـ YouTube.'
-        },
-        {
-            title: '6. التعليقات والتفاعل',
-            items: [
-                'قد يتم تخزين محتوى التعليق ووقت الإرسال لأغراض العرض والتنظيم',
-                'لا نطلب أي معلومات شخصية حساسة أو خطرة',
-                'الهدف من التعليقات هو التفاعل الإيجابي وأرشفة الآراء فقط',
-                'نحتفظ بالحق في حذف أي تعليق مخالف للأدب العام',
-                'تعليقات صاحب الموقع مميزة بوضوح كـ "صاحب الموقع" لتجنب التضليل'
-            ]
-        },
-        {
-            title: '7. حماية الأطفال',
-            description: 'يهدف موقع Watch VIP إلى تقديم محتوى ترفيهي مناسب للعائلة، يركّز على إحياء ذكريات الطفولة بطريقة محترمة وآمنة. لا نجمع بيانات شخصية من الأطفال بشكل متعمّد. جميع الإجراءات المتخذة تتوافق مع قانون حماية الأطفال على الإنترنت.'
-        },
-        {
-            title: '8. الروابط الخارجية',
-            description: 'قد يحتوي موقع Watch VIP على روابط لمواقع خارجية (مثل YouTube). نحن غير مسؤولين عن محتوى أو سياسات الخصوصية الخاصة بتلك المواقع، وننصح المستخدمين بمراجعة سياسات الخصوصية الخاصة بها.'
-        },
-        {
-            title: '9. الموافقة على سياسة الخصوصية',
-            description: 'باستخدامك لموقع Watch VIP، فإنك توافق على سياسة الخصوصية هذه وتوافق على جميع بنودها.'
-        },
-        {
-            title: '10. التعديلات على سياسة الخصوصية',
-            description: 'نحتفظ بالحق في تعديل أو تحديث سياسة الخصوصية هذه في أي وقت. سيتم نشر أي تعديل في هذه الصفحة مع تحديث تاريخ المراجعة.'
-        }
-    ],
-    en: [
-        {
-            title: '1. Information We Collect',
-            items: [
-                'Browser type and version',
-                'Operating system',
-                'Pages browsed on the website',
-                'Visit duration and referral source'
-            ],
-            description: 'This information is used for statistical purposes only and to improve website performance and user experience. It is not used to identify visitors personally.'
-        },
-        {
-            title: '2. Cookies (Website Tracking Files)',
-            items: [
-                'Improve overall user experience',
-                'Save user preferences (such as selected language)',
-                'Analyze website performance and statistics',
-                'Display appropriate and personalized advertisements'
-            ],
-            description: 'Users can disable cookies through their browser settings, although some website features may not work optimally afterward.'
-        },
-        {
-            title: '3. Family-Directed Content & Child Safety (COPPA Compliance)',
-            description: 'Watch VIP is a family-friendly platform and does not directly target children. We do not knowingly collect personally identifiable information from children without parental consent. We respect children\'s rights online and comply with COPPA regulations and international laws protecting children in the digital space.'
-        },
-        {
-            title: '4. Google AdSense and Advertisements',
-            description: 'The website Watch VIP uses Google AdSense to display advertisements. Google uses cookies (such as DART cookie) to show advertisements tailored to user interests. Users can disable the DART cookie through <a href="https://policies.google.com/technologies/ads" class="privacy-link" target="_blank">Google\'s advertising privacy policy page</a>. All advertisements are subject to Google\'s policies and are managed according to child-safe standards.'
-        },
-        {
-            title: '5. YouTube Video Content',
-            description: 'The website Watch VIP embeds videos from YouTube using the official player (iframe) and does not host or upload any content on its own servers. All video rights belong to their original owners and YouTube. Use of these videos is subject to YouTube\'s privacy policy and terms of service.'
-        },
-        {
-            title: '6. Comments and Interaction',
-            items: [
-                'Comment content and submission time may be stored for display and organization',
-                'We do not request any sensitive or dangerous personal information',
-                'Comments are for positive interaction and opinion archiving only',
-                'We reserve the right to delete any comments violating community standards',
-                'Website owner comments are clearly labeled as "Website Owner" to prevent misleading'
-            ]
-        },
-        {
-            title: '7. Child Protection',
-            description: 'The website Watch VIP aims to provide family-friendly entertainment content, focusing on reviving childhood memories in a respectful and safe manner. We do not intentionally collect personal data from children. All actions comply with child protection laws online.'
-        },
-        {
-            title: '8. External Links',
-            description: 'The website Watch VIP may contain links to external sites (such as YouTube). We are not responsible for the content or privacy policies of these sites. We recommend users review their privacy policies.'
-        },
-        {
-            title: '9. Consent to Privacy Policy',
-            description: 'By using Watch VIP, you agree to this privacy policy and all its terms.'
-        },
-        {
-            title: '10. Changes to Privacy Policy',
-            description: 'We reserve the right to modify or update this privacy policy at any time. Any changes will be posted on this page with an updated revision date.'
-        }
-    ],
-    fr: [
-        {
-            title: '1. Informations que nous collectons',
-            items: [
-                'Type et version du navigateur',
-                'Système d\'exploitation utilisé',
-                'Pages consultées sur le site',
-                'Durée de la visite et source de référence'
-            ],
-            description: 'Ces informations sont utilisées à des fins statistiques uniquement et pour améliorer les performances du site et l\'expérience utilisateur. Elles ne sont pas utilisées pour identifier les visiteurs personnellement.'
-        },
-        {
-            title: '2. Cookies (Fichiers de suivi du site)',
-            items: [
-                'Améliorer l\'expérience utilisateur globale',
-                'Enregistrer les préférences utilisateur (comme la langue sélectionnée)',
-                'Analyser les performances du site et les statistiques',
-                'Afficher des publicités appropriées et personnalisées'
-            ],
-            description: 'Les utilisateurs peuvent désactiver les cookies via les paramètres de leur navigateur, bien que certaines fonctionnalités du site pourraient ne pas fonctionner correctement.'
-        },
-        {
-            title: '3. Contenu familial et sécurité des enfants (Conformité COPPA)',
-            description: 'Watch VIP est une plateforme conviviale pour les familles et ne cible pas directement les enfants. Nous ne collectons pas intentionnellement d\'informations personnelles identifiables d\'enfants sans consentement parental. Nous respectons les droits des enfants en ligne et nous conformons aux réglementations COPPA et aux lois internationales protégeant les enfants dans l\'espace numérique.'
-        },
-        {
-            title: '4. Google AdSense et Publicités',
-            description: 'Le site Watch VIP utilise Google AdSense pour afficher des publicités. Google utilise des cookies (comme le cookie DART) pour afficher des publicités adaptées aux intérêts de l\'utilisateur. Les utilisateurs peuvent désactiver le cookie DART via <a href="https://policies.google.com/technologies/ads" class="privacy-link" target="_blank">la page de politique de confidentialité des publicités Google</a>. Toutes les publicités sont soumises aux politiques de Google et gérées selon les normes de sécurité des enfants.'
-        },
-        {
-            title: '5. Contenu vidéo YouTube',
-            description: 'Le site Watch VIP intègre des vidéos de YouTube en utilisant le lecteur officiel (iframe) et n\'héberge pas de contenu sur ses propres serveurs. Tous les droits des vidéos appartiennent à leurs propriétaires d\'origine et à YouTube. L\'utilisation de ces vidéos est soumise à la politique de confidentialité et aux conditions d\'utilisation de YouTube.'
-        },
-        {
-            title: '6. Commentaires et Interactions',
-            items: [
-                'Le contenu des commentaires et l\'heure d\'envoi peuvent être stockés à des fins d\'affichage et d\'organisation',
-                'Nous ne demandons aucune information personnelle sensible ou dangereuse',
-                'Les commentaires sont destinés à l\'interaction positive et à l\'archivage des opinions',
-                'Nous nous réservons le droit de supprimer tout commentaire violant les normes communautaires',
-                'Les commentaires du propriétaire du site sont clairement marqués comme « Propriétaire du site » pour éviter la tromperie'
-            ]
-        },
-        {
-            title: '7. Protection des Enfants',
-            description: 'Le site Watch VIP vise à fournir un contenu divertissant adapté aux familles, en mettant l\'accent sur la revitalisation des souvenirs d\'enfance de manière respectueuse et sûre. Nous ne collectons pas intentionnellement de données personnelles auprès des enfants. Toutes les actions sont conformes aux lois de protection des enfants en ligne.'
-        },
-        {
-            title: '8. Liens Externes',
-            description: 'Le site Watch VIP peut contenir des liens vers des sites externes (comme YouTube). Nous ne sommes pas responsables du contenu ou des politiques de confidentialité de ces sites. Nous recommandons aux utilisateurs de consulter leurs politiques de confidentialité.'
-        },
-        {
-            title: '9. Consentement à la Politique de Confidentialité',
-            description: 'En utilisant Watch VIP, vous acceptez cette politique de confidentialité et tous ses termes.'
-        },
-        {
-            title: '10. Modifications de la Politique de Confidentialité',
-            description: 'Nous nous réservons le droit de modifier ou de mettre à jour cette politique de confidentialité à tout moment. Tout changement sera affiché sur cette page avec une date de révision mise à jour.'
-        }
-    ],
-    ja: [
-        {
-            title: '1. 収集する情報',
-            items: [
-                'ブラウザの種類とバージョン',
-                '使用されているオペレーティングシステム',
-                'ウェブサイト内で閲覧されるページ',
-                '訪問期間とリファラル情報'
-            ],
-            description: 'この情報は統計目的のみに使用され、ウェブサイトのパフォーマンスとユーザー体験を改善するために使用されます。訪問者を個人的に特定するために使用されることはありません。'
-        },
-        {
-            title: '2. Cookie（ウェブサイト追跡ファイル）',
-            items: [
-                'ユーザー体験全般の改善',
-                'ユーザー設定の保存（選択された言語など）',
-                'ウェブサイトのパフォーマンスと統計の分析',
-                '適切でカスタマイズされた広告の表示'
-            ],
-            description: 'ユーザーはブラウザ設定からCookieを無効にできますが、その後、ウェブサイトのいくつかの機能が最適に機能しないことがあります。'
-        },
-        {
-            title: '3. ファミリー向けコンテンツと児童安全（COPPA準拠）',
-            description: 'Watch VIPはファミリー向けプラットフォームであり、児童を直接ターゲットにしていません。親の同意なしに児童から個人識別情報を故意に収集していません。オンラインでの児童の権利を尊重し、COPPA規制およびデジタル空間で児童を保護する国際法に準拠しています。'
-        },
-        {
-            title: '4. Google AdSenseと広告',
-            description: 'ウェブサイトWatch VIPはGoogle AdSenseを使用して広告を表示しています。Googleはクッキー（DARTクッキーなど）を使用して、ユーザーの興味に合わせた広告を表示します。ユーザーは<a href="https://policies.google.com/technologies/ads" class="privacy-link" target="_blank">Googleの広告プライバシーポリシーページ</a>を通じてDARTクッキーを無効にできます。すべての広告はGoogleの政策の対象であり、児童安全基準に従って管理されています。'
-        },
-        {
-            title: '5. YouTubeビデオコンテンツ',
-            description: 'ウェブサイトWatch VIPはYouTubeからビデオを公式プレーヤー（iframe）を使用して埋め込み、独自のサーバーでコンテンツをホストしていません。すべてのビデオ権は元の所有者とYouTubeに属します。これらのビデオの使用はYouTubeのプライバシーポリシーと利用規約の対象です。'
-        },
-        {
-            title: '6. コメントと相互作用',
-            items: [
-                'コメント内容と送信時間は表示と管理の目的で保存される場合があります',
-                '機密情報や危険な個人情報は要求しません',
-                'コメントはポジティブなやり取りと意見アーカイブ目的のみです',
-                'コミュニティ基準に違反するコメント削除の権利を保有しています',
-                'ウェブサイト所有者のコメントは「ウェブサイト所有者」と明確に表示されて、誤解を防ぎます'
-            ]
-        },
-        {
-            title: '7. 児童保護',
-            description: 'ウェブサイトWatch VIPは、家族向けのエンターテインメントコンテンツを提供し、尊重と安全な方法で幼少期の思い出を復活させることを目指しています。児童から個人データを意図的に収集していません。すべての行動はオンラインの児童保護法に準拠しています。'
-        },
-        {
-            title: '8. 外部リンク',
-            description: 'ウェブサイトWatch VIPは、外部サイト（YouTubeなど）へのリンクを含む場合があります。これらのサイトのコンテンツまたはプライバシーポリシーについては責任を負いません。ユーザーはそれらのプライバシーポリシーを確認することをお勧めします。'
-        },
-        {
-            title: '9. プライバシーポリシーへの同意',
-            description: 'Watch VIPを使用することにより、このプライバシーポリシーとそのすべての条件に同意することになります。'
-        },
-        {
-            title: '10. プライバシーポリシーの変更',
-            description: 'このプライバシーポリシーをいつでも変更または更新する権利を保有しています。すべての変更はこのページに投稿され、改訂日が更新されます。'
-        }
-    ]
-};
-
-// Terms of Service Content
-const TERMS_CONTENT = {
-    ar: [
-        {
-            title: '1. قبول الشروط',
-            description: 'باستخدام موقع Watch VIP، أنت توافق على جميع شروط الاستخدام هذه. إذا كنت لا توافق على أي جزء من هذه الشروط، يرجى عدم استخدام الموقع.'
-        },
-        {
-            title: '2. الترخيص المحدودة',
-            description: 'نمنحك ترخيصاً محدوداً غير قابل للنقل لاستخدام الموقع لأغراض شخصية وغير تجارية فقط. يُحظر نسخ أو توزيع أو بيع أو إيجار أي محتوى من الموقع.'
-        },
-        {
-            title: '3. محتوى المستخدم',
-            items: [
-                'أنت مسؤول بالكامل عن التعليقات والمحتوى الذي تنشره',
-                'يجب أن يكون المحتوى محترماً وخالياً من الإساءة',
-                'نحتفظ بالحق في حذف أي محتوى ينتهك هذه الشروط',
-                'بنشرك محتوى، تمنح Watch VIP حقاً غير حصري لاستخدامه'
-            ]
-        },
-        {
-            title: '4. حقوق الملكية الفكرية',
-            description: 'جميع محتويات الموقع (النصوص والتصميمات والشعارات) محمية بحقوق الملكية الفكرية. يُحظر نسخ أو إعادة استخدام هذا المحتوى بدون إذن صريح.'
-        },
-        {
-            title: '5. تنصل من المسؤولية',
-            description: 'الموقع يُقدم "كما هو" بدون ضمانات. لا نضمن دقة المحتوى أو توفره المستمر. نحن غير مسؤولين عن أي أضرار مباشرة أو غير مباشرة ناتجة عن استخدام الموقع.'
-        },
-        {
-            title: '6. روابط خارجية',
-            description: 'الموقع قد يحتوي على روابط خارجية. نحن غير مسؤولين عن محتوى هذه المواقع أو سياساتها. استخدام هذه الروابط على مسؤوليتك الخاصة.'
-        },
-        {
-            title: '7. انتهاك الشروط',
-            items: [
-                'نحتفظ بالحق في تعليق أو إنهاء الوصول لأي مستخدم ينتهك هذه الشروط',
-                'قد نتخذ إجراءات قانونية ضد انتهاكات جسيمة',
-                'يشمل الانتهاك: المحتوى الفاحش، الإساءة، أو محاولة الوصول غير المصرح'
-            ]
-        },
-        {
-            title: '8. التعديلات على الشروط',
-            description: 'نحتفظ بالحق في تعديل هذه الشروط في أي وقت. سيتم إخطار المستخدمين بأي تغييرات جسيمة عبر الموقع.'
-        },
-        {
-            title: '9. القانون الحاكم',
-            description: 'تخضع هذه الشروط للقوانين الدولية. أي نزاع يُحل من خلال التفاوض بحسن نية أولاً.'
-        },
-        {
-            title: '10. الاتصال بنا',
-            description: 'لأي استفسارات حول هذه الشروط، يرجى التواصل معنا عبر بيانات الاتصال المتوفرة على الموقع.'
-        }
-    ],
-    en: [
-        {
-            title: '1. Acceptance of Terms',
-            description: 'By using Watch VIP, you agree to all these terms of service. If you do not agree to any part of these terms, please do not use the website.'
-        },
-        {
-            title: '2. Limited License',
-            description: 'We grant you a limited, non-transferable license to use the website for personal, non-commercial purposes only. You may not copy, distribute, sell, or rent any content from the website.'
-        },
-        {
-            title: '3. User Content',
-            items: [
-                'You are fully responsible for any comments and content you post',
-                'Content must be respectful and free from abuse',
-                'We reserve the right to delete any content that violates these terms',
-                'By posting content, you grant Watch VIP a non-exclusive right to use it'
-            ]
-        },
-        {
-            title: '4. Intellectual Property Rights',
-            description: 'All website content (text, designs, logos) is protected by intellectual property rights. It is forbidden to copy or reuse this content without express permission.'
-        },
-        {
-            title: '5. Disclaimer of Liability',
-            description: 'The website is provided "as is" without warranties. We do not guarantee the accuracy of content or its continuous availability. We are not responsible for any direct or indirect damages resulting from website use.'
-        },
-        {
-            title: '6. External Links',
-            description: 'The website may contain external links. We are not responsible for the content or policies of these websites. Use of these links is at your own risk.'
-        },
-        {
-            title: '7. Violations of Terms',
-            items: [
-                'We reserve the right to suspend or terminate access for any user who violates these terms',
-                'We may take legal action against serious violations',
-                'Violations include: obscene content, abuse, or unauthorized access attempts'
-            ]
-        },
-        {
-            title: '8. Amendments to Terms',
-            description: 'We reserve the right to modify these terms at any time. Users will be notified of any significant changes via the website.'
-        },
-        {
-            title: '9. Governing Law',
-            description: 'These terms are governed by international law. Any dispute will be resolved through good faith negotiation first.'
-        },
-        {
-            title: '10. Contact Us',
-            description: 'For any inquiries about these terms, please contact us using the contact information available on the website.'
-        }
-    ],
-    fr: [
-        {
-            title: '1. Acceptation des conditions',
-            description: 'En utilisant Watch VIP, vous acceptez tous ces termes du service. Si vous n\'acceptez pas une partie de ces conditions, veuillez ne pas utiliser le site.'
-        },
-        {
-            title: '2. Licence limitée',
-            description: 'Nous vous accordons une licence limitée et non transférable pour utiliser le site à des fins personnelles et non commerciales uniquement. Vous ne pouvez pas copier, distribuer, vendre ou louer de contenu du site.'
-        },
-        {
-            title: '3. Contenu utilisateur',
-            items: [
-                'Vous êtes entièrement responsable de tout commentaire et contenu que vous publiez',
-                'Le contenu doit être respectueux et exempt d\'abus',
-                'Nous nous réservons le droit de supprimer tout contenu violant ces conditions',
-                'En publiant du contenu, vous accordez à Watch VIP un droit non exclusif de l\'utiliser'
-            ]
-        },
-        {
-            title: '4. Droits de propriété intellectuelle',
-            description: 'Tout le contenu du site (textes, conceptions, logos) est protégé par les droits de propriété intellectuelle. Il est interdit de copier ou de réutiliser ce contenu sans permission expresse.'
-        },
-        {
-            title: '5. Clause de non-responsabilité',
-            description: 'Le site est fourni "tel quel" sans garanties. Nous ne garantissons pas l\'exactitude du contenu ou sa disponibilité continue. Nous ne sommes pas responsables des dommages directs ou indirects résultant de l\'utilisation du site.'
-        },
-        {
-            title: '6. Liens externes',
-            description: 'Le site peut contenir des liens externes. Nous ne sommes pas responsables du contenu ou des politiques de ces sites. L\'utilisation de ces liens se fait à vos risques et périls.'
-        },
-        {
-            title: '7. Violations des conditions',
-            items: [
-                'Nous nous réservons le droit de suspendre ou de résilier l\'accès pour tout utilisateur violant ces conditions',
-                'Nous pouvons prendre des mesures juridiques contre les violations graves',
-                'Les violations incluent: contenu obscène, abus ou tentatives d\'accès non autorisé'
-            ]
-        },
-        {
-            title: '8. Modifications des conditions',
-            description: 'Nous nous réservons le droit de modifier ces conditions à tout moment. Les utilisateurs seront informés de tout changement important via le site.'
-        },
-        {
-            title: '9. Droit applicable',
-            description: 'Ces conditions sont régies par le droit international. Tout différend sera résolu par négociation de bonne foi en premier lieu.'
-        },
-        {
-            title: '10. Nous contacter',
-            description: 'Pour toute demande concernant ces conditions, veuillez nous contacter en utilisant les coordonnées disponibles sur le site.'
-        }
-    ],
-    ja: [
-        {
-            title: '1. 条件の受け入れ',
-            description: 'Watch VIPを使用することにより、これらすべての利用規約に同意することになります。これらの条件のいかなる部分にも同意しない場合は、ウェブサイトを使用しないでください。'
-        },
-        {
-            title: '2. 制限付きライセンス',
-            description: '個人的および非商用目的でのみウェブサイトを使用するための制限付きの譲渡不可能なライセンスを付与します。ウェブサイトからのコンテンツをコピー、配布、販売、または賃貸することはできません。'
-        },
-        {
-            title: '3. ユーザーコンテンツ',
-            items: [
-                'あなたが投稿するコメントとコンテンツについて完全に責任があります',
-                'コンテンツは尊重されるべきであり、虐待から解放されるべきです',
-                'これらの条件に違反するコンテンツを削除する権利を留保します',
-                'コンテンツを投稿することにより、Watch VIPに使用する非排他的権を付与します'
-            ]
-        },
-        {
-            title: '4. 知的財産権',
-            description: 'ウェブサイトのすべてのコンテンツ（テキスト、デザイン、ロゴ）は知的財産権で保護されています。明示的な許可なしにこのコンテンツをコピーまたは再利用することは禁止されています。'
-        },
-        {
-            title: '5. 責任の免責',
-            description: 'ウェブサイトは保証なし「そのまま」で提供されます。コンテンツの正確性または継続的な利用可能性を保証しません。ウェブサイトの使用から生じた直接的または間接的な損害については責任を負いません。'
-        },
-        {
-            title: '6. 外部リンク',
-            description: 'ウェブサイトは外部リンクを含む場合があります。これらのウェブサイトのコンテンツまたはポリシーについては責任を負いません。これらのリンクの使用はあなた自身の危険性を負います。'
-        },
-        {
-            title: '7. 条件の違反',
-            items: [
-                'これらの条件に違反するユーザーのアクセスを一時停止または終了する権利を留保します',
-                '重大な違反に対して法的措置を取る場合があります',
-                '違反には以下が含まれます：下品なコンテンツ、虐待、または不正アクセス試行'
-            ]
-        },
-        {
-            title: '8. 条件の変更',
-            description: 'これらの条件はいつでも変更する権利を留保します。重大な変更についてはウェブサイト経由でユーザーに通知されます。'
-        },
-        {
-            title: '9. 準拠法',
-            description: 'これらの条件は国際法に準拠します。紛争は最初に誠実な交渉によって解決されます。'
-        },
-        {
-            title: '10. お問い合わせ',
-            description: 'これらの条件に関するご不明な点については、ウェブサイトで利用可能なお問い合わせ情報を使用してお問い合わせください。'
-        }
-    ]
 };
 
 // ============================================
@@ -2068,13 +1568,13 @@ const LIBRARY = {
         {
             id: 'doraemon',
             titleKey: 'series.doraemon.title',
-            cover: 'https://via.placeholder.com/400x225?text=Doraemon',
+            cover: 'covers/doraemon.jpg',
             episodes: [
                 {
                     id: 'ep01',
                     titleKey: 'series.doraemon.episode.ep01.title',
                     descriptionKey: 'series.doraemon.episode.ep01.description',
-                    cover: 'https://via.placeholder.com/400x225?text=Episode+01',
+                    cover: 'covers/ep01.jpg',
                     versions: {
                         original: {
                             nameKey: 'original',
@@ -2099,42 +1599,444 @@ const LIBRARY = {
 };
 
 // ============================================
-// STORAGE UTILITIES
+// MODAL MANAGER
 // ============================================
-const Storage = {
-    set(key, value) {
-        try {
-            if (typeof sessionStorage !== 'undefined') {
-                sessionStorage.setItem(key, value);
-                return true;
-            }
-        } catch (e) {
-            console.warn('SessionStorage unavailable:', e);
-        }
-        return false;
+const Modal = {
+    show(title, content) {
+        const container = document.getElementById('modalContainer');
+        if (!container) return;
+
+        container.innerHTML = `
+            <div class="modal-overlay" onclick="Modal.close(event)">
+                <div class="modal-content" onclick="event.stopPropagation()">
+                    <div class="modal-header">
+                        <h2>${title}</h2>
+                        <button class="modal-close" onclick="Modal.close()">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        ${content}
+                    </div>
+                </div>
+            </div>
+        `;
+
+        document.body.style.overflow = 'hidden';
     },
 
-    get(key) {
-        try {
-            if (typeof sessionStorage !== 'undefined') {
-                return sessionStorage.getItem(key);
-            }
-        } catch (e) {
-            console.warn('SessionStorage unavailable:', e);
+    close(event) {
+        if (event && event.target.className !== 'modal-overlay') return;
+        
+        const container = document.getElementById('modalContainer');
+        if (container) {
+            container.innerHTML = '';
         }
-        return null;
+        document.body.style.overflow = '';
     },
 
-    remove(key) {
-        try {
-            if (typeof sessionStorage !== 'undefined') {
-                sessionStorage.removeItem(key);
-                return true;
-            }
-        } catch (e) {
-            console.warn('SessionStorage unavailable:', e);
+    showPrivacy() {
+        const lang = i18next.language;
+        let content = '';
+
+        if (lang === 'ar') {
+            content = `
+                <h3>🔒 سياسة الخصوصية</h3>
+                <p><strong>تاريخ السريان:</strong> 16 يناير 2026</p>
+
+                <h3>1. المعلومات التي نجمعها</h3>
+                <p>نحن في Watch VIP نحترم خصوصيتك ونلتزم بحماية بياناتك الشخصية. نجمع المعلومات التالية:</p>
+                <ul>
+                    <li><strong>ملفات تعريف الارتباط (Cookies):</strong> نستخدم ملفات تعريف الارتباط لتحسين تجربة المستخدم وتحليل استخدام الموقع عبر Google Analytics.</li>
+                    <li><strong>التعليقات:</strong> عند كتابة تعليق، نقوم بتخزين الاسم (اختياري) والنص والمعرف الفريد للمتصفح (Client ID).</li>
+                    <li><strong>بيانات التصفح:</strong> نجمع بيانات مجهولة حول كيفية استخدامك للموقع لتحسين الخدمة.</li>
+                </ul>
+
+                <h3>2. استخدام Google Analytics و Google AdSense</h3>
+                <ul>
+                    <li><strong>Google Analytics:</strong> نستخدم Google Analytics لتحليل حركة المرور على الموقع. يتم جمع البيانات بشكل مجهول ولا تحتوي على معلومات شخصية محددة.</li>
+                    <li><strong>Google AdSense:</strong> قد نعرض إعلانات من Google AdSense. قد تستخدم Google ملفات تعريف الارتباط لعرض إعلانات مخصصة بناءً على زياراتك السابقة.</li>
+                </ul>
+
+                <h3>3. YouTube وسياسة COPPA</h3>
+                <p>نستخدم YouTube API Services لعرض مقاطع الفيديو. جميع المحتويات المعروضة مناسبة للعائلة وتتوافق مع قوانين حماية خصوصية الأطفال على الإنترنت (COPPA).</p>
+                <ul>
+                    <li>لا نجمع عمداً معلومات شخصية من الأطفال دون سن 13 عاماً.</li>
+                    <li>المحتوى المعروض آمن وخالٍ من المحتوى غير اللائق.</li>
+                    <li>نوصي بمراقبة الوالدين لاستخدام الأطفال للموقع.</li>
+                </ul>
+
+                <h3>4. التعليقات والبيانات المخزنة</h3>
+                <ul>
+                    <li>يتم تخزين التعليقات في قاعدة بيانات PostgreSQL آمنة.</li>
+                    <li>نستخدم معرف فريد للمتصفح (Client ID) لمنع التعليقات المكررة - لا يتم ربطه بهويتك الشخصية.</li>
+                    <li>يمكنك حذف تعليقك بالنقر مرتين عليه.</li>
+                </ul>
+
+                <h3>5. حقوقك</h3>
+                <ul>
+                    <li>يمكنك تعطيل ملفات تعريف الارتباط من إعدادات المتصفح.</li>
+                    <li>يمكنك طلب حذف بياناتك في أي وقت.</li>
+                    <li>يمكنك إلغاء الاشتراك في الإعلانات المخصصة عبر <a href="https://www.google.com/settings/ads" target="_blank">إعدادات إعلانات Google</a>.</li>
+                </ul>
+
+                <div class="highlight-box">
+                    <p><strong>⚠️ ملاحظة مهمة:</strong> نحن لا نبيع أو نشارك بياناتك الشخصية مع أطراف ثالثة باستثناء الخدمات الضرورية مثل Google Analytics و YouTube.</p>
+                </div>
+
+                <h3>6. الاتصال</h3>
+                <p>إذا كان لديك أي أسئلة حول سياسة الخصوصية، يرجى التواصل معنا عبر البريد الإلكتروني.</p>
+            `;
+        } else if (lang === 'en') {
+            content = `
+                <h3>🔒 Privacy Policy</h3>
+                <p><strong>Effective Date:</strong> January 16, 2026</p>
+
+                <h3>1. Information We Collect</h3>
+                <p>At Watch VIP, we respect your privacy and are committed to protecting your personal data. We collect the following information:</p>
+                <ul>
+                    <li><strong>Cookies:</strong> We use cookies to improve user experience and analyze site usage via Google Analytics.</li>
+                    <li><strong>Comments:</strong> When you post a comment, we store your name (optional), text, and unique browser identifier (Client ID).</li>
+                    <li><strong>Browsing Data:</strong> We collect anonymous data about how you use the site to improve our service.</li>
+                </ul>
+
+                <h3>2. Use of Google Analytics & Google AdSense</h3>
+                <ul>
+                    <li><strong>Google Analytics:</strong> We use Google Analytics to analyze site traffic. Data is collected anonymously and does not contain specific personal information.</li>
+                    <li><strong>Google AdSense:</strong> We may display ads from Google AdSense. Google may use cookies to show personalized ads based on your previous visits.</li>
+                </ul>
+
+                <h3>3. YouTube & COPPA Policy</h3>
+                <p>We use YouTube API Services to display videos. All content displayed is family-friendly and complies with the Children's Online Privacy Protection Act (COPPA).</p>
+                <ul>
+                    <li>We do not knowingly collect personal information from children under 13.</li>
+                    <li>Content displayed is safe and free from inappropriate material.</li>
+                    <li>We recommend parental supervision for children's use of the site.</li>
+                </ul>
+
+                <h3>4. Comments & Stored Data</h3>
+                <ul>
+                    <li>Comments are stored in a secure PostgreSQL database.</li>
+                    <li>We use a unique browser identifier (Client ID) to prevent duplicate comments - it is not linked to your personal identity.</li>
+                    <li>You can delete your comment by double-clicking it.</li>
+                </ul>
+
+                <h3>5. Your Rights</h3>
+                <ul>
+                    <li>You can disable cookies from your browser settings.</li>
+                    <li>You can request deletion of your data at any time.</li>
+                    <li>You can opt out of personalized ads via <a href="https://www.google.com/settings/ads" target="_blank">Google Ads Settings</a>.</li>
+                </ul>
+
+                <div class="highlight-box">
+                    <p><strong>⚠️ Important Note:</strong> We do not sell or share your personal data with third parties except for necessary services like Google Analytics and YouTube.</p>
+                </div>
+
+                <h3>6. Contact</h3>
+                <p>If you have any questions about our privacy policy, please contact us via email.</p>
+            `;
+        } else if (lang === 'fr') {
+            content = `
+                <h3>🔒 Politique de Confidentialité</h3>
+                <p><strong>Date d'entrée en vigueur:</strong> 16 janvier 2026</p>
+
+                <h3>1. Informations que nous collectons</h3>
+                <p>Chez Watch VIP, nous respectons votre vie privée et nous nous engageons à protéger vos données personnelles. Nous collectons les informations suivantes:</p>
+                <ul>
+                    <li><strong>Cookies:</strong> Nous utilisons des cookies pour améliorer l'expérience utilisateur et analyser l'utilisation du site via Google Analytics.</li>
+                    <li><strong>Commentaires:</strong> Lorsque vous publiez un commentaire, nous stockons votre nom (facultatif), votre texte et votre identifiant de navigateur unique (Client ID).</li>
+                    <li><strong>Données de navigation:</strong> Nous collectons des données anonymes sur la façon dont vous utilisez le site pour améliorer notre service.</li>
+                </ul>
+
+                <h3>2. Utilisation de Google Analytics et Google AdSense</h3>
+                <ul>
+                    <li><strong>Google Analytics:</strong> Nous utilisons Google Analytics pour analyser le trafic du site. Les données sont collectées de manière anonyme et ne contiennent pas d'informations personnelles spécifiques.</li>
+                    <li><strong>Google AdSense:</strong> Nous pouvons afficher des publicités de Google AdSense. Google peut utiliser des cookies pour afficher des publicités personnalisées en fonction de vos visites précédentes.</li>
+                </ul>
+
+                <h3>3. YouTube et politique COPPA</h3>
+                <p>Nous utilisons les services API YouTube pour afficher des vidéos. Tout le contenu affiché est adapté aux familles et conforme à la loi sur la protection de la vie privée des enfants en ligne (COPPA).</p>
+                <ul>
+                    <li>Nous ne collectons pas sciemment d'informations personnelles d'enfants de moins de 13 ans.</li>
+                    <li>Le contenu affiché est sûr et exempt de matériel inapproprié.</li>
+                    <li>Nous recommandons la surveillance parentale pour l'utilisation du site par les enfants.</li>
+                </ul>
+
+                <h3>4. Commentaires et données stockées</h3>
+                <ul>
+                    <li>Les commentaires sont stockés dans une base de données PostgreSQL sécurisée.</li>
+                    <li>Nous utilisons un identifiant de navigateur unique (Client ID) pour empêcher les commentaires en double - il n'est pas lié à votre identité personnelle.</li>
+                    <li>Vous pouvez supprimer votre commentaire en double-cliquant dessus.</li>
+                </ul>
+
+                <h3>5. Vos droits</h3>
+                <ul>
+                    <li>Vous pouvez désactiver les cookies depuis les paramètres de votre navigateur.</li>
+                    <li>Vous pouvez demander la suppression de vos données à tout moment.</li>
+                    <li>Vous pouvez vous désabonner des publicités personnalisées via les <a href="https://www.google.com/settings/ads" target="_blank">paramètres des annonces Google</a>.</li>
+                </ul>
+
+                <div class="highlight-box">
+                    <p><strong>⚠️ Note importante:</strong> Nous ne vendons ni ne partageons vos données personnelles avec des tiers, sauf pour les services nécessaires comme Google Analytics et YouTube.</p>
+                </div>
+
+                <h3>6. Contact</h3>
+                <p>Si vous avez des questions sur notre politique de confidentialité, veuillez nous contacter par email.</p>
+            `;
+        } else {
+            content = `
+                <h3>🔒 プライバシーポリシー</h3>
+                <p><strong>発効日:</strong> 2026年1月16日</p>
+
+                <h3>1. 収集する情報</h3>
+                <p>Watch VIPでは、お客様のプライバシーを尊重し、個人データの保護に努めています。次の情報を収集します:</p>
+                <ul>
+                    <li><strong>Cookie:</strong> ユーザーエクスペリエンスを向上させ、Google Analyticsを通じてサイトの使用状況を分析するためにCookieを使用します。</li>
+                    <li><strong>コメント:</strong> コメントを投稿すると、名前（任意）、テキスト、固有のブラウザ識別子（Client ID）を保存します。</li>
+                    <li><strong>閲覧データ:</strong> サービスを改善するために、サイトの使用方法に関する匿名データを収集します。</li>
+                </ul>
+
+                <h3>2. Google AnalyticsとGoogle AdSenseの使用</h3>
+                <ul>
+                    <li><strong>Google Analytics:</strong> サイトのトラフィックを分析するためにGoogle Analyticsを使用します。データは匿名で収集され、特定の個人情報は含まれません。</li>
+                    <li><strong>Google AdSense:</strong> Google AdSenseからの広告を表示する場合があります。Googleは、以前の訪問に基づいてパーソナライズされた広告を表示するためにCookieを使用する場合があります。</li>
+                </ul>
+
+                <h3>3. YouTubeとCOPPAポリシー</h3>
+                <p>動画を表示するためにYouTube APIサービスを使用しています。表示されるすべてのコンテンツは家族向けで、児童オンラインプライバシー保護法（COPPA）に準拠しています。</p>
+                <ul>
+                    <li>13歳未満の子供から故意に個人情報を収集することはありません。</li>
+                    <li>表示されるコンテンツは安全で、不適切な素材を含みません。</li>
+                    <li>子供がサイトを使用する際は、保護者の監督をお勧めします。</li>
+                </ul>
+
+                <h3>4. コメントと保存データ</h3>
+                <ul>
+                    <li>コメントは安全なPostgreSQLデータベースに保存されます。</li>
+                    <li>重複コメントを防ぐために固有のブラウザ識別子（Client ID）を使用します - 個人のIDにはリンクされません。</li>
+                    <li>コメントをダブルクリックすると削除できます。</li>
+                </ul>
+
+                <h3>5. お客様の権利</h3>
+                <ul>
+                    <li>ブラウザの設定からCookieを無効にすることができます。</li>
+                    <li>いつでもデータの削除を要求できます。</li>
+                    <li><a href="https://www.google.com/settings/ads" target="_blank">Google広告設定</a>からパーソナライズされた広告をオプトアウトできます。</li>
+                </ul>
+
+                <div class="highlight-box">
+                    <p><strong>⚠️ 重要な注意:</strong> Google AnalyticsやYouTubeなどの必要なサービスを除き、お客様の個人データを第三者に販売または共有することはありません。</p>
+                </div>
+
+                <h3>6. お問い合わせ</h3>
+                <p>プライバシーポリシーについてご質問がある場合は、メールでお問い合わせください。</p>
+            `;
         }
-        return false;
+
+        this.show(I18n.t('privacyPolicy'), content);
+    },
+
+    showTerms() {
+        const lang = i18next.language;
+        let content = '';
+
+        if (lang === 'ar') {
+            content = `
+                <h3>📜 شروط الاستخدام</h3>
+                <p><strong>تاريخ السريان:</strong> 16 يناير 2026</p>
+
+                <h3>1. قبول الشروط</h3>
+                <p>باستخدامك لموقع Watch VIP، فإنك توافق على الالتزام بشروط الاستخدام هذه. إذا كنت لا توافق على هذه الشروط، يرجى عدم استخدام الموقع.</p>
+
+                <h3>2. استخدام الموقع</h3>
+                <ul>
+                    <li>يجب أن يكون عمرك 13 عاماً على الأقل لاستخدام هذا الموقع.</li>
+                    <li>يجب استخدام الموقع للأغراض القانونية فقط.</li>
+                    <li>يُمنع نشر محتوى مسيء أو غير لائق أو ينتهك حقوق الآخرين.</li>
+                </ul>
+
+                <h3>3. المحتوى والملكية الفكرية</h3>
+                <ul>
+                    <li>جميع مقاطع الفيديو المعروضة مملوكة لأصحابها الأصليين ويتم عرضها عبر YouTube API.</li>
+                    <li>نحن لا نستضيف أي محتوى فيديو على خوادمنا.</li>
+                    <li>إذا كنت تعتقد أن محتوى ما ينتهك حقوق الطبع والنشر، يرجى التواصل معنا فوراً.</li>
+                </ul>
+
+                <h3>4. التعليقات والسلوك</h3>
+                <ul>
+                    <li>يجب أن تكون التعليقات محترمة وخالية من الإساءة.</li>
+                    <li>نحتفظ بالحق في حذف أي تعليق غير لائق دون إشعار مسبق.</li>
+                    <li>يُمنع الرسائل غير المرغوب فيها (Spam) والترويج التجاري.</li>
+                </ul>
+
+                <h3>5. YouTube API Services</h3>
+                <p>استخدامك لهذا الموقع يعني موافقتك على <a href="https://www.youtube.com/t/terms" target="_blank">شروط خدمة YouTube</a> وسياسة الخصوصية الخاصة بها.</p>
+
+                <h3>6. إخلاء المسؤولية</h3>
+                <ul>
+                    <li>يتم توفير الموقع "كما هو" دون أي ضمانات.</li>
+                    <li>لا نتحمل مسؤولية أي أضرار قد تنتج عن استخدام الموقع.</li>
+                    <li>قد تحتوي الإعلانات على محتوى من أطراف ثالثة - نحن لسنا مسؤولين عن محتواها.</li>
+                </ul>
+
+                <h3>7. التغييرات على الشروط</h3>
+                <p>نحتفظ بالحق في تعديل شروط الاستخدام في أي وقت. سيتم نشر التغييرات على هذه الصفحة.</p>
+
+                <div class="highlight-box">
+                    <p><strong>⚠️ ملاحظة:</strong> استمرارك في استخدام الموقع بعد التغييرات يعني موافقتك على الشروط المعدلة.</p>
+                </div>
+
+                <h3>8. الاتصال</h3>
+                <p>للأسئلة حول شروط الاستخدام، يرجى التواصل معنا عبر البريد الإلكتروني.</p>
+            `;
+        } else if (lang === 'en') {
+            content = `
+                <h3>📜 Terms of Service</h3>
+                <p><strong>Effective Date:</strong> January 16, 2026</p>
+
+                <h3>1. Acceptance of Terms</h3>
+                <p>By using Watch VIP, you agree to comply with these Terms of Service. If you do not agree with these terms, please do not use the site.</p>
+
+                <h3>2. Use of the Site</h3>
+                <ul>
+                    <li>You must be at least 13 years old to use this site.</li>
+                    <li>The site must be used for lawful purposes only.</li>
+                    <li>Posting offensive, inappropriate content or content that violates others' rights is prohibited.</li>
+                </ul>
+
+                <h3>3. Content & Intellectual Property</h3>
+                <ul>
+                    <li>All videos displayed are owned by their original owners and are shown via YouTube API.</li>
+                    <li>We do not host any video content on our servers.</li>
+                    <li>If you believe content infringes copyright, please contact us immediately.</li>
+                </ul>
+
+                <h3>4. Comments & Conduct</h3>
+                <ul>
+                    <li>Comments must be respectful and free from abuse.</li>
+                    <li>We reserve the right to delete any inappropriate comment without prior notice.</li>
+                    <li>Spam and commercial promotion are prohibited.</li>
+                </ul>
+
+                <h3>5. YouTube API Services</h3>
+                <p>Your use of this site means you agree to <a href="https://www.youtube.com/t/terms" target="_blank">YouTube's Terms of Service</a> and its privacy policy.</p>
+
+                <h3>6. Disclaimer</h3>
+                <ul>
+                    <li>The site is provided "as is" without any warranties.</li>
+                    <li>We are not responsible for any damages that may result from using the site.</li>
+                    <li>Ads may contain third-party content - we are not responsible for their content.</li>
+                </ul>
+
+                <h3>7. Changes to Terms</h3>
+                <p>We reserve the right to modify the Terms of Service at any time. Changes will be posted on this page.</p>
+
+                <div class="highlight-box">
+                    <p><strong>⚠️ Note:</strong> Your continued use of the site after changes means you agree to the modified terms.</p>
+                </div>
+
+                <h3>8. Contact</h3>
+                <p>For questions about the Terms of Service, please contact us via email.</p>
+            `;
+        } else if (lang === 'fr') {
+            content = `
+                <h3>📜 Conditions d'Utilisation</h3>
+                <p><strong>Date d'entrée en vigueur:</strong> 16 janvier 2026</p>
+
+                <h3>1. Acceptation des Conditions</h3>
+                <p>En utilisant Watch VIP, vous acceptez de vous conformer à ces Conditions d'Utilisation. Si vous n'êtes pas d'accord avec ces conditions, veuillez ne pas utiliser le site.</p>
+
+                <h3>2. Utilisation du Site</h3>
+                <ul>
+                    <li>Vous devez avoir au moins 13 ans pour utiliser ce site.</li>
+                    <li>Le site doit être utilisé à des fins légales uniquement.</li>
+                    <li>La publication de contenu offensant, inapproprié ou qui viole les droits d'autrui est interdite.</li>
+                </ul>
+
+                <h3>3. Contenu et Propriété Intellectuelle</h3>
+                <ul>
+                    <li>Toutes les vidéos affichées appartiennent à leurs propriétaires d'origine et sont affichées via l'API YouTube.</li>
+                    <li>Nous n'hébergeons aucun contenu vidéo sur nos serveurs.</li>
+                    <li>Si vous pensez qu'un contenu enfreint les droits d'auteur, veuillez nous contacter immédiatement.</li>
+                </ul>
+
+                <h3>4. Commentaires et Conduite</h3>
+                <ul>
+                    <li>Les commentaires doivent être respectueux et exempts d'abus.</li>
+                    <li>Nous nous réservons le droit de supprimer tout commentaire inapproprié sans préavis.</li>
+                    <li>Le spam et la promotion commerciale sont interdits.</li>
+                </ul>
+
+                <h3>5. Services API YouTube</h3>
+                <p>Votre utilisation de ce site signifie que vous acceptez les <a href="https://www.youtube.com/t/terms" target="_blank">Conditions d'utilisation de YouTube</a> et sa politique de confidentialité.</p>
+
+                <h3>6. Clause de Non-Responsabilité</h3>
+                <ul>
+                    <li>Le site est fourni "tel quel" sans aucune garantie.</li>
+                    <li>Nous ne sommes pas responsables des dommages pouvant résulter de l'utilisation du site.</li>
+                    <li>Les publicités peuvent contenir du contenu de tiers - nous ne sommes pas responsables de leur contenu.</li>
+                </ul>
+
+                <h3>7. Modifications des Conditions</h3>
+                <p>Nous nous réservons le droit de modifier les Conditions d'Utilisation à tout moment. Les modifications seront publiées sur cette page.</p>
+
+                <div class="highlight-box">
+                    <p><strong>⚠️ Note:</strong> Votre utilisation continue du site après les modifications signifie que vous acceptez les conditions modifiées.</p>
+                </div>
+
+                <h3>8. Contact</h3>
+                <p>Pour des questions sur les Conditions d'Utilisation, veuillez nous contacter par email.</p>
+            `;
+        } else {
+            content = `
+                <h3>📜 利用規約</h3>
+                <p><strong>発効日:</strong> 2026年1月16日</p>
+
+                <h3>1. 規約の承認</h3>
+                <p>Watch VIPを使用することにより、本利用規約に従うことに同意したものとみなされます。これらの規約に同意しない場合は、サイトを使用しないでください。</p>
+
+                <h3>2. サイトの使用</h3>
+                <ul>
+                    <li>このサイトを使用するには、少なくとも13歳以上である必要があります。</li>
+                    <li>サイトは合法的な目的でのみ使用する必要があります。</li>
+                    <li>攻撃的、不適切なコンテンツ、または他者の権利を侵害するコンテンツの投稿は禁止されています。</li>
+                </ul>
+
+                <h3>3. コンテンツと知的財産</h3>
+                <ul>
+                    <li>表示されるすべての動画は元の所有者に帰属し、YouTube APIを通じて表示されます。</li>
+                    <li>当社のサーバーに動画コンテンツをホストしていません。</li>
+                    <li>コンテンツが著作権を侵害していると思われる場合は、直ちにご連絡ください。</li>
+                </ul>
+
+                <h3>4. コメントと行動</h3>
+                <ul>
+                    <li>コメントは敬意を持ち、虐待のないものでなければなりません。</li>
+                    <li>不適切なコメントは事前の通知なしに削除する権利を留保します。</li>
+                    <li>スパムおよび商業的宣伝は禁止されています。</li>
+                </ul>
+
+                <h3>5. YouTube APIサービス</h3>
+                <p>このサイトの使用は、<a href="https://www.youtube.com/t/terms" target="_blank">YouTubeの利用規約</a>およびそのプライバシーポリシーに同意することを意味します。</p>
+
+                <h3>6. 免責事項</h3>
+                <ul>
+                    <li>サイトは「現状のまま」保証なしで提供されます。</li>
+                    <li>サイトの使用から生じる損害について責任を負いません。</li>
+                    <li>広告には第三者のコンテンツが含まれる場合があります - そのコンテンツについて責任を負いません。</li>
+                </ul>
+
+                <h3>7. 規約の変更</h3>
+                <p>いつでも利用規約を変更する権利を留保します。変更はこのページに掲載されます。</p>
+
+                <div class="highlight-box">
+                    <p><strong>⚠️ 注意:</strong> 変更後もサイトを継続して使用すると、変更された規約に同意したものとみなされます。</p>
+                </div>
+
+                <h3>8. お問い合わせ</h3>
+                <p>利用規約に関するご質問は、メールでお問い合わせください。</p>
+            `;
+        }
+
+        this.show(I18n.t('termsOfService'), content);
     }
 };
 
@@ -2184,12 +2086,6 @@ const I18n = {
         const lang = i18next.language;
         document.documentElement.setAttribute('data-lang', lang);
         document.documentElement.setAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr');
-
-        // Fix: Update meta description
-        const metaDesc = document.querySelector('meta[name="description"]');
-        if (metaDesc && i18next.exists('metaDescription')) {
-            metaDesc.setAttribute('content', i18next.t('metaDescription'));
-        }
     },
 
     changeLanguage(lang) {
@@ -2198,11 +2094,7 @@ const I18n = {
                 console.error('Language change error:', err);
                 return;
             }
-            try {
-                localStorage.setItem('site_lang', lang);
-            } catch (e) {
-                console.warn('localStorage unavailable');
-            }
+            localStorage.setItem('site_lang', lang);
             this.translatePage();
             App.refreshCurrentView();
         });
@@ -2239,17 +2131,12 @@ const Utils = {
     },
 
     clientId() {
-        try {
-            let id = localStorage.getItem('watch_vip_client_id');
-            if (!id) {
-                id = Date.now().toString(36) + Math.random().toString(36).slice(2);
-                localStorage.setItem('watch_vip_client_id', id);
-            }
-            return id;
-        } catch (e) {
-            console.warn('localStorage unavailable');
-            return 'anonymous-' + Date.now();
+        let id = localStorage.getItem('watch_vip_client_id');
+        if (!id) {
+            id = Date.now().toString(36) + Math.random().toString(36).slice(2);
+            localStorage.setItem('watch_vip_client_id', id);
         }
+        return id;
     },
 
     status(msg, type='info') {
@@ -2324,7 +2211,7 @@ const DubEngine = {
             if (key !== 'original') {
                 html += `<iframe id="dub-${key}"
                     src="https://www.youtube.com/embed/${version.id}?enablejsapi=1&controls=0&modestbranding=1&rel=0"
-                    style="position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;"
+                    style="display:none"
                     allow="autoplay; encrypted-media"></iframe>`;
             }
         });
@@ -2515,21 +2402,15 @@ const App = {
     currentSeries: null,
     currentEpisode: null,
     dubEnabled: false,
-    lastDubMode: 'arabic',
+    lastDubMode: localStorage.getItem('last_dub') || 'arabic',
     dubSelectorVisible: false,
     dubToggleLongPressTimer: null,
 
     init() {
-        try {
-            this.lastDubMode = localStorage.getItem('last_dub') || 'arabic';
-        } catch (e) {
-            console.warn('localStorage unavailable');
-        }
-
         if (!i18next.isInitialized) {
             i18next.init({
-                lng: this.getSavedLanguage(),
-                fallbackLng: 'ar',
+                lng: localStorage.getItem('site_lang') || 'ar',
+                fallbackLng: false,
                 resources: i18nResources,
                 interpolation: {
                     escapeValue: false
@@ -2546,19 +2427,17 @@ const App = {
         Comments.init();
         this.setupDubToggle();
         this.setupLanguageToggle();
-    },
-
-    getSavedLanguage() {
-        try {
-            return localStorage.getItem('site_lang') || 'ar';
-        } catch (e) {
-            console.warn('localStorage unavailable');
-            return 'ar';
-        }
+        
+        // Close modal on ESC key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                Modal.close();
+            }
+        });
     },
 
     restoreState() {
-        const saved = Storage.get('last_view');
+        const saved = sessionStorage.getItem('last_view');
 
         if (saved) {
             try {
@@ -2579,7 +2458,6 @@ const App = {
                     this.renderHome();
                 }
             } catch (e) {
-                console.warn('State restoration error:', e);
                 this.renderHome();
             }
         } else {
@@ -2603,13 +2481,13 @@ const App = {
             }
         });
 
-        langMenu.querySelectorAll('button[data-lang]').forEach(btn => {
+        langMenu.querySelectorAll('button').forEach(btn => {
             btn.addEventListener('click', () => {
                 const lang = btn.getAttribute('data-lang');
                 I18n.changeLanguage(lang);
                 langMenu.classList.add('hidden');
                 
-                langMenu.querySelectorAll('button[data-lang]').forEach(b => b.classList.remove('active'));
+                langMenu.querySelectorAll('button').forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
             });
         });
@@ -2637,12 +2515,6 @@ const App = {
                     }, 1000);
                 }
             });
-        }
-        else if (this.currentView === 'privacy') {
-            this.viewPrivacy();
-        }
-        else if (this.currentView === 'terms') {
-            this.viewTerms();
         }
         
         I18n.translatePage();
@@ -2747,14 +2619,10 @@ const App = {
     renderHome() {
         const libraryView = document.getElementById('libraryView');
         const videoView = document.getElementById('videoView');
-        const privacyView = document.getElementById('privacyView');
-        const termsView = document.getElementById('termsView');
         const backBtn = document.getElementById('backBtn');
 
         if (libraryView) libraryView.classList.remove('hidden');
         if (videoView) videoView.classList.add('hidden');
-        if (privacyView) privacyView.classList.add('hidden');
-        if (termsView) termsView.classList.add('hidden');
         if (backBtn) backBtn.style.display = 'none';
         
         const breadcrumb = document.getElementById('breadcrumbText');
@@ -2768,7 +2636,7 @@ const App = {
             grid.innerHTML = LIBRARY.series.map(series => `
                 <div class="library-item" onclick="App.viewSeries('${series.id}')">
                     <div class="item-cover">
-                        <img src="${series.cover}" alt="${I18n.t(series.titleKey)}" loading="lazy">
+                        <img src="${series.cover}" alt="${I18n.t(series.titleKey)}">
                     </div>
                     <div class="item-info">
                         <div class="item-title">${Utils.sanitize(I18n.t(series.titleKey))}</div>
@@ -2783,7 +2651,7 @@ const App = {
         Comments.pauseAutoRefresh();
         DubEngine.cleanup();
 
-        Storage.remove('last_view');
+        sessionStorage.removeItem('last_view');
         I18n.translatePage();
     },
 
@@ -2793,14 +2661,10 @@ const App = {
 
         const libraryView = document.getElementById('libraryView');
         const videoView = document.getElementById('videoView');
-        const privacyView = document.getElementById('privacyView');
-        const termsView = document.getElementById('termsView');
         const backBtn = document.getElementById('backBtn');
 
         if (libraryView) libraryView.classList.remove('hidden');
         if (videoView) videoView.classList.add('hidden');
-        if (privacyView) privacyView.classList.add('hidden');
-        if (termsView) termsView.classList.add('hidden');
         if (backBtn) {
             backBtn.style.display = 'inline-flex';
             backBtn.setAttribute('data-i18n', 'back');
@@ -2839,7 +2703,7 @@ const App = {
         Comments.pauseAutoRefresh();
         DubEngine.cleanup();
 
-        Storage.set('last_view', JSON.stringify({
+        sessionStorage.setItem('last_view', JSON.stringify({
             view: 'series',
             seriesId
         }));
@@ -2854,14 +2718,10 @@ const App = {
 
         const libraryView = document.getElementById('libraryView');
         const videoView = document.getElementById('videoView');
-        const privacyView = document.getElementById('privacyView');
-        const termsView = document.getElementById('termsView');
         const backBtn = document.getElementById('backBtn');
 
         if (libraryView) libraryView.classList.add('hidden');
         if (videoView) videoView.classList.remove('hidden');
-        if (privacyView) privacyView.classList.add('hidden');
-        if (termsView) termsView.classList.add('hidden');
         if (backBtn) {
             backBtn.style.display = 'inline-flex';
             backBtn.setAttribute('data-i18n', 'back');
@@ -2908,110 +2768,12 @@ const App = {
         this.currentView = 'video';
         Comments.load();
 
-        Storage.set('last_view', JSON.stringify({
+        sessionStorage.setItem('last_view', JSON.stringify({
             view: 'video',
             seriesId: this.currentSeries.id,
             episodeId
         }));
         
-        I18n.translatePage();
-    },
-
-    viewPrivacy() {
-        const libraryView = document.getElementById('libraryView');
-        const videoView = document.getElementById('videoView');
-        const privacyView = document.getElementById('privacyView');
-        const termsView = document.getElementById('termsView');
-        const backBtn = document.getElementById('backBtn');
-
-        if (libraryView) libraryView.classList.add('hidden');
-        if (videoView) videoView.classList.add('hidden');
-        if (privacyView) privacyView.classList.remove('hidden');
-        if (termsView) termsView.classList.add('hidden');
-        if (backBtn) {
-            backBtn.style.display = 'inline-flex';
-            backBtn.setAttribute('data-i18n', 'back');
-            I18n.translateElement(backBtn);
-        }
-
-        const breadcrumbText = document.getElementById('breadcrumbText');
-        if (breadcrumbText) {
-            breadcrumbText.setAttribute('data-i18n', 'privacyTitle');
-            I18n.translateElement(breadcrumbText);
-        }
-
-        const privacyContent = document.getElementById('privacyContent');
-        const lang = i18next.language;
-        const content = PRIVACY_CONTENT[lang] || PRIVACY_CONTENT.ar;
-
-        if (privacyContent) {
-            privacyContent.innerHTML = content.map((section, idx) => `
-                <div class="privacy-section">
-                    <h2>${section.title}</h2>
-                    ${section.description ? `<p>${section.description}</p>` : ''}
-                    ${section.items ? `
-                        <ul>
-                            ${section.items.map(item => `<li>${item}</li>`).join('')}
-                        </ul>
-                    ` : ''}
-                </div>
-            `).join('');
-        }
-
-        this.currentView = 'privacy';
-        Comments.pauseAutoRefresh();
-        DubEngine.cleanup();
-
-        Storage.remove('last_view');
-        I18n.translatePage();
-    },
-
-    viewTerms() {
-        const libraryView = document.getElementById('libraryView');
-        const videoView = document.getElementById('videoView');
-        const privacyView = document.getElementById('privacyView');
-        const termsView = document.getElementById('termsView');
-        const backBtn = document.getElementById('backBtn');
-
-        if (libraryView) libraryView.classList.add('hidden');
-        if (videoView) videoView.classList.add('hidden');
-        if (privacyView) privacyView.classList.add('hidden');
-        if (termsView) termsView.classList.remove('hidden');
-        if (backBtn) {
-            backBtn.style.display = 'inline-flex';
-            backBtn.setAttribute('data-i18n', 'back');
-            I18n.translateElement(backBtn);
-        }
-
-        const breadcrumbText = document.getElementById('breadcrumbText');
-        if (breadcrumbText) {
-            breadcrumbText.setAttribute('data-i18n', 'termsTitle');
-            I18n.translateElement(breadcrumbText);
-        }
-
-        const termsContent = document.getElementById('termsContent');
-        const lang = i18next.language;
-        const content = TERMS_CONTENT[lang] || TERMS_CONTENT.ar;
-
-        if (termsContent) {
-            termsContent.innerHTML = content.map((section, idx) => `
-                <div class="terms-section">
-                    <h2>${section.title}</h2>
-                    ${section.description ? `<p>${section.description}</p>` : ''}
-                    ${section.items ? `
-                        <ul>
-                            ${section.items.map(item => `<li>${item}</li>`).join('')}
-                        </ul>
-                    ` : ''}
-                </div>
-            `).join('');
-        }
-
-        this.currentView = 'terms';
-        Comments.pauseAutoRefresh();
-        DubEngine.cleanup();
-
-        Storage.remove('last_view');
         I18n.translatePage();
     },
 
@@ -3095,11 +2857,7 @@ const App = {
             if (preDubNotice) preDubNotice.classList.remove('hidden');
         } else {
             this.lastDubMode = versionKey;
-            try {
-                localStorage.setItem('last_dub', versionKey);
-            } catch (e) {
-                console.warn('localStorage unavailable');
-            }
+            localStorage.setItem('last_dub', versionKey);
             this.dubEnabled = true;
             if (dubToggle) dubToggle.classList.add('active');
             if (iconEl) iconEl.innerHTML = '&#128266;';
@@ -3115,8 +2873,6 @@ const App = {
             this.viewSeries(this.currentSeries.id);
         } else if (this.currentView === 'series') {
             this.renderHome();
-        } else if (this.currentView === 'privacy' || this.currentView === 'terms') {
-            this.renderHome();
         }
     }
 };
@@ -3125,18 +2881,12 @@ const App = {
 // COMMENTS MANAGER
 // ============================================
 const Comments = {
-    userCommentId: null,
+    userCommentId: localStorage.getItem('watch_vip_user_comment_id'),
     autoRefreshInterval: null,
     isRefreshing: false,
     lastSubmitTime: 0,
 
-    init() {
-        try {
-            this.userCommentId = localStorage.getItem('watch_vip_user_comment_id');
-        } catch (e) {
-            console.warn('localStorage unavailable');
-        }
-
+    async init() {
         const form = document.getElementById('commentForm');
         if (form) {
             form.addEventListener('submit', e => {
@@ -3210,11 +2960,7 @@ const Comments = {
         try {
             const res = await API.submit(name || null, text);
             this.userCommentId = res.commentId;
-            try {
-                localStorage.setItem('watch_vip_user_comment_id', res.commentId);
-            } catch (e) {
-                console.warn('localStorage unavailable');
-            }
+            localStorage.setItem('watch_vip_user_comment_id', res.commentId);
             this.lastSubmitTime = now;
             
             Utils.status(I18n.t('success'), 'success');
@@ -3258,11 +3004,7 @@ const Comments = {
             }
 
             if (this.userCommentId && !list.some(c => c.commentId === this.userCommentId)) {
-                try {
-                    localStorage.removeItem('watch_vip_user_comment_id');
-                } catch (e) {
-                    console.warn('localStorage unavailable');
-                }
+                localStorage.removeItem('watch_vip_user_comment_id');
                 this.userCommentId = null;
             }
 
@@ -3274,18 +3016,28 @@ const Comments = {
 
             box.innerHTML = `
                 <div class="comments-list">
-                    ${list.map(c=>`
-                        <div class="comment-item ${c.commentId===this.userCommentId?'user-comment':''}"
-                             data-id="${c.commentId}">
-                            <div class="comment-header">
-                                <div class="comment-author">
-                                    ${Utils.sanitize(c.displayName)}
+                    ${list.map(c=>{
+                        const isAdmin = c.clientId === CONFIG.ADMIN_CLIENT_ID;
+                        const isUser = c.commentId === this.userCommentId;
+                        const commentClass = isAdmin ? 'admin-comment' : (isUser ? 'user-comment' : '');
+                        
+                        return `
+                            <div class="comment-item ${commentClass}"
+                                 data-id="${c.commentId}">
+                                <div class="comment-header">
+                                    <div class="comment-author">
+                                        ${Utils.sanitize(c.displayName)}
+                                        ${isAdmin ? `<span class="admin-badge">👑 ${I18n.t('adminBadge')}</span>` : ''}
+                                        ${c.verified && !isAdmin ? `<svg class="verified-svg" viewBox="0 0 24 24" fill="#1da1f2">
+                                            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+                                        </svg>` : ''}
+                                    </div>
+                                    <span class="comment-time">${Utils.timeAgo(c.timestamp)}</span>
                                 </div>
-                                <span class="comment-time">${Utils.timeAgo(c.timestamp)}</span>
+                                <div class="comment-text">${Utils.sanitize(c.text)}</div>
                             </div>
-                            <div class="comment-text">${Utils.sanitize(c.text)}</div>
-                        </div>
-                    `).join('')}
+                        `;
+                    }).join('')}
                 </div>
             `;
 
@@ -3301,11 +3053,7 @@ const Comments = {
             el.addEventListener('click', () => {
                 const now = Date.now();
                 if (now - lastClick < 300) {
-                    try {
-                        localStorage.removeItem('watch_vip_user_comment_id');
-                    } catch (e) {
-                        console.warn('localStorage unavailable');
-                    }
+                    localStorage.removeItem('watch_vip_user_comment_id');
                     this.userCommentId = null;
                     Utils.status(I18n.t('canComment'), 'success');
                     Utils.playHaptic();
