@@ -1102,6 +1102,103 @@
                 padding: 20px;
             }
         }
+        /* ===========================
+   Kids Fun Page
+=========================== */
+
+.kids-page {
+    position: fixed;
+    inset: 0;
+    z-index: 9000;
+    background: transparent;
+}
+
+#kidsHandle {
+    position: fixed;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    background: var(--primary-color);
+    color: #fff;
+    padding: 14px 10px;
+    border-radius: 0 12px 12px 0;
+    cursor: pointer;
+    font-size: 20px;
+    box-shadow: var(--shadow);
+}
+
+.kids-drawer {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 300px;
+    height: 100%;
+    background: var(--bg-light);
+    box-shadow: 4px 0 20px rgba(0,0,0,.6);
+    padding: 20px;
+    transform: translateX(-100%);
+    transition: transform .35s ease;
+}
+
+.kids-drawer.show {
+    transform: translateX(0);
+}
+
+.kids-title {
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+.kids-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 15px;
+}
+
+.kids-tab {
+    flex: 1;
+    background: var(--secondary-color);
+    border: 1px solid var(--border-color);
+    color: #fff;
+    padding: 8px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.kids-tab.active {
+    background: var(--primary-color);
+}
+
+.kids-content {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.kids-page-content {
+    display: none;
+}
+
+.kids-page-content.active {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+}
+
+.kids-card {
+    background: var(--secondary-color);
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+    font-size: 18px;
+    cursor: pointer;
+    transition: transform .2s;
+}
+
+.kids-card:hover {
+    transform: scale(1.05);
+    background: var(--primary-color);
+}
     </style>
 </head>
 <body>
@@ -1244,21 +1341,56 @@
                         </div>
 
                         <button
-                            type="submit"
-                            class="submit-btn"
-                            id="submitBtn"
-                            data-i18n="submit">
-                        </button>
-                    </form>
+    type="submit"
+    class="submit-btn"
+    id="submitBtn"
+    data-i18n="submit">
+</button>
+</form>
+</div>
+
+<div id="commentsListContainer">
+    <div class="loading" id="loadingText" data-i18n="loading"></div>
+</div>
+</div> <!-- comments-section -->
+</div> <!-- videoView -->
+</div> <!-- container -->
+
+<!-- Kids Fun Page -->
+<div id="kidsPage" class="kids-page hidden">
+    <!-- Swipe Handle -->
+    <div id="kidsHandle">🌪️</div>
+
+        <!-- Side Drawer -->
+        <div id="kidsDrawer" class="kids-drawer hidden">
+            <h2 class="kids-title">🫧 عالم التسلية</h2>
+
+            <div class="kids-tabs">
+                <button class="kids-tab active" data-page="games">🤸🏻‍♂️ ألعاب</button>
+                <button class="kids-tab" data-page="characters">🕳️ شخصيات</button>
+                <button class="kids-tab" data-page="surprise">🫆 مفاجآت</button>
+            </div>
+
+            <div class="kids-content">
+                <div class="kids-page-content active" id="kids-games">
+                    <div class="kids-card">❄️ لعبة 1</div>
+                    <div class="kids-card">☄️ لعبة 2</div>
+                    <div class="kids-card">🛞 لعبة 3</div>
                 </div>
 
-                <div id="commentsListContainer">
-                    <div class="loading" id="loadingText" data-i18n="loading"></div>
+                <div class="kids-page-content" id="kids-characters">
+                    <div class="kids-card">🤸🏻‍♂️ شخصية 1</div>
+                    <div class="kids-card">🕳️ شخصية 2</div>
+                </div>
+
+                <div class="kids-page-content" id="kids-surprise">
+                    <div class="kids-card">🫧 مفاجأة اليوم</div>
                 </div>
             </div>
         </div>
     </div>
 
+  
     <!-- Footer -->
     <footer class="site-footer">
         <div class="footer-content">
@@ -3070,6 +3202,28 @@ const Comments = {
 // ============================================
 document.addEventListener('DOMContentLoaded', () => {
     App.init();
+});
+
+// ===========================
+// Kids Fun Logic
+// ===========================
+const kidsHandle = document.getElementById('kidsHandle');
+const kidsDrawer = document.getElementById('kidsDrawer');
+
+kidsHandle.addEventListener('click', () => {
+    kidsDrawer.classList.toggle('show');
+});
+
+document.querySelectorAll('.kids-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+        document.querySelectorAll('.kids-tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+
+        const page = tab.dataset.page;
+
+        document.querySelectorAll('.kids-page-content').forEach(p => p.classList.remove('active'));
+        document.getElementById(`kids-${page}`).classList.add('active');
+    });
 });
     </script>
 </body>
